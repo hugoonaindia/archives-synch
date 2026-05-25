@@ -1,7 +1,8 @@
-pyautogui==0.9.53
-Pillow==10.1.0
-google-auth==2.25.2
-google-auth-oauthlib==1.2.0
-google-api-python-client==2.107.0
-pytest==7.4.3
-pytest-cov==4.1.0
+pyautogui>=0.9.54
+Pillow>=10.2.0
+pyscreeze>=0.1.30
+google-auth>=2.28.0
+google-auth-oauthlib>=1.2.0
+google-api-python-client>=2.108.0
+pytest>=8.0.0
+pytest-cov>=5.0.0
