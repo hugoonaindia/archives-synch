@@ -592,9 +592,7 @@ class CalibrationApp:
         self.root.lift()
         self.root.focus_force()
         captured_idx = self.step_idx
-        if stype in ("capture_point", "capture_x"):
-            # Auto-avanza al siguiente paso tras 1s (tiempo de ver el badge)
-            self.root.after(1000, lambda idx=captured_idx: self._auto_advance(idx))
+        self.root.after(1000, lambda idx=captured_idx: self._auto_advance(idx))
 
     def _auto_advance(self, from_idx: int) -> None:
         """Avanza al siguiente paso si no se ha navegado manualmente."""
