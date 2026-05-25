@@ -270,7 +270,17 @@ def main() -> None:
 
 ✅ `recon.py` acepta ESPACIO + R/S interactivamente
 ✅ `sync.py` pregunta días cada ejecución
-✅ 39 tests pasan (nuevos + existentes)
+✅ 43 tests pasan (nuevos + existentes)
 ✅ Lint clean
 ✅ Documentación clara en scripts
+
+---
+
+## §9. Implementación Iteración 1: capture_screenshot_interactive() — 2026-05-25
+
+- **Qué**: Implementó `capture_screenshot_interactive()` en recon.py. Reemplazó timing automático (esperar 5s) con controles interactivos [ESPACIO] capturar / [R] reintentar / [S] saltar. Refactorizó `run_recon()` para usar nueva función. Hizo captura de formulario opcional.
+- **Por qué**: §2.1 del design spec - eliminar fragilidad de timing, dar control al usuario
+- **Tests**: 4 nuevos tests + 39 existentes = 43 passing | lint: clean
+- **Decisión**: Importé `Optional` desde typing explícitamente para satisfacer ruff lint (strict mode)
+- **Próximo**: Implementar `ask_sync_days()` en sync.py (§3 del design spec)
 
