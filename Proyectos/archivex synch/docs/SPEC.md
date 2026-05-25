@@ -1,0 +1,41 @@
+# Archivex Sync — Spec
+*Bootstrapped 2026-05-25 — plan en docs/superpowers/plans/2026-05-25-archivex-sync-rewrite.md*
+
+## Goal
+
+Dos scripts Python:
+1. `recon.py` — Opus 4.7 analiza Archivex Clinical visualmente y guarda `ui_knowledge.json` con coordenadas relativas y firmas visuales
+2. `sync.py` — monolito que lee Google Calendar (semana actual), filtra lunes y miércoles, y crea las citas restantes en Archivex via pyautogui + Haiku cacheado para verificaciones semánticas
+
+## Architecture
+
+```
+recon.py          ← reconocimiento Opus 4.7 (una vez)
+sync.py           ← monolito de sync (cada semana)
+requirements.txt
+pyproject.toml
+tests/
+  test_sync.py
+  test_recon.py
+~/.config/archivex-sync/
+  ui_knowledge.json    (producido por recon, nunca commiteado)
+  token_calendar.json  (OAuth, nunca commiteado)
+```
+
+## §1. Backlog
+
+| # | Task | Priority | Status |
+|---|------|----------|--------|
+| 1 | Task 1: Project foundation (requirements, pyproject, tests/__init__) | ✨ Feature | Open |
+| 2 | Task 2: Appointment dataclass + Calendar reader + Mon/Wed filter | ✨ Feature | Open |
+| 3 | Task 3: Knowledge base loader + coordinate calculator | ✨ Feature | Open |
+| 4 | Task 4: Archivex window detection via AppleScript | ✨ Feature | Open |
+| 5 | Task 5: Haiku verifier with prompt caching | ✨ Feature | Open |
+| 6 | Task 6: Appointment processor — pyautogui actions | ✨ Feature | Open |
+| 7 | Task 7: Week navigation | ✨ Feature | Open |
+| 8 | Task 8: Main sync loop — conflict handling + main() | ✨ Feature | Open |
+| 9 | Task 9: recon.py — Opus 4.7 reconnaissance | ✨ Feature | Open |
+| 10 | Task 10: Update .gitignore + smoke test | ✨ Feature | Open |
+
+## §2. Historial
+<!-- iterations logged here -->
