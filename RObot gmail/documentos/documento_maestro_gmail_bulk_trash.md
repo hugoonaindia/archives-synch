@@ -238,6 +238,13 @@ python3 gmail_bulk_trash.py                  # ejecutar
 - **Decisión**: Seguida estructura exacta del plan; archivo JSON simple con estructura `{"blocked": [], "whitelist": []}`
 - **Próximo**: Task 2 — Comando `--add-sender` / `--remove-sender` / `--list-senders`
 
+### §4. Task 2 — Gestión CLI de remitentes — 2026-05-25
+- **Qué**: Implementación de argparse + función `manage_senders()` con soporte para `--add-sender`, `--remove-sender`, `--add-whitelist`, `--remove-whitelist`, `--list-senders`
+- **Por qué**: Permite al usuario gestionar su blocklist/whitelist sin necesidad de editar JSON a mano
+- **Tests**: Verificación manual de cada comando ✅
+- **Decisión**: Agregué chequeos `hasattr()` en `manage_senders()` para compatibilidad con argparse
+- **Próximo**: Task 3 — Construcción dinámica de query desde blocklist
+
 ---
 
 ## 10. Notas de seguridad
