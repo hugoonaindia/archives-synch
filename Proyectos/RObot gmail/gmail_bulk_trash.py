@@ -391,6 +391,181 @@ def batch_trash(service: Any, ids: list[str]) -> None:
         print(f"⚠️  {failed} correos no pudieron procesarse.")
     print("   Vacíala en Gmail cuando quieras para liberar espacio definitivamente.\n")
 
+# ── Menú interactivo ──────────────────────────────────────────────────────────
+
+def _bulk_trash_interactive() -> None:
+    print("\n═══════════════════════════════════")
+    print("   Limpieza masiva por filtros")
+    print("═══════════════════════════════════")
+    print("(Deja vacío para omitir un filtro)\n")
+
+    sender = input("Remitente (from:): ").strip()
+    subject = input("Palabra en asunto (subject:): ").strip()
+    content = input("Palabra en cuerpo: ").strip()
+    before = input("Antes de fecha (YYYY-MM-DD): ").strip()
+    after = input("Después de fecha (YYYY-MM-DD): ").strip()
+    label = input("Etiqueta (label:): ").strip()
+
+    query_parts = []
+    if sender:
+        query_parts.append(f"from:{sender}")
+    if subject:
+        query_parts.append(f"subject:{subject}")
+    if label:
+        query_parts.append(f"label:{label}")
+    if content:
+        query_parts.append(content)
+
+    base = " ".join(query_parts) if query_parts else ""
+
+    if before:
+        base = f"({base}) before:{before.replace('-', '/')}" if base else f"before:{before.replace('-', '/')}"
+    if after:
+        base = f"({base}) after:{after.replace('-', '/')}" if base else f"after:{after.replace('-', '/')}"
+
+    print(f"\nQuery: {base or '(todas las bandejas)'}")
+
+    dry = input("¿Solo simular (dry-run)? (s/n): ").strip().lower()
+    dry_run = dry == "s"
+
+    try:
+        service = get_service()
+        senders = load_senders()
+        query = build_query(base, senders)
+
+        if not query and not sender:
+            print("⚠️  Debes especificar al menos un filtro.")
+            return
+
+        ids = get_all_ids(service, query)
+
+        if not ids:
+            print("✅ No hay mensajes que coincidan.")
+            return
+
+        if dry_run:
+            print(f"\n🔍 DRY RUN — Se moverían {len(ids)} mensajes a la papelera.")
+            return
+
+        confirm = input(f"\n¿Mover {len(ids)} mensajes a la papelera? (s/n): ").strip().lower()
+        if confirm == "s":
+            batch_trash(service, ids)
+        else:
+            print("Cancelado.")
+    except HttpError as e:
+        print(f"\n❌ Error de la API: {e}")
+    except KeyboardInterrupt:
+        print("\n\nInterrumpido por el usuario.")
+
+
+def _manage_list_menu(list_key: str, title: str, icon: str) -> None:
+    while True:
+        data = load_senders()
+        items = data[list_key]
+
+        print(f"\n╔══════════════════════════════════╗")
+        print(f"║      {title:<31}║")
+        print(f"╚══════════════════════════════════╝")
+
+        if items:
+            for i, s in enumerate(items, 1):
+                print(f"  {icon} {i:>2}. {s}")
+        else:
+            print(f"  (vacío)")
+
+        print(f"\n  [1] Añadir remitente")
+        print(f"  [2] Eliminar remitente")
+        print(f"  [v] Volver al menú principal")
+        choice = input("\nOpción: ").strip().lower()
+
+        if choice == "v":
+            break
+        elif choice == "1":
+            email = input("Email: ").strip().lower()
+            if email and email not in data[list_key]:
+                data[list_key].append(email)
+                save_senders(data)
+                print(f"✅ Añadido: {email}")
+            elif email in data[list_key]:
+                print(f"⚠️  Ya estaba en la lista.")
+        elif choice == "2":
+            n = input("Número del remitente a eliminar: ").strip()
+            if n.isdigit() and 1 <= int(n) <= len(items):
+                removed = items.pop(int(n) - 1)
+                save_senders(data)
+                print(f"✅ Eliminado: {removed}")
+        else:
+            print("⚠️  Opción no válida.")
+
+
+def _run_top_senders_menu(args: argparse.Namespace) -> None:
+    try:
+        service = get_service()
+        senders = load_senders()
+
+        base = args.query or ""
+        days = args.days if args.days > 0 else 90
+        cutoff = datetime.now() - timedelta(days=days)
+        date_query = f"before:{cutoff.strftime('%Y/%m/%d')}"
+
+        parts = [p for p in [base, date_query] if p]
+        query = " ".join(parts)
+
+        if args.before:
+            query = f"({query}) before:{args.before.replace('-', '/')}" if query else f"before:{args.before.replace('-', '/')}"
+        if args.after:
+            query = f"({query}) after:{args.after.replace('-', '/')}" if query else f"after:{args.after.replace('-', '/')}"
+
+        ids = get_all_ids(service, query)
+
+        if not ids:
+            print("✅ No hay mensajes en el rango especificado.")
+            return
+
+        top, sender_id_map = get_top_senders(service, ids, args.top_limit)
+
+        if not top:
+            print("No se pudieron identificar remitentes.")
+            return
+
+        interactive_sender_menu(service, top, sender_id_map, senders)
+
+    except HttpError as e:
+        print(f"\n❌ Error de la API: {e}")
+    except KeyboardInterrupt:
+        print("\n\nInterrumpido por el usuario.")
+
+
+def show_menu() -> None:
+    while True:
+        print("\n╔══════════════════════════════════╗")
+        print("║    Gmail Bulk Trash — by Hugo    ║")
+        print("╚══════════════════════════════════╝")
+        print("  [1] 🔍  Analizar top senders")
+        print("  [2] 🗑️   Limpieza masiva por filtros")
+        print("  [3] 📋  Gestionar blocklist")
+        print("  [4] 🛡️   Gestionar whitelist")
+        print("  [q] Salir")
+
+        choice = input("\nOpción: ").strip().lower()
+
+        if choice == "q":
+            print("\n¡Hasta luego! 👋\n")
+            break
+        elif choice == "1":
+            _run_top_senders_menu(argparse.Namespace(
+                query=None, days=0, before=None, after=None, top_limit=20
+            ))
+        elif choice == "2":
+            _bulk_trash_interactive()
+        elif choice == "3":
+            _manage_list_menu("blocked", "Blocklist", "🚫")
+        elif choice == "4":
+            _manage_list_menu("whitelist", "Whitelist", "✅")
+        else:
+            print("⚠️  Opción no válida.")
+
+
 # ── Main ──────────────────────────────────────────────────────────────────────
 
 def main() -> None:
@@ -431,8 +606,13 @@ Ejemplos:
     parser.add_argument("--top-senders",      action="store_true",       help="Analizar remitentes más frecuentes (modo interactivo)")
     parser.add_argument("--top-limit",        type=int, default=20,      help="Número de top senders a mostrar (default: 20)")
     parser.add_argument("--days",             type=int, default=0,       help="Ventana de tiempo en días para el análisis (default: 90 con --top-senders)")
+    parser.add_argument("--menu",             action="store_true",       help="Mostrar menú interactivo")
 
-    args = parser.parse_args()
+    args, remaining = parser.parse_known_args()
+
+    if args.menu or len(sys.argv) == 1:
+        show_menu()
+        return
 
     print("\n═══════════════════════════════════")
     print("   Gmail Bulk Trash — by Hugo")
@@ -444,47 +624,7 @@ Ejemplos:
 
     # ── Modo Top Senders ────────────────────────────────────────────────
     if args.top_senders:
-        try:
-            service = get_service()
-            senders = load_senders()
-
-            base = args.query or ""
-            days = args.days if args.days > 0 else 90
-            cutoff = datetime.now() - timedelta(days=days)
-            date_query = f"before:{cutoff.strftime('%Y/%m/%d')}"
-
-            parts = [p for p in [base, date_query] if p]
-            query = " ".join(parts)
-
-            if args.before:
-                query = f"({query}) before:{args.before.replace('-', '/')}" if query else f"before:{args.before.replace('-', '/')}"
-            if args.after:
-                query = f"({query}) after:{args.after.replace('-', '/')}" if query else f"after:{args.after.replace('-', '/')}"
-
-            ids = get_all_ids(service, query)
-
-            if not ids:
-                print("✅ No hay mensajes en el rango especificado.")
-                return
-
-            top, sender_id_map = get_top_senders(service, ids, args.top_limit)
-
-            if not top:
-                print("No se pudieron identificar remitentes.")
-                return
-
-            modified = interactive_sender_menu(service, top, sender_id_map, senders)
-
-            if modified:
-                print("\n✅ Cambios guardados. Ejecuta sin --top-senders para limpiar el resto.")
-            else:
-                print("\nSin cambios.")
-
-        except HttpError as e:
-            print(f"\n❌ Error de la API: {e}")
-            sys.exit(1)
-        except KeyboardInterrupt:
-            print("\n\nInterrumpido por el usuario.")
+        _run_top_senders_menu(args)
         return
 
     try:
