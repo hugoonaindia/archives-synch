@@ -23,14 +23,21 @@ tests/
 
 | # | Task | Priority | Status |
 |---|------|----------|--------|
-| 1 | Fix ruff 16 issues (lint gate rojo) | 🚨 CI | Open |
-| 2 | GitHub Actions CI (pytest + ruff en push) | ⚡ P0 | Open |
-| 3 | Log rotation: RotatingFileHandler (max 5MB × 3 archivos) | ⚠️ Debt | Open |
-| 4 | Eliminar calibrate_archivex.py (supersedido por GUI) | ⚠️ Debt | Open |
-| 5 | Añadir `first_result_dy` calibración a GUI (paso dedicado) | ✨ Feature | Open |
-| 6 | Manejo Archivex no abierto: retry loop + mensaje al usuario | ✨ Feature | Open |
+| 1 | Fix ruff 16 issues (lint gate rojo) | 🚨 CI | ✅ Done |
+| 2 | GitHub Actions CI (pytest + ruff en push) | ⚡ P0 | ✅ Done |
+| 3 | Log rotation: RotatingFileHandler (max 5MB × 3 archivos) | ⚠️ Debt | ✅ Done |
+| 4 | Eliminar calibrate_archivex.py (supersedido por GUI) | ⚠️ Debt | ✅ Done |
+| 5 | Manejo Archivex no abierto: mensaje claro al usuario | ✨ Feature | ✅ Done |
+| 6 | Añadir `first_result_dy` calibración a GUI (paso dedicado) | ✨ Feature | Open |
 | 7 | Test E2E completo con pyautogui mockeado | ✨ Feature | Open |
 | 8 | Launcher shell alias / script de inicio | ✨ Feature | Open |
 
 ## §2. Historial
 <!-- iterations logged here -->
+
+## §2. Bootstrap + lint + CI + debt cleanup — 2026-05-25
+
+- **Qué**: Bootstrap CLAUDE.md/SPEC.md/MEMORY.md; fix ruff 16 issues; CI workflow; log rotation; remove legacy calibrate_archivex.py; detect Archivex not running.
+- **Por qué**: Producción requiere gate de calidad limpio, CI, y UX robusta.
+- **Tests**: 10 passing | lint: clean
+- **Próximo**: `first_result_dy` calibración GUI (paso dedicado) o Launcher script
