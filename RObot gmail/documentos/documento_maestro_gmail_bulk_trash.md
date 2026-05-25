@@ -245,6 +245,13 @@ python3 gmail_bulk_trash.py                  # ejecutar
 - **Decisión**: Agregué chequeos `hasattr()` en `manage_senders()` para compatibilidad con argparse
 - **Próximo**: Task 3 — Construcción dinámica de query desde blocklist
 
+### §5. Task 3 — Query dinámica desde blocklist — 2026-05-25
+- **Qué**: Función `build_query()` que combina query base con remitentes bloqueados (OR) y excluye whitelist (-from:)
+- **Por qué**: Fundación para filtros dinámicos; permitirá al usuario borrar por remitentes sin escribir queries complejas
+- **Tests**: Verificación manual de combinación de queries ✅
+- **Decisión**: La query se construye cada ejecución (no se cachea) para mantener flexibilidad
+- **Próximo**: Task 4 — Modo `--dry-run`
+
 ---
 
 ## 10. Notas de seguridad
