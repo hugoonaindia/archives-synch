@@ -17,15 +17,18 @@ from __future__ import annotations
 
 import base64
 import json
+import logging
 import os
 import sys
-import time
 from datetime import date
 from io import BytesIO
 from pathlib import Path
+from typing import Optional
 
 import pyautogui
 from openai import OpenAI
+
+log = logging.getLogger(__name__)
 
 # ─── CONSTANTES ──────────────────────────────────────────────────────────────
 CONFIG_DIR     = Path.home() / ".config" / "archivex-sync"
@@ -87,6 +90,53 @@ def _screenshot_b64() -> str:
     buf = BytesIO()
     pyautogui.screenshot().save(buf, format="PNG")
     return base64.b64encode(buf.getvalue()).decode()
+
+
+# Instrucciones para cada paso de captura
+_STEP_INSTRUCTIONS = {
+    "calendario": (
+        "Abre Archivex Clinical en vista semanal.\n"
+        "Asegúrate de que el calendario sea visible sin obstáculos."
+    ),
+    "formulario": (
+        "Abre el formulario de nueva cita haciendo doble clic en un slot vacío.\n"
+        "El formulario debe estar completamente visible."
+    ),
+}
+
+
+def capture_screenshot_interactive(step_name: str) -> Optional[str]:
+    """
+    Captura screenshot con control interactivo del usuario.
+
+    Args:
+        step_name: "calendario" o "formulario"
+
+    Returns:
+        base64 PNG string si capturó
+        None si usuario presiona S (saltar)
+
+    Flow:
+        1. Muestra instrucciones
+        2. Espera input: [ESPACIO] Capturar | [R] Reintentar | [S] Saltar
+        3. Si ESPACIO: captura screenshot, retorna base64
+        4. Si R: repite paso 2
+        5. Si S: retorna None
+    """
+    while True:
+        print(f"📍 {_STEP_INSTRUCTIONS[step_name]}")
+        print("   [ESPACIO] Capturar | [R] Reintentar | [S] Saltar")
+
+        key = pyautogui.press()  # bloqueante, retorna string de tecla
+
+        if key == "space":
+            return _screenshot_b64()
+        elif key == "r":
+            continue  # repite el loop
+        elif key == "s":
+            return None
+        else:
+            print("   Presiona ESPACIO, R o S")
 
 
 # ─── PROMPT PARA OPUS ────────────────────────────────────────────────────────
@@ -151,33 +201,40 @@ def run_recon() -> dict:
         timeout=120.0,  # 120s timeout (más tiempo para 2 imágenes)
     )
 
-    print("📸  Capturando screenshot 1/2 — calendario...")
-    shot1 = _screenshot_b64()
-    print("   ✓  Screenshot 1 capturado")
-    print("   ℹ️   Haz doble clic en un slot vacío para abrir el formulario de cita.")
-    print("   ℹ️   Tienes 5 segundos...")
-    time.sleep(5)
+    # Paso 1: capturar calendario con control interactivo
+    shot1 = capture_screenshot_interactive("calendario")
+    if shot1 is None:
+        sys.exit("❌  Usuario saltó captura de calendario")
+    print("   ✓  Screenshot 1 capturado\n")
 
-    print("📸  Capturando screenshot 2/2 — formulario (si está abierto)...")
-    shot2 = _screenshot_b64()
+    # Paso 2: capturar formulario con control interactivo
+    shot2 = capture_screenshot_interactive("formulario")
+    if shot2 is None:
+        log.warning("Formulario no capturado — continuaremos sin él")
     print("   ✓  Screenshot 2 capturado\n")
 
     print(f"🤖  Enviando a {MODEL_RECON} para análisis...")
     prompt = _RECON_PROMPT.replace("RECON_DATE", date.today().isoformat())
 
+    # Construir mensaje: shot1 siempre, shot2 solo si existe
+    content = [
+        {"type": "text", "text": "Screenshot 1 (vista calendario):"},
+        {"type": "image_url",
+         "image_url": {"url": f"data:image/png;base64,{shot1}"}},
+    ]
+    if shot2:
+        content.extend([
+            {"type": "text", "text": "Screenshot 2 (formulario si estaba abierto):"},
+            {"type": "image_url",
+             "image_url": {"url": f"data:image/png;base64,{shot2}"}},
+        ])
+    content.append({"type": "text", "text": prompt})
+
     try:
         resp = client.chat.completions.create(
             model=MODEL_RECON,
             max_tokens=2000,
-            messages=[{"role": "user", "content": [
-                {"type": "text", "text": "Screenshot 1 (vista calendario):"},
-                {"type": "image_url",
-                 "image_url": {"url": f"data:image/png;base64,{shot1}"}},
-                {"type": "text", "text": "Screenshot 2 (formulario si estaba abierto):"},
-                {"type": "image_url",
-                 "image_url": {"url": f"data:image/png;base64,{shot2}"}},
-                {"type": "text", "text": prompt},
-            ]}],
+            messages=[{"role": "user", "content": content}],
         )
     except Exception as e:
         sys.exit(f"❌  Error en llamada a OpenRouter: {e}")

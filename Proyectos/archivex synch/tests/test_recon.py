@@ -76,3 +76,56 @@ class TestValidateReconOutput:
         }}
         with pytest.raises(ValueError, match="empty_slot"):
             recon.validate_recon_output(bad)
+
+
+class TestCaptureScreenshotInteractive:
+    def test_space_returns_b64_screenshot(self, recon, monkeypatch):
+        """Usuario presiona ESPACIO → captura screenshot"""
+        # Mock pyautogui.press() → retorna "space"
+        monkeypatch.setattr("recon.pyautogui.press", lambda: "space")
+        # Mock _screenshot_b64() → retorna fake b64
+        monkeypatch.setattr("recon._screenshot_b64", lambda: "fake_b64_data")
+        # Mock input() → nunca debería ser llamado
+        monkeypatch.setattr("builtins.input", lambda _: pytest.fail("input() should not be called"))
+
+        result = recon.capture_screenshot_interactive("calendario")
+        assert result == "fake_b64_data"
+
+    def test_retry_then_space(self, recon, monkeypatch):
+        """Usuario presiona R (retry), luego ESPACIO → captura screenshot"""
+        calls = []
+        def fake_press():
+            calls.append(1)
+            return "space" if len(calls) > 1 else "r"
+
+        monkeypatch.setattr("recon.pyautogui.press", fake_press)
+        monkeypatch.setattr("recon._screenshot_b64", lambda: "screenshot_data")
+        monkeypatch.setattr("builtins.print", lambda *a, **k: None)  # silence output
+
+        result = recon.capture_screenshot_interactive("calendario")
+        assert result == "screenshot_data"
+        assert len(calls) == 2  # press() called twice
+
+    def test_skip_returns_none(self, recon, monkeypatch):
+        """Usuario presiona S (skip) → retorna None"""
+        monkeypatch.setattr("recon.pyautogui.press", lambda: "s")
+        monkeypatch.setattr("builtins.print", lambda *a, **k: None)
+
+        result = recon.capture_screenshot_interactive("formulario")
+        assert result is None
+
+    def test_invalid_key_repeats_prompt(self, recon, monkeypatch):
+        """Usuario presiona tecla inválida, luego ESPACIO → captura screenshot"""
+        calls = []
+        def fake_press():
+            calls.append(1)
+            # Primero una tecla inválida, luego ESPACIO
+            return "x" if len(calls) == 1 else "space"
+
+        monkeypatch.setattr("recon.pyautogui.press", fake_press)
+        monkeypatch.setattr("recon._screenshot_b64", lambda: "valid_screenshot")
+        monkeypatch.setattr("builtins.print", lambda *a, **k: None)
+
+        result = recon.capture_screenshot_interactive("calendario")
+        assert result == "valid_screenshot"
+        assert len(calls) == 2
