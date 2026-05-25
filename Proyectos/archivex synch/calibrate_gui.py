@@ -324,6 +324,15 @@ class CalibrationApp:
                                                       size=12, weight="bold"))
         self.lbl_captured.pack(pady=(6, 0))
 
+        # Botón guardar dentro de la tarjeta (solo visible en el paso resumen)
+        self.btn_save_card = tk.Button(
+            self.card, text="💾  Guardar calibración",
+            font=tkfont.Font(family="Helvetica Neue", size=15, weight="bold"),
+            bg=C["done"], fg="white", activebackground="#059669",
+            relief="flat", bd=0, padx=16, pady=14,
+            cursor="hand2", command=self.save_calibration,
+        )
+
         # ── Navegación (se packea ANTES que el panel expandible) ─────────────
         # En tkinter, side="bottom" debe reservarse antes de que expand=True
         # consuma todo el espacio vertical restante.
@@ -462,6 +471,9 @@ class CalibrationApp:
             self.btn_capture.pack_forget()
             self.input_frame.pack_forget()
             self._render_summary_in_desc()
+            self.btn_save_card.pack(fill="x", pady=(12, 4))
+        else:
+            self.btn_save_card.pack_forget()
 
         # Marca ya capturado si existe
         key = step.get("result_key")
