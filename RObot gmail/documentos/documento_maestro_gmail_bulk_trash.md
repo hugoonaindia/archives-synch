@@ -231,6 +231,13 @@ python3 gmail_bulk_trash.py                  # ejecutar
 - Plan de implementación creado en `docs/superpowers/plans/`
 - Backlog definido con 6 tareas de mejora
 
+### §3. Task 1 — Persistencia de remitentes — 2026-05-25
+- **Qué**: Creación de `senders.json` y funciones `load_senders()` / `save_senders()`
+- **Por qué**: Foundation para gestión de blocklist/whitelist (Task 2)
+- **Tests**: N/A (no hay suite de tests en proyecto)
+- **Decisión**: Seguida estructura exacta del plan; archivo JSON simple con estructura `{"blocked": [], "whitelist": []}`
+- **Próximo**: Task 2 — Comando `--add-sender` / `--remove-sender` / `--list-senders`
+
 ---
 
 ## 10. Notas de seguridad
