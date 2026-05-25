@@ -27,6 +27,7 @@ for pkg in [
         install(pkg)
 
 # ── Imports ───────────────────────────────────────────────────────────────────
+import argparse
 import os
 from pathlib import Path
 
@@ -111,6 +112,75 @@ def get_all_ids(service, query: str) -> list[str]:
     print(f"\n📬 Total: {len(ids)} mensajes\n")
     return ids
 
+# ── Gestión de remitentes ────────────────────────────────────────────────────
+
+def manage_senders(args) -> bool:
+    """Gestiona blocklist y whitelist. Devuelve True si manejó un comando de gestión."""
+    data = load_senders()
+
+    if hasattr(args, 'add_sender') and args.add_sender:
+        for s in args.add_sender:
+            s = s.strip().lower()
+            if s not in data["blocked"]:
+                data["blocked"].append(s)
+                print(f"✅ Añadido a blocklist: {s}")
+            else:
+                print(f"⚠️  Ya estaba en blocklist: {s}")
+        save_senders(data)
+        return True
+
+    if hasattr(args, 'remove_sender') and args.remove_sender:
+        for s in args.remove_sender:
+            s = s.strip().lower()
+            if s in data["blocked"]:
+                data["blocked"].remove(s)
+                print(f"✅ Eliminado de blocklist: {s}")
+            else:
+                print(f"⚠️  No estaba en blocklist: {s}")
+        save_senders(data)
+        return True
+
+    if hasattr(args, 'add_whitelist') and args.add_whitelist:
+        for s in args.add_whitelist:
+            s = s.strip().lower()
+            if s not in data["whitelist"]:
+                data["whitelist"].append(s)
+                print(f"✅ Añadido a whitelist: {s}")
+            else:
+                print(f"⚠️  Ya estaba en whitelist: {s}")
+        save_senders(data)
+        return True
+
+    if hasattr(args, 'remove_whitelist') and args.remove_whitelist:
+        for s in args.remove_whitelist:
+            s = s.strip().lower()
+            if s in data["whitelist"]:
+                data["whitelist"].remove(s)
+                print(f"✅ Eliminado de whitelist: {s}")
+            else:
+                print(f"⚠️  No estaba en whitelist: {s}")
+        save_senders(data)
+        return True
+
+    if hasattr(args, 'list_senders') and args.list_senders:
+        print("\n📋 BLOCKLIST (remitentes bloqueados):")
+        if data["blocked"]:
+            for s in data["blocked"]:
+                print(f"   🚫 {s}")
+        else:
+            print("   (vacío)")
+
+        print("\n🛡️  WHITELIST (remitentes protegidos):")
+        if data["whitelist"]:
+            for s in data["whitelist"]:
+                print(f"   ✅ {s}")
+        else:
+            print("   (vacío)")
+        print()
+        return True
+
+    return False
+
 # ── Borrado en batch ──────────────────────────────────────────────────────────
 
 def batch_trash(service, ids: list[str]) -> None:
@@ -138,9 +208,36 @@ def batch_trash(service, ids: list[str]) -> None:
 # ── Main ──────────────────────────────────────────────────────────────────────
 
 def main():
+    parser = argparse.ArgumentParser(
+        description="Gmail Bulk Trash — by Hugo",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Ejemplos:
+  python3 gmail_bulk_trash.py --list-senders
+  python3 gmail_bulk_trash.py --add-sender spam@example.com
+  python3 gmail_bulk_trash.py --add-sender correo1@x.com correo2@y.com
+  python3 gmail_bulk_trash.py --remove-sender spam@example.com
+  python3 gmail_bulk_trash.py --add-whitelist boss@work.com
+  python3 gmail_bulk_trash.py --remove-whitelist boss@work.com
+        """
+    )
+
+    # Comandos de gestión
+    parser.add_argument("--add-sender",       nargs="+", metavar="EMAIL", help="Añadir remitente(s) al blocklist")
+    parser.add_argument("--remove-sender",    nargs="+", metavar="EMAIL", help="Eliminar remitente(s) del blocklist")
+    parser.add_argument("--add-whitelist",    nargs="+", metavar="EMAIL", help="Añadir remitente(s) a la whitelist")
+    parser.add_argument("--remove-whitelist", nargs="+", metavar="EMAIL", help="Eliminar remitente(s) de la whitelist")
+    parser.add_argument("--list-senders",     action="store_true",       help="Mostrar blocklist y whitelist")
+
+    args = parser.parse_args()
+
     print("\n═══════════════════════════════════")
     print("   Gmail Bulk Trash — by Hugo")
     print("═══════════════════════════════════")
+
+    # Manejar comandos de gestión (no necesitan autenticación)
+    if manage_senders(args):
+        return
 
     try:
         service = get_service()
