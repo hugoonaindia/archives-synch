@@ -406,7 +406,7 @@ def click_calendar_slot(wx: int, wy: int, ww: int, wh: int,
     _, _, _, col_w, cell_y = calc_grid_metrics(wx, wy, ww, wh, hour, minute)
     cell_x = int(wx + CAL["time_col_px"] + day_offset * col_w + col_w / 2)
     pyautogui.click(cell_x, cell_y)
-    time.sleep(1.5)
+    time.sleep(2.5)  # espera generosa a que el formulario abra completamente
 
 
 def search_and_select_patient(wx: int, wy: int, ww: int, wh: int, name: str) -> None:
@@ -414,15 +414,22 @@ def search_and_select_patient(wx: int, wy: int, ww: int, wh: int, name: str) -> 
     search_x = int(wx + ww * CAL["search_box_x"])
     search_y = int(wy + wh * CAL["search_box_y"])
 
+    # Triple clic para asegurar foco + selección total del campo
     pyautogui.click(search_x, search_y)
-    time.sleep(0.4)
+    time.sleep(0.3)
+    pyautogui.click(search_x, search_y)
+    time.sleep(0.3)
     pyautogui.hotkey("command", "a")
+    time.sleep(0.2)
+
+    # Pegar vía clipboard para soportar acentos y caracteres especiales
     sp.run(["pbcopy"], input=name.encode("utf-8"), check=True)
     pyautogui.hotkey("command", "v")
-    time.sleep(1.8)
+    time.sleep(2.5)  # esperar a que carguen los resultados de búsqueda
 
+    # Seleccionar el primer resultado
     pyautogui.click(search_x, search_y + CAL["first_result_dy"])
-    time.sleep(0.5)
+    time.sleep(0.8)
 
 
 def click_crear_cita(wx: int, wy: int, ww: int, wh: int) -> None:
