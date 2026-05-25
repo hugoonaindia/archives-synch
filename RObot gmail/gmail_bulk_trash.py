@@ -208,8 +208,10 @@ def manage_senders(args) -> bool:
 # ── Borrado en batch ──────────────────────────────────────────────────────────
 
 def batch_trash(service, ids: list[str]) -> None:
+    import time
     total   = len(ids)
     trashed = 0
+    start   = time.time()
 
     for i in range(0, total, BATCH_SIZE):
         batch = ids[i : i + BATCH_SIZE]
@@ -222,12 +224,17 @@ def batch_trash(service, ids: list[str]) -> None:
             },
         ).execute()
         trashed += len(batch)
-        pct = round(trashed / total * 100)
-        bar = "█" * (pct // 5) + "░" * (20 - pct // 5)
-        print(f"  [{bar}] {pct}%  ({trashed}/{total})", end="\r")
+        elapsed  = time.time() - start
+        rate     = trashed / elapsed if elapsed > 0 else 0
+        remaining = int((total - trashed) / rate) if rate > 0 else 0
+        pct      = round(trashed / total * 100)
+        bar      = "█" * (pct // 5) + "░" * (20 - pct // 5)
+        eta_str  = f"{remaining}s restantes" if remaining > 0 else "casi listo"
+        print(f"  [{bar}] {pct}%  ({trashed}/{total})  ⏱ {eta_str}   ", end="\r")
 
-    print(f"\n\n✅ {trashed} correos movidos a la papelera.")
-    print("   Vacíala en Gmail cuando quieras para liberar espacio definitivamente.")
+    elapsed_total = round(time.time() - start)
+    print(f"\n\n✅ {trashed} correos movidos a la papelera en {elapsed_total}s.")
+    print("   Vacíala en Gmail cuando quieras para liberar espacio definitivamente.\n")
 
 # ── Main ──────────────────────────────────────────────────────────────────────
 
