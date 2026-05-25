@@ -266,6 +266,28 @@ python3 gmail_bulk_trash.py                  # ejecutar
 - **Decisión**: Se envuelven las queries en paréntesis para asegurar precedencia correcta; conversión de formato automática
 - **Próximo**: Task 6 — Mejor UX (ETA y reporte final)
 
+### §8. Task 6 — UX mejorada (ETA y reporte final) — 2026-05-25
+- **Qué**: Función `batch_trash()` mejorada con cálculo de ETA, tasa de procesamiento y tiempo total
+- **Por qué**: Feedback visual durante ejecución larga; usuario sabe cuándo terminará
+- **Tests**: Verificación de sintaxis ✅; ETA requiere ejecución real contra Gmail API
+- **Decisión**: ETA se calcula como (mensajes_restantes / tasa_actual); muestra "casi listo" cuando faltan < 1s
+- **Próximo**: Backlog de features futuras (F-01 a F-06) o cierre de ciclo
+
+---
+
+## 10a. Estado final — Plan completado ✅
+
+**Todas las 6 tareas del plan han sido implementadas:**
+
+- [x] Task 1: `senders.json` + funciones load/save
+- [x] Task 2: CLI con `--add-sender`, `--remove-sender`, `--add-whitelist`, `--remove-whitelist`, `--list-senders`
+- [x] Task 3: Query dinámica desde blocklist + whitelist
+- [x] Task 4: Modo `--dry-run`
+- [x] Task 5: Filtros `--query`, `--before`, `--after`
+- [x] Task 6: ETA y reporte final en barra de progreso
+
+**El script ahora soporta la interfaz completa descrita en §5 (Comandos — Referencia Completa).**
+
 ---
 
 ## 10. Notas de seguridad
