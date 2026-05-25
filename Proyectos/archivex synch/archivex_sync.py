@@ -63,16 +63,17 @@ logger = logging.getLogger(__name__)
 pyautogui.PAUSE    = 0.4
 pyautogui.FAILSAFE = True
 
-DEBUG_CLICKS = False  # True → mueve el ratón sin hacer clic y pide confirmación
-
 # ── CALIBRACIÓN — valores por defecto ─────────────────────────────────────────
 
 CAL_DEFAULTS: dict = {
     "grid_top_px":     135,
     "grid_bottom_px":  145,
-    "time_col_px":     65,
     "grid_start_h":    8,
     "grid_end_h":      20,
+    # Coordenadas absolutas del centro de cada columna de día
+    # Orden: [Lunes, Martes, Miércoles, Jueves, Viernes, Sábado, Domingo]
+    # None → se calcula linealmente si no se ha calibrado
+    "col_centers_x":   None,
     "search_box_x":    0.245,
     "search_box_y":    0.525,
     "first_result_dy": 85,
@@ -99,16 +100,8 @@ CAL: dict = load_cal()
 # ── CLICK HELPER ─────────────────────────────────────────────────────────────
 
 def click(x: int, y: int, label: str = "") -> None:
-    """Hace clic en (x, y). En modo DEBUG mueve el ratón y pide confirmación."""
-    tag = f" [{label}]" if label else ""
-    if DEBUG_CLICKS:
-        pyautogui.moveTo(x, y, duration=0.4)
-        resp = input(f"  🖱  Clic en ({x}, {y}){tag} — ¿OK? (s/n): ").strip().lower()
-        if resp != "s":
-            logger.warning(f"Clic cancelado en ({x}, {y}){tag}")
-            return
-    else:
-        logger.debug(f"Click ({x}, {y}){tag}")
+    """Hace clic en (x, y) y loggea coordenadas."""
+    logger.debug(f"Click ({x}, {y}) [{label}]")
     pyautogui.click(x, y)
 
 
@@ -158,37 +151,41 @@ indicado y espera 3 segundos sin moverlo.
         sw, sh = pyautogui.size()
         wx, wy, ww, wh = 0, 0, sw, sh
 
-    # ── 6 puntos de calibración ──────────────────────────────────────────────
+    DIAS = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"]
 
-    print("\n─── PASO 1/6 ──────────────────────────────────────────────")
+    # ── Puntos de calibración ────────────────────────────────────────────────
+
+    print("\n─── PASO 1/5 ──────────────────────────────────────────────")
     print("    Esquina SUPERIOR-IZQUIERDA de la rejilla del calendario")
-    print("    (primera celda del Lunes, justo tras la columna de horas)")
+    print("    (primera celda visible, justo tras la columna de horas)")
     gx1, gy1 = _wait_for_position("Esquina SUPERIOR-IZQUIERDA de la rejilla")
 
-    print("\n─── PASO 2/6 ──────────────────────────────────────────────")
+    print("\n─── PASO 2/5 ──────────────────────────────────────────────")
     print("    Esquina INFERIOR-DERECHA de la rejilla")
-    print("    (última celda del Domingo, fila inferior)")
     gx2, gy2 = _wait_for_position("Esquina INFERIOR-DERECHA de la rejilla")
 
-    print("\n─── PASO 3/6 ──────────────────────────────────────────────")
-    print("    PRIMERA franja horaria visible (ej. 08:00)")
-    print("    Apunta al centro vertical de esa franja")
-    _, gy_start = _wait_for_position("Centro de la PRIMERA franja horaria (08:00)")
+    print("\n─── PASO 3/5 ──────────────────────────────────────────────")
+    print("    PRIMERA franja horaria visible — apunta a su centro vertical")
+    _, gy_start = _wait_for_position("Centro de la PRIMERA franja horaria")
     hour_start = int(input("  ¿Qué hora indica esa franja? (ej: 8): ").strip() or "8")
 
-    print("\n─── PASO 4/6 ──────────────────────────────────────────────")
-    print("    ÚLTIMA franja horaria visible (ej. 20:00)")
+    print("\n─── PASO 4/5 ──────────────────────────────────────────────")
+    print("    ÚLTIMA franja horaria visible")
     _, gy_end = _wait_for_position("Centro de la ÚLTIMA franja horaria visible")
     hour_end = int(input("  ¿Qué hora indica esa franja? (ej: 20): ").strip() or "20")
 
-    print("\n─── PASO 5/6 ──────────────────────────────────────────────")
-    print("    Campo de búsqueda de pacientes en el formulario 'Nueva cita'")
-    print("    → Haz doble clic en un slot del calendario para abrirlo")
+    print("\n─── PASO 5a/5 — COLUMNAS DE DÍAS ──────────────────────────")
+    print("    Coloca el ratón en el CENTRO HORIZONTAL de cada columna de día.")
+    print("    La altura no importa, solo la posición izquierda-derecha.")
+    col_centers: list[int] = []
+    for i, dia in enumerate(DIAS, 1):
+        cx, _ = _wait_for_position(f"Centro de la columna del {dia.upper()} ({i}/7)")
+        col_centers.append(cx)
+
+    print("\n─── PASO 5b/5 — FORMULARIO NUEVA CITA ─────────────────────")
+    print("    Haz doble clic en cualquier slot del calendario para abrirlo.")
     input("  Presiona ENTER cuando el formulario 'Nueva cita' esté abierto... ")
     sbx, sby = _wait_for_position("CENTRO del campo de búsqueda de pacientes")
-
-    print("\n─── PASO 6/6 ──────────────────────────────────────────────")
-    print("    Botón 'Crear cita' o 'Guardar' del formulario")
     cbx, cby = _wait_for_position("Botón CREAR/GUARDAR cita")
 
     # ── Calcular valores ─────────────────────────────────────────────────────
@@ -196,9 +193,9 @@ indicado y espera 3 segundos sin moverlo.
     cal = dict(CAL_DEFAULTS)
     cal["grid_top_px"]    = max(0, gy1 - wy)
     cal["grid_bottom_px"] = max(0, wh - (gy2 - wy))
-    cal["time_col_px"]    = max(0, gx1 - wx)
     cal["grid_start_h"]   = hour_start
     cal["grid_end_h"]     = hour_end
+    cal["col_centers_x"]  = col_centers          # coordenadas absolutas por día
     cal["search_box_x"]   = round((sbx - wx) / ww, 3)
     cal["search_box_y"]   = round((sby - wy) / wh, 3)
     cal["crear_btn_x"]    = round((cbx - wx) / ww, 3)
@@ -250,6 +247,15 @@ class Appointment:
 
 # ── HELPER: Grid metrics ──────────────────────────────────────────────────────
 
+def _calc_cell_y(wy: int, wh: int, hour: int, minute: int) -> int:
+    """Calcula la coordenada Y de un slot horario."""
+    grid_h    = wh - CAL["grid_top_px"] - CAL["grid_bottom_px"]
+    total_min = (CAL["grid_end_h"] - CAL["grid_start_h"]) * 60
+    event_min = (hour - CAL["grid_start_h"]) * 60 + minute
+    y_ratio   = event_min / total_min
+    return int(wy + CAL["grid_top_px"] + y_ratio * grid_h)
+
+
 def calc_grid_metrics(
     wx: int, wy: int, ww: int, wh: int, hour: int, minute: int
 ) -> tuple[int, int, float, float, int]:
@@ -258,12 +264,12 @@ def calc_grid_metrics(
     Returns: (grid_h, grid_w, y_ratio, col_w, cell_y)
     """
     grid_h    = wh - CAL["grid_top_px"] - CAL["grid_bottom_px"]
-    grid_w    = ww - CAL["time_col_px"]
+    grid_w    = ww - CAL.get("time_col_px", 65)
     col_w     = grid_w / 7
     total_min = (CAL["grid_end_h"] - CAL["grid_start_h"]) * 60
     event_min = (hour - CAL["grid_start_h"]) * 60 + minute
     y_ratio   = event_min / total_min
-    cell_y    = int(wy + CAL["grid_top_px"] + y_ratio * grid_h)
+    cell_y    = _calc_cell_y(wy, wh, hour, minute)
     return grid_h, grid_w, y_ratio, col_w, cell_y
 
 
@@ -424,8 +430,18 @@ def navigate_to_week(monday: date) -> None:
 def click_calendar_slot(wx: int, wy: int, ww: int, wh: int,
                         day_offset: int, hour: int, minute: int) -> None:
     """Hace clic en la celda del calendario para el día y hora dados."""
-    _, _, _, col_w, cell_y = calc_grid_metrics(wx, wy, ww, wh, hour, minute)
-    cell_x = int(wx + CAL["time_col_px"] + day_offset * col_w + col_w / 2)
+    cell_y = _calc_cell_y(wy, wh, hour, minute)
+
+    cols = CAL.get("col_centers_x")
+    if cols and len(cols) == 7:
+        # Usar coordenadas absolutas calibradas (más fiable)
+        cell_x = cols[day_offset]
+    else:
+        # Fallback: cálculo lineal (puede estar desalineado)
+        grid_w = ww - CAL.get("time_col_px", 65)
+        col_w  = grid_w / 7
+        cell_x = int(wx + CAL.get("time_col_px", 65) + day_offset * col_w + col_w / 2)
+
     click(cell_x, cell_y, f"slot día={day_offset} {hour}:{minute:02d}")
     time.sleep(2.5)
 
@@ -609,16 +625,10 @@ def main() -> None:
 
     # ── Opciones al inicio ────────────────────────────────────────────────────
     print("\n  [C] Recalibrar pantalla")
-    print("  [D] Modo debug (mueve el ratón y pide confirmación antes de cada clic)")
     print("  [ENTER] Sincronizar\n")
-    resp = input("  Opción: ").strip().lower()
-    if resp == "c":
+    if input("  Opción: ").strip().lower() == "c":
         run_calibration()
         print("\n✅ Calibración guardada. Continuando...\n")
-    elif resp == "d":
-        global DEBUG_CLICKS
-        DEBUG_CLICKS = True
-        print("\n🐛 Modo debug activado — confirmarás cada clic antes de ejecutarlo.\n")
 
     # 1. Conectar con Google Calendar
     print("\n📅 Conectando con Google Calendar…")
