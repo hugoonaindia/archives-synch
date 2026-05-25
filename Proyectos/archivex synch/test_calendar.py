@@ -3,7 +3,8 @@
 test_calendar.py — Comprueba que Google Calendar API está activa
 y lista los calendarios y citas de esta semana.
 """
-import subprocess, sys
+import subprocess
+import sys
 
 for pkg in ["google-auth", "google-auth-oauthlib", "google-api-python-client"]:
     try:
@@ -11,12 +12,13 @@ for pkg in ["google-auth", "google-auth-oauthlib", "google-api-python-client"]:
     except ImportError:
         subprocess.check_call([sys.executable, "-m", "pip", "install", pkg, "-q", "--break-system-packages"])
 
-from pathlib import Path
-from datetime import datetime, timedelta, date
-from google_auth_oauthlib.flow import InstalledAppFlow
-from google.auth.transport.requests import Request
-from google.oauth2.credentials import Credentials
-from googleapiclient.discovery import build
+from datetime import date, datetime, timedelta  # noqa: E402
+from pathlib import Path  # noqa: E402
+
+from google.auth.transport.requests import Request  # noqa: E402
+from google.oauth2.credentials import Credentials  # noqa: E402
+from google_auth_oauthlib.flow import InstalledAppFlow  # noqa: E402
+from googleapiclient.discovery import build  # noqa: E402
 
 SCOPES     = ["https://www.googleapis.com/auth/calendar.readonly"]
 CREDS_FILE = Path(__file__).parent / "credentials.json"

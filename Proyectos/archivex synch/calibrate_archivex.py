@@ -134,19 +134,7 @@ PASO 6/6: Botón '+ Crear cita' o 'Guardar'
     grid_top_px    = gy1 - wy
     grid_bottom_px = wh - (gy2 - wy)
     time_col_px    = gx1 - wx
-    grid_total_px  = gy2 - gy1
-
-    # Estimar horas de inicio y fin basándose en los puntos 3 y 4
-    # Asumimos que los puntos marcan 08:00 y la última hora
-    total_visible_range = gy_end - gy_start
-    grid_range = gy2 - gy1
-    # Proporción: grid_start_h estimado como 8 por defecto
     grid_start_h = 8
-    # Calcular cuántas horas caben en el grid
-    px_per_hour = total_visible_range / 1.0  # 1 hora como referencia inicial
-    if total_visible_range > 0:
-        # Si el grid tiene más píxeles, estimar escala
-        estimated_hours = int(grid_range / (total_visible_range / 1)) if total_visible_range > 0 else 12
     grid_end_h = grid_start_h + 12  # default 12 horas visibles
 
     # Búsqueda como proporción de la ventana
