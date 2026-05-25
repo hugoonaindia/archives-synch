@@ -284,3 +284,13 @@ def main() -> None:
 - **Decisión**: Importé `Optional` desde typing explícitamente para satisfacer ruff lint (strict mode)
 - **Próximo**: Implementar `ask_sync_days()` en sync.py (§3 del design spec)
 
+---
+
+## §10. Implementación Iteración 2: ask_sync_days() + integración en main() — 2026-05-25
+
+- **Qué**: Implementó `ask_sync_days()` en sync.py (§3.1 del design spec). Función pregunta al usuario qué días sincronizar con presets [T/L/A/P] e input personalizado. Integró en main() para filtrar citas por días seleccionados antes de procesarlas.
+- **Por qué**: §3 del design spec - permitir al usuario elegir dinámicamente qué días sincronizar en lugar de hardcodeados
+- **Tests**: 5 nuevos tests (TestAskSyncDays) + 4 de capture_screenshot_interactive + 39 existentes = 48 passing | lint: clean
+- **Decisión**: Colocar ask_sync_days() call después de cargar KB pero antes de get_window_bounds() para priorizar UI interactiva
+- **Próximo**: Ciclo de verificación completo; spec está liserto para deployment
+
