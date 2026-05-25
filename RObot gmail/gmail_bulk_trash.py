@@ -86,6 +86,30 @@ def get_service():
 
     return build("gmail", "v1", credentials=creds)
 
+# ── Query builder ────────────────────────────────────────────────────────────
+
+def build_query(base_query: str, senders: dict) -> str:
+    """Combina la query base con los remitentes bloqueados, excluyendo whitelist."""
+    parts = []
+
+    if base_query:
+        parts.append(f"({base_query})")
+
+    if senders["blocked"]:
+        blocked_part = " OR ".join(f"from:{s}" for s in senders["blocked"])
+        parts.append(f"({blocked_part})")
+
+    if not parts:
+        return ""
+
+    query = " OR ".join(parts)
+
+    # Excluir whitelist
+    for protected in senders["whitelist"]:
+        query = f"({query}) -from:{protected}"
+
+    return query
+
 # ── Búsqueda ──────────────────────────────────────────────────────────────────
 
 def get_all_ids(service, query: str) -> list[str]:
@@ -241,7 +265,15 @@ Ejemplos:
 
     try:
         service = get_service()
-        ids     = get_all_ids(service, QUERY)
+        senders = load_senders()
+        query = build_query(QUERY, senders)
+
+        if not query:
+            print("⚠️  No hay query ni remitentes bloqueados.")
+            print("   Usa --query 'tu filtro' o --add-sender email@ejemplo.com")
+            sys.exit(1)
+
+        ids = get_all_ids(service, query)
 
         if not ids:
             print("✅ No hay mensajes que coincidan con el filtro.")
