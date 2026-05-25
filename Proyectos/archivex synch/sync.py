@@ -40,7 +40,7 @@ TOKEN_PATH   = CONFIG_DIR / "token_calendar.json"
 CREDS_PATH   = Path("credentials.json")
 SCOPES       = ["https://www.googleapis.com/auth/calendar.readonly"]
 MODEL_VERIFY     = os.getenv(
-    "ARCHIVEX_VERIFY_MODEL", "meta-llama/llama-3.2-11b-vision-instruct:free"
+    "ARCHIVEX_VERIFY_MODEL", "nvidia/nemotron-nano-12b-v2-vl:free"
 )
 OPENROUTER_URL   = "https://openrouter.ai/api/v1"
 SKIP_DAYS    = {0, 2}   # Monday=0, Wednesday=2

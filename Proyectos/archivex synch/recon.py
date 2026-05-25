@@ -31,7 +31,7 @@ from openai import OpenAI
 CONFIG_DIR     = Path.home() / ".config" / "archivex-sync"
 OUTPUT_PATH    = CONFIG_DIR / "ui_knowledge.json"
 MODEL_RECON    = os.getenv(
-    "ARCHIVEX_RECON_MODEL", "meta-llama/llama-3.2-11b-vision-instruct:free"
+    "ARCHIVEX_RECON_MODEL", "nvidia/nemotron-nano-12b-v2-vl:free"
 )
 OPENROUTER_URL = "https://openrouter.ai/api/v1"
 
