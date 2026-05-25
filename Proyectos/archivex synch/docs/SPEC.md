@@ -26,7 +26,7 @@ tests/
 
 | # | Task | Priority | Status |
 |---|------|----------|--------|
-| 1 | Task 1: Project foundation (requirements, pyproject, tests/__init__) | ✨ Feature | Open |
+| 1 | Task 1: Project foundation (requirements, pyproject, tests/__init__) | ✨ Feature | ✅ Done |
 | 2 | Task 2: Appointment dataclass + Calendar reader + Mon/Wed filter | ✨ Feature | Open |
 | 3 | Task 3: Knowledge base loader + coordinate calculator | ✨ Feature | Open |
 | 4 | Task 4: Archivex window detection via AppleScript | ✨ Feature | Open |
@@ -38,4 +38,10 @@ tests/
 | 10 | Task 10: Update .gitignore + smoke test | ✨ Feature | Open |
 
 ## §2. Historial
-<!-- iterations logged here -->
+
+## §2. Task 1 — Project foundation — 2026-05-25
+
+- **Qué**: requirements.txt, pyproject.toml (ruff+pytest config), tests/__init__.py, CLAUDE.md
+- **Por qué**: Backlog #1 — prerequisito de todo
+- **Tests**: 0 (aún no hay) | lint: clean
+- **Próximo**: Task 2 — Appointment dataclass + Calendar reader + Mon/Wed filter
