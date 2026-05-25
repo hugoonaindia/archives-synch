@@ -237,6 +237,7 @@ def _ask_llm(question: str, signatures: dict) -> str:
     client = OpenAI(
         base_url=OPENROUTER_URL,
         api_key=os.getenv("OPENROUTER_API_KEY"),
+        timeout=60.0,  # 60s timeout para evitar cuelgues
     )
     resp = client.chat.completions.create(
         model=MODEL_VERIFY,
@@ -334,31 +335,34 @@ def save_appointment(kb: dict, wx: int, wy: int, ww: int, wh: int) -> None:
 # ─── §9 NAVIGATION ───────────────────────────────────────────────────────────
 def detect_displayed_monday() -> Optional[date]:
     """Pregunta al modelo de visión qué lunes muestra el calendario. Devuelve date o None."""
-    client = OpenAI(
-        base_url=OPENROUTER_URL,
-        api_key=os.getenv("OPENROUTER_API_KEY"),
-    )
-    resp = client.chat.completions.create(
-        model=MODEL_VERIFY,
-        max_tokens=32,
-        messages=[{"role": "user", "content": [
-            {"type": "image_url",
-             "image_url": {"url": f"data:image/png;base64,{_screenshot_b64()}"}},
-            {"type": "text", "text": (
-                "Mira este calendario semanal de Archivex Clinical. "
-                "¿Qué fecha tiene el lunes (primer día) de la semana visible? "
-                'Responde ÚNICAMENTE con JSON: {"date": "YYYY-MM-DD"} '
-                'o {"date": null} si no puedes determinarlo.'
-            )},
-        ]}],
-    )
-    raw = resp.choices[0].message.content.strip()
     try:
+        client = OpenAI(
+            base_url=OPENROUTER_URL,
+            api_key=os.getenv("OPENROUTER_API_KEY"),
+            timeout=60.0,  # 60s timeout
+        )
+        resp = client.chat.completions.create(
+            model=MODEL_VERIFY,
+            max_tokens=32,
+            messages=[{"role": "user", "content": [
+                {"type": "image_url",
+                 "image_url": {"url": f"data:image/png;base64,{_screenshot_b64()}"}},
+                {"type": "text", "text": (
+                    "Mira este calendario semanal de Archivex Clinical. "
+                    "¿Qué fecha tiene el lunes (primer día) de la semana visible? "
+                    'Responde ÚNICAMENTE con JSON: {"date": "YYYY-MM-DD"} '
+                    'o {"date": null} si no puedes determinarlo.'
+                )},
+            ]}],
+        )
+        raw = resp.choices[0].message.content.strip()
         d = json.loads(raw)
         if d.get("date"):
             return date.fromisoformat(d["date"])
-    except Exception:
-        pass
+    except (json.JSONDecodeError, ValueError) as e:
+        log.warning(f"No se pudo detectar lunes: {e}")
+    except Exception as e:
+        log.error(f"Error en detect_displayed_monday: {e}")
     return None
 
 
@@ -446,6 +450,13 @@ def process_appointment(appt: Appointment, kb: dict,
 def main() -> None:
     print("🗓  Archivex Sync")
     print("─" * 40)
+
+    # Validar entorno al inicio
+    if not os.getenv("OPENROUTER_API_KEY"):
+        sys.exit(
+            "❌  OPENROUTER_API_KEY no está configurada.\n"
+            "   Configura: export OPENROUTER_API_KEY=<tu_key>"
+        )
 
     kb = load_knowledge()
     print(f"✅  Knowledge base cargado ({KNOWLEDGE})")

@@ -138,9 +138,17 @@ def run_recon() -> dict:
     """
     Toma screenshots de Archivex y llama al modelo de visión para producir ui_knowledge.json.
     """
+    api_key = os.getenv("OPENROUTER_API_KEY")
+    if not api_key:
+        sys.exit(
+            "❌  OPENROUTER_API_KEY no está configurada.\n"
+            "   Configura: export OPENROUTER_API_KEY=<tu_key>"
+        )
+
     client = OpenAI(
         base_url=OPENROUTER_URL,
-        api_key=os.getenv("OPENROUTER_API_KEY"),
+        api_key=api_key,
+        timeout=120.0,  # 120s timeout (más tiempo para 2 imágenes)
     )
 
     print("📸  Capturando screenshot 1/2 — calendario...")
@@ -157,19 +165,22 @@ def run_recon() -> dict:
     print(f"🤖  Enviando a {MODEL_RECON} para análisis...")
     prompt = _RECON_PROMPT.replace("RECON_DATE", date.today().isoformat())
 
-    resp = client.chat.completions.create(
-        model=MODEL_RECON,
-        max_tokens=2000,
-        messages=[{"role": "user", "content": [
-            {"type": "text", "text": "Screenshot 1 (vista calendario):"},
-            {"type": "image_url",
-             "image_url": {"url": f"data:image/png;base64,{shot1}"}},
-            {"type": "text", "text": "Screenshot 2 (formulario si estaba abierto):"},
-            {"type": "image_url",
-             "image_url": {"url": f"data:image/png;base64,{shot2}"}},
-            {"type": "text", "text": prompt},
-        ]}],
-    )
+    try:
+        resp = client.chat.completions.create(
+            model=MODEL_RECON,
+            max_tokens=2000,
+            messages=[{"role": "user", "content": [
+                {"type": "text", "text": "Screenshot 1 (vista calendario):"},
+                {"type": "image_url",
+                 "image_url": {"url": f"data:image/png;base64,{shot1}"}},
+                {"type": "text", "text": "Screenshot 2 (formulario si estaba abierto):"},
+                {"type": "image_url",
+                 "image_url": {"url": f"data:image/png;base64,{shot2}"}},
+                {"type": "text", "text": prompt},
+            ]}],
+        )
+    except Exception as e:
+        sys.exit(f"❌  Error en llamada a OpenRouter: {e}")
 
     raw = resp.choices[0].message.content.strip()
 
