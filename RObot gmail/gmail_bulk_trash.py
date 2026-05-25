@@ -2,11 +2,22 @@
 """
 gmail_bulk_trash.py
 -------------------
-Instala dependencias y mueve a la papelera TODOS los correos
-que coincidan con el filtro, usando batchModify (1000 por llamada).
+Herramienta CLI para limpiar masivamente el correo de Gmail usando la API.
+
+Características:
+  - Gestión de blocklist/whitelist persistente (senders.json)
+  - Filtros dinámicos (query, fecha)
+  - Modo dry-run para simular
+  - Barra de progreso con ETA
+  - Auto-instalación de dependencias
 
 Uso:
-    python gmail_bulk_trash.py
+    python gmail_bulk_trash.py --help          # Ver todos los comandos
+    python gmail_bulk_trash.py --list-senders  # Mostrar blocklist/whitelist
+    python gmail_bulk_trash.py --dry-run       # Simular sin borrar
+    python gmail_bulk_trash.py                 # Ejecutar limpieza
+
+Ver documentos/documento_maestro_gmail_bulk_trash.md para más detalles.
 """
 
 # ── Auto-instalación de dependencias ─────────────────────────────────────────
@@ -64,7 +75,7 @@ def save_senders(data: dict) -> None:
 
 # ── Autenticación ─────────────────────────────────────────────────────────────
 
-def get_service():
+def get_service() -> any:
     creds = None
 
     if TOKEN_FILE.exists():
@@ -138,55 +149,38 @@ def get_all_ids(service, query: str) -> list[str]:
 
 # ── Gestión de remitentes ────────────────────────────────────────────────────
 
-def manage_senders(args) -> bool:
+def manage_senders(args: argparse.Namespace) -> bool:
     """Gestiona blocklist y whitelist. Devuelve True si manejó un comando de gestión."""
     data = load_senders()
 
-    if hasattr(args, 'add_sender') and args.add_sender:
-        for s in args.add_sender:
-            s = s.strip().lower()
-            if s not in data["blocked"]:
-                data["blocked"].append(s)
-                print(f"✅ Añadido a blocklist: {s}")
-            else:
-                print(f"⚠️  Ya estaba en blocklist: {s}")
-        save_senders(data)
-        return True
+    # Procesar comandos de adición/eliminación
+    commands = [
+        ('add_sender', 'blocked', '✅ Añadido a blocklist:', '⚠️  Ya estaba en blocklist:'),
+        ('remove_sender', 'blocked', '✅ Eliminado de blocklist:', '⚠️  No estaba en blocklist:'),
+        ('add_whitelist', 'whitelist', '✅ Añadido a whitelist:', '⚠️  Ya estaba en whitelist:'),
+        ('remove_whitelist', 'whitelist', '✅ Eliminado de whitelist:', '⚠️  No estaba en whitelist:'),
+    ]
 
-    if hasattr(args, 'remove_sender') and args.remove_sender:
-        for s in args.remove_sender:
-            s = s.strip().lower()
-            if s in data["blocked"]:
-                data["blocked"].remove(s)
-                print(f"✅ Eliminado de blocklist: {s}")
-            else:
-                print(f"⚠️  No estaba en blocklist: {s}")
-        save_senders(data)
-        return True
+    for cmd_attr, list_key, success_msg, error_msg in commands:
+        cmd_value = getattr(args, cmd_attr, None)
+        if cmd_value:
+            is_add = 'add' in cmd_attr
+            for s in cmd_value:
+                s = s.strip().lower()
+                exists = s in data[list_key]
+                if (is_add and not exists) or (not is_add and exists):
+                    if is_add:
+                        data[list_key].append(s)
+                    else:
+                        data[list_key].remove(s)
+                    print(f"{success_msg} {s}")
+                else:
+                    print(f"{error_msg} {s}")
+            save_senders(data)
+            return True
 
-    if hasattr(args, 'add_whitelist') and args.add_whitelist:
-        for s in args.add_whitelist:
-            s = s.strip().lower()
-            if s not in data["whitelist"]:
-                data["whitelist"].append(s)
-                print(f"✅ Añadido a whitelist: {s}")
-            else:
-                print(f"⚠️  Ya estaba en whitelist: {s}")
-        save_senders(data)
-        return True
-
-    if hasattr(args, 'remove_whitelist') and args.remove_whitelist:
-        for s in args.remove_whitelist:
-            s = s.strip().lower()
-            if s in data["whitelist"]:
-                data["whitelist"].remove(s)
-                print(f"✅ Eliminado de whitelist: {s}")
-            else:
-                print(f"⚠️  No estaba en whitelist: {s}")
-        save_senders(data)
-        return True
-
-    if hasattr(args, 'list_senders') and args.list_senders:
+    # Mostrar listas
+    if getattr(args, 'list_senders', False):
         print("\n📋 BLOCKLIST (remitentes bloqueados):")
         if data["blocked"]:
             for s in data["blocked"]:
@@ -207,7 +201,7 @@ def manage_senders(args) -> bool:
 
 # ── Borrado en batch ──────────────────────────────────────────────────────────
 
-def batch_trash(service, ids: list[str]) -> None:
+def batch_trash(service: any, ids: list[str]) -> None:
     import time
     total   = len(ids)
     trashed = 0
