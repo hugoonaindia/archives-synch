@@ -560,6 +560,29 @@ def process_appointment(appt: Appointment, wx: int, wy: int, ww: int, wh: int) -
     return "creada"
 
 
+# ── PROCESADO CON VISIÓN (Claude API, sin calibración) ───────────────────────
+
+def process_appointment_vision(appt: "Appointment") -> str:
+    """
+    Crea una cita en Archivex usando vision_driver (Claude API).
+    Sin coordenadas hardcodeadas ni calibración.
+    Devuelve: 'creada' | 'saltada'
+    """
+    import vision_driver as vd
+
+    form_opened = vd.open_appointment_form(appt.day_offset, appt.hour, appt.minute)
+    if not form_opened:
+        logger.warning("Formulario no se abrió para %s %s — slot posiblemente ocupado",
+                       appt.patient, appt.start_time)
+        log(appt, "SALTADA", "formulario no se abrió (slot ocupado o error)")
+        return "saltada"
+
+    vd.fill_patient(appt.patient)
+    vd.save_appointment()
+    log(appt, "CREADA")
+    return "creada"
+
+
 # ── SELECCIÓN DE DÍAS ─────────────────────────────────────────────────────────
 
 DIAS_SEMANA = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"]
@@ -691,15 +714,27 @@ def main() -> None:
 
     # 5b. Foco y navegación
     focus_archivex()
-    navigate_to_week(monday)
 
-    # 6. Posición de la ventana
-    bounds = get_window_bounds()
-    if not bounds:
-        print("❌ No se pudo detectar la ventana de Archivex.")
-        return
-    wx, wy, ww, wh = bounds
-    print(f"   🪟 Ventana: {ww}×{wh} en ({wx},{wy})\n")
+    # Detectar modo: visión (Claude API) o calibración (coordenadas)
+    import vision_driver as _vd
+    use_vision = _vd.is_available()
+    if use_vision:
+        print("   🤖 Modo: visión con Claude API (sin calibración)")
+        _vd.navigate_to_week(monday)
+    else:
+        print("   📐 Modo: calibración (ANTHROPIC_API_KEY no configurada)")
+        navigate_to_week(monday)
+
+    # 6. Posición de la ventana (solo necesaria en modo calibración)
+    if not use_vision:
+        bounds = get_window_bounds()
+        if not bounds:
+            print("❌ No se pudo detectar la ventana de Archivex.")
+            return
+        wx, wy, ww, wh = bounds
+        print(f"   🪟 Ventana: {ww}×{wh} en ({wx},{wy})\n")
+    else:
+        wx = wy = ww = wh = 0  # no usados en modo visión
 
     # 7. Procesar citas
     creadas, saltadas = 0, 0
@@ -710,7 +745,10 @@ def main() -> None:
         print(f"[{i}/{len(appointments)}] {appt.patient} — {appt.date.strftime('%a %d/%m')} {appt.start_time}…",
               end=" ", flush=True)
         try:
-            resultado = process_appointment(appt, wx, wy, ww, wh)
+            if use_vision:
+                resultado = process_appointment_vision(appt)
+            else:
+                resultado = process_appointment(appt, wx, wy, ww, wh)
             if resultado == "creada":
                 creadas += 1
                 print("✅")

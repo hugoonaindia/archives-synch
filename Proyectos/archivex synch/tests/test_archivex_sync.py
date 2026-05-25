@@ -1,9 +1,9 @@
 """
-test_archivex_sync.py — Unit tests for archivex_sync.py
+test_archivex_sync.py — Unit tests for archivex_sync.py and vision_driver.py
 """
-from datetime import date, datetime, timedelta
-from unittest.mock import MagicMock, patch, Mock
 import sys
+from datetime import date
+from unittest.mock import MagicMock, Mock
 
 import pytest
 
@@ -13,8 +13,8 @@ def mock_pyautogui():
     """Mock pyautogui before importing archivex_sync."""
     sys.modules['pyautogui'] = Mock()
     yield
-    if 'archivex_sync' in sys.modules:
-        del sys.modules['archivex_sync']
+    for mod in ['archivex_sync', 'vision_driver']:
+        sys.modules.pop(mod, None)
 
 
 @pytest.fixture
@@ -184,3 +184,58 @@ class TestConflictStopException:
         ConflictStopException = load_module.ConflictStopException
         with pytest.raises(ConflictStopException):
             raise ConflictStopException()
+
+
+class TestVisionDriver:
+    """Tests for vision_driver.py (mocked Claude API)."""
+
+    @pytest.fixture
+    def vd(self):
+        """Load vision_driver with anthropic mocked."""
+        import importlib
+        from pathlib import Path
+        sys.path.insert(0, str(Path(__file__).parent.parent))
+        mock_anthropic = MagicMock()
+        sys.modules['anthropic'] = mock_anthropic
+        import vision_driver
+        importlib.reload(vision_driver)
+        return vision_driver, mock_anthropic
+
+    def _make_response(self, mock_anthropic, text: str):
+        """Helper: configure mock to return text from Claude."""
+        msg = MagicMock()
+        msg.content = [MagicMock(text=text)]
+        mock_anthropic.Anthropic.return_value.messages.create.return_value = msg
+
+    def test_find_coords_parses_valid_json(self, vd):
+        """find_coords returns (x, y) when Claude returns valid JSON."""
+        vision_driver, mock_anthropic = vd
+        self._make_response(mock_anthropic, '{"x": 120, "y": 350}')
+        result = vision_driver.find_coords("search field")
+        assert result == (120, 350)
+
+    def test_find_coords_returns_none_when_not_found(self, vd):
+        """find_coords returns None when Claude reports element not found."""
+        vision_driver, mock_anthropic = vd
+        self._make_response(mock_anthropic, '{"x": null, "y": null}')
+        result = vision_driver.find_coords("nonexistent element")
+        assert result is None
+
+    def test_find_coords_fallback_regex(self, vd):
+        """find_coords uses regex fallback if JSON has extra text."""
+        vision_driver, mock_anthropic = vd
+        self._make_response(mock_anthropic, 'Here it is: {"x": 200, "y": 400}')
+        result = vision_driver.find_coords("button")
+        assert result == (200, 400)
+
+    def test_is_available_false_without_key(self, vd, monkeypatch):
+        """is_available returns False when ANTHROPIC_API_KEY is not set."""
+        vision_driver, _ = vd
+        monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+        assert vision_driver.is_available() is False
+
+    def test_is_available_true_with_key(self, vd, monkeypatch):
+        """is_available returns True when ANTHROPIC_API_KEY is set."""
+        vision_driver, _ = vd
+        monkeypatch.setenv("ANTHROPIC_API_KEY", "sk-test-key")
+        assert vision_driver.is_available() is True
