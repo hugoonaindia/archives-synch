@@ -252,6 +252,13 @@ python3 gmail_bulk_trash.py                  # ejecutar
 - **Decisión**: La query se construye cada ejecución (no se cachea) para mantener flexibilidad
 - **Próximo**: Task 4 — Modo `--dry-run`
 
+### §6. Task 4 — Modo --dry-run — 2026-05-25
+- **Qué**: Argumento `--dry-run` que muestra cuántos mensajes se moverían sin borrar nada
+- **Por qué**: Seguridad; permite revisar el filtro antes de ejecutar la limpieza real
+- **Tests**: Verificación de --help y sintaxis ✅
+- **Decisión**: Se muestra el mensaje de dry-run antes de pedir confirmación
+- **Próximo**: Task 5 — Filtros `--query`, `--before`, `--after`
+
 ---
 
 ## 10. Notas de seguridad
