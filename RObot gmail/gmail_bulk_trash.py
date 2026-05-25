@@ -123,7 +123,7 @@ def build_query(base_query: str, senders: dict) -> str:
 
 # ── Búsqueda ──────────────────────────────────────────────────────────────────
 
-def get_all_ids(service, query: str) -> list[str]:
+def get_all_ids(service: any, query: str) -> list[str]:
     ids = []
     page_token = None
 
@@ -232,7 +232,7 @@ def batch_trash(service: any, ids: list[str]) -> None:
 
 # ── Main ──────────────────────────────────────────────────────────────────────
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(
         description="Gmail Bulk Trash — by Hugo",
         formatter_class=argparse.RawDescriptionHelpFormatter,
