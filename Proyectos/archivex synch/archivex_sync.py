@@ -69,6 +69,7 @@ pyautogui.FAILSAFE = True
 CAL_DEFAULTS: dict = {
     "grid_top_px":     135,
     "grid_bottom_px":  145,
+    "time_col_px":     65,
     "grid_start_h":    8,
     "grid_end_h":      20,
     # Coordenadas absolutas del centro de cada columna de día
@@ -480,7 +481,7 @@ def get_cell_region(wx: int, wy: int, ww: int, wh: int,
     """Devuelve (x, y, ancho, alto) de la celda del calendario."""
     grid_h, _, _, col_w, cell_y = calc_grid_metrics(wx, wy, ww, wh, hour, minute)
     slot_h = grid_h / ((CAL["grid_end_h"] - CAL["grid_start_h"]) * 4)
-    cell_x = int(wx + CAL["time_col_px"] + day_offset * col_w + 4)
+    cell_x = int(wx + CAL.get("time_col_px", 65) + day_offset * col_w + 4)
     return cell_x, cell_y, int(col_w - 8), int(slot_h * 4)
 
 

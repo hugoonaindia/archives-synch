@@ -655,6 +655,7 @@ class CalibrationApp:
 
         cal = {
             "grid_top_px":     max(0, tl[1] - wy),
+            "time_col_px":     max(0, tl[0] - wx),
             "grid_bottom_px":  max(0, (wy + self._window_h()) - br[1]),
             "grid_start_h":    r["hour_start"]["hour"],
             "grid_end_h":      r["hour_end"]["hour"],
