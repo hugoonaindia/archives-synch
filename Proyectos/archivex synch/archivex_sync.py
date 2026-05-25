@@ -318,17 +318,20 @@ def get_week_appointments(service, monday: date) -> list[Appointment]:
 
 def get_archivex_process_name() -> str:
     """Busca el nombre exacto del proceso de Archivex entre las apps abiertas."""
+    # Búsqueda hecha en AppleScript para evitar problemas de delimitadores al parsear en Python
     script = '''
     tell application "System Events"
-        set appNames to name of every process whose background only is false
-        return appNames as string
+        repeat with proc in (every process whose background only is false)
+            set n to name of proc
+            if n contains "Archivex" or n contains "Archive" then
+                return n
+            end if
+        end repeat
+        return ""
     end tell
     '''
     out = sp.run(["osascript", "-e", script], capture_output=True, text=True).stdout.strip()
-    for name in [n.strip() for n in out.split(",")]:
-        if "archivex" in name.lower() or "archive" in name.lower():
-            return name
-    return APP_NAME
+    return out if out else APP_NAME
 
 
 def focus_archivex() -> None:
