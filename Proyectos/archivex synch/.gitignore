@@ -2,6 +2,7 @@
 credentials.json
 token_*.json
 *.token
+ui_knowledge.json
 
 # Python
 __pycache__/

@@ -29,13 +29,13 @@ tests/
 | 1 | Task 1: Project foundation (requirements, pyproject, tests/__init__) | ✨ Feature | ✅ Done |
 | 2 | Task 2: Appointment dataclass + Calendar reader + Mon/Wed filter | ✨ Feature | ✅ Done |
 | 3 | Task 3: Knowledge base loader + coordinate calculator | ✨ Feature | ✅ Done |
-| 4 | Task 4: Archivex window detection via AppleScript | ✨ Feature | Open |
-| 5 | Task 5: Haiku verifier with prompt caching | ✨ Feature | Open |
-| 6 | Task 6: Appointment processor — pyautogui actions | ✨ Feature | Open |
-| 7 | Task 7: Week navigation | ✨ Feature | Open |
-| 8 | Task 8: Main sync loop — conflict handling + main() | ✨ Feature | Open |
-| 9 | Task 9: recon.py — Opus 4.7 reconnaissance | ✨ Feature | Open |
-| 10 | Task 10: Update .gitignore + smoke test | ✨ Feature | Open |
+| 4 | Task 4: Archivex window detection via AppleScript | ✨ Feature | ✅ Done |
+| 5 | Task 5: Haiku verifier with prompt caching | ✨ Feature | ✅ Done |
+| 6 | Task 6: Appointment processor — pyautogui actions | ✨ Feature | ✅ Done |
+| 7 | Task 7: Week navigation | ✨ Feature | ✅ Done |
+| 8 | Task 8: Main sync loop — conflict handling + main() | ✨ Feature | ✅ Done |
+| 9 | Task 9: recon.py — Opus 4.7 reconnaissance | ✨ Feature | ✅ Done |
+| 10 | Task 10: Update .gitignore + smoke test | ✨ Feature | ✅ Done |
 
 ## §2. Historial
 
@@ -59,3 +59,11 @@ tests/
 - **Por qué**: Backlog #3
 - **Tests**: 13 passing | lint: clean
 - **Próximo**: Task 4 — Archivex window detection via AppleScript
+
+## §5. Tasks 4-10 — sync.py completo + recon.py — 2026-05-25
+
+- **Qué**: §6 window detection (AppleScript), §7 Haiku verifier (prompt caching), §8 pyautogui processor, §9 navigation (detect_displayed_monday + navigate_to_week), §10 conflict handling + StopSync, §11 main(). Más recon.py completo con validate_recon_output() y Opus 4.7.
+- **Por qué**: Backlog #4-10 — completar el sistema desde cero
+- **Tests**: 39 passing | lint: clean | smoke: OK
+- **Decisión**: Bug en plan original — mock usaba `mock_ant.Anthropic.return_value` pero debía ser `mock_ant.return_value`. Corregido en tests.
+- **Próximo**: Sistema completo — ejecutar `python recon.py` con Archivex abierto para generar ui_knowledge.json

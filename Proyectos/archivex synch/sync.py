@@ -13,15 +13,21 @@ Requisitos previos:
 # ─── §1 IMPORTS ──────────────────────────────────────────────────────────────
 from __future__ import annotations
 
+import base64
 import json
 import logging
 import os
+import subprocess
 import sys
+import time
 from dataclasses import dataclass
 from datetime import date, datetime, timedelta, timezone
+from io import BytesIO
 from pathlib import Path
 from typing import Optional
 
+import pyautogui
+from anthropic import Anthropic
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
@@ -172,16 +178,314 @@ def slot_coords(day_offset: int, hour: int, minute: int,
     return abs_coords(x_pct, y_pct, wx, wy, ww, wh)
 
 # ─── §6 ARCHIVEX WINDOW ──────────────────────────────────────────────────────
-# (implemented in Task 4)
+_APPLESCRIPT_BOUNDS = """\
+tell application "System Events"
+    tell process "Archivex Clinical"
+        set b to position of window 1 & size of window 1
+        return (item 1 of b as text) & "," & (item 2 of b as text) & "," & \
+               (item 3 of b as text) & "," & (item 4 of b as text)
+    end tell
+end tell
+"""
 
-# ─── §7 VERIFIER ─────────────────────────────────────────────────────────────
-# (implemented in Task 5)
+
+def get_window_bounds() -> tuple[int, int, int, int]:
+    """
+    Devuelve (x, y, width, height) de la ventana de Archivex Clinical.
+    Lanza RuntimeError si Archivex no está abierto.
+    """
+    result = subprocess.run(
+        ["osascript", "-e", _APPLESCRIPT_BOUNDS],
+        capture_output=True, text=True,
+    )
+    raw = result.stdout.strip()
+    if not raw:
+        raise RuntimeError(
+            "Archivex Clinical no está abierto o no es visible. "
+            "Ábrelo y ponlo en vista semanal antes de ejecutar sync.py."
+        )
+    parts = [int(v) for v in raw.split(",")]
+    return parts[0], parts[1], parts[2], parts[3]
+
+
+# ─── §7 VERIFIER (Haiku + prompt caching) ────────────────────────────────────
+def _screenshot_b64() -> str:
+    """Captura la pantalla y devuelve PNG en base64."""
+    buf = BytesIO()
+    pyautogui.screenshot().save(buf, format="PNG")
+    return base64.b64encode(buf.getvalue()).decode()
+
+
+def _build_cache_prefix(signatures: dict) -> str:
+    lines = [
+        "Eres un asistente de verificación para Archivex Clinical (macOS).",
+        "Recibirás un screenshot y una pregunta sobre el estado de la UI.",
+        "Responde ÚNICAMENTE con la palabra indicada, nada más.",
+        "",
+        "Descripciones visuales de los estados de la app:",
+    ]
+    for key, desc in signatures.items():
+        lines.append(f"  - {key}: {desc}")
+    return "\n".join(lines)
+
+
+def _ask_haiku(question: str, signatures: dict) -> str:
+    """Envía screenshot + pregunta a Haiku con prefijo cacheado."""
+    client = Anthropic()
+    resp = client.messages.create(
+        model=MODEL_VERIFY,
+        max_tokens=10,
+        system=[{
+            "type": "text",
+            "text": _build_cache_prefix(signatures),
+            "cache_control": {"type": "ephemeral"},
+        }],
+        messages=[{"role": "user", "content": [
+            {"type": "image", "source": {
+                "type": "base64",
+                "media_type": "image/png",
+                "data": _screenshot_b64(),
+            }},
+            {"type": "text", "text": question},
+        ]}],
+    )
+    return resp.content[0].text.strip().lower()
+
+
+def verify_slot_empty(signatures: dict, day_offset: int, hour: int) -> str:
+    """Devuelve: 'empty' | 'occupied' | 'uncertain'"""
+    days_es = ["lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo"]
+    question = (
+        f"¿El slot del calendario del {days_es[day_offset]} a las {hour:02d}:00 "
+        "está vacío o tiene una cita?\n"
+        "Responde ÚNICAMENTE con: empty (vacío) u occupied (tiene cita)."
+    )
+    raw = _ask_haiku(question, signatures)
+    if "empty" in raw:
+        return "empty"
+    if "occupied" in raw:
+        return "occupied"
+    return "uncertain"
+
+
+def verify_form_open(signatures: dict) -> bool:
+    """Verifica si el formulario de nueva cita está abierto."""
+    raw = _ask_haiku(
+        "¿Está visible el formulario modal de nueva cita con el campo de búsqueda?\n"
+        "Responde ÚNICAMENTE con: yes o no.",
+        signatures,
+    )
+    return "yes" in raw
+
+
+def verify_saved(signatures: dict) -> bool:
+    """Verifica si la cita fue guardada exitosamente."""
+    raw = _ask_haiku(
+        "¿Se cerró el formulario y la nueva cita es visible en el calendario?\n"
+        "Responde ÚNICAMENTE con: yes o no.",
+        signatures,
+    )
+    return "yes" in raw
+
 
 # ─── §8 APPOINTMENT PROCESSOR ────────────────────────────────────────────────
-# (implemented in Task 6)
+def open_slot(x: int, y: int) -> None:
+    """Doble clic en el slot del calendario para abrir el formulario."""
+    pyautogui.doubleClick(x, y)
+    time.sleep(2.0)
+
+
+def fill_patient(patient: str, kb: dict,
+                 wx: int, wy: int, ww: int, wh: int) -> None:
+    """Clic en búsqueda, pega nombre via pbcopy, selecciona primer resultado."""
+    sx, sy = abs_coords(
+        kb["elements"]["patient_search_pct"]["x"],
+        kb["elements"]["patient_search_pct"]["y"],
+        wx, wy, ww, wh,
+    )
+    pyautogui.click(sx, sy)
+    time.sleep(0.4)
+    subprocess.run(["pbcopy"], input=patient.encode("utf-8"), check=True)
+    pyautogui.hotkey("command", "a")
+    time.sleep(0.1)
+    pyautogui.hotkey("command", "v")
+    time.sleep(2.5)
+    rx, ry = abs_coords(
+        kb["elements"]["first_result_pct"]["x"],
+        kb["elements"]["first_result_pct"]["y"],
+        wx, wy, ww, wh,
+    )
+    pyautogui.click(rx, ry)
+    time.sleep(0.8)
+
+
+def save_appointment(kb: dict, wx: int, wy: int, ww: int, wh: int) -> None:
+    """Hace clic en el botón guardar/crear cita."""
+    bx, by = abs_coords(
+        kb["elements"]["save_btn_pct"]["x"],
+        kb["elements"]["save_btn_pct"]["y"],
+        wx, wy, ww, wh,
+    )
+    pyautogui.click(bx, by)
+    time.sleep(1.5)
+
 
 # ─── §9 NAVIGATION ───────────────────────────────────────────────────────────
-# (implemented in Task 7)
+def detect_displayed_monday() -> Optional[date]:
+    """Pregunta a Haiku qué lunes muestra el calendario. Devuelve date o None."""
+    client = Anthropic()
+    resp = client.messages.create(
+        model=MODEL_VERIFY,
+        max_tokens=32,
+        messages=[{"role": "user", "content": [
+            {"type": "image", "source": {
+                "type": "base64",
+                "media_type": "image/png",
+                "data": _screenshot_b64(),
+            }},
+            {"type": "text", "text": (
+                "Mira este calendario semanal de Archivex Clinical. "
+                "¿Qué fecha tiene el lunes (primer día) de la semana visible? "
+                'Responde ÚNICAMENTE con JSON: {"date": "YYYY-MM-DD"} '
+                'o {"date": null} si no puedes determinarlo.'
+            )},
+        ]}],
+    )
+    raw = resp.content[0].text.strip()
+    try:
+        d = json.loads(raw)
+        if d.get("date"):
+            return date.fromisoformat(d["date"])
+    except Exception:
+        pass
+    return None
 
-# ─── §10 CONFLICT HANDLING + MAIN ────────────────────────────────────────────
-# (implemented in Task 8)
+
+def navigate_to_week(target_monday: date, kb: dict,
+                     wx: int, wy: int, ww: int, wh: int) -> None:
+    """Navega Archivex a la semana de target_monday."""
+    current = detect_displayed_monday()
+    if current is None:
+        log.warning("No se pudo detectar la semana actual — omitiendo navegación")
+        return
+    delta = (target_monday - current).days // 7
+    if delta == 0:
+        return
+    btn = kb["elements"]["nav_next_pct"] if delta > 0 else kb["elements"]["nav_prev_pct"]
+    bx, by = abs_coords(btn["x"], btn["y"], wx, wy, ww, wh)
+    for _ in range(abs(delta)):
+        pyautogui.click(bx, by)
+        time.sleep(0.8)
+
+
+# ─── §10 CONFLICT HANDLING ───────────────────────────────────────────────────
+class StopSync(Exception):
+    """Raised when the user chooses to stop the entire sync."""
+
+
+def ask_conflict_action(appt: Appointment) -> str:
+    """Pregunta al usuario qué hacer. Devuelve: 'crear' | 'saltar' | 'parar'"""
+    print(f"\n  ⚠️  CONFLICTO: {appt.patient} — "
+          f"{appt.date.strftime('%a %d/%m')} {appt.start_time}")
+    print("     El slot parece ocupado en Archivex.")
+    print("     [C] Crear igualmente   [S] Saltar   [P] Parar todo")
+    while True:
+        resp = input("     ¿Qué hago? (c/s/p): ").strip().lower()
+        if resp == "c":
+            return "crear"
+        if resp == "s":
+            return "saltar"
+        if resp == "p":
+            return "parar"
+        print("     Responde c, s o p.")
+
+
+def process_appointment(appt: Appointment, kb: dict,
+                        wx: int, wy: int, ww: int, wh: int) -> str:
+    """
+    Crea una cita en Archivex. Devuelve: 'creada' | 'saltada'
+    Lanza StopSync si el usuario elige parar.
+    """
+    sigs = kb["visual_signatures"]
+
+    status = verify_slot_empty(sigs, day_offset=appt.day_offset, hour=appt.hour)
+    if status != "empty":
+        accion = ask_conflict_action(appt)
+        if accion == "parar":
+            raise StopSync()
+        if accion == "saltar":
+            log.info("SALTADA  | %s | %s %s | slot ocupado",
+                     appt.patient, appt.date.strftime("%d/%m/%Y"), appt.start_time)
+            return "saltada"
+
+    sx, sy = slot_coords(appt.day_offset, appt.hour, appt.minute, kb, wx, wy, ww, wh)
+    open_slot(sx, sy)
+
+    if not verify_form_open(sigs):
+        open_slot(sx, sy)
+        if not verify_form_open(sigs):
+            log.warning("SALTADA  | %s | %s %s | formulario no se abrió",
+                        appt.patient, appt.date.strftime("%d/%m/%Y"), appt.start_time)
+            print(f"  ⚠️  Formulario no se abrió para {appt.patient}. Saltando.")
+            return "saltada"
+
+    fill_patient(appt.patient, kb, wx, wy, ww, wh)
+    save_appointment(kb, wx, wy, ww, wh)
+
+    if not verify_saved(sigs):
+        print(f"  ⚠️  No se pudo confirmar que la cita de {appt.patient} fue guardada.")
+
+    log.info("CREADA   | %s | %s %s-%s",
+             appt.patient, appt.date.strftime("%d/%m/%Y"),
+             appt.start_time, appt.end_time)
+    return "creada"
+
+
+# ─── §11 MAIN ────────────────────────────────────────────────────────────────
+def main() -> None:
+    print("🗓  Archivex Sync")
+    print("─" * 40)
+
+    kb = load_knowledge()
+    print(f"✅  Knowledge base cargado ({KNOWLEDGE})")
+
+    try:
+        wx, wy, ww, wh = get_window_bounds()
+    except RuntimeError as e:
+        sys.exit(f"❌  {e}")
+    print(f"✅  Archivex detectado: {ww}×{wh} en ({wx},{wy})")
+
+    service = get_calendar_service()
+    monday = date.today() - timedelta(days=date.today().weekday())
+    print(f"📅  Semana del {monday.strftime('%d/%m/%Y')}")
+
+    appointments = get_week_appointments(service, monday)
+    print(f"📋  {len(appointments)} cita(s) a procesar (lunes y miércoles excluidos)")
+
+    if not appointments:
+        print("   Nada que sincronizar.")
+        return
+
+    navigate_to_week(monday, kb, wx, wy, ww, wh)
+
+    creadas = saltadas = 0
+    try:
+        for appt in appointments:
+            print(f"\n  ▶  {appt.patient}  {appt.date.strftime('%a %d/%m')} "
+                  f"{appt.start_time}–{appt.end_time}", end="  ", flush=True)
+            resultado = process_appointment(appt, kb, wx, wy, ww, wh)
+            if resultado == "creada":
+                creadas += 1
+                print("✅")
+            else:
+                saltadas += 1
+                print("⏭")
+    except StopSync:
+        print("\n⛔  Parado por el usuario.")
+
+    print("\n" + "─" * 40)
+    print(f"✅  Creadas: {creadas}   ⏭  Saltadas: {saltadas}")
+
+
+if __name__ == "__main__":
+    main()
