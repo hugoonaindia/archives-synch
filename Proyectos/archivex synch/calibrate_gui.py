@@ -324,28 +324,11 @@ class CalibrationApp:
                                                       size=12, weight="bold"))
         self.lbl_captured.pack(pady=(6, 0))
 
-        # ── Panel de resultados ───────────────────────────────────────────────
-        res_outer = tk.Frame(root, bg=C["bg"])
-        res_outer.pack(fill="both", padx=16, expand=True)
-
-        tk.Label(res_outer, text="Valores capturados",
-                 bg=C["bg"], fg=C["muted"], font=self.f_small,
-                 anchor="w").pack(fill="x")
-
-        self.results_frame = tk.Frame(res_outer, bg=C["card"], padx=10, pady=8)
-        self.results_frame.pack(fill="both", expand=True)
-
-        self.results_text = tk.Text(
-            self.results_frame, bg=C["card"], fg=C["text"],
-            font=tkfont.Font(family="Menlo", size=10),
-            relief="flat", bd=0, state="disabled",
-            height=8, wrap="none",
-        )
-        self.results_text.pack(fill="both", expand=True)
-
-        # ── Navegación ────────────────────────────────────────────────────────
+        # ── Navegación (se packea ANTES que el panel expandible) ─────────────
+        # En tkinter, side="bottom" debe reservarse antes de que expand=True
+        # consuma todo el espacio vertical restante.
         nav = tk.Frame(root, bg=C["bg"], pady=10)
-        nav.pack(fill="x", padx=16)
+        nav.pack(side="bottom", fill="x", padx=16)
 
         self.btn_back = tk.Button(
             nav, text="← Anterior",
@@ -378,6 +361,25 @@ class CalibrationApp:
             command=self.save_calibration,
         )
         self.btn_save.pack(side="right")
+
+        # ── Panel de resultados ───────────────────────────────────────────────
+        res_outer = tk.Frame(root, bg=C["bg"])
+        res_outer.pack(fill="both", padx=16, expand=True)
+
+        tk.Label(res_outer, text="Valores capturados",
+                 bg=C["bg"], fg=C["muted"], font=self.f_small,
+                 anchor="w").pack(fill="x")
+
+        self.results_frame = tk.Frame(res_outer, bg=C["card"], padx=10, pady=8)
+        self.results_frame.pack(fill="both", expand=True)
+
+        self.results_text = tk.Text(
+            self.results_frame, bg=C["card"], fg=C["text"],
+            font=tkfont.Font(family="Menlo", size=10),
+            relief="flat", bd=0, state="disabled",
+            height=8, wrap="none",
+        )
+        self.results_text.pack(fill="both", expand=True)
 
     # ── Mouse tracking ────────────────────────────────────────────────────────
 
