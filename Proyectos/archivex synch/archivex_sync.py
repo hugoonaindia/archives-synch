@@ -624,10 +624,13 @@ def main() -> None:
     _show_cal_status()
 
     # ── Opciones al inicio ────────────────────────────────────────────────────
-    print("\n  [C] Recalibrar pantalla")
+    print("\n  [C] Recalibrar pantalla (abre interfaz gráfica)")
     print("  [ENTER] Sincronizar\n")
     if input("  Opción: ").strip().lower() == "c":
-        run_calibration()
+        from calibrate_gui import run_calibration_gui
+        run_calibration_gui()
+        global CAL
+        CAL = load_cal()   # recargar valores recién guardados
         print("\n✅ Calibración guardada. Continuando...\n")
 
     # 1. Conectar con Google Calendar
