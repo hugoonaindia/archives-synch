@@ -1,0 +1,7 @@
+pyautogui==0.9.53
+Pillow==10.1.0
+google-auth==2.25.2
+google-auth-oauthlib==1.2.0
+google-api-python-client==2.107.0
+pytest==7.4.3
+pytest-cov==4.1.0
