@@ -1,0 +1,2278 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Artefacto 3 · Cómo aprende un modelo</title>
+<style>
+  :root {
+    --cream: #F5F1E8;
+    --cream-dark: #ECE6D6;
+    --navy: #0F1B4D;
+    --navy-soft: #1E2A5E;
+    --blue: #3FA9F5;
+    --blue-light: #B8DEF9;
+    --ink: #1A1A2E;
+    --muted: #6B6B7C;
+    --line: #C9C2B0;
+    --good: #2E8B57;
+    --bad: #C8453F;
+    --amber: #D9994E;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--cream);
+    color: var(--ink);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 48px 32px 80px; }
+
+  /* Hero */
+  header.hero { border-bottom: 1px solid var(--line); padding-bottom: 32px; margin-bottom: 48px; }
+  .tag {
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+    font-size: 11px; letter-spacing: 0.18em; color: var(--navy);
+    text-transform: uppercase; margin-bottom: 24px;
+  }
+  .tag .dot { color: var(--blue); }
+  h1.title {
+    font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 500;
+    font-size: clamp(40px, 6vw, 76px); line-height: 1.02; margin: 0 0 20px;
+    color: var(--navy); letter-spacing: -0.02em;
+  }
+  h1.title em { color: var(--blue); font-style: italic; }
+  .subtitle {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: clamp(18px, 2vw, 22px); color: var(--navy-soft); max-width: 740px; margin: 0;
+  }
+
+  section { margin: 64px 0; scroll-margin-top: 24px; }
+  .section-tag {
+    font-family: 'JetBrains Mono', monospace; font-size: 10.5px;
+    letter-spacing: 0.18em; color: var(--navy); text-transform: uppercase; margin-bottom: 14px;
+  }
+  h2 {
+    font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 500;
+    font-size: clamp(32px, 4vw, 48px); line-height: 1.05; margin: 0 0 24px;
+    color: var(--navy); letter-spacing: -0.015em;
+  }
+  h2 em { color: var(--blue); font-style: italic; }
+  h3 {
+    font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 600;
+    font-size: 24px; color: var(--navy); margin: 32px 0 12px;
+  }
+  p { font-size: 16px; color: var(--ink); }
+  p.lead { font-size: 18px; color: var(--navy-soft); max-width: 760px; }
+  .pull {
+    font-family: 'Cormorant Garamond', Georgia, serif; font-size: 26px;
+    font-style: italic; color: var(--navy); border-left: 3px solid var(--blue);
+    padding: 8px 24px; margin: 32px 0; line-height: 1.3;
+  }
+
+  /* ===== Steps de entrenamiento ===== */
+  .training-steps {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 24px 0;
+  }
+  @media (max-width: 800px) { .training-steps { grid-template-columns: 1fr 1fr; } }
+  .ts {
+    background: white; border: 1px solid var(--line); border-radius: 4px; padding: 20px;
+  }
+  .ts .n {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--blue);
+    letter-spacing: 0.15em; margin-bottom: 4px;
+  }
+  .ts h4 {
+    font-family: 'Cormorant Garamond', serif; font-size: 19px; color: var(--navy);
+    margin: 0 0 8px; font-weight: 600;
+  }
+  .ts p { font-size: 13px; color: var(--muted); margin: 0; line-height: 1.5; }
+
+  /* ===== Vocabulary ===== */
+  .vocab {
+    background: white; border: 1px solid var(--line); border-radius: 6px;
+    padding: 24px 28px; margin: 24px 0;
+  }
+  .vocab dl { margin: 0; }
+  .vocab dt {
+    font-family: 'Cormorant Garamond', serif; font-size: 22px; color: var(--navy);
+    font-weight: 600; margin-top: 14px;
+  }
+  .vocab dt:first-of-type { margin-top: 0; }
+  .vocab dt em { color: var(--blue); font-style: italic; }
+  .vocab dd { margin: 4px 0 12px; font-size: 14.5px; color: var(--ink); padding-left: 0; }
+  .vocab dd code {
+    background: var(--cream); padding: 2px 6px; border-radius: 3px;
+    font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--navy);
+  }
+
+  /* ===== Lab ===== */
+  .lab {
+    background: white; border: 1px solid var(--line); border-radius: 8px;
+    padding: 28px; margin: 24px 0; box-shadow: 0 2px 8px rgba(15,27,77,0.04);
+  }
+  .lab-header {
+    display: flex; justify-content: space-between; align-items: baseline;
+    border-bottom: 1px solid var(--line); padding-bottom: 16px; margin-bottom: 20px;
+    flex-wrap: wrap; gap: 12px;
+  }
+  .lab-title {
+    font-family: 'Cormorant Garamond', serif; font-size: 28px; color: var(--navy);
+    font-weight: 600; margin: 0;
+  }
+  .lab-title em { color: var(--blue); font-style: italic; }
+  .lab-status {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted);
+    letter-spacing: 0.1em;
+  }
+  .lab-status .live { color: var(--good); }
+  .lab-status .live::before { content: "● "; }
+  .lab-status .stop { color: var(--bad); }
+  .lab-status .stop::before { content: "■ "; }
+
+  /* ===== Charts ===== */
+  .charts {
+    display: grid; grid-template-columns: 1.4fr 1fr; gap: 16px; margin-bottom: 16px;
+  }
+  @media (max-width: 800px) { .charts { grid-template-columns: 1fr; } }
+  .chart-box {
+    background: var(--cream); border-radius: 6px; padding: 16px;
+  }
+  .chart-name {
+    font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: var(--muted);
+    letter-spacing: 0.15em; margin-bottom: 8px; text-transform: uppercase;
+  }
+  .chart-box svg { display: block; width: 100%; height: auto; }
+
+  /* ===== Controls ===== */
+  .controls {
+    display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 16px; margin-top: 16px;
+  }
+  @media (max-width: 800px) { .controls { grid-template-columns: 1fr; } }
+  .ctrl-block {
+    background: var(--cream); border-radius: 6px; padding: 14px 16px;
+  }
+  .ctrl-label {
+    font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: var(--muted);
+    letter-spacing: 0.12em; text-transform: uppercase; display: block; margin-bottom: 8px;
+  }
+  .ctrl-row {
+    display: flex; align-items: center; gap: 10px;
+  }
+  .ctrl-row input[type="range"] { flex: 1; accent-color: var(--blue); }
+  .ctrl-val {
+    font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--navy);
+    font-weight: 600; min-width: 50px; text-align: right;
+  }
+  .buttons { display: flex; gap: 8px; flex-wrap: wrap; }
+  .btn {
+    background: var(--navy); color: white; border: none; padding: 10px 20px;
+    border-radius: 3px; cursor: pointer; font-family: inherit; font-size: 13px;
+    letter-spacing: 0.04em; transition: background 0.15s;
+  }
+  .btn:hover { background: var(--navy-soft); }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .btn.secondary {
+    background: transparent; color: var(--navy); border: 1px solid var(--navy);
+  }
+  .btn.secondary:hover { background: var(--navy); color: white; }
+  .btn.danger {
+    background: transparent; color: var(--bad); border: 1px solid var(--bad);
+  }
+  .btn.danger:hover { background: var(--bad); color: white; }
+
+  /* ===== Stats ===== */
+  .stats {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+    background: var(--cream); border-radius: 6px; padding: 14px; margin-top: 16px;
+  }
+  @media (max-width: 700px) { .stats { grid-template-columns: 1fr 1fr; } }
+  .stat {
+    text-align: center; padding: 6px;
+  }
+  .stat .l {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--muted);
+    letter-spacing: 0.15em; text-transform: uppercase;
+  }
+  .stat .v {
+    font-family: 'Cormorant Garamond', serif; font-size: 28px; color: var(--navy);
+    font-weight: 600; margin-top: 2px;
+  }
+  .stat .v em { color: var(--blue); font-style: italic; }
+
+  /* ===== Insight cards ===== */
+  .insights {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 32px 0;
+  }
+  @media (max-width: 800px) { .insights { grid-template-columns: 1fr; } }
+  .insight {
+    background: white; border: 1px solid var(--line); border-radius: 6px; padding: 22px;
+  }
+  .insight .ic {
+    font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 32px;
+    color: var(--blue); line-height: 1; margin-bottom: 8px;
+  }
+  .insight h4 {
+    font-family: 'Cormorant Garamond', serif; font-size: 22px; color: var(--navy);
+    margin: 0 0 8px; font-weight: 600;
+  }
+  .insight p { font-size: 14px; color: var(--ink); margin: 0; }
+
+  /* ===== Callouts ===== */
+  .callout {
+    background: white; border: 1px solid var(--line); border-left: 3px solid var(--blue);
+    border-radius: 4px; padding: 18px 22px; margin: 24px 0;
+  }
+  .callout strong { color: var(--navy); }
+  .callout .title {
+    font-family: 'JetBrains Mono', monospace; font-size: 10.5px;
+    letter-spacing: 0.15em; color: var(--blue); margin-bottom: 8px; text-transform: uppercase;
+  }
+  .callout p { margin: 4px 0; font-size: 14.5px; }
+  .callout.warn { border-left-color: var(--amber); }
+  .callout.warn .title { color: var(--amber); }
+  .callout.danger { border-left-color: var(--bad); }
+  .callout.danger .title { color: var(--bad); }
+  .callout.good { border-left-color: var(--good); }
+  .callout.good .title { color: var(--good); }
+
+  /* ===== Formula ===== */
+  .formula {
+    background: var(--navy); color: var(--cream); padding: 20px 24px;
+    border-radius: 6px; font-family: 'JetBrains Mono', monospace; font-size: 16px;
+    margin: 16px 0; text-align: center; letter-spacing: 0.04em;
+  }
+  .formula .blue { color: var(--blue); }
+  .formula .formula-tag {
+    color: var(--blue-light); font-size: 11px; letter-spacing: 0.18em;
+    display: block; margin-bottom: 12px; text-transform: uppercase;
+    background: transparent; border: none;
+  }
+
+  /* ===== Scenario buttons ===== */
+  .scenarios {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 16px 0 8px;
+  }
+  @media (max-width: 700px) { .scenarios { grid-template-columns: 1fr; } }
+  .scen {
+    background: var(--cream); border: 1px solid var(--line); padding: 14px;
+    border-radius: 4px; cursor: pointer; font-family: inherit; text-align: left;
+    transition: all 0.15s;
+  }
+  .scen:hover { border-color: var(--navy); background: white; }
+  .scen.active { border-color: var(--blue); border-width: 2px; padding: 13px; background: white; }
+  .scen .nm {
+    font-family: 'Cormorant Garamond', serif; font-size: 17px; color: var(--navy);
+    font-weight: 600; margin-bottom: 4px;
+  }
+  .scen .dsc { font-size: 12px; color: var(--muted); }
+  .scen .pms {
+    font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: var(--blue);
+    margin-top: 6px; letter-spacing: 0.05em;
+  }
+
+  /* ===== Final analogy ===== */
+  .analogy {
+    background: var(--navy); color: var(--cream); padding: 32px;
+    border-radius: 8px; margin: 32px 0;
+  }
+  .analogy .lab {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--blue-light);
+    letter-spacing: 0.18em; text-transform: uppercase; margin-bottom: 12px;
+    background: transparent; border: none; padding: 0;
+  }
+  .analogy h3 {
+    font-family: 'Cormorant Garamond', serif; font-size: 36px; color: white;
+    margin: 0 0 16px; font-weight: 500;
+  }
+  .analogy h3 em { color: var(--blue); font-style: italic; }
+  .analogy p { color: var(--blue-light); font-size: 16px; line-height: 1.6; }
+
+  footer {
+    margin-top: 80px; padding-top: 24px; border-top: 1px solid var(--line);
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted);
+    letter-spacing: 0.1em; text-transform: uppercase;
+    display: flex; justify-content: space-between;
+  }
+
+  /* ===== Descent lab ===== */
+  .descent-lab {
+    background: white; border: 1px solid var(--line); border-radius: 8px;
+    padding: 28px; margin: 24px 0;
+  }
+  .descent-svg { display: block; width: 100%; height: auto; cursor: crosshair; }
+  .descent-controls {
+    display: grid; grid-template-columns: 1fr 1fr 1fr 1.2fr; gap: 12px; margin-top: 16px;
+  }
+  @media (max-width: 800px) { .descent-controls { grid-template-columns: 1fr 1fr; } }
+  .descent-info {
+    background: var(--cream); border-radius: 4px; padding: 12px 14px;
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    color: var(--navy-soft); letter-spacing: 0.05em;
+  }
+  .descent-info .nm {
+    color: var(--muted); display: block; margin-bottom: 4px;
+    letter-spacing: 0.15em; font-size: 10px;
+  }
+  .descent-info .v {
+    font-family: 'Cormorant Garamond', serif; font-size: 22px; color: var(--navy);
+    font-weight: 600; letter-spacing: 0;
+  }
+  .descent-info .v em { color: var(--blue); font-style: italic; font-size: 16px; }
+
+  /* ===== Classification lab ===== */
+  .clf-lab {
+    background: white; border: 1px solid var(--line); border-radius: 8px;
+    padding: 28px; margin: 24px 0;
+  }
+  .clf-charts {
+    display: grid; grid-template-columns: 1.2fr 1fr; gap: 16px;
+  }
+  @media (max-width: 800px) { .clf-charts { grid-template-columns: 1fr; } }
+  .clf-svg { display: block; width: 100%; height: auto; }
+  .clf-controls {
+    display: grid; grid-template-columns: 1fr 1fr 1.4fr; gap: 12px; margin-top: 16px;
+  }
+  @media (max-width: 800px) { .clf-controls { grid-template-columns: 1fr; } }
+
+  /* ===== Dataset toggle ===== */
+  .dataset-toggle {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 16px 0;
+  }
+  @media (max-width: 700px) { .dataset-toggle { grid-template-columns: 1fr; } }
+  .ds-btn {
+    background: var(--cream); border: 1px solid var(--line); padding: 14px;
+    border-radius: 4px; cursor: pointer; font-family: inherit; text-align: left;
+    transition: all 0.15s;
+  }
+  .ds-btn:hover { border-color: var(--navy); background: white; }
+  .ds-btn.active { border-color: var(--blue); border-width: 2px; padding: 13px; background: white; }
+  .ds-btn .nm {
+    font-family: 'Cormorant Garamond', serif; font-size: 17px; color: var(--navy);
+    font-weight: 600; margin-bottom: 4px;
+  }
+  .ds-btn .dsc { font-size: 12px; color: var(--muted); }
+
+  /* ===== Model toggle ===== */
+  .model-toggle {
+    display: flex; gap: 8px; flex-wrap: wrap; margin: 8px 0 16px;
+  }
+  .mod-btn {
+    background: transparent; border: 1px solid var(--line); padding: 8px 14px;
+    border-radius: 3px; cursor: pointer; font-family: inherit; font-size: 12.5px;
+    color: var(--navy-soft);
+  }
+  .mod-btn:hover { border-color: var(--navy); color: var(--navy); }
+  .mod-btn.active { background: var(--navy); border-color: var(--navy); color: white; }
+
+  .legend {
+    display: flex; gap: 18px; flex-wrap: wrap; margin: 8px 0 0;
+    font-size: 12px; color: var(--navy-soft);
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .legend .swatch {
+    display: inline-block; width: 12px; height: 12px;
+    border-radius: 50%; vertical-align: middle; margin-right: 6px;
+  }
+
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <div class="tag">MÁSTER IA · UNIR · TEMA 02 <span class="dot">·</span> ARTEFACTO 03</div>
+    <h1 class="title">Cómo <em>aprende</em><br>un modelo.</h1>
+    <p class="subtitle">Esta es la parte más mágica del machine learning, y también la más matemática. Un modelo «aprende» significa que ajusta sus parámetros, paso a paso, intentando equivocarse cada vez menos. Aquí lo vas a ver suceder en directo.</p>
+  </header>
+
+  <!-- Sección 1: el bucle de entrenamiento -->
+  <section>
+    <div class="section-tag">01 · EL BUCLE DE ENTRENAMIENTO</div>
+    <h2>Aprender es <em>repetir</em>, medir y ajustar.</h2>
+    <p class="lead">Todo modelo supervisado, desde la regresión más simple hasta una red neuronal de mil capas, sigue exactamente el mismo bucle. Cuatro pasos. Repetidos miles de veces.</p>
+
+    <div class="training-steps">
+      <div class="ts">
+        <div class="n">PASO 01</div>
+        <h4>Predecir</h4>
+        <p>Con los parámetros actuales, el modelo da una respuesta para cada ejemplo del dataset.</p>
+      </div>
+      <div class="ts">
+        <div class="n">PASO 02</div>
+        <h4>Medir el error</h4>
+        <p>Compara cada predicción con la respuesta real. La función de pérdida cuantifica cuánto se equivocó.</p>
+      </div>
+      <div class="ts">
+        <div class="n">PASO 03</div>
+        <h4>Calcular gradiente</h4>
+        <p>El gradiente indica en qué dirección hay que mover los parámetros para reducir el error.</p>
+      </div>
+      <div class="ts">
+        <div class="n">PASO 04</div>
+        <h4>Ajustar</h4>
+        <p>Da un pequeño paso en la dirección correcta. Vuelve al paso 1. Repite.</p>
+      </div>
+    </div>
+
+    <div class="pull">Una <em>epoch</em> es una pasada completa por el dataset. Entrenar 100 epochs significa hacer este bucle 100 veces sobre todos los ejemplos.</div>
+  </section>
+
+  <!-- Sección 2: vocabulario -->
+  <section>
+    <div class="section-tag">02 · VOCABULARIO</div>
+    <h2>Tres palabras que <em>oirás siempre</em>.</h2>
+    <p class="lead">Antes de tocar el simulador, tres conceptos que vas a ver una y otra vez. Si los entiendes, el resto cuadra solo.</p>
+
+    <div class="vocab">
+      <dl>
+        <dt><em>Función de pérdida</em> · loss</dt>
+        <dd>Un número que mide cuánto se equivoca el modelo. <code>0</code> sería perfecto. Cuanto más alto, peor. Para regresión, la fórmula típica es el <strong>error cuadrático medio (MSE)</strong>: la media de los errores al cuadrado entre lo predicho y lo real.</dd>
+
+        <dt><em>Learning rate</em> · tasa de aprendizaje</dt>
+        <dd>Cuánto se mueven los parámetros en cada paso. Si es <strong>muy pequeña</strong>, aprende lentísimo. Si es <strong>muy grande</strong>, salta tanto que nunca encuentra el mínimo. Es uno de los hiperparámetros más críticos de cualquier modelo.</dd>
+
+        <dt><em>Epoch</em> · época</dt>
+        <dd>Una vuelta completa al dataset. Entrenar más epochs = más oportunidades de afinar. Pero pasarse trae <strong>sobreajuste</strong>: el modelo memoriza los datos en lugar de aprender el patrón.</dd>
+      </dl>
+    </div>
+
+    <div class="formula">
+      <span class="formula-tag">FÓRMULA DE LA REGRESIÓN LINEAL</span>
+      ŷ <span class="blue">=</span> w · x <span class="blue">+</span> b
+    </div>
+    <p style="text-align:center;color:var(--muted);font-size:14px;">El modelo busca los valores de <strong style="color:var(--navy);">w</strong> (pendiente) y <strong style="color:var(--navy);">b</strong> (intercepto) que mejor ajustan los datos. Aprender = encontrar w y b óptimos.</p>
+  </section>
+
+  <!-- Sección 3: el laboratorio -->
+  <section>
+    <div class="section-tag">03 · LABORATORIO INTERACTIVO</div>
+    <h2>Entrena un modelo en <em>directo</em>.</h2>
+    <p class="lead">Los puntos azules son datos reales: el área de una vivienda y su precio. La línea índigo es el modelo. Pulsa entrenar y verás cómo se ajusta. Cambia el learning rate y verás qué pasa.</p>
+
+    <div class="lab">
+      <div class="lab-header">
+        <h3 class="lab-title">Regresión lineal · <em>precio según m²</em></h3>
+        <div class="lab-status">
+          <span id="lab-status-text" class="stop">Detenido</span>
+        </div>
+      </div>
+
+      <!-- Escenarios pre-set -->
+      <div class="scenarios">
+        <button class="scen active" data-lr="0.3" data-epochs="120" data-name="ideal">
+          <div class="nm">Escenario ideal</div>
+          <div class="dsc">Learning rate equilibrado, epochs suficientes. Convergencia limpia.</div>
+          <div class="pms">lr 0.30 · 120 epochs</div>
+        </button>
+        <button class="scen" data-lr="0.01" data-epochs="120" data-name="lento">
+          <div class="nm">Demasiado lento</div>
+          <div class="dsc">Learning rate diminuto. Aprende, pero le falta tiempo.</div>
+          <div class="pms">lr 0.01 · 120 epochs</div>
+        </button>
+        <button class="scen" data-lr="0.9" data-epochs="120" data-name="explota">
+          <div class="nm">Demasiado rápido</div>
+          <div class="dsc">Learning rate enorme. Salta tanto que diverge: el error explota.</div>
+          <div class="pms">lr 0.90 · 120 epochs</div>
+        </button>
+      </div>
+
+      <div class="charts">
+        <!-- Scatter + recta -->
+        <div class="chart-box">
+          <div class="chart-name">DATOS Y RECTA AJUSTADA · M² vs PRECIO (k€)</div>
+          <svg id="scatter" viewBox="0 0 600 360" preserveAspectRatio="xMidYMid meet"></svg>
+        </div>
+        <!-- Loss -->
+        <div class="chart-box">
+          <div class="chart-name">CURVA DE PÉRDIDA · MSE POR EPOCH</div>
+          <svg id="loss" viewBox="0 0 400 360" preserveAspectRatio="xMidYMid meet"></svg>
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="stat"><div class="l">Epoch</div><div class="v" id="stat-epoch">0</div></div>
+        <div class="stat"><div class="l">w (pendiente)</div><div class="v" id="stat-w"><em>—</em></div></div>
+        <div class="stat"><div class="l">b (intercepto)</div><div class="v" id="stat-b"><em>—</em></div></div>
+        <div class="stat"><div class="l">Pérdida (MSE)</div><div class="v" id="stat-loss"><em>—</em></div></div>
+      </div>
+
+      <div class="controls">
+        <div class="ctrl-block">
+          <span class="ctrl-label">Learning rate</span>
+          <div class="ctrl-row">
+            <input type="range" id="lr" min="0.001" max="1.5" step="0.001" value="0.3">
+            <span class="ctrl-val" id="lr-val">0.300</span>
+          </div>
+        </div>
+        <div class="ctrl-block">
+          <span class="ctrl-label">Nº de epochs</span>
+          <div class="ctrl-row">
+            <input type="range" id="epochs" min="10" max="500" step="10" value="120">
+            <span class="ctrl-val" id="epochs-val">120</span>
+          </div>
+        </div>
+        <div class="ctrl-block">
+          <span class="ctrl-label">Acciones</span>
+          <div class="buttons">
+            <button class="btn" id="train-btn">▶ Entrenar</button>
+            <button class="btn secondary" id="step-btn">+1 epoch</button>
+            <button class="btn danger" id="reset-btn">↺ Reset</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout">
+      <div class="title">QUÉ PROBAR EN CLASE</div>
+      <p><strong>1.</strong> Haz clic en «Escenario ideal» y luego entrenar. Observa cómo la recta busca su sitio y la curva de pérdida baja como una pendiente.</p>
+      <p><strong>2.</strong> Cambia a «Demasiado lento»: la recta apenas se mueve. Necesitarías miles de epochs para llegar.</p>
+      <p><strong>3.</strong> Cambia a «Demasiado rápido»: la pérdida no baja, oscila o se dispara. El modelo diverge.</p>
+      <p><strong>4.</strong> Usa «+1 epoch» para ver paso a paso cómo cada iteración mejora un poquito el ajuste.</p>
+    </div>
+  </section>
+
+  <!-- Sección 4: insights -->
+  <section>
+    <div class="section-tag">04 · LO QUE DEBERÍAS HABER VISTO</div>
+    <h2>Tres <em>lecciones</em> del experimento.</h2>
+
+    <div class="insights">
+      <div class="insight">
+        <div class="ic">↘</div>
+        <h4>La pérdida baja, pero menos cada vez</h4>
+        <p>Al principio, cada epoch reduce mucho el error. Después, cada vez menos. Llega un momento en que casi no mejora: ahí ya no hace falta seguir entrenando.</p>
+      </div>
+      <div class="insight">
+        <div class="ic">⤬</div>
+        <h4>El learning rate decide todo</h4>
+        <p>Demasiado pequeño: tarda una eternidad. Demasiado grande: oscila o explota. El truco está en el equilibrio, y muchas veces se ajusta probando.</p>
+      </div>
+      <div class="insight">
+        <div class="ic">≈</div>
+        <h4>Nunca llegará a 0</h4>
+        <p>Aunque entrenes infinitas epochs, la pérdida se queda en algún valor mínimo. Los datos tienen ruido, y un modelo perfecto en train sería sospechoso (memoria, no aprendizaje).</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sección 5: la analogía de la montaña -->
+  <section>
+    <div class="section-tag">05 · INTUICIÓN GEOMÉTRICA</div>
+    <h2>Aprender es <em>bajar una montaña</em> a ciegas.</h2>
+    <p class="lead">Imagina que el error del modelo dibuja un paisaje. Las cumbres son las configuraciones malas. Los valles, las buenas. El entrenamiento es ir bajando.</p>
+
+    <div class="descent-lab">
+      <div class="lab-header">
+        <h3 class="lab-title">Descenso de gradiente · <em>elige dónde empezar</em></h3>
+        <div class="lab-status">
+          <span id="descent-status" class="stop">Detenido</span>
+        </div>
+      </div>
+
+      <p style="font-size:14px; color:var(--muted); margin: 0 0 12px;">
+        <strong style="color:var(--navy);">Haz clic en cualquier punto de la curva</strong> para colocar ahí la pelota. Después pulsa <strong>«Soltar»</strong> y verás cómo el descenso de gradiente la hace bajar paso a paso. Prueba a soltarla a la izquierda del primer valle — caerá en el mínimo local. Suéltala a la derecha y caerá en el mínimo global. Mismo algoritmo, distinta inicialización, modelo final muy distinto.
+      </p>
+
+      <svg id="descent-svg" class="descent-svg" viewBox="0 0 760 360" preserveAspectRatio="xMidYMid meet"></svg>
+
+      <div class="descent-controls">
+        <div class="descent-info">
+          <span class="nm">PASO ACTUAL</span>
+          <span class="v" id="descent-step">0</span>
+        </div>
+        <div class="descent-info">
+          <span class="nm">PARÁMETRO w</span>
+          <span class="v" id="descent-x"><em>—</em></span>
+        </div>
+        <div class="descent-info">
+          <span class="nm">PÉRDIDA L(w)</span>
+          <span class="v" id="descent-loss"><em>—</em></span>
+        </div>
+        <div class="descent-info">
+          <span class="nm">LEARNING RATE</span>
+          <div class="ctrl-row" style="margin-top:2px;">
+            <input type="range" id="descent-lr" min="0.005" max="0.15" step="0.005" value="0.04">
+            <span class="ctrl-val" id="descent-lr-val">0.040</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="buttons" style="margin-top:14px;">
+        <button class="btn" id="descent-go">▶ Soltar la pelota</button>
+        <button class="btn secondary" id="descent-step-btn">+1 paso</button>
+        <button class="btn secondary" id="descent-random">⚄ Posición aleatoria</button>
+        <button class="btn danger" id="descent-reset">↺ Limpiar</button>
+      </div>
+    </div>
+
+    <div class="insights">
+      <div class="insight">
+        <div class="ic">↘</div>
+        <h4>Gradiente = pendiente local</h4>
+        <p>En cada punto, la flecha azul muestra la dirección y magnitud del gradiente: hacia dónde sube el terreno y cuán empinado está. Bajar es moverse en dirección <em>contraria</em> al gradiente.</p>
+      </div>
+      <div class="insight">
+        <div class="ic">⌽</div>
+        <h4>Mínimo local ≠ mínimo global</h4>
+        <p>Si la pelota cae en el primer valle, ahí se queda — el gradiente vale cero y no sabe que existe un valle mejor más a la derecha. Por eso la inicialización importa tanto.</p>
+      </div>
+      <div class="insight">
+        <div class="ic">↜</div>
+        <h4>Learning rate alto: oscilación</h4>
+        <p>Sube el learning rate al máximo y suelta la pelota. Verás que el paso es tan grande que «salta» el valle: la pérdida sube y baja sin asentarse. La intuición coincide con lo que viste arriba.</p>
+      </div>
+    </div>
+
+    <div class="callout warn">
+      <div class="title">UN MATIZ IMPORTANTE</div>
+      <p>En la regresión lineal el paisaje real es una parábola limpia y solo hay un mínimo. Pero en redes neuronales el paisaje tiene <strong>millones de dimensiones y muchos valles</strong>. Por eso, en la práctica, se prueban varias inicializaciones aleatorias, se añade ruido (SGD), se ajusta el learning rate dinámicamente (Adam, RMSprop)… todo para escapar de los valles mediocres y encontrar uno bueno.</p>
+    </div>
+  </section>
+
+  <!-- Sección 5b: clasificación lineal -->
+  <section>
+    <div class="section-tag">06 · CLASIFICACIÓN LINEAL EN DIRECTO</div>
+    <h2>Cuando la salida ya no es un <em>número</em>, sino una <em>clase</em>.</h2>
+    <p class="lead">La regresión lineal predice un número. La clasificación responde a otra pregunta: <strong>¿este punto pertenece a la clase A o a la clase B?</strong> En lugar de buscar una recta que pase por los datos, buscamos una recta que los <em>separe</em>.</p>
+
+    <div class="callout">
+      <div class="title">EL CAMBIO DE CHIP</div>
+      <p>El bucle de entrenamiento es <strong>el mismo</strong>: predecir, medir el error, ajustar los parámetros, repetir. Lo que cambia son tres cosas: (1) la salida ahora es una <strong>probabilidad</strong> entre 0 y 1, (2) la pérdida ya no es MSE sino <strong>cross-entropy</strong>, y (3) lo que dibujamos no es una recta de predicción, sino una <strong>frontera de decisión</strong>: a un lado, clase A; al otro, clase B.</p>
+    </div>
+
+    <div class="clf-lab">
+      <div class="lab-header">
+        <h3 class="lab-title">Clasificador lineal · <em>frontera de decisión</em></h3>
+        <div class="lab-status">
+          <span id="clf-status" class="stop">Detenido</span>
+        </div>
+      </div>
+
+      <p style="font-size:14px; color:var(--muted); margin: 0 0 12px;">Dos clases de puntos generadas alrededor de dos centros distintos. El modelo (regresión logística) busca la recta que mejor las separa. Pulsa entrenar y verás cómo la frontera gira y se desplaza en cada epoch hasta dejar la mayoría de puntos en su lado.</p>
+
+      <div class="clf-charts">
+        <div class="chart-box">
+          <div class="chart-name">ESPACIO DE CARACTERÍSTICAS · X₁ vs X₂</div>
+          <svg id="clf-scatter" class="clf-svg" viewBox="0 0 500 400" preserveAspectRatio="xMidYMid meet"></svg>
+          <div class="legend">
+            <span><span class="swatch" style="background:#3FA9F5;"></span>clase A</span>
+            <span><span class="swatch" style="background:#D9994E;"></span>clase B</span>
+            <span><span class="swatch" style="background:#0F1B4D; border-radius:1px; height:3px; margin-top:4px;"></span>frontera</span>
+          </div>
+        </div>
+        <div class="chart-box">
+          <div class="chart-name">PÉRDIDA Y ACCURACY · POR EPOCH</div>
+          <svg id="clf-loss" class="clf-svg" viewBox="0 0 400 400" preserveAspectRatio="xMidYMid meet"></svg>
+          <div class="legend">
+            <span><span class="swatch" style="background:#3FA9F5;"></span>cross-entropy (loss)</span>
+            <span><span class="swatch" style="background:#2E8B57;"></span>accuracy</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="stat"><div class="l">Epoch</div><div class="v" id="clf-epoch">0</div></div>
+        <div class="stat"><div class="l">Loss</div><div class="v" id="clf-loss-v"><em>—</em></div></div>
+        <div class="stat"><div class="l">Accuracy</div><div class="v" id="clf-acc"><em>—</em></div></div>
+        <div class="stat"><div class="l">Bien clasificados</div><div class="v" id="clf-good"><em>—</em></div></div>
+      </div>
+
+      <div class="clf-controls">
+        <div class="ctrl-block">
+          <span class="ctrl-label">Learning rate</span>
+          <div class="ctrl-row">
+            <input type="range" id="clf-lr" min="0.01" max="2" step="0.01" value="0.5">
+            <span class="ctrl-val" id="clf-lr-val">0.50</span>
+          </div>
+        </div>
+        <div class="ctrl-block">
+          <span class="ctrl-label">Nº de epochs</span>
+          <div class="ctrl-row">
+            <input type="range" id="clf-epochs" min="20" max="400" step="10" value="120">
+            <span class="ctrl-val" id="clf-epochs-val">120</span>
+          </div>
+        </div>
+        <div class="ctrl-block">
+          <span class="ctrl-label">Acciones</span>
+          <div class="buttons">
+            <button class="btn" id="clf-train">▶ Entrenar</button>
+            <button class="btn secondary" id="clf-step">+1 epoch</button>
+            <button class="btn danger" id="clf-reset">↺ Reset</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout good">
+      <div class="title">CÓMO LEER LA EVOLUCIÓN</div>
+      <p><strong>Epoch 1:</strong> la frontera empieza en una posición aleatoria, partiendo el plano por cualquier sitio. La accuracy es próxima al 50% — el modelo está adivinando.</p>
+      <p><strong>Epochs intermedios:</strong> el gradiente empuja la frontera hacia la zona de transición entre clases. La pérdida cae rápido al principio.</p>
+      <p><strong>Convergencia:</strong> la frontera se queda casi quieta. Los pocos errores que persisten son puntos cerca del borde, ambiguos por naturaleza. La accuracy se estabiliza.</p>
+    </div>
+  </section>
+
+  <!-- Sección 5c: clasificación NO lineal -->
+  <section>
+    <div class="section-tag">07 · CUANDO UNA RECTA NO BASTA</div>
+    <h2>El mundo real no se separa con una <em>línea recta</em>.</h2>
+    <p class="lead">A veces los datos forman patrones donde ninguna recta los separa: círculos concéntricos, espirales, lunas entrelazadas. En estos casos, un modelo lineal está condenado a fallar — y aquí entra en juego la potencia de las redes neuronales.</p>
+
+    <div class="clf-lab">
+      <div class="lab-header">
+        <h3 class="lab-title">Mismo problema, dos modelos · <em>compara fronteras</em></h3>
+        <div class="lab-status">
+          <span id="nl-status" class="stop">Detenido</span>
+        </div>
+      </div>
+
+      <p style="font-size:14px; color:var(--muted); margin: 0 0 8px;">Elige primero la <strong>forma del dataset</strong> (más arriba la dificultad, más obvio que un modelo lineal no puede). Después elige el <strong>modelo</strong>: un clasificador lineal o una red neuronal con una capa oculta. Mismo bucle de entrenamiento — el resultado, muy distinto.</p>
+
+      <div class="dataset-toggle">
+        <button class="ds-btn active" data-shape="moons">
+          <div class="nm">Lunas entrelazadas</div>
+          <div class="dsc">Dos arcos en forma de luna que se entrelazan. Levemente no lineal.</div>
+        </button>
+        <button class="ds-btn" data-shape="circles">
+          <div class="nm">Círculos concéntricos</div>
+          <div class="dsc">Una clase en el centro, otra rodeándola. Imposible con una recta.</div>
+        </button>
+        <button class="ds-btn" data-shape="spirals">
+          <div class="nm">Espirales</div>
+          <div class="dsc">Dos espirales que giran entrelazadas. El caso más difícil.</div>
+        </button>
+      </div>
+
+      <div class="model-toggle">
+        <span style="font-family:'JetBrains Mono', monospace; font-size:11px; color:var(--muted); letter-spacing:0.12em; padding: 8px 6px 8px 0;">MODELO:</span>
+        <button class="mod-btn active" data-model="linear">Clasificador lineal</button>
+        <button class="mod-btn" data-model="mlp">Red neuronal · 8 + 8 unidades</button>
+      </div>
+
+      <div class="clf-charts">
+        <div class="chart-box">
+          <div class="chart-name">FRONTERA DE DECISIÓN · X₁ vs X₂</div>
+          <svg id="nl-scatter" class="clf-svg" viewBox="0 0 500 400" preserveAspectRatio="xMidYMid meet"></svg>
+          <div class="legend">
+            <span><span class="swatch" style="background:#3FA9F5;"></span>clase A</span>
+            <span><span class="swatch" style="background:#D9994E;"></span>clase B</span>
+            <span style="color:var(--muted);">fondo: zona de decisión del modelo</span>
+          </div>
+        </div>
+        <div class="chart-box">
+          <div class="chart-name">EVOLUCIÓN POR EPOCH</div>
+          <svg id="nl-loss" class="clf-svg" viewBox="0 0 400 400" preserveAspectRatio="xMidYMid meet"></svg>
+          <div class="legend">
+            <span><span class="swatch" style="background:#3FA9F5;"></span>loss</span>
+            <span><span class="swatch" style="background:#2E8B57;"></span>accuracy</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="stat"><div class="l">Epoch</div><div class="v" id="nl-epoch">0</div></div>
+        <div class="stat"><div class="l">Loss</div><div class="v" id="nl-loss-v"><em>—</em></div></div>
+        <div class="stat"><div class="l">Accuracy</div><div class="v" id="nl-acc"><em>—</em></div></div>
+        <div class="stat"><div class="l">Modelo</div><div class="v" id="nl-model" style="font-size:18px;"><em>—</em></div></div>
+      </div>
+
+      <div class="clf-controls">
+        <div class="ctrl-block">
+          <span class="ctrl-label">Learning rate</span>
+          <div class="ctrl-row">
+            <input type="range" id="nl-lr" min="0.01" max="0.5" step="0.01" value="0.1">
+            <span class="ctrl-val" id="nl-lr-val">0.10</span>
+          </div>
+        </div>
+        <div class="ctrl-block">
+          <span class="ctrl-label">Nº de epochs</span>
+          <div class="ctrl-row">
+            <input type="range" id="nl-epochs" min="50" max="800" step="10" value="300">
+            <span class="ctrl-val" id="nl-epochs-val">300</span>
+          </div>
+        </div>
+        <div class="ctrl-block">
+          <span class="ctrl-label">Acciones</span>
+          <div class="buttons">
+            <button class="btn" id="nl-train">▶ Entrenar</button>
+            <button class="btn secondary" id="nl-step">+10 epochs</button>
+            <button class="btn danger" id="nl-reset">↺ Reset</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="insights">
+      <div class="insight">
+        <div class="ic">▦</div>
+        <h4>El lineal se rompe</h4>
+        <p>Con círculos o espirales, el modelo lineal no llega del 50-65% de accuracy por mucho que entrenes. La línea no puede curvarse — y los datos exigen curvas.</p>
+      </div>
+      <div class="insight">
+        <div class="ic">≋</div>
+        <h4>La red dobla el espacio</h4>
+        <p>Cada capa oculta es una transformación no lineal. Concatenando varias, el modelo «dobla» el espacio hasta que las clases sí se pueden separar con una superficie. El fondo del gráfico te lo enseña en directo.</p>
+      </div>
+      <div class="insight">
+        <div class="ic">⏳</div>
+        <h4>La red tarda más</h4>
+        <p>Con la misma cantidad de epochs, la red empieza peor que el lineal — tiene más parámetros que ajustar. Pero hacia la mitad del entrenamiento te adelanta y, sobre todo, sigue mejorando.</p>
+      </div>
+    </div>
+
+    <div class="callout warn">
+      <div class="title">CONCLUSIÓN PARA TENER EN MENTE</div>
+      <p>Antes de elegir un modelo más complejo (red neuronal, gradient boosting…), pregúntate primero si tu problema <strong>realmente</strong> requiere no linealidad. Si una recta basta, la recta es más rápida, más interpretable y casi imposible de sobreajustar. Subir de complejidad solo cuando los datos lo piden.</p>
+    </div>
+  </section>
+
+  <!-- Sección 6: cuándo parar -->
+  <section>
+    <div class="section-tag">08 · CUÁNDO PARAR</div>
+    <h2>Más epochs <em>no siempre es mejor</em>.</h2>
+    <p class="lead">Aquí aparece uno de los peligros más famosos del machine learning: el sobreajuste.</p>
+
+    <div style="background:white; border:1px solid var(--line); border-radius:8px; padding:24px; margin: 24px 0;">
+      <div class="chart-name" style="margin-bottom:8px;">PÉRDIDA EN TRAIN VS VALIDATION · CON SOBREAJUSTE</div>
+      <svg id="overfitting-svg" viewBox="0 0 700 340" style="display:block;width:100%;height:auto;"></svg>
+      <div class="legend" style="justify-content:center; margin-top:8px;">
+        <span><span class="swatch" style="background:#0F1B4D;"></span>train</span>
+        <span><span class="swatch" style="background:#3FA9F5;"></span>validation</span>
+        <span><span class="swatch" style="background:#C8453F; border-radius:2px;"></span>early stopping</span>
+      </div>
+    </div>
+
+    <p>Mientras la pérdida en <strong>train</strong> sigue bajando, la pérdida en un conjunto de <strong>validación</strong> deja de mejorar y empieza a empeorar. Eso significa que el modelo está memorizando los datos de entrenamiento en lugar de aprender el patrón general. La técnica para evitarlo se llama <strong>early stopping</strong>: detener el entrenamiento cuando la validación deja de mejorar.</p>
+  </section>
+
+  <!-- Sección final: cierre -->
+  <section>
+    <div class="analogy">
+      <div class="lab">EN UNA FRASE</div>
+      <h3>Un modelo aprende cuando, con cada paso, <em>se equivoca un poquito menos</em>.</h3>
+      <p>Eso es todo. La complejidad de las redes neuronales modernas, los modelos fundacionales y los LLMs es la misma idea, repetida a una escala absurda: predecir, medir el error, ajustar, repetir. Si entiendes el bucle que has visto en este artefacto, entiendes el corazón del machine learning.</p>
+    </div>
+
+    <p style="text-align:center; color:var(--muted); font-size:14px; margin-top:32px;">
+      Próxima sesión: nos meteremos dentro de los algoritmos concretos — regresión lineal, árboles, redes neuronales — y veremos por qué cada uno encaja con problemas distintos.
+    </p>
+  </section>
+
+  <footer>
+    <span>UNIR · ESTRATEGIA DEL DATO · TEMA 02</span>
+    <span>ARTEFACTO 03 / 03</span>
+  </footer>
+
+</div>
+
+<script>
+// ============================================================
+// LABORATORIO · regresión lineal con descenso de gradiente
+// ============================================================
+
+// --- Datos sintéticos: m² vs precio (k€), con ruido realista ---
+// Verdaderos parámetros ocultos: w ≈ 4.5, b ≈ 30
+const data = [
+  [40, 220], [45, 240], [50, 245], [55, 270], [60, 290],
+  [62, 310], [65, 295], [70, 320], [72, 335], [75, 360],
+  [78, 365], [82, 380], [85, 405], [90, 410], [92, 430],
+  [95, 445], [100, 460], [105, 480], [110, 510], [115, 525],
+  [120, 555], [125, 570], [130, 600], [135, 615], [140, 640],
+  [145, 660], [150, 680], [155, 705], [160, 720], [165, 745],
+  [50, 230], [70, 305], [90, 425], [110, 495], [130, 585]
+];
+
+// Domain
+const X_MIN = 30, X_MAX = 175;
+const Y_MIN = 150, Y_MAX = 800;
+
+// State
+let w = 0;
+let b = 0;
+let epoch = 0;
+let lossHistory = [];
+let isRunning = false;
+let animId = null;
+
+// DOM
+const scatter = document.getElementById('scatter');
+const lossSvg = document.getElementById('loss');
+const lrSlider = document.getElementById('lr');
+const lrVal = document.getElementById('lr-val');
+const epochsSlider = document.getElementById('epochs');
+const epochsVal = document.getElementById('epochs-val');
+const trainBtn = document.getElementById('train-btn');
+const stepBtn = document.getElementById('step-btn');
+const resetBtn = document.getElementById('reset-btn');
+const statusText = document.getElementById('lab-status-text');
+
+// Sliders
+lrSlider.addEventListener('input', () => {
+  lrVal.textContent = parseFloat(lrSlider.value).toFixed(3);
+});
+epochsSlider.addEventListener('input', () => {
+  epochsVal.textContent = epochsSlider.value;
+});
+
+// Scenarios
+document.querySelectorAll('.scen').forEach(s => {
+  s.addEventListener('click', () => {
+    document.querySelectorAll('.scen').forEach(x => x.classList.remove('active'));
+    s.classList.add('active');
+    lrSlider.value = s.dataset.lr;
+    epochsSlider.value = s.dataset.epochs;
+    lrVal.textContent = parseFloat(s.dataset.lr).toFixed(3);
+    epochsVal.textContent = s.dataset.epochs;
+    reset();
+  });
+});
+
+// ----- Math -----
+// Trabajamos internamente con x e y normalizados para que el gradient descent
+// sea estable. Mostramos al usuario w y b en unidades reales (k€/m² y k€).
+//   x' = x / X_REF    y' = y / Y_REF
+//   modelo interno: y' = wp · x' + bp
+//   conversión a real: w_real = wp · Y_REF / X_REF;  b_real = bp · Y_REF
+const X_REF = 100;   // m² de referencia
+const Y_REF = 450;   // k€ de referencia
+
+let wp = 0, bp = 0;  // parámetros internos (normalizados)
+
+function syncRealParams() {
+  w = wp * Y_REF / X_REF;
+  b = bp * Y_REF;
+}
+
+function predict(x) { return w * x + b; }
+
+function computeLoss() {
+  let total = 0;
+  for (const [x, y] of data) {
+    const e = predict(x) - y;
+    total += e * e;
+  }
+  return total / data.length;
+}
+
+function gradientStep(lr) {
+  let dwp = 0, dbp = 0;
+  const n = data.length;
+  for (const [x, y] of data) {
+    const xn = x / X_REF, yn = y / Y_REF;
+    const err = wp * xn + bp - yn;
+    dwp += 2 * err * xn;
+    dbp += 2 * err;
+  }
+  dwp /= n; dbp /= n;
+  wp -= lr * dwp;
+  bp -= lr * dbp;
+  syncRealParams();
+}
+
+// ----- Drawing scatter + line -----
+function xToSvg(x) {
+  return 60 + (x - X_MIN) / (X_MAX - X_MIN) * 510;
+}
+function yToSvg(y) {
+  return 320 - (y - Y_MIN) / (Y_MAX - Y_MIN) * 290;
+}
+
+function drawScatter() {
+  let html = '';
+  // Gridlines
+  html += `<line x1="60" y1="320" x2="570" y2="320" stroke="#0F1B4D" stroke-width="1"/>`;
+  html += `<line x1="60" y1="320" x2="60" y2="30" stroke="#0F1B4D" stroke-width="1"/>`;
+  // x ticks
+  for (let v = 50; v <= 170; v += 30) {
+    const sx = xToSvg(v);
+    html += `<line x1="${sx}" y1="318" x2="${sx}" y2="322" stroke="#0F1B4D"/>`;
+    html += `<text x="${sx}" y="338" font-size="10" fill="#6B6B7C" font-family="JetBrains Mono" text-anchor="middle">${v}</text>`;
+  }
+  html += `<text x="320" y="354" font-size="11" fill="#6B6B7C" font-family="JetBrains Mono" text-anchor="middle">m²</text>`;
+  // y ticks
+  for (let v = 200; v <= 800; v += 200) {
+    const sy = yToSvg(v);
+    html += `<line x1="58" y1="${sy}" x2="62" y2="${sy}" stroke="#0F1B4D"/>`;
+    html += `<text x="55" y="${sy+3}" font-size="10" fill="#6B6B7C" font-family="JetBrains Mono" text-anchor="end">${v}</text>`;
+  }
+  html += `<text x="35" y="22" font-size="11" fill="#6B6B7C" font-family="JetBrains Mono">k€</text>`;
+
+  // Data points
+  for (const [x, y] of data) {
+    html += `<circle cx="${xToSvg(x)}" cy="${yToSvg(y)}" r="3.5" fill="#3FA9F5" opacity="0.85"/>`;
+  }
+
+  // Recta del modelo (clipped a los bordes del plot para que diverger no rompa el SVG)
+  {
+    const yA = predict(X_MIN);
+    const yB = predict(X_MAX);
+    if (isFinite(yA) && isFinite(yB)) {
+      const sxA = xToSvg(X_MIN), syA = yToSvg(Math.max(Y_MIN - 500, Math.min(Y_MAX + 500, yA)));
+      const sxB = xToSvg(X_MAX), syB = yToSvg(Math.max(Y_MIN - 500, Math.min(Y_MAX + 500, yB)));
+      html += `<line x1="${sxA}" y1="${syA}" x2="${sxB}" y2="${syB}" stroke="#0F1B4D" stroke-width="2.5"/>`;
+    }
+
+    // Residuos: línea vertical desde el punto real al predicho
+    for (const [x, y] of data) {
+      const yp = predict(x);
+      if (isFinite(yp) && yp > Y_MIN - 100 && yp < Y_MAX + 100) {
+        html += `<line x1="${xToSvg(x)}" y1="${yToSvg(y)}" x2="${xToSvg(x)}" y2="${yToSvg(yp)}" stroke="#C8453F" stroke-width="0.8" stroke-dasharray="2,2" opacity="0.55"/>`;
+      }
+    }
+  }
+
+  scatter.innerHTML = html;
+}
+
+// ----- Drawing loss curve -----
+function drawLoss() {
+  let html = '';
+  html += `<line x1="50" y1="320" x2="380" y2="320" stroke="#0F1B4D" stroke-width="1"/>`;
+  html += `<line x1="50" y1="320" x2="50" y2="20" stroke="#0F1B4D" stroke-width="1"/>`;
+  html += `<text x="215" y="350" font-size="11" fill="#6B6B7C" font-family="JetBrains Mono" text-anchor="middle">epoch</text>`;
+  html += `<text x="30" y="22" font-size="11" fill="#6B6B7C" font-family="JetBrains Mono">↑ MSE</text>`;
+
+  if (lossHistory.length === 0) {
+    html += `<text x="215" y="170" font-size="14" fill="#C9C2B0" font-family="Cormorant Garamond" font-style="italic" text-anchor="middle">Pulsa entrenar para empezar</text>`;
+  } else {
+    const maxEpochs = parseInt(epochsSlider.value);
+    const maxLoss = Math.max(...lossHistory) * 1.05;
+    const minLoss = 0;
+
+    // Scale
+    const xToSvgL = i => 50 + (i / Math.max(maxEpochs, 1)) * 330;
+    const yToSvgL = v => {
+      if (!isFinite(v)) return 20;
+      const clamped = Math.max(0, Math.min(maxLoss, v));
+      return 320 - (clamped / maxLoss) * 290;
+    };
+
+    // Polyline
+    let path = '';
+    lossHistory.forEach((l, i) => {
+      const sx = xToSvgL(i);
+      const sy = yToSvgL(l);
+      if (!isFinite(sy)) return;
+      path += (i === 0 ? 'M' : 'L') + ` ${sx} ${sy} `;
+    });
+    html += `<path d="${path}" fill="none" stroke="#3FA9F5" stroke-width="2.5"/>`;
+
+    // Last point
+    const last = lossHistory[lossHistory.length - 1];
+    const lx = xToSvgL(lossHistory.length - 1);
+    const ly = yToSvgL(last);
+    if (isFinite(ly)) {
+      html += `<circle cx="${lx}" cy="${ly}" r="4" fill="#0F1B4D"/>`;
+    }
+
+    // y-labels
+    html += `<text x="45" y="320" font-size="9" fill="#6B6B7C" font-family="JetBrains Mono" text-anchor="end">0</text>`;
+    html += `<text x="45" y="25" font-size="9" fill="#6B6B7C" font-family="JetBrains Mono" text-anchor="end">${maxLoss > 1e6 ? maxLoss.toExponential(1) : Math.round(maxLoss).toLocaleString()}</text>`;
+
+    // x-end label
+    html += `<text x="380" y="335" font-size="9" fill="#6B6B7C" font-family="JetBrains Mono" text-anchor="end">${maxEpochs}</text>`;
+
+    // Detect divergence
+    if (last > 1e6 || !isFinite(last)) {
+      html += `<text x="215" y="190" font-size="13" fill="#C8453F" font-family="Cormorant Garamond" font-style="italic" text-anchor="middle">↑ El error explota · learning rate demasiado alto</text>`;
+    }
+  }
+
+  lossSvg.innerHTML = html;
+}
+
+// ----- UI updates -----
+function updateStats() {
+  document.getElementById('stat-epoch').textContent = epoch;
+  document.getElementById('stat-w').textContent = w.toFixed(2);
+  document.getElementById('stat-b').textContent = b.toFixed(1);
+  const last = lossHistory[lossHistory.length - 1];
+  if (last === undefined) {
+    document.getElementById('stat-loss').innerHTML = '<em>—</em>';
+  } else if (!isFinite(last) || last > 1e10) {
+    document.getElementById('stat-loss').innerHTML = '<em style="color:var(--bad)">∞</em>';
+  } else if (last > 100000) {
+    document.getElementById('stat-loss').textContent = last.toExponential(2);
+  } else {
+    document.getElementById('stat-loss').textContent = Math.round(last).toLocaleString();
+  }
+}
+
+// ----- Run -----
+function reset() {
+  if (animId) cancelAnimationFrame(animId);
+  isRunning = false;
+  // Inicializamos con pendiente NEGATIVA y intercepto alto:
+  // recta que cae de izquierda a derecha — al revés que los datos —
+  // para que se vea claramente cómo gira durante el entrenamiento.
+  // En unidades reales: w_real ≈ -1, b_real ≈ 500
+  // En unidades internas: wp = -1 · X_REF/Y_REF ≈ -0.222;  bp = 500/Y_REF ≈ 1.111
+  wp = -1 * X_REF / Y_REF;
+  bp = 500 / Y_REF;
+  syncRealParams();
+  epoch = 0;
+  lossHistory = [computeLoss()];   // registramos el punto inicial (epoch 0)
+  trainBtn.textContent = '▶ Entrenar';
+  trainBtn.disabled = false;
+  stepBtn.disabled = false;
+  statusText.className = 'stop';
+  statusText.textContent = 'Detenido';
+  drawScatter();
+  drawLoss();
+  updateStats();
+}
+
+function doStep() {
+  const lr = parseFloat(lrSlider.value);
+  gradientStep(lr);
+  const loss = computeLoss();
+  lossHistory.push(loss);
+  epoch++;
+  drawScatter();
+  drawLoss();
+  updateStats();
+}
+
+function startTraining() {
+  if (isRunning) {
+    // pause
+    isRunning = false;
+    if (animId) cancelAnimationFrame(animId);
+    trainBtn.textContent = '▶ Continuar';
+    statusText.className = 'stop';
+    statusText.textContent = 'Pausado';
+    return;
+  }
+  const maxEpochs = parseInt(epochsSlider.value);
+  if (epoch >= maxEpochs) {
+    // Already done
+    return;
+  }
+  isRunning = true;
+  trainBtn.textContent = '⏸ Pausar';
+  statusText.className = 'live';
+  statusText.textContent = 'Entrenando…';
+
+  let lastTime = 0;
+  // Choose interval per epoch based on total epochs (smoother UI)
+  const baseInterval = Math.max(20, Math.min(80, 5000 / maxEpochs));
+
+  const loop = (t) => {
+    if (!isRunning) return;
+    if (t - lastTime > baseInterval) {
+      doStep();
+      lastTime = t;
+      const last = lossHistory[lossHistory.length - 1];
+      // Stop if diverged
+      if (!isFinite(last) || last > 1e15) {
+        isRunning = false;
+        trainBtn.textContent = '▶ Entrenar';
+        statusText.className = 'stop';
+        statusText.textContent = 'Divergió';
+        return;
+      }
+      if (epoch >= maxEpochs) {
+        isRunning = false;
+        trainBtn.textContent = '▶ Entrenar';
+        trainBtn.disabled = true;
+        statusText.className = 'live';
+        statusText.textContent = 'Completado';
+        return;
+      }
+    }
+    animId = requestAnimationFrame(loop);
+  };
+  animId = requestAnimationFrame(loop);
+}
+
+trainBtn.addEventListener('click', startTraining);
+stepBtn.addEventListener('click', () => {
+  const maxEpochs = parseInt(epochsSlider.value);
+  if (epoch < maxEpochs && isFinite(lossHistory[lossHistory.length - 1] || 0)) {
+    doStep();
+  }
+});
+resetBtn.addEventListener('click', reset);
+
+// Initial
+reset();
+
+// ============================================================
+// LABORATORIO 5 · DESCENSO DE GRADIENTE INTERACTIVO
+// ============================================================
+// Función de pérdida con dos mínimos (uno local, uno global):
+//   L(w) = 0.06*(w-2)^2 * (w-7)^2 + 0.5*w + ruido suave
+// La construimos pieza a pieza para que tenga un mínimo local
+// poco profundo en w≈2.5 y un mínimo global en w≈6.
+
+(function() {
+  const W_MIN = 0.5, W_MAX = 9.5;
+  const SVG_W = 760, SVG_H = 360;
+  const PAD_L = 60, PAD_R = 30, PAD_T = 30, PAD_B = 50;
+  const PLOT_W = SVG_W - PAD_L - PAD_R;
+  const PLOT_H = SVG_H - PAD_T - PAD_B;
+
+  // Pérdida 1D con dos valles. Pendiente negativa para que el valle derecho sea
+  // más profundo (mínimo global ≈ 6.7) y el izquierdo sea solo local (≈ 2.9).
+  function L(w) {
+    return 0.04 * Math.pow(w - 2.5, 2) * Math.pow(w - 6.5, 2) - 0.35 * w + 6;
+  }
+  function dL(w) {
+    const a = w - 2.5, b = w - 6.5;
+    return 0.04 * (2 * a * b * b + 2 * a * a * b) - 0.35;
+  }
+
+  // Determinar rango Y automáticamente
+  let lMin = Infinity, lMax = -Infinity;
+  for (let i = 0; i <= 200; i++) {
+    const w = W_MIN + (W_MAX - W_MIN) * i / 200;
+    const v = L(w);
+    if (v < lMin) lMin = v;
+    if (v > lMax) lMax = v;
+  }
+  const yPad = (lMax - lMin) * 0.1;
+  const Y_MIN = lMin - yPad;
+  const Y_MAX = lMax + yPad;
+
+  function wToX(w) {
+    return PAD_L + (w - W_MIN) / (W_MAX - W_MIN) * PLOT_W;
+  }
+  function lToY(v) {
+    return PAD_T + (1 - (v - Y_MIN) / (Y_MAX - Y_MIN)) * PLOT_H;
+  }
+  function xToW(x) {
+    return W_MIN + (x - PAD_L) / PLOT_W * (W_MAX - W_MIN);
+  }
+
+  const svg = document.getElementById('descent-svg');
+  const goBtn = document.getElementById('descent-go');
+  const stepBtn2 = document.getElementById('descent-step-btn');
+  const randBtn = document.getElementById('descent-random');
+  const resetBtn2 = document.getElementById('descent-reset');
+  const lrSlider2 = document.getElementById('descent-lr');
+  const lrVal2 = document.getElementById('descent-lr-val');
+  const stepStat = document.getElementById('descent-step');
+  const xStat = document.getElementById('descent-x');
+  const lossStat = document.getElementById('descent-loss');
+  const statusEl = document.getElementById('descent-status');
+
+  let currentW = null;       // posición actual de la pelota
+  let path = [];             // historial [{w, l}]
+  let running = false;
+  let animId2 = null;
+
+  lrSlider2.addEventListener('input', () => {
+    lrVal2.textContent = parseFloat(lrSlider2.value).toFixed(3);
+  });
+
+  // Encontrar mínimos locales y globales para anotarlos
+  function findMinima() {
+    const samples = [];
+    for (let i = 0; i <= 1000; i++) {
+      const w = W_MIN + (W_MAX - W_MIN) * i / 1000;
+      samples.push({ w, l: L(w) });
+    }
+    const minima = [];
+    for (let i = 1; i < samples.length - 1; i++) {
+      if (samples[i].l < samples[i-1].l && samples[i].l < samples[i+1].l) {
+        minima.push(samples[i]);
+      }
+    }
+    minima.sort((a, b) => a.l - b.l);
+    return minima;
+  }
+  const minima = findMinima();
+  // Global: el más bajo. Local: cualquier otro.
+  const global = minima[0];
+  const localMins = minima.slice(1);
+
+  function drawCurve() {
+    let html = '';
+    // Caja de fondo
+    html += `<rect x="${PAD_L}" y="${PAD_T}" width="${PLOT_W}" height="${PLOT_H}" fill="#F5F1E8" stroke="#C9C2B0" stroke-width="1"/>`;
+    // Eje X
+    html += `<line x1="${PAD_L}" y1="${PAD_T+PLOT_H}" x2="${PAD_L+PLOT_W}" y2="${PAD_T+PLOT_H}" stroke="#0F1B4D"/>`;
+    html += `<line x1="${PAD_L}" y1="${PAD_T}" x2="${PAD_L}" y2="${PAD_T+PLOT_H}" stroke="#0F1B4D"/>`;
+    // Marcas X
+    for (let v = 1; v <= 9; v += 1) {
+      const sx = wToX(v);
+      html += `<line x1="${sx}" y1="${PAD_T+PLOT_H}" x2="${sx}" y2="${PAD_T+PLOT_H+4}" stroke="#0F1B4D"/>`;
+      html += `<text x="${sx}" y="${PAD_T+PLOT_H+18}" font-size="10" fill="#6B6B7C" font-family="JetBrains Mono" text-anchor="middle">${v}</text>`;
+    }
+    html += `<text x="${PAD_L+PLOT_W/2}" y="${PAD_T+PLOT_H+38}" font-size="12" fill="#0F1B4D" font-family="JetBrains Mono" text-anchor="middle">parámetro w</text>`;
+    html += `<text x="${PAD_L-46}" y="${PAD_T+12}" font-size="11" fill="#6B6B7C" font-family="JetBrains Mono">↑ pérdida L(w)</text>`;
+
+    // Curva de pérdida
+    let d = '';
+    const N = 240;
+    for (let i = 0; i <= N; i++) {
+      const w = W_MIN + (W_MAX - W_MIN) * i / N;
+      const sx = wToX(w);
+      const sy = lToY(L(w));
+      d += (i === 0 ? 'M' : 'L') + sx.toFixed(2) + ',' + sy.toFixed(2) + ' ';
+    }
+    // Relleno suave
+    const fillD = d + `L${wToX(W_MAX)},${PAD_T+PLOT_H} L${wToX(W_MIN)},${PAD_T+PLOT_H} Z`;
+    html += `<path d="${fillD}" fill="#ECE6D6" opacity="0.55"/>`;
+    html += `<path d="${d}" fill="none" stroke="#0F1B4D" stroke-width="2.2"/>`;
+
+    // Anotar mínimos
+    localMins.forEach(m => {
+      const sx = wToX(m.w), sy = lToY(m.l);
+      html += `<circle cx="${sx}" cy="${sy}" r="4" fill="#D9994E"/>`;
+      html += `<text x="${sx}" y="${sy+22}" font-size="11" fill="#D9994E" font-family="Cormorant Garamond" font-style="italic" text-anchor="middle">mínimo local</text>`;
+    });
+    if (global) {
+      const sx = wToX(global.w), sy = lToY(global.l);
+      html += `<circle cx="${sx}" cy="${sy}" r="5" fill="#2E8B57"/>`;
+      html += `<text x="${sx}" y="${sy+22}" font-size="11" fill="#2E8B57" font-family="Cormorant Garamond" font-style="italic" text-anchor="middle">mínimo global</text>`;
+    }
+
+    // Path histórico (líneas entre puntos)
+    if (path.length > 1) {
+      let p = '';
+      path.forEach((pt, i) => {
+        const sx = wToX(pt.w), sy = lToY(pt.l);
+        p += (i === 0 ? 'M' : 'L') + sx + ',' + sy + ' ';
+      });
+      html += `<path d="${p}" fill="none" stroke="#3FA9F5" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.7"/>`;
+      // puntos del path
+      path.forEach((pt, i) => {
+        if (i === path.length - 1) return; // pelota actual fuera
+        const sx = wToX(pt.w), sy = lToY(pt.l);
+        html += `<circle cx="${sx}" cy="${sy}" r="3" fill="#0F1B4D" opacity="${0.3 + 0.7 * i / path.length}"/>`;
+      });
+    }
+
+    // Pelota actual
+    if (currentW !== null) {
+      const w = currentW;
+      const sx = wToX(w), sy = lToY(L(w));
+      // Flecha de gradiente (en sentido contrario al gradiente, escalada)
+      const grad = dL(w);
+      const arrowLen = Math.min(80, Math.abs(grad) * 12);
+      const dirX = -Math.sign(grad);
+      const ax = sx + dirX * arrowLen;
+      // Eje X local: dibujamos flecha horizontal, posición arriba de la pelota
+      const ay = sy - 22;
+      html += `<defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#3FA9F5"/></marker></defs>`;
+      html += `<line x1="${sx}" y1="${ay}" x2="${ax}" y2="${ay}" stroke="#3FA9F5" stroke-width="2" marker-end="url(#arr)"/>`;
+      html += `<text x="${(sx+ax)/2}" y="${ay-6}" font-size="10" fill="#3FA9F5" font-family="JetBrains Mono" text-anchor="middle">−∇L</text>`;
+      // pelota
+      html += `<circle cx="${sx}" cy="${sy}" r="8" fill="#0F1B4D" stroke="white" stroke-width="2"/>`;
+    }
+
+    svg.innerHTML = html;
+  }
+
+  function updateStats() {
+    stepStat.textContent = path.length === 0 ? 0 : path.length - 1;
+    if (currentW === null) {
+      xStat.innerHTML = '<em>—</em>';
+      lossStat.innerHTML = '<em>—</em>';
+    } else {
+      xStat.textContent = currentW.toFixed(2);
+      lossStat.textContent = L(currentW).toFixed(2);
+    }
+  }
+
+  function resetDescent() {
+    if (animId2) cancelAnimationFrame(animId2);
+    running = false;
+    currentW = null;
+    path = [];
+    statusEl.className = 'stop';
+    statusEl.textContent = 'Detenido';
+    goBtn.textContent = '▶ Soltar la pelota';
+    drawCurve();
+    updateStats();
+  }
+
+  function placeAt(w) {
+    if (animId2) cancelAnimationFrame(animId2);
+    running = false;
+    currentW = Math.max(W_MIN + 0.1, Math.min(W_MAX - 0.1, w));
+    path = [{ w: currentW, l: L(currentW) }];
+    statusEl.className = 'stop';
+    statusEl.textContent = 'Listo · pulsa Soltar';
+    goBtn.textContent = '▶ Soltar la pelota';
+    drawCurve();
+    updateStats();
+  }
+
+  function descentStep() {
+    if (currentW === null) return false;
+    const lr = parseFloat(lrSlider2.value);
+    const grad = dL(currentW);
+    const newW = currentW - lr * grad;
+    // Si se sale, lo recortamos (y paramos)
+    if (newW < W_MIN || newW > W_MAX) {
+      currentW = Math.max(W_MIN + 0.05, Math.min(W_MAX - 0.05, newW));
+      path.push({ w: currentW, l: L(currentW) });
+      return false; // diverge
+    }
+    // Convergencia: gradiente casi cero
+    if (Math.abs(grad) < 0.01 && Math.abs(newW - currentW) < 0.005) {
+      currentW = newW;
+      path.push({ w: currentW, l: L(currentW) });
+      return false;
+    }
+    currentW = newW;
+    path.push({ w: currentW, l: L(currentW) });
+    return true;
+  }
+
+  // Click en el SVG → coloca la pelota
+  svg.addEventListener('click', (e) => {
+    const rect = svg.getBoundingClientRect();
+    const xRatio = (e.clientX - rect.left) / rect.width;
+    const x = xRatio * SVG_W;
+    if (x < PAD_L || x > PAD_L + PLOT_W) return;
+    const w = xToW(x);
+    placeAt(w);
+  });
+
+  goBtn.addEventListener('click', () => {
+    if (currentW === null) {
+      // colocar al azar si no hay punto
+      placeAt(W_MIN + 0.5 + Math.random() * (W_MAX - W_MIN - 1));
+    }
+    if (running) {
+      running = false;
+      if (animId2) cancelAnimationFrame(animId2);
+      goBtn.textContent = '▶ Continuar';
+      statusEl.className = 'stop';
+      statusEl.textContent = 'Pausado';
+      return;
+    }
+    running = true;
+    goBtn.textContent = '⏸ Pausar';
+    statusEl.className = 'live';
+    statusEl.textContent = 'Bajando…';
+
+    let last = 0;
+    const loop = (t) => {
+      if (!running) return;
+      if (t - last > 80) {
+        const cont = descentStep();
+        last = t;
+        drawCurve();
+        updateStats();
+        if (!cont) {
+          running = false;
+          goBtn.textContent = '▶ Soltar otra vez';
+          statusEl.className = 'live';
+          statusEl.textContent = 'Convergió';
+          return;
+        }
+      }
+      animId2 = requestAnimationFrame(loop);
+    };
+    animId2 = requestAnimationFrame(loop);
+  });
+
+  stepBtn2.addEventListener('click', () => {
+    if (currentW === null) placeAt(W_MIN + 0.5 + Math.random() * (W_MAX - W_MIN - 1));
+    descentStep();
+    drawCurve();
+    updateStats();
+  });
+
+  randBtn.addEventListener('click', () => {
+    placeAt(W_MIN + 0.5 + Math.random() * (W_MAX - W_MIN - 1));
+  });
+
+  resetBtn2.addEventListener('click', resetDescent);
+
+  // Render inicial
+  drawCurve();
+  updateStats();
+})();
+
+// ============================================================
+// LABORATORIO 6 · CLASIFICACIÓN LINEAL (regresión logística)
+// ============================================================
+(function() {
+  // Generar 2 clases con distribución gaussiana 2D
+  function makeData(seed) {
+    let s = seed;
+    function rng() { s = (s * 9301 + 49297) % 233280; return s / 233280; }
+    function gauss() {
+      const u = rng() || 1e-9, v = rng();
+      return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+    }
+    const points = [];
+    // Clase A centrada en (-1.2, -0.8)
+    for (let i = 0; i < 60; i++) {
+      points.push({ x: -1.2 + gauss() * 0.55, y: -0.8 + gauss() * 0.55, c: 0 });
+    }
+    // Clase B centrada en (1.2, 0.9)
+    for (let i = 0; i < 60; i++) {
+      points.push({ x: 1.2 + gauss() * 0.55, y: 0.9 + gauss() * 0.55, c: 1 });
+    }
+    return points;
+  }
+  let data = makeData(42);
+
+  // Estado
+  let w1 = 0, w2 = 0, bias = 0;
+  let epoch = 0;
+  let lossHist = [];
+  let accHist = [];
+  let running = false;
+  let animId = null;
+
+  const X_MIN = -3, X_MAX = 3, Y_MIN = -3, Y_MAX = 3;
+  const SCAT = { w: 500, h: 400, padL: 50, padR: 20, padT: 20, padB: 40 };
+  const LOSS = { w: 400, h: 400, padL: 50, padR: 30, padT: 20, padB: 40 };
+
+  const scSvg = document.getElementById('clf-scatter');
+  const lsSvg = document.getElementById('clf-loss');
+  const epEl = document.getElementById('clf-epoch');
+  const lossEl = document.getElementById('clf-loss-v');
+  const accEl = document.getElementById('clf-acc');
+  const goodEl = document.getElementById('clf-good');
+  const lrS = document.getElementById('clf-lr');
+  const lrV = document.getElementById('clf-lr-val');
+  const epS = document.getElementById('clf-epochs');
+  const epV = document.getElementById('clf-epochs-val');
+  const trBtn = document.getElementById('clf-train');
+  const stBtn = document.getElementById('clf-step');
+  const rsBtn = document.getElementById('clf-reset');
+  const stEl = document.getElementById('clf-status');
+
+  lrS.addEventListener('input', () => lrV.textContent = parseFloat(lrS.value).toFixed(2));
+  epS.addEventListener('input', () => epV.textContent = epS.value);
+
+  function sigmoid(z) { return 1 / (1 + Math.exp(-z)); }
+  function predict(p) { return sigmoid(w1 * p.x + w2 * p.y + bias); }
+
+  function computeMetrics() {
+    let loss = 0, correct = 0;
+    for (const p of data) {
+      const pr = predict(p);
+      const e = 1e-9;
+      loss += -(p.c * Math.log(pr + e) + (1 - p.c) * Math.log(1 - pr + e));
+      const pred = pr > 0.5 ? 1 : 0;
+      if (pred === p.c) correct++;
+    }
+    return { loss: loss / data.length, acc: correct / data.length, correct };
+  }
+
+  function trainStep() {
+    const lr = parseFloat(lrS.value);
+    let dw1 = 0, dw2 = 0, dbias = 0;
+    for (const p of data) {
+      const pr = predict(p);
+      const err = pr - p.c;
+      dw1 += err * p.x;
+      dw2 += err * p.y;
+      dbias += err;
+    }
+    const n = data.length;
+    w1 -= lr * dw1 / n;
+    w2 -= lr * dw2 / n;
+    bias -= lr * dbias / n;
+    epoch++;
+    const m = computeMetrics();
+    lossHist.push(m.loss);
+    accHist.push(m.acc);
+  }
+
+  function xToSx(x) {
+    return SCAT.padL + (x - X_MIN) / (X_MAX - X_MIN) * (SCAT.w - SCAT.padL - SCAT.padR);
+  }
+  function yToSy(y) {
+    return SCAT.padT + (1 - (y - Y_MIN) / (Y_MAX - Y_MIN)) * (SCAT.h - SCAT.padT - SCAT.padB);
+  }
+
+  function drawScatter() {
+    let html = '';
+    const plotW = SCAT.w - SCAT.padL - SCAT.padR;
+    const plotH = SCAT.h - SCAT.padT - SCAT.padB;
+    html += `<rect x="${SCAT.padL}" y="${SCAT.padT}" width="${plotW}" height="${plotH}" fill="#F5F1E8" stroke="#C9C2B0"/>`;
+
+    // Sombrear regiones de decisión si ya hay parámetros
+    if (w1 !== 0 || w2 !== 0 || bias !== 0) {
+      const cell = 8;
+      for (let sx = SCAT.padL; sx < SCAT.padL + plotW; sx += cell) {
+        for (let sy = SCAT.padT; sy < SCAT.padT + plotH; sy += cell) {
+          const x = X_MIN + (sx - SCAT.padL) / plotW * (X_MAX - X_MIN);
+          const y = Y_MAX - (sy - SCAT.padT) / plotH * (Y_MAX - Y_MIN);
+          const pr = sigmoid(w1 * x + w2 * y + bias);
+          const cls = pr > 0.5 ? 'B' : 'A';
+          const conf = Math.abs(pr - 0.5);
+          const fill = cls === 'A' ? '#3FA9F5' : '#D9994E';
+          const op = (0.06 + conf * 0.18).toFixed(2);
+          html += `<rect x="${sx}" y="${sy}" width="${cell}" height="${cell}" fill="${fill}" opacity="${op}"/>`;
+        }
+      }
+    }
+
+    // Ejes
+    const cx0 = xToSx(0), cy0 = yToSy(0);
+    html += `<line x1="${SCAT.padL}" y1="${cy0}" x2="${SCAT.padL+plotW}" y2="${cy0}" stroke="#C9C2B0" stroke-dasharray="2,3"/>`;
+    html += `<line x1="${cx0}" y1="${SCAT.padT}" x2="${cx0}" y2="${SCAT.padT+plotH}" stroke="#C9C2B0" stroke-dasharray="2,3"/>`;
+
+    // Etiquetas
+    for (let v = -2; v <= 2; v += 1) {
+      if (v === 0) continue;
+      const sx = xToSx(v);
+      const sy = yToSy(v);
+      html += `<text x="${sx}" y="${SCAT.padT+plotH+15}" font-size="10" fill="#6B6B7C" font-family="JetBrains Mono" text-anchor="middle">${v}</text>`;
+      html += `<text x="${SCAT.padL-6}" y="${sy+3}" font-size="10" fill="#6B6B7C" font-family="JetBrains Mono" text-anchor="end">${v}</text>`;
+    }
+    html += `<text x="${SCAT.padL+plotW/2}" y="${SCAT.padT+plotH+32}" font-size="11" fill="#0F1B4D" font-family="JetBrains Mono" text-anchor="middle">X₁</text>`;
+    html += `<text x="${SCAT.padL-30}" y="${SCAT.padT+plotH/2}" font-size="11" fill="#0F1B4D" font-family="JetBrains Mono" text-anchor="middle" transform="rotate(-90 ${SCAT.padL-30} ${SCAT.padT+plotH/2})">X₂</text>`;
+
+    // Frontera de decisión: w1*x + w2*y + b = 0  →  y = -(w1*x + b) / w2
+    if (Math.abs(w2) > 1e-6) {
+      const x1 = X_MIN, y1 = -(w1 * x1 + bias) / w2;
+      const x2 = X_MAX, y2 = -(w1 * x2 + bias) / w2;
+      const sx1 = xToSx(x1), sy1 = yToSy(y1);
+      const sx2 = xToSx(x2), sy2 = yToSy(y2);
+      html += `<line x1="${sx1}" y1="${sy1}" x2="${sx2}" y2="${sy2}" stroke="#0F1B4D" stroke-width="2.5"/>`;
+    } else if (Math.abs(w1) > 1e-6) {
+      const x = -bias / w1;
+      const sx = xToSx(x);
+      html += `<line x1="${sx}" y1="${SCAT.padT}" x2="${sx}" y2="${SCAT.padT+plotH}" stroke="#0F1B4D" stroke-width="2.5"/>`;
+    }
+
+    // Puntos
+    for (const p of data) {
+      const sx = xToSx(p.x), sy = yToSy(p.y);
+      const fill = p.c === 0 ? '#3FA9F5' : '#D9994E';
+      html += `<circle cx="${sx}" cy="${sy}" r="4" fill="${fill}" stroke="white" stroke-width="0.8"/>`;
+    }
+
+    scSvg.innerHTML = html;
+  }
+
+  function drawLossClf() {
+    let html = '';
+    const plotW = LOSS.w - LOSS.padL - LOSS.padR;
+    const plotH = LOSS.h - LOSS.padT - LOSS.padB;
+    html += `<rect x="${LOSS.padL}" y="${LOSS.padT}" width="${plotW}" height="${plotH}" fill="#F5F1E8" stroke="#C9C2B0"/>`;
+    html += `<line x1="${LOSS.padL}" y1="${LOSS.padT+plotH}" x2="${LOSS.padL+plotW}" y2="${LOSS.padT+plotH}" stroke="#0F1B4D"/>`;
+    html += `<line x1="${LOSS.padL}" y1="${LOSS.padT}" x2="${LOSS.padL}" y2="${LOSS.padT+plotH}" stroke="#0F1B4D"/>`;
+
+    if (lossHist.length === 0) {
+      html += `<text x="${LOSS.padL+plotW/2}" y="${LOSS.padT+plotH/2}" font-size="14" fill="#C9C2B0" font-family="Cormorant Garamond" font-style="italic" text-anchor="middle">Pulsa entrenar para empezar</text>`;
+    } else {
+      const maxEp = parseInt(epS.value);
+      const maxL = Math.max(0.7, ...lossHist) * 1.05;
+      // ejes y
+      html += `<text x="${LOSS.padL-6}" y="${LOSS.padT+plotH+3}" font-size="9" fill="#6B6B7C" font-family="JetBrains Mono" text-anchor="end">0</text>`;
+      html += `<text x="${LOSS.padL-6}" y="${LOSS.padT+8}" font-size="9" fill="#6B6B7C" font-family="JetBrains Mono" text-anchor="end">${maxL.toFixed(2)}</text>`;
+      // ax y derecha (accuracy 0-1)
+      html += `<text x="${LOSS.padL+plotW+6}" y="${LOSS.padT+plotH+3}" font-size="9" fill="#2E8B57" font-family="JetBrains Mono">0%</text>`;
+      html += `<text x="${LOSS.padL+plotW+6}" y="${LOSS.padT+8}" font-size="9" fill="#2E8B57" font-family="JetBrains Mono">100%</text>`;
+      // ax x
+      html += `<text x="${LOSS.padL}" y="${LOSS.padT+plotH+18}" font-size="10" fill="#6B6B7C" font-family="JetBrains Mono">0</text>`;
+      html += `<text x="${LOSS.padL+plotW}" y="${LOSS.padT+plotH+18}" font-size="10" fill="#6B6B7C" font-family="JetBrains Mono" text-anchor="end">${maxEp}</text>`;
+      html += `<text x="${LOSS.padL+plotW/2}" y="${LOSS.padT+plotH+32}" font-size="11" fill="#0F1B4D" font-family="JetBrains Mono" text-anchor="middle">epoch</text>`;
+
+      // Loss path
+      let dL = '';
+      lossHist.forEach((v, i) => {
+        const sx = LOSS.padL + (i / Math.max(1, maxEp - 1)) * plotW;
+        const sy = LOSS.padT + (1 - v / maxL) * plotH;
+        dL += (i === 0 ? 'M' : 'L') + sx.toFixed(2) + ',' + sy.toFixed(2) + ' ';
+      });
+      html += `<path d="${dL}" fill="none" stroke="#3FA9F5" stroke-width="2.5"/>`;
+      // Acc path
+      let dA = '';
+      accHist.forEach((v, i) => {
+        const sx = LOSS.padL + (i / Math.max(1, maxEp - 1)) * plotW;
+        const sy = LOSS.padT + (1 - v) * plotH;
+        dA += (i === 0 ? 'M' : 'L') + sx.toFixed(2) + ',' + sy.toFixed(2) + ' ';
+      });
+      html += `<path d="${dA}" fill="none" stroke="#2E8B57" stroke-width="2"/>`;
+    }
+    lsSvg.innerHTML = html;
+  }
+
+  function updateClfStats() {
+    epEl.textContent = epoch;
+    if (lossHist.length === 0) {
+      lossEl.innerHTML = '<em>—</em>';
+      accEl.innerHTML = '<em>—</em>';
+      goodEl.innerHTML = '<em>—</em>';
+    } else {
+      lossEl.textContent = lossHist[lossHist.length-1].toFixed(3);
+      const a = accHist[accHist.length-1];
+      accEl.innerHTML = `<em>${(a*100).toFixed(1)}%</em>`;
+      const m = computeMetrics();
+      goodEl.textContent = `${m.correct} / ${data.length}`;
+    }
+  }
+
+  function resetClf() {
+    if (animId) cancelAnimationFrame(animId);
+    running = false;
+    // Inicialización aleatoria pequeña
+    w1 = (Math.random() - 0.5) * 0.4;
+    w2 = (Math.random() - 0.5) * 0.4;
+    bias = (Math.random() - 0.5) * 0.2;
+    epoch = 0;
+    lossHist = [];
+    accHist = [];
+    trBtn.textContent = '▶ Entrenar';
+    trBtn.disabled = false;
+    stEl.className = 'stop';
+    stEl.textContent = 'Detenido';
+    drawScatter();
+    drawLossClf();
+    updateClfStats();
+  }
+
+  trBtn.addEventListener('click', () => {
+    if (running) {
+      running = false;
+      if (animId) cancelAnimationFrame(animId);
+      trBtn.textContent = '▶ Continuar';
+      stEl.className = 'stop';
+      stEl.textContent = 'Pausado';
+      return;
+    }
+    const maxEp = parseInt(epS.value);
+    if (epoch >= maxEp) return;
+    running = true;
+    trBtn.textContent = '⏸ Pausar';
+    stEl.className = 'live';
+    stEl.textContent = 'Entrenando…';
+    let last = 0;
+    const interval = Math.max(15, Math.min(60, 4000 / maxEp));
+    const loop = (t) => {
+      if (!running) return;
+      if (t - last > interval) {
+        trainStep();
+        last = t;
+        drawScatter();
+        drawLossClf();
+        updateClfStats();
+        if (epoch >= maxEp) {
+          running = false;
+          trBtn.textContent = '▶ Entrenar';
+          trBtn.disabled = true;
+          stEl.className = 'live';
+          stEl.textContent = 'Completado';
+          return;
+        }
+      }
+      animId = requestAnimationFrame(loop);
+    };
+    animId = requestAnimationFrame(loop);
+  });
+  stBtn.addEventListener('click', () => {
+    const maxEp = parseInt(epS.value);
+    if (epoch < maxEp) {
+      trainStep();
+      drawScatter();
+      drawLossClf();
+      updateClfStats();
+    }
+  });
+  rsBtn.addEventListener('click', resetClf);
+  resetClf();
+})();
+
+// ============================================================
+// LABORATORIO 7 · CLASIFICACIÓN NO LINEAL · MLP simple
+// ============================================================
+(function() {
+  // Generar datasets
+  function rngFactory(seed) {
+    let s = seed;
+    return function() { s = (s * 9301 + 49297) % 233280; return s / 233280; };
+  }
+  function makeMoons(seed) {
+    const rng = rngFactory(seed);
+    const pts = [];
+    const N = 60;
+    for (let i = 0; i < N; i++) {
+      const t = Math.PI * (i / N);
+      const x = Math.cos(t) - 0.4 + (rng() - 0.5) * 0.25;
+      const y = Math.sin(t) - 0.2 + (rng() - 0.5) * 0.25;
+      pts.push({ x, y, c: 0 });
+    }
+    for (let i = 0; i < N; i++) {
+      const t = Math.PI * (i / N);
+      const x = 1 - Math.cos(t) - 0.6 + (rng() - 0.5) * 0.25;
+      const y = -Math.sin(t) + 0.2 + (rng() - 0.5) * 0.25;
+      pts.push({ x, y, c: 1 });
+    }
+    return pts;
+  }
+  function makeCircles(seed) {
+    const rng = rngFactory(seed);
+    const pts = [];
+    const N = 60;
+    for (let i = 0; i < N; i++) {
+      const t = 2 * Math.PI * (i / N);
+      const r = 0.5 + (rng() - 0.5) * 0.18;
+      pts.push({ x: r * Math.cos(t), y: r * Math.sin(t), c: 0 });
+    }
+    for (let i = 0; i < N; i++) {
+      const t = 2 * Math.PI * (i / N);
+      const r = 1.5 + (rng() - 0.5) * 0.2;
+      pts.push({ x: r * Math.cos(t), y: r * Math.sin(t), c: 1 });
+    }
+    return pts;
+  }
+  function makeSpirals(seed) {
+    const rng = rngFactory(seed);
+    const pts = [];
+    const N = 70;
+    for (let i = 0; i < N; i++) {
+      const t = 1.4 * Math.PI * (i / N) + 0.4;
+      const r = t * 0.6;
+      pts.push({ x: r * Math.cos(t) + (rng()-0.5)*0.18, y: r * Math.sin(t) + (rng()-0.5)*0.18, c: 0 });
+    }
+    for (let i = 0; i < N; i++) {
+      const t = 1.4 * Math.PI * (i / N) + 0.4;
+      const r = t * 0.6;
+      pts.push({ x: -r * Math.cos(t) + (rng()-0.5)*0.18, y: -r * Math.sin(t) + (rng()-0.5)*0.18, c: 1 });
+    }
+    return pts;
+  }
+  function makeData(shape) {
+    if (shape === 'circles') return makeCircles(7);
+    if (shape === 'spirals') return makeSpirals(11);
+    return makeMoons(3);
+  }
+
+  let shape = 'moons';
+  let modelType = 'linear';
+  let data = makeData(shape);
+
+  // Modelo lineal: w1, w2, b. Predicción = sigmoid(w1*x + w2*y + b)
+  // Modelo MLP: 2 → 8 → 8 → 1, con ReLU. Inicialización He.
+  let model = null;
+
+  function initLinear() {
+    return { type: 'linear', w1: (Math.random()-0.5)*0.4, w2: (Math.random()-0.5)*0.4, b: 0 };
+  }
+  function initMLP() {
+    const H1 = 8, H2 = 8;
+    function rand(n) { return Array.from({length:n}, () => (Math.random()-0.5) * Math.sqrt(2/Math.max(1, n))); }
+    return {
+      type: 'mlp',
+      // Capa 1: 2 -> H1
+      W1: Array.from({length: H1}, () => rand(2)),
+      b1: Array(H1).fill(0),
+      // Capa 2: H1 -> H2
+      W2: Array.from({length: H2}, () => rand(H1)),
+      b2: Array(H2).fill(0),
+      // Capa salida: H2 -> 1
+      W3: Array.from({length: 1}, () => rand(H2)),
+      b3: [0]
+    };
+  }
+
+  function relu(z) { return z > 0 ? z : 0; }
+  function dRelu(z) { return z > 0 ? 1 : 0; }
+  function sigm(z) { return 1 / (1 + Math.exp(-z)); }
+
+  function forwardLinear(m, x, y) {
+    const z = m.w1 * x + m.w2 * y + m.b;
+    return { p: sigm(z) };
+  }
+  function forwardMLP(m, x, y) {
+    const z1 = m.W1.map((row, i) => row[0]*x + row[1]*y + m.b1[i]);
+    const a1 = z1.map(relu);
+    const z2 = m.W2.map((row, i) => row.reduce((s, v, j) => s + v * a1[j], 0) + m.b2[i]);
+    const a2 = z2.map(relu);
+    const z3 = m.W3[0].reduce((s, v, j) => s + v * a2[j], 0) + m.b3[0];
+    const p = sigm(z3);
+    return { p, z1, a1, z2, a2, z3 };
+  }
+  function predictPoint(m, x, y) {
+    if (m.type === 'linear') return forwardLinear(m, x, y).p;
+    return forwardMLP(m, x, y).p;
+  }
+
+  function computeLossAcc(m, data) {
+    let loss = 0, correct = 0;
+    for (const p of data) {
+      const pr = predictPoint(m, p.x, p.y);
+      const e = 1e-9;
+      loss += -(p.c * Math.log(pr+e) + (1-p.c) * Math.log(1-pr+e));
+      if ((pr > 0.5 ? 1 : 0) === p.c) correct++;
+    }
+    return { loss: loss / data.length, acc: correct / data.length };
+  }
+
+  function trainBatchLinear(m, data, lr) {
+    let dw1 = 0, dw2 = 0, db = 0;
+    for (const p of data) {
+      const pr = sigm(m.w1*p.x + m.w2*p.y + m.b);
+      const err = pr - p.c;
+      dw1 += err * p.x;
+      dw2 += err * p.y;
+      db += err;
+    }
+    const n = data.length;
+    m.w1 -= lr * dw1 / n;
+    m.w2 -= lr * dw2 / n;
+    m.b -= lr * db / n;
+  }
+
+  function trainBatchMLP(m, data, lr) {
+    const n = data.length;
+    const H1 = m.b1.length, H2 = m.b2.length;
+    // Acumuladores
+    const gW1 = m.W1.map(r => r.map(()=>0));
+    const gb1 = Array(H1).fill(0);
+    const gW2 = m.W2.map(r => r.map(()=>0));
+    const gb2 = Array(H2).fill(0);
+    const gW3 = m.W3.map(r => r.map(()=>0));
+    const gb3 = [0];
+
+    for (const p of data) {
+      const f = forwardMLP(m, p.x, p.y);
+      const err = f.p - p.c; // dL/dz3
+      // Capa salida: dL/dW3 = err * a2; dL/db3 = err
+      for (let j = 0; j < H2; j++) gW3[0][j] += err * f.a2[j];
+      gb3[0] += err;
+      // Hacia atrás a a2: dL/da2 = err * W3
+      const dA2 = m.W3[0].map(w => err * w);
+      const dZ2 = dA2.map((v, i) => v * dRelu(f.z2[i]));
+      // dL/dW2 = dZ2 * a1; dL/db2 = dZ2
+      for (let i = 0; i < H2; i++) {
+        for (let j = 0; j < H1; j++) gW2[i][j] += dZ2[i] * f.a1[j];
+        gb2[i] += dZ2[i];
+      }
+      // Hacia atrás a a1: dL/da1[j] = sum_i dZ2[i] * W2[i][j]
+      const dA1 = Array(H1).fill(0);
+      for (let j = 0; j < H1; j++) {
+        for (let i = 0; i < H2; i++) dA1[j] += dZ2[i] * m.W2[i][j];
+      }
+      const dZ1 = dA1.map((v, i) => v * dRelu(f.z1[i]));
+      for (let i = 0; i < H1; i++) {
+        gW1[i][0] += dZ1[i] * p.x;
+        gW1[i][1] += dZ1[i] * p.y;
+        gb1[i] += dZ1[i];
+      }
+    }
+    // Actualizar
+    for (let i = 0; i < H1; i++) {
+      m.W1[i][0] -= lr * gW1[i][0] / n;
+      m.W1[i][1] -= lr * gW1[i][1] / n;
+      m.b1[i] -= lr * gb1[i] / n;
+    }
+    for (let i = 0; i < H2; i++) {
+      for (let j = 0; j < H1; j++) m.W2[i][j] -= lr * gW2[i][j] / n;
+      m.b2[i] -= lr * gb2[i] / n;
+    }
+    for (let j = 0; j < H2; j++) m.W3[0][j] -= lr * gW3[0][j] / n;
+    m.b3[0] -= lr * gb3[0] / n;
+  }
+
+  function trainStepNL() {
+    const lr = parseFloat(nlLr.value);
+    if (model.type === 'linear') trainBatchLinear(model, data, lr);
+    else trainBatchMLP(model, data, lr);
+  }
+
+  // Estado y DOM
+  let epoch = 0;
+  let lossH = [];
+  let accH = [];
+  let running = false;
+  let animId = null;
+
+  const X_MIN = -2.5, X_MAX = 2.5, Y_MIN = -2.5, Y_MAX = 2.5;
+  const SCAT2 = { w: 500, h: 400, padL: 50, padR: 20, padT: 20, padB: 40 };
+  const LOSS2 = { w: 400, h: 400, padL: 50, padR: 30, padT: 20, padB: 40 };
+
+  const nlScSvg = document.getElementById('nl-scatter');
+  const nlLsSvg = document.getElementById('nl-loss');
+  const nlEp = document.getElementById('nl-epoch');
+  const nlLossEl = document.getElementById('nl-loss-v');
+  const nlAcc = document.getElementById('nl-acc');
+  const nlModEl = document.getElementById('nl-model');
+  const nlLr = document.getElementById('nl-lr');
+  const nlLrV = document.getElementById('nl-lr-val');
+  const nlEpS = document.getElementById('nl-epochs');
+  const nlEpV = document.getElementById('nl-epochs-val');
+  const nlTr = document.getElementById('nl-train');
+  const nlSt = document.getElementById('nl-step');
+  const nlRs = document.getElementById('nl-reset');
+  const nlStat = document.getElementById('nl-status');
+
+  nlLr.addEventListener('input', () => nlLrV.textContent = parseFloat(nlLr.value).toFixed(2));
+  nlEpS.addEventListener('input', () => nlEpV.textContent = nlEpS.value);
+
+  function xToSx2(x) { return SCAT2.padL + (x - X_MIN) / (X_MAX - X_MIN) * (SCAT2.w - SCAT2.padL - SCAT2.padR); }
+  function yToSy2(y) { return SCAT2.padT + (1 - (y - Y_MIN) / (Y_MAX - Y_MIN)) * (SCAT2.h - SCAT2.padT - SCAT2.padB); }
+
+  function drawNL() {
+    let html = '';
+    const plotW = SCAT2.w - SCAT2.padL - SCAT2.padR;
+    const plotH = SCAT2.h - SCAT2.padT - SCAT2.padB;
+    html += `<rect x="${SCAT2.padL}" y="${SCAT2.padT}" width="${plotW}" height="${plotH}" fill="#F5F1E8" stroke="#C9C2B0"/>`;
+
+    // Region de decisión: rejilla
+    const cell = 8;
+    for (let sx = SCAT2.padL; sx < SCAT2.padL + plotW; sx += cell) {
+      for (let sy = SCAT2.padT; sy < SCAT2.padT + plotH; sy += cell) {
+        const x = X_MIN + (sx - SCAT2.padL) / plotW * (X_MAX - X_MIN);
+        const y = Y_MAX - (sy - SCAT2.padT) / plotH * (Y_MAX - Y_MIN);
+        const pr = predictPoint(model, x, y);
+        const cls = pr > 0.5 ? 'B' : 'A';
+        const conf = Math.abs(pr - 0.5);
+        const fill = cls === 'A' ? '#3FA9F5' : '#D9994E';
+        const op = (0.06 + conf * 0.22).toFixed(2);
+        html += `<rect x="${sx}" y="${sy}" width="${cell}" height="${cell}" fill="${fill}" opacity="${op}"/>`;
+      }
+    }
+
+    // Ejes y marcas
+    const cx0 = xToSx2(0), cy0 = yToSy2(0);
+    html += `<line x1="${SCAT2.padL}" y1="${cy0}" x2="${SCAT2.padL+plotW}" y2="${cy0}" stroke="#C9C2B0" stroke-dasharray="2,3"/>`;
+    html += `<line x1="${cx0}" y1="${SCAT2.padT}" x2="${cx0}" y2="${SCAT2.padT+plotH}" stroke="#C9C2B0" stroke-dasharray="2,3"/>`;
+    for (let v = -2; v <= 2; v += 1) {
+      if (v === 0) continue;
+      const sx = xToSx2(v), sy = yToSy2(v);
+      html += `<text x="${sx}" y="${SCAT2.padT+plotH+15}" font-size="10" fill="#6B6B7C" font-family="JetBrains Mono" text-anchor="middle">${v}</text>`;
+      html += `<text x="${SCAT2.padL-6}" y="${sy+3}" font-size="10" fill="#6B6B7C" font-family="JetBrains Mono" text-anchor="end">${v}</text>`;
+    }
+    html += `<text x="${SCAT2.padL+plotW/2}" y="${SCAT2.padT+plotH+32}" font-size="11" fill="#0F1B4D" font-family="JetBrains Mono" text-anchor="middle">X₁</text>`;
+    html += `<text x="${SCAT2.padL-30}" y="${SCAT2.padT+plotH/2}" font-size="11" fill="#0F1B4D" font-family="JetBrains Mono" text-anchor="middle" transform="rotate(-90 ${SCAT2.padL-30} ${SCAT2.padT+plotH/2})">X₂</text>`;
+
+    // Puntos
+    for (const p of data) {
+      const sx = xToSx2(p.x), sy = yToSy2(p.y);
+      const fill = p.c === 0 ? '#3FA9F5' : '#D9994E';
+      html += `<circle cx="${sx}" cy="${sy}" r="4" fill="${fill}" stroke="white" stroke-width="0.8"/>`;
+    }
+    nlScSvg.innerHTML = html;
+  }
+
+  function drawNLLoss() {
+    let html = '';
+    const plotW = LOSS2.w - LOSS2.padL - LOSS2.padR;
+    const plotH = LOSS2.h - LOSS2.padT - LOSS2.padB;
+    html += `<rect x="${LOSS2.padL}" y="${LOSS2.padT}" width="${plotW}" height="${plotH}" fill="#F5F1E8" stroke="#C9C2B0"/>`;
+    html += `<line x1="${LOSS2.padL}" y1="${LOSS2.padT+plotH}" x2="${LOSS2.padL+plotW}" y2="${LOSS2.padT+plotH}" stroke="#0F1B4D"/>`;
+    html += `<line x1="${LOSS2.padL}" y1="${LOSS2.padT}" x2="${LOSS2.padL}" y2="${LOSS2.padT+plotH}" stroke="#0F1B4D"/>`;
+
+    if (lossH.length === 0) {
+      html += `<text x="${LOSS2.padL+plotW/2}" y="${LOSS2.padT+plotH/2}" font-size="14" fill="#C9C2B0" font-family="Cormorant Garamond" font-style="italic" text-anchor="middle">Pulsa entrenar</text>`;
+    } else {
+      const maxEp = parseInt(nlEpS.value);
+      const maxL = Math.max(0.7, ...lossH) * 1.05;
+      html += `<text x="${LOSS2.padL-6}" y="${LOSS2.padT+plotH+3}" font-size="9" fill="#6B6B7C" font-family="JetBrains Mono" text-anchor="end">0</text>`;
+      html += `<text x="${LOSS2.padL-6}" y="${LOSS2.padT+8}" font-size="9" fill="#6B6B7C" font-family="JetBrains Mono" text-anchor="end">${maxL.toFixed(2)}</text>`;
+      html += `<text x="${LOSS2.padL+plotW+6}" y="${LOSS2.padT+plotH+3}" font-size="9" fill="#2E8B57" font-family="JetBrains Mono">0%</text>`;
+      html += `<text x="${LOSS2.padL+plotW+6}" y="${LOSS2.padT+8}" font-size="9" fill="#2E8B57" font-family="JetBrains Mono">100%</text>`;
+      html += `<text x="${LOSS2.padL}" y="${LOSS2.padT+plotH+18}" font-size="10" fill="#6B6B7C" font-family="JetBrains Mono">0</text>`;
+      html += `<text x="${LOSS2.padL+plotW}" y="${LOSS2.padT+plotH+18}" font-size="10" fill="#6B6B7C" font-family="JetBrains Mono" text-anchor="end">${maxEp}</text>`;
+      html += `<text x="${LOSS2.padL+plotW/2}" y="${LOSS2.padT+plotH+32}" font-size="11" fill="#0F1B4D" font-family="JetBrains Mono" text-anchor="middle">epoch</text>`;
+
+      let dL = '';
+      lossH.forEach((v, i) => {
+        const sx = LOSS2.padL + (i / Math.max(1, maxEp - 1)) * plotW;
+        const sy = LOSS2.padT + (1 - v / maxL) * plotH;
+        dL += (i === 0 ? 'M' : 'L') + sx.toFixed(2) + ',' + sy.toFixed(2) + ' ';
+      });
+      html += `<path d="${dL}" fill="none" stroke="#3FA9F5" stroke-width="2.5"/>`;
+      let dA = '';
+      accH.forEach((v, i) => {
+        const sx = LOSS2.padL + (i / Math.max(1, maxEp - 1)) * plotW;
+        const sy = LOSS2.padT + (1 - v) * plotH;
+        dA += (i === 0 ? 'M' : 'L') + sx.toFixed(2) + ',' + sy.toFixed(2) + ' ';
+      });
+      html += `<path d="${dA}" fill="none" stroke="#2E8B57" stroke-width="2"/>`;
+    }
+    nlLsSvg.innerHTML = html;
+  }
+
+  function updateNLStats() {
+    nlEp.textContent = epoch;
+    if (lossH.length === 0) {
+      nlLossEl.innerHTML = '<em>—</em>';
+      nlAcc.innerHTML = '<em>—</em>';
+    } else {
+      nlLossEl.textContent = lossH[lossH.length-1].toFixed(3);
+      nlAcc.innerHTML = `<em>${(accH[accH.length-1]*100).toFixed(1)}%</em>`;
+    }
+    nlModEl.innerHTML = modelType === 'linear' ? '<em>lineal</em>' : '<em>MLP 8+8</em>';
+  }
+
+  function resetNL() {
+    if (animId) cancelAnimationFrame(animId);
+    running = false;
+    data = makeData(shape);
+    model = modelType === 'linear' ? initLinear() : initMLP();
+    epoch = 0;
+    lossH = [];
+    accH = [];
+    nlTr.textContent = '▶ Entrenar';
+    nlTr.disabled = false;
+    nlStat.className = 'stop';
+    nlStat.textContent = 'Detenido';
+    drawNL();
+    drawNLLoss();
+    updateNLStats();
+  }
+
+  document.querySelectorAll('.ds-btn').forEach(b => {
+    b.addEventListener('click', () => {
+      document.querySelectorAll('.ds-btn').forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
+      shape = b.dataset.shape;
+      resetNL();
+    });
+  });
+  document.querySelectorAll('.mod-btn').forEach(b => {
+    b.addEventListener('click', () => {
+      document.querySelectorAll('.mod-btn').forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
+      modelType = b.dataset.model;
+      resetNL();
+    });
+  });
+
+  nlTr.addEventListener('click', () => {
+    if (running) {
+      running = false;
+      if (animId) cancelAnimationFrame(animId);
+      nlTr.textContent = '▶ Continuar';
+      nlStat.className = 'stop';
+      nlStat.textContent = 'Pausado';
+      return;
+    }
+    const maxEp = parseInt(nlEpS.value);
+    if (epoch >= maxEp) return;
+    running = true;
+    nlTr.textContent = '⏸ Pausar';
+    nlStat.className = 'live';
+    nlStat.textContent = 'Entrenando…';
+    let last = 0;
+    // Hacemos varios pasos por frame para que no sea lentísimo en spirals
+    const stepsPerFrame = modelType === 'mlp' ? 3 : 2;
+    const interval = 16;
+    const loop = (t) => {
+      if (!running) return;
+      if (t - last > interval) {
+        for (let k = 0; k < stepsPerFrame && epoch < maxEp; k++) {
+          trainStepNL();
+          epoch++;
+          const m = computeLossAcc(model, data);
+          lossH.push(m.loss);
+          accH.push(m.acc);
+        }
+        last = t;
+        drawNL();
+        drawNLLoss();
+        updateNLStats();
+        if (epoch >= maxEp) {
+          running = false;
+          nlTr.textContent = '▶ Entrenar';
+          nlTr.disabled = true;
+          nlStat.className = 'live';
+          nlStat.textContent = 'Completado';
+          return;
+        }
+      }
+      animId = requestAnimationFrame(loop);
+    };
+    animId = requestAnimationFrame(loop);
+  });
+  nlSt.addEventListener('click', () => {
+    const maxEp = parseInt(nlEpS.value);
+    for (let k = 0; k < 10 && epoch < maxEp; k++) {
+      trainStepNL();
+      epoch++;
+      const m = computeLossAcc(model, data);
+      lossH.push(m.loss);
+      accH.push(m.acc);
+    }
+    drawNL();
+    drawNLLoss();
+    updateNLStats();
+  });
+  nlRs.addEventListener('click', resetNL);
+  resetNL();
+})();
+
+// ============================================================
+// GRÁFICO ESTÁTICO · OVERFITTING (curvas matemáticas)
+// ============================================================
+(function() {
+  const svg = document.getElementById('overfitting-svg');
+  if (!svg) return;
+  const W = 700, H = 340;
+  const padL = 60, padR = 30, padT = 30, padB = 50;
+  const plotW = W - padL - padR, plotH = H - padT - padB;
+  const N = 200;
+  const E_MAX = 100;
+  // Train: cae monotónica hacia 0.05
+  const trainCurve = [];
+  for (let i = 0; i <= N; i++) {
+    const ep = i / N * E_MAX;
+    const v = 0.05 + 0.85 * Math.exp(-ep / 18);
+    trainCurve.push({ ep, v });
+  }
+  // Validation: cae primero, luego sube. Mínimo en ep ≈ 35.
+  const valCurve = [];
+  for (let i = 0; i <= N; i++) {
+    const ep = i / N * E_MAX;
+    const fall = 0.85 * Math.exp(-ep / 16);
+    const overfit = 0.012 * Math.pow(Math.max(0, ep - 30), 1.6);
+    const v = 0.18 + fall + overfit;
+    valCurve.push({ ep, v });
+  }
+  // Encontrar mínimo de validation
+  let minIdx = 0, minVal = Infinity;
+  valCurve.forEach((p, i) => { if (p.v < minVal) { minVal = p.v; minIdx = i; } });
+  const sweetEp = valCurve[minIdx].ep;
+  const sweetV = valCurve[minIdx].v;
+
+  // Determinar Y
+  const yMax = Math.max(...trainCurve.map(p=>p.v), ...valCurve.map(p=>p.v)) * 1.05;
+  const yMin = 0;
+  function epToX(ep) { return padL + (ep / E_MAX) * plotW; }
+  function vToY(v) { return padT + (1 - (v - yMin) / (yMax - yMin)) * plotH; }
+
+  let html = '';
+  // Caja
+  html += `<rect x="${padL}" y="${padT}" width="${plotW}" height="${plotH}" fill="#F5F1E8" stroke="#C9C2B0"/>`;
+  // Zona de sobreajuste (fondo rojo claro)
+  const sweetX = epToX(sweetEp);
+  html += `<rect x="${sweetX}" y="${padT}" width="${padL+plotW-sweetX}" height="${plotH}" fill="#C8453F" opacity="0.06"/>`;
+  html += `<text x="${(sweetX + padL+plotW)/2}" y="${padT+18}" font-size="11" fill="#C8453F" font-family="JetBrains Mono" letter-spacing="2" text-anchor="middle">SOBREAJUSTE</text>`;
+  // Ejes
+  html += `<line x1="${padL}" y1="${padT+plotH}" x2="${padL+plotW}" y2="${padT+plotH}" stroke="#0F1B4D"/>`;
+  html += `<line x1="${padL}" y1="${padT}" x2="${padL}" y2="${padT+plotH}" stroke="#0F1B4D"/>`;
+  // Marcas X
+  for (let v = 0; v <= E_MAX; v += 20) {
+    const sx = epToX(v);
+    html += `<line x1="${sx}" y1="${padT+plotH}" x2="${sx}" y2="${padT+plotH+4}" stroke="#0F1B4D"/>`;
+    html += `<text x="${sx}" y="${padT+plotH+18}" font-size="10" fill="#6B6B7C" font-family="JetBrains Mono" text-anchor="middle">${v}</text>`;
+  }
+  html += `<text x="${padL+plotW/2}" y="${padT+plotH+38}" font-size="11" fill="#0F1B4D" font-family="JetBrains Mono" text-anchor="middle">epochs</text>`;
+  html += `<text x="${padL-46}" y="${padT+12}" font-size="11" fill="#6B6B7C" font-family="JetBrains Mono">↑ pérdida</text>`;
+  // Train path
+  let dT = trainCurve.map((p, i) => (i===0?'M':'L') + epToX(p.ep).toFixed(2) + ',' + vToY(p.v).toFixed(2)).join(' ');
+  html += `<path d="${dT}" fill="none" stroke="#0F1B4D" stroke-width="2.5"/>`;
+  // Validation path
+  let dV = valCurve.map((p, i) => (i===0?'M':'L') + epToX(p.ep).toFixed(2) + ',' + vToY(p.v).toFixed(2)).join(' ');
+  html += `<path d="${dV}" fill="none" stroke="#3FA9F5" stroke-width="2.5"/>`;
+  // Sweet spot
+  const ssX = epToX(sweetEp), ssY = vToY(sweetV);
+  html += `<line x1="${ssX}" y1="${ssY}" x2="${ssX}" y2="${padT+plotH}" stroke="#C8453F" stroke-width="1" stroke-dasharray="3,3"/>`;
+  html += `<circle cx="${ssX}" cy="${ssY}" r="6" fill="white" stroke="#C8453F" stroke-width="2.5"/>`;
+  html += `<text x="${ssX}" y="${ssY-12}" font-size="11" fill="#C8453F" font-family="Cormorant Garamond" font-style="italic" text-anchor="middle">parar aquí · early stopping</text>`;
+  // Etiquetas curvas
+  html += `<text x="${epToX(95)}" y="${vToY(trainCurve[Math.floor(N*0.95)].v)-6}" font-size="13" fill="#0F1B4D" font-family="Cormorant Garamond" font-style="italic" text-anchor="end">train</text>`;
+  html += `<text x="${epToX(95)}" y="${vToY(valCurve[Math.floor(N*0.95)].v)-6}" font-size="13" fill="#3FA9F5" font-family="Cormorant Garamond" font-style="italic" text-anchor="end">validation</text>`;
+  svg.innerHTML = html;
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,588 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Sesión 6 · Docker y Kubernetes en vivo</title>
+<style>
+  :root{
+    --crema:#F2EFE6;
+    --tinta:#0E1B4D;
+    --tinta-2:#1B2A6B;
+    --azul:#3FA9F5;
+    --azul-2:#1F8AD9;
+    --rojo:#D85C3E;
+    --verde:#2E9E6E;
+    --amber:#E0A23A;
+    --gris:#7A7A7A;
+    --gris-2:#C9C5B8;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--crema);color:var(--tinta);font-family:Georgia,'Times New Roman',serif;line-height:1.55}
+  .mono{font-family:'SF Mono',Menlo,Monaco,Consolas,monospace}
+  .upper{text-transform:uppercase;letter-spacing:.18em;font-weight:600}
+
+  .wrap{max-width:1240px;margin:0 auto;padding:48px 32px 96px}
+  header.hero{padding:64px 0 48px;border-bottom:1px solid var(--gris-2)}
+  header .tag{font-size:11px;color:var(--azul-2)}
+  header h1{font-size:60px;line-height:1.05;margin:24px 0 16px;font-weight:700;letter-spacing:-.02em}
+  header h1 em{font-style:italic;color:var(--azul-2);font-weight:400}
+  header p.lead{font-size:19px;color:var(--tinta-2);max-width:780px;margin:0}
+
+  section{padding:56px 0;border-bottom:1px solid var(--gris-2)}
+  section .step-tag{font-size:11px;color:var(--azul-2)}
+  section h2{font-size:42px;margin:12px 0 16px;font-weight:700;letter-spacing:-.01em;line-height:1.1}
+  section h2 em{font-style:italic;color:var(--azul-2);font-weight:400}
+  section p.intro{font-size:17px;color:var(--tinta-2);max-width:880px;margin:0 0 24px}
+
+  .card{background:#fff;border:1px solid var(--gris-2);border-radius:10px;padding:22px}
+
+  /* Analogía paella */
+  .paella-box{background:#fff;border:1px solid var(--gris-2);border-radius:12px;padding:24px;margin-top:18px}
+  .paella-list{display:grid;grid-template-columns:1fr;gap:6px;margin-top:10px}
+  .paella-item{display:flex;align-items:center;background:#FAF8F1;padding:10px 14px;border-radius:6px;font-family:'SF Mono',monospace;font-size:13px;color:var(--tinta);border-left:3px solid var(--amber)}
+  .paella-item .ico{font-size:18px;margin-right:12px}
+
+  /* Docker build animation */
+  .lab{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:18px}
+  .dockerfile{background:#0a0e2c;color:#e8e8e8;border-radius:10px;padding:0;overflow:hidden}
+  .dockerfile-head{background:rgba(255,255,255,.07);padding:10px 16px;font-family:'SF Mono',monospace;font-size:12px;color:#9DD2F8;display:flex;justify-content:space-between;align-items:center}
+  .dockerfile-body{padding:16px;font-family:'SF Mono',monospace;font-size:13px;line-height:1.7;min-height:280px}
+  .dockerfile-body .line{transition:background .3s;padding:2px 6px;margin-left:-6px;border-radius:3px}
+  .dockerfile-body .line.executing{background:rgba(224,162,58,.25)}
+  .dockerfile-body .line.done{opacity:.6}
+  .dockerfile-body .kw{color:#c084fc}
+  .dockerfile-body .st{color:#86efac}
+  .dockerfile-body .nm{color:#fbbf24}
+  .dockerfile-body .cm{color:#7a8aa8;font-style:italic}
+
+  /* Build progress */
+  .build-progress{background:#0a0e2c;color:#cbd5e1;border-radius:10px;padding:0;overflow:hidden;display:flex;flex-direction:column}
+  .build-head{background:rgba(255,255,255,.07);padding:10px 16px;font-family:'SF Mono',monospace;font-size:12px;color:#9DD2F8}
+  .build-body{flex:1;padding:16px;font-family:'SF Mono',monospace;font-size:12px;line-height:1.7;min-height:280px;overflow:auto}
+  .build-body .b-line{margin-bottom:2px}
+  .build-body .b-line .step{color:#fbbf24}
+  .build-body .b-line .ok{color:#86efac}
+  .build-body .b-line .err{color:#fca5a5}
+  .build-body .b-line .info{color:#9DD2F8}
+  .build-body .b-line .dim{color:#6b7280}
+
+  .controls{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;align-items:center}
+  .btn{appearance:none;border:1px solid var(--tinta);background:transparent;color:var(--tinta);padding:10px 18px;font-family:inherit;font-size:14px;cursor:pointer;border-radius:4px;font-weight:600;transition:.15s}
+  .btn:hover{background:var(--tinta);color:var(--crema)}
+  .btn.primary{background:var(--azul-2);color:#fff;border-color:var(--azul-2)}
+  .btn.primary:hover{background:var(--tinta);border-color:var(--tinta)}
+  .btn[disabled]{opacity:.4;cursor:not-allowed}
+
+  /* Kubernetes cluster */
+  .cluster{background:#fff;border:1px solid var(--gris-2);border-radius:12px;padding:24px;margin-top:18px}
+  .cluster-head{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:14px}
+  .cluster-toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .cluster-toolbar select{padding:6px 10px;border:1px solid var(--gris-2);border-radius:4px;font-family:'SF Mono',monospace;font-size:12px;background:#fff;color:var(--tinta)}
+
+  /* Demand meter */
+  .demand{background:#FAF8F1;padding:14px 18px;border-radius:8px;border:1px solid var(--gris-2);margin-bottom:18px}
+  .demand-head{display:flex;justify-content:space-between;align-items:center;font-family:'SF Mono',monospace;font-size:12px;color:var(--tinta);margin-bottom:8px}
+  .demand-bar{height:14px;background:#fff;border-radius:8px;border:1px solid var(--gris-2);overflow:hidden;position:relative}
+  .demand-fill{height:100%;background:linear-gradient(90deg,var(--verde) 0%,var(--amber) 60%,var(--rojo) 95%);width:30%;transition:width .5s ease}
+  .demand input[type=range]{width:100%;margin-top:8px;accent-color:var(--azul-2)}
+
+  /* Pods grid */
+  .pods-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-top:14px}
+  .pod{background:#FFF7E6;border:2px solid var(--amber);border-radius:8px;padding:12px;text-align:center;position:relative;transition:.3s;min-height:110px;display:flex;flex-direction:column;justify-content:center;cursor:pointer}
+  .pod .pod-id{font-family:'SF Mono',monospace;font-size:10px;color:var(--gris);text-align:left;position:absolute;top:6px;left:8px}
+  .pod .pod-emoji{font-size:34px;line-height:1;margin:8px 0 4px}
+  .pod .pod-status{font-family:'SF Mono',monospace;font-size:10px;color:var(--verde);text-transform:uppercase;letter-spacing:.1em;font-weight:600;margin-top:4px}
+  .pod.starting{background:#E5F1FB;border-color:var(--azul);animation:podstart 1s ease-in-out infinite alternate}
+  @keyframes podstart{0%{transform:scale(.95)}100%{transform:scale(1)}}
+  .pod.starting .pod-emoji{filter:grayscale(.6)}
+  .pod.starting .pod-status{color:var(--azul-2)}
+  .pod.crashed{background:#FBE5DD;border-color:var(--rojo);animation:podcrash .5s 3 ease-in-out}
+  @keyframes podcrash{0%,100%{transform:translateX(0)}25%{transform:translateX(-3px)}75%{transform:translateX(3px)}}
+  .pod.crashed .pod-emoji{filter:grayscale(1) opacity(.4)}
+  .pod.crashed .pod-status{color:var(--rojo)}
+  .pod.terminating{background:#FAF8F1;border-color:var(--gris-2);opacity:.5}
+  .pod.terminating .pod-status{color:var(--gris)}
+  .pod.dragnew{animation:newpod .5s ease-out}
+  @keyframes newpod{from{transform:scale(0.3) rotate(-30deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}
+
+  /* K8s event log */
+  .k8s-log{margin-top:18px;background:#0a0e2c;color:#cbd5e1;border-radius:10px;overflow:hidden}
+  .k8s-log-head{background:rgba(255,255,255,.07);padding:10px 16px;font-family:'SF Mono',monospace;font-size:12px;color:#9DD2F8;display:flex;justify-content:space-between;align-items:center}
+  .k8s-log-body{padding:14px 16px;font-family:'SF Mono',monospace;font-size:12px;max-height:180px;overflow-y:auto;line-height:1.7}
+  .k8s-log-body .ev{margin-bottom:2px}
+  .k8s-log-body .ev .t{color:#6b7280}
+  .k8s-log-body .ev .l{color:#fbbf24}
+  .k8s-log-body .ev .ok{color:#86efac}
+  .k8s-log-body .ev .err{color:#fca5a5}
+  .k8s-log-body .ev .info{color:#9DD2F8}
+
+  /* Stats cluster */
+  .cluster-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px}
+  .cs{background:#FAF8F1;padding:14px;border-radius:8px;text-align:center;font-family:'SF Mono',monospace}
+  .cs .l{font-size:10px;color:var(--gris);text-transform:uppercase;letter-spacing:.1em}
+  .cs .v{font-size:24px;font-weight:700;margin-top:4px;color:var(--tinta)}
+  .cs.green .v{color:var(--verde)}
+  .cs.red .v{color:var(--rojo)}
+
+  /* Compara */
+  .compare{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px}
+  .compare .item{background:#fff;border:1px solid var(--gris-2);border-radius:10px;padding:24px;border-top:4px solid var(--gris-2)}
+  .compare .item.docker{border-top-color:var(--amber)}
+  .compare .item.k8s{border-top-color:var(--azul-2)}
+  .compare .item .k{font-size:11px;color:var(--gris);text-transform:uppercase;letter-spacing:.12em}
+  .compare .item h4{margin:6px 0 8px;font-size:22px}
+  .compare .item h4 em{font-style:italic;color:var(--azul-2)}
+  .compare .item .what{font-size:14px;color:var(--tinta-2);margin:0 0 10px}
+  .compare .item .q{font-family:'SF Mono',monospace;font-size:12px;background:#FAF8F1;padding:10px;border-radius:4px;margin-top:10px;color:var(--tinta-2);font-style:italic}
+  .compare .item ul{margin:10px 0 0;padding-left:18px;font-size:13px;color:var(--tinta-2)}
+  .compare .item li{margin-bottom:4px}
+
+  .note{background:#E5F1FB;border-left:4px solid var(--azul);padding:14px 18px;border-radius:4px;margin-top:18px;font-size:14px;color:var(--tinta-2)}
+  .note b{color:var(--tinta)}
+  .tip{background:#E0F4E8;border-left-color:var(--verde)}
+  .warning{background:#FBE5DD;border-left-color:var(--rojo)}
+
+  @media (max-width:880px){
+    header h1{font-size:42px}
+    section h2{font-size:32px}
+    .lab,.compare,.cluster-stats{grid-template-columns:1fr}
+    .pods-grid{grid-template-columns:repeat(3,1fr)}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <div class="upper tag">Tema 6 · Sesión 06 · Artefacto 2</div>
+  <h1>Docker <em>empaqueta</em>. Kubernetes <em>orquesta</em>.</h1>
+  <p class="lead">Imagina que tu paella sale perfecta en tu cocina. Quieres que un amigo en Berlín la cocine exactamente igual. Le envías la receta, el arroz exacto, el azafrán, la paellera del tamaño correcto, el fuego adecuado — todo dentro de un mismo paquete sellado. Eso es Docker. Si además quieres servir <b>5.000 paellas a la vez</b> y reponer cuando se acabe el arroz, necesitas Kubernetes. Aquí los verás funcionando en vivo.</p>
+</header>
+
+<!-- Analogía paella -->
+<section style="border-bottom:none">
+  <div class="upper step-tag">La gran analogía del tema</div>
+  <h2>La <em>paella precocinada</em>.</h2>
+  <p class="intro">Un contenedor empaqueta tu modelo + Python + librerías + configuración. Ejecutas el contenedor en cualquier servidor y el modelo se comporta exactamente igual. Sin «funciona en mi máquina».</p>
+
+  <div class="paella-box">
+    <div class="upper step-tag" style="color:var(--amber)">Contenedor · paella.tar</div>
+    <div class="paella-list">
+      <div class="paella-item"><span class="ico">🍚</span>Arroz bomba — 400 g</div>
+      <div class="paella-item"><span class="ico">🌿</span>Azafrán — 0.2 g</div>
+      <div class="paella-item"><span class="ico">🦐</span>Marisco — 600 g</div>
+      <div class="paella-item"><span class="ico">🔥</span>Paellera — Ø 38 cm</div>
+      <div class="paella-item"><span class="ico">🎵</span>Receta — paella.recipe v2.1</div>
+      <div class="paella-item"><span class="ico">⏱</span>Tiempo — 25 min</div>
+    </div>
+    <div style="text-align:center;margin-top:14px;font-size:13px;color:var(--gris);font-style:italic">Mismo paquete → misma paella en cualquier cocina</div>
+  </div>
+</section>
+
+<!-- Docker build animation -->
+<section style="border-bottom:none">
+  <div class="upper step-tag">Demo 1 · Docker en vivo</div>
+  <h2>Construir la <em>imagen</em>, paso a paso.</h2>
+  <p class="intro">Un <span class="mono">Dockerfile</span> es la receta paso a paso. Cada línea construye una capa de la imagen. Pulsa play y mira cómo Docker ejecuta cada instrucción.</p>
+
+  <div class="lab">
+    <div>
+      <div class="upper step-tag">Dockerfile · receta del contenedor</div>
+      <div class="dockerfile">
+        <div class="dockerfile-head"><span>📄 Dockerfile</span><span id="df-progress">listo</span></div>
+        <div class="dockerfile-body" id="dockerfile-body"></div>
+      </div>
+      <div class="controls">
+        <button class="btn primary" id="build-btn">▶ docker build .</button>
+        <button class="btn" id="run-btn">▶ docker run</button>
+        <button class="btn" id="reset-docker">↺ Reset</button>
+      </div>
+    </div>
+
+    <div>
+      <div class="upper step-tag">Terminal · salida de docker</div>
+      <div class="build-progress">
+        <div class="build-head">$ docker build -t gympro:v2 . </div>
+        <div class="build-body" id="build-body"></div>
+      </div>
+      <div class="note tip" id="docker-note" style="margin-top:14px"><b>Una imagen Docker es una receta paso a paso, reproducible al 100%.</b> Cada capa se cachea — si solo cambias <span class="mono">serve.py</span>, las capas anteriores no se reconstruyen. Velocidad y consistencia.</div>
+    </div>
+  </div>
+</section>
+
+<!-- Kubernetes cluster -->
+<section style="border-bottom:none">
+  <div class="upper step-tag">Demo 2 · Kubernetes en vivo</div>
+  <h2>Kubernetes: la <em>cocina industrial</em>.</h2>
+  <p class="intro">Si Docker es <em>una paella precocinada</em>, Kubernetes es la <b>cocina industrial</b> que sirve 5.000 paellas a la vez, repone cuando se acaba el arroz y abre más fuegos cuando llega el rush. Mueve el slider de demanda y mira cómo el cluster reacciona. Pulsa cualquier pod para «matarlo» y verás cómo K8s lo reinicia solo.</p>
+
+  <div class="cluster">
+    <div class="cluster-head">
+      <div>
+        <div class="upper step-tag" style="color:var(--tinta)">Clúster Kubernetes · gympro-svc</div>
+        <h4 style="margin:6px 0 0;font-size:20px">Deployment: 3 réplicas mínimo · 12 máximo</h4>
+      </div>
+      <div class="cluster-toolbar">
+        <button class="btn" id="kill-random">💥 Matar pod aleatorio</button>
+        <button class="btn" id="rolling-update">↻ Rolling update (v3)</button>
+      </div>
+    </div>
+
+    <div class="demand">
+      <div class="demand-head">
+        <span>Demanda actual</span>
+        <span><b id="demand-val">30%</b> · <span id="rps-val">300 req/s</span></span>
+      </div>
+      <div class="demand-bar"><div class="demand-fill" id="demand-fill"></div></div>
+      <input type="range" id="demand-slider" min="10" max="100" value="30" step="1" />
+      <div style="font-size:11px;color:var(--gris);margin-top:6px;font-family:'SF Mono',monospace">↑ Sube la demanda y observa cómo el HPA (Horizontal Pod Autoscaler) arranca nuevos pods automáticamente.</div>
+    </div>
+
+    <div class="pods-grid" id="pods-grid"></div>
+
+    <div class="cluster-stats">
+      <div class="cs green"><div class="l">pods running</div><div class="v" id="pods-running">3</div></div>
+      <div class="cs"><div class="l">pods totales</div><div class="v" id="pods-total">3</div></div>
+      <div class="cs red"><div class="l">pods caídos hoy</div><div class="v" id="pods-crashed">0</div></div>
+      <div class="cs green"><div class="l">downtime</div><div class="v">0s</div></div>
+    </div>
+
+    <div class="k8s-log">
+      <div class="k8s-log-head"><span>📋 kubectl get events --watch</span><span id="log-count">0 eventos</span></div>
+      <div class="k8s-log-body" id="log-body"></div>
+    </div>
+
+    <div class="note tip" style="margin-top:18px"><b>Lo que acabas de ver:</b> Kubernetes decidió por sí solo cuándo abrir fuegos nuevos, cuándo cerrarlos y qué hacer si uno se apaga. <em>Tú no escribiste nada de esa lógica.</em> Está en la configuración del cluster (deployment.yaml, HPA, liveness probes). MLOps maduro es delegar estas decisiones operativas en el sistema.</div>
+  </div>
+</section>
+
+<!-- Comparativa Docker vs K8s -->
+<section style="border-bottom:none">
+  <div class="upper step-tag">Diferencia clave · para que no se confundan nunca más</div>
+  <h2>Docker <em>empaqueta</em>. Kubernetes <em>orquesta</em>.</h2>
+  <p class="intro">Son <b>complementarios, no alternativas</b>. Docker construye la paella. Kubernetes gestiona el restaurante entero.</p>
+
+  <div class="compare">
+    <div class="item docker">
+      <div class="k upper">Docker</div>
+      <h4>Una <em>paella</em> precocinada</h4>
+      <p class="what">Empaqueta tu aplicación con sus dependencias en un contenedor portable.</p>
+      <ul>
+        <li>Construye imágenes</li>
+        <li>Ejecuta contenedores individuales</li>
+        <li>Una máquina, varios contenedores</li>
+        <li>Aislamiento entre contenedores</li>
+      </ul>
+      <div class="q">«¿Cómo hago que mi modelo funcione igual en cualquier servidor?»</div>
+    </div>
+    <div class="item k8s">
+      <div class="k upper">Kubernetes (K8s)</div>
+      <h4>La <em>cocina</em> industrial</h4>
+      <p class="what">Gestiona miles de contenedores a la vez. Escala, repone, balancea.</p>
+      <ul>
+        <li>Orquesta clústeres de contenedores</li>
+        <li>Auto-scaling, auto-healing</li>
+        <li>Muchas máquinas, miles de contenedores</li>
+        <li>Rolling updates sin downtime</li>
+      </ul>
+      <div class="q">«¿Cómo manejo 10.000 paellas funcionando a la vez sin que se queme ninguna?»</div>
+    </div>
+  </div>
+
+  <div class="note"><b>En la práctica:</b> empaquetas tu modelo con <span class="mono">docker build</span>. Lo despliegas a escala con <span class="mono">kubectl apply</span>. Cuando AWS/Azure/GCP hablan de «contenedores» se refieren a Docker. Cuando hablan de «orquestación» o «K8s/EKS/AKS/GKE» se refieren a Kubernetes.</div>
+</section>
+
+</div>
+
+<script>
+/* =====================================================================
+   DEMO 1 · Dockerfile build animation
+   ===================================================================== */
+const DOCKERFILE_LINES = [
+  {html:'<span class="cm"># Imagen base — Python 3.11 ligera</span>'},
+  {html:'<span class="kw">FROM</span> python:<span class="nm">3.11</span>-slim', exec:'Pulling python:3.11-slim from Docker Hub...', dur:1200, size:'45 MB'},
+  {html:''},
+  {html:'<span class="kw">WORKDIR</span> /app', exec:'Setting working directory /app', dur:300, size:'0 B'},
+  {html:''},
+  {html:'<span class="cm"># Instalar dependencias (capa cacheable)</span>'},
+  {html:'<span class="kw">COPY</span> requirements.txt .', exec:'Copying requirements.txt', dur:200, size:'1 KB'},
+  {html:'<span class="kw">RUN</span> pip install -r requirements.txt', exec:'Installing scikit-learn, pandas, fastapi...', dur:2200, size:'127 MB'},
+  {html:''},
+  {html:'<span class="cm"># Modelo y código de servicio</span>'},
+  {html:'<span class="kw">COPY</span> model.pkl .', exec:'Copying model.pkl', dur:400, size:'3.2 MB'},
+  {html:'<span class="kw">COPY</span> serve.py .', exec:'Copying serve.py', dur:200, size:'2 KB'},
+  {html:''},
+  {html:'<span class="kw">EXPOSE</span> <span class="nm">8000</span>', exec:'Exposing port 8000', dur:200, size:'0 B'},
+  {html:'<span class="kw">CMD</span> [<span class="st">"python"</span>, <span class="st">"serve.py"</span>]', exec:'Setting CMD', dur:300, size:'0 B'}
+];
+
+function renderDockerfile(){
+  const body = document.getElementById('dockerfile-body');
+  body.innerHTML = '';
+  DOCKERFILE_LINES.forEach(function(l, i){
+    const div = document.createElement('div');
+    div.className = 'line';
+    div.dataset.idx = i;
+    div.innerHTML = l.html === '' ? '&nbsp;' : l.html;
+    body.appendChild(div);
+  });
+}
+
+let buildRunning = false;
+function buildAnim(){
+  if(buildRunning) return;
+  buildRunning = true;
+  renderDockerfile();
+  const body = document.getElementById('build-body');
+  body.innerHTML = '';
+  document.getElementById('df-progress').textContent = 'building...';
+
+  let i = 0;
+  let stepN = 1;
+  function step(){
+    if(i >= DOCKERFILE_LINES.length){
+      // Final
+      body.innerHTML += '<div class="b-line"><span class="ok">✓</span> Successfully built <span class="info">7d4f3a2b1c8e</span></div>';
+      body.innerHTML += '<div class="b-line"><span class="ok">✓</span> Successfully tagged <span class="info">gympro:v2</span></div>';
+      body.innerHTML += '<div class="b-line"><span class="dim">Total size: 175 MB · Time: 4.8s</span></div>';
+      body.scrollTop = body.scrollHeight;
+      document.getElementById('df-progress').textContent = 'done ✓';
+      buildRunning = false;
+      return;
+    }
+    const line = DOCKERFILE_LINES[i];
+    const lineEl = document.querySelector('.dockerfile-body .line[data-idx="'+i+'"]');
+    if(line.exec){
+      // Resaltar línea
+      lineEl.classList.add('executing');
+      body.innerHTML += '<div class="b-line"><span class="step">STEP '+stepN+'/8:</span> '+line.exec+'</div>';
+      body.scrollTop = body.scrollHeight;
+      stepN++;
+      setTimeout(function(){
+        lineEl.classList.remove('executing');
+        lineEl.classList.add('done');
+        body.innerHTML += '<div class="b-line"><span class="ok">  ✓</span> done <span class="dim">[layer: '+line.size+']</span></div>';
+        body.scrollTop = body.scrollHeight;
+        i++;
+        step();
+      }, line.dur);
+    } else {
+      lineEl.classList.add('done');
+      i++;
+      step();
+    }
+  }
+  step();
+}
+
+function runContainer(){
+  const body = document.getElementById('build-body');
+  body.innerHTML += '<div class="b-line">&nbsp;</div>';
+  body.innerHTML += '<div class="b-line"><span class="info">$</span> docker run -p 8000:8000 gympro:v2</div>';
+  setTimeout(function(){
+    body.innerHTML += '<div class="b-line"><span class="dim">[INFO]</span> Loading model.pkl...</div>';
+    body.scrollTop = body.scrollHeight;
+  }, 300);
+  setTimeout(function(){
+    body.innerHTML += '<div class="b-line"><span class="dim">[INFO]</span> Started server on http://0.0.0.0:8000</div>';
+    body.innerHTML += '<div class="b-line"><span class="ok">✓ Modelo sirviendo predicciones</span></div>';
+    body.scrollTop = body.scrollHeight;
+  }, 900);
+}
+
+document.getElementById('build-btn').addEventListener('click', buildAnim);
+document.getElementById('run-btn').addEventListener('click', runContainer);
+document.getElementById('reset-docker').addEventListener('click', function(){
+  renderDockerfile();
+  document.getElementById('build-body').innerHTML = '<div class="b-line"><span class="dim">Pulsa «docker build» para construir la imagen.</span></div>';
+  document.getElementById('df-progress').textContent = 'listo';
+});
+
+renderDockerfile();
+document.getElementById('build-body').innerHTML = '<div class="b-line"><span class="dim">Pulsa «docker build» para construir la imagen.</span></div>';
+
+/* =====================================================================
+   DEMO 2 · Kubernetes cluster simulator
+   ===================================================================== */
+const MIN_PODS = 3;
+const MAX_PODS = 12;
+let pods = [];  // {id, status, version}
+let podCounter = 0;
+let crashedToday = 0;
+let events = [];
+let demandPct = 30;
+let currentVersion = 'v2';
+
+function targetReplicas(demand){
+  // 30% → 3 pods. 100% → 12 pods. Lineal.
+  const t = Math.max(MIN_PODS, Math.min(MAX_PODS, Math.round(MIN_PODS + (demand-30)/70 * (MAX_PODS-MIN_PODS))));
+  return t;
+}
+
+function addEvent(text, cls){
+  const time = new Date().toLocaleTimeString('es-ES',{hour12:false});
+  events.unshift({t:time, text:text, cls:cls||'info'});
+  if(events.length > 40) events.pop();
+  renderLog();
+}
+
+function renderLog(){
+  const body = document.getElementById('log-body');
+  body.innerHTML = events.map(function(e){
+    return '<div class="ev"><span class="t">['+e.t+']</span> <span class="'+e.cls+'">'+e.text+'</span></div>';
+  }).join('');
+  document.getElementById('log-count').textContent = events.length + ' eventos';
+}
+
+function renderPods(){
+  const grid = document.getElementById('pods-grid');
+  grid.innerHTML = '';
+  pods.forEach(function(p, i){
+    const div = document.createElement('div');
+    div.className = 'pod ' + p.status;
+    if(p.justAdded){ div.classList.add('dragnew'); p.justAdded = false; }
+    div.innerHTML = '<div class="pod-id">pod-'+p.id+'</div>'
+                  + '<div class="pod-emoji">🥘</div>'
+                  + '<div style="font-family:\'SF Mono\',monospace;font-size:10px;color:var(--gris)">'+p.version+'</div>'
+                  + '<div class="pod-status">'+(p.status === 'starting' ? 'starting…' : p.status === 'crashed' ? 'CrashLoopBackOff' : p.status === 'terminating' ? 'terminating' : 'Running')+'</div>';
+    if(p.status === 'running'){
+      div.addEventListener('click', function(){ killPod(p.id); });
+    }
+    grid.appendChild(div);
+  });
+  updateStats();
+}
+
+function updateStats(){
+  const running = pods.filter(function(p){return p.status==='running';}).length;
+  const total = pods.length;
+  document.getElementById('pods-running').textContent = running;
+  document.getElementById('pods-total').textContent = total;
+  document.getElementById('pods-crashed').textContent = crashedToday;
+}
+
+function startPod(version){
+  podCounter++;
+  const newPod = {id:String(podCounter).padStart(2,'0'), status:'starting', version:version||currentVersion, justAdded:true};
+  pods.push(newPod);
+  addEvent('Pod '+newPod.id+' scheduled · pulling image gympro:'+newPod.version, 'info');
+  renderPods();
+  setTimeout(function(){
+    newPod.status = 'running';
+    addEvent('Pod '+newPod.id+' running · healthy', 'ok');
+    renderPods();
+  }, 900);
+}
+
+function killPod(id){
+  const idx = pods.findIndex(function(p){return p.id===id;});
+  if(idx < 0) return;
+  if(pods[idx].status !== 'running') return;
+  pods[idx].status = 'crashed';
+  crashedToday++;
+  addEvent('Pod '+id+' CRASHED · liveness probe failed', 'err');
+  renderPods();
+  // K8s reschedules
+  setTimeout(function(){
+    pods[idx].status = 'terminating';
+    addEvent('Pod '+id+' terminating · removing from cluster', 'l');
+    renderPods();
+    setTimeout(function(){
+      const removeIdx = pods.findIndex(function(p){return p.id===id;});
+      if(removeIdx >= 0) pods.splice(removeIdx, 1);
+      addEvent('K8s scheduler · replacement pod requested', 'info');
+      startPod();
+    }, 600);
+  }, 1200);
+}
+
+function reconcile(){
+  // Match current pods to target
+  const target = targetReplicas(demandPct);
+  const running = pods.filter(function(p){return p.status==='running' || p.status==='starting';}).length;
+  if(running < target){
+    addEvent('HPA · scaling up · '+running+' → '+target+' pods (demand '+demandPct+'%)', 'info');
+    for(let i=0; i<target-running; i++){
+      setTimeout(function(){ startPod(); }, i*250);
+    }
+  } else if(running > target && demandPct < 60){
+    const toRemove = running - target;
+    addEvent('HPA · scaling down · '+running+' → '+target+' pods', 'info');
+    let removed = 0;
+    for(let i = pods.length - 1; i >= 0 && removed < toRemove; i--){
+      if(pods[i].status === 'running'){
+        pods[i].status = 'terminating';
+        const podId = pods[i].id;
+        addEvent('Pod '+podId+' draining gracefully', 'l');
+        (function(idx, pid){
+          setTimeout(function(){
+            const removeIdx = pods.findIndex(function(p){return p.id===pid;});
+            if(removeIdx >= 0) pods.splice(removeIdx, 1);
+            renderPods();
+          }, 800);
+        })(i, podId);
+        removed++;
+      }
+    }
+    renderPods();
+  }
+}
+
+document.getElementById('demand-slider').addEventListener('input', function(e){
+  demandPct = +e.target.value;
+  document.getElementById('demand-val').textContent = demandPct+'%';
+  document.getElementById('rps-val').textContent = (demandPct*10)+' req/s';
+  document.getElementById('demand-fill').style.width = demandPct+'%';
+  reconcile();
+});
+
+document.getElementById('kill-random').addEventListener('click', function(){
+  const running = pods.filter(function(p){return p.status==='running';});
+  if(running.length === 0) return;
+  const victim = running[Math.floor(Math.random()*running.length)];
+  killPod(victim.id);
+});
+
+document.getElementById('rolling-update').addEventListener('click', function(){
+  currentVersion = currentVersion === 'v2' ? 'v3' : (currentVersion === 'v3' ? 'v4' : 'v2');
+  addEvent('🚀 Rolling update started · target version: gympro:'+currentVersion, 'info');
+  // Replace pods one by one
+  const oldPods = pods.filter(function(p){return p.status==='running' && p.version!==currentVersion;});
+  let i = 0;
+  function rollOne(){
+    if(i >= oldPods.length) return;
+    const old = oldPods[i];
+    addEvent('Rolling · replacing pod '+old.id+' (gympro:'+old.version+' → gympro:'+currentVersion+')', 'l');
+    // start new
+    startPod(currentVersion);
+    // terminate old after a delay
+    setTimeout(function(){
+      const idx = pods.findIndex(function(p){return p.id===old.id;});
+      if(idx >= 0){
+        pods[idx].status = 'terminating';
+        renderPods();
+        setTimeout(function(){
+          const ri = pods.findIndex(function(p){return p.id===old.id;});
+          if(ri >= 0) pods.splice(ri, 1);
+          renderPods();
+        }, 500);
+      }
+    }, 1200);
+    i++;
+    setTimeout(rollOne, 1600);
+  }
+  rollOne();
+  setTimeout(function(){
+    addEvent('✓ Rolling update complete · all pods on '+currentVersion, 'ok');
+  }, oldPods.length * 1600 + 1500);
+});
+
+/* Init: 3 pods */
+addEvent('Cluster started · gympro-svc deployment created', 'info');
+for(let i = 0; i < MIN_PODS; i++) {
+  setTimeout(function(){ startPod(); }, i*200);
+}
+</script>
+</body>
+</html>

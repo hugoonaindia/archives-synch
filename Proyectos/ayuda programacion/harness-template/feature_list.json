@@ -1,0 +1,24 @@
+{
+  "features": [
+    {
+      "id": "F-001",
+      "titulo": "Esqueleto del proyecto",
+      "estado": "pending",
+      "prioridad": "alta",
+      "descripcion": "Estructura de carpetas, deps instaladas, punto de entrada ejecutable.",
+      "definition_of_done": "bash init.sh pasa sin errores.",
+      "dependencias": [],
+      "notas": ""
+    },
+    {
+      "id": "F-002",
+      "titulo": "[Feature 2]",
+      "estado": "pending",
+      "prioridad": "alta",
+      "descripcion": "[Qué hace esta feature]",
+      "definition_of_done": "[Criterio concreto y verificable — un comando que pasa o falla]",
+      "dependencias": ["F-001"],
+      "notas": ""
+    }
+  ]
+}

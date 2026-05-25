@@ -1,0 +1,503 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Sesión 4 · Pipeline GymPro</title>
+<style>
+  :root{
+    --crema:#F2EFE6;
+    --crema-2:#EAE6D7;
+    --tinta:#0E1B4D;
+    --tinta-2:#1B2A6B;
+    --azul:#3FA9F5;
+    --azul-2:#1F8AD9;
+    --rojo:#D85C3E;
+    --verde:#2E9E6E;
+    --gris:#7A7A7A;
+    --gris-2:#C9C5B8;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--crema);color:var(--tinta);font-family:Georgia,'Times New Roman',serif;line-height:1.5}
+  .mono{font-family:'SF Mono',Menlo,Monaco,Consolas,monospace}
+  .sans{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}
+  .upper{text-transform:uppercase;letter-spacing:.18em;font-weight:600}
+  a{color:var(--azul-2)}
+
+  .wrap{max-width:1200px;margin:0 auto;padding:48px 32px 96px}
+  header.hero{padding:64px 0 48px;border-bottom:1px solid var(--gris-2)}
+  header .tag{font-size:11px;color:var(--azul-2)}
+  header h1{font-size:64px;line-height:1.05;margin:24px 0 16px;font-weight:700;letter-spacing:-.02em}
+  header h1 em{font-style:italic;color:var(--azul-2);font-weight:400}
+  header p.lead{font-size:20px;color:var(--tinta-2);max-width:780px;margin:0}
+  header .meta{margin-top:32px;display:flex;gap:32px;flex-wrap:wrap;font-size:12px}
+  header .meta div{border-left:2px solid var(--azul);padding-left:12px}
+  header .meta b{display:block;font-family:inherit;font-weight:600;margin-bottom:4px}
+
+  section{padding:56px 0;border-bottom:1px solid var(--gris-2)}
+  section .step-tag{font-size:11px;color:var(--azul-2)}
+  section h2{font-size:44px;margin:12px 0 12px;font-weight:700;letter-spacing:-.01em;line-height:1.1}
+  section h2 em{font-style:italic;color:var(--azul-2);font-weight:400}
+  section p.intro{font-size:17px;color:var(--tinta-2);max-width:880px;margin:0 0 24px}
+
+  .stepper{display:flex;gap:8px;margin:24px 0 0;flex-wrap:wrap}
+  .stepper .step{flex:1 1 140px;padding:14px 12px;border:1px solid var(--gris-2);background:#fff;border-radius:6px;font-size:13px;cursor:pointer;transition:.2s}
+  .stepper .step .n{font-size:11px;color:var(--azul-2)}
+  .stepper .step .t{font-weight:700;margin-top:4px}
+  .stepper .step.active{background:var(--tinta);color:var(--crema);border-color:var(--tinta)}
+  .stepper .step.active .n{color:var(--azul)}
+  .stepper .step.done{border-left:4px solid var(--verde)}
+
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:24px}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:16px}
+  .card{background:#fff;border:1px solid var(--gris-2);border-radius:8px;padding:20px}
+  .card .k{font-size:11px;color:var(--azul-2);margin-bottom:8px}
+  .card h3{margin:0 0 8px;font-size:22px}
+  .card p{font-size:14px;color:var(--tinta-2);margin:0}
+
+  pre.code{background:#0a0e2c;color:#e8e8e8;padding:18px 20px;border-radius:8px;font-size:13px;line-height:1.6;overflow-x:auto;margin:0;font-family:'SF Mono',Menlo,monospace}
+  pre.code .kw{color:#c084fc}
+  pre.code .fn{color:#fbbf24}
+  pre.code .st{color:#86efac}
+  pre.code .nm{color:#f59e0b}
+  pre.code .cm{color:#7a8aa8;font-style:italic}
+
+  .term{background:#0a0e2c;color:#e8e8e8;border-radius:8px;font-family:'SF Mono',Menlo,monospace;font-size:13px;line-height:1.6;padding:16px;min-height:260px;overflow:auto;margin-top:16px}
+  .term .prompt{color:#3FA9F5}
+  .term .out{color:#cbd5e1}
+  .term .ok{color:#86efac}
+  .term .warn{color:#fbbf24}
+  .term .err{color:#fca5a5}
+
+  table.df{width:100%;border-collapse:collapse;font-family:'SF Mono',Menlo,monospace;font-size:13px;background:#fff;border-radius:8px;overflow:hidden}
+  table.df th{background:#E5E7F5;color:var(--tinta);text-transform:uppercase;font-size:10px;letter-spacing:.12em;padding:10px;text-align:left;font-weight:600}
+  table.df td{padding:10px;border-bottom:1px solid #f0eee4;color:var(--tinta)}
+  table.df tr:last-child td{border-bottom:none}
+  table.df td.idx{color:var(--gris);font-weight:600}
+  td.nan{background:#FBE0DA;color:var(--rojo);font-style:italic}
+  td.outlier{background:#FBE0DA;color:var(--rojo);font-weight:700}
+  td.fixed{background:#D8F1E5;color:var(--verde);font-weight:600}
+  td.encoded{background:#E0E5FA;color:var(--tinta-2)}
+  td.scaled{background:#FFF3D6;color:#996600}
+
+  .btn{appearance:none;border:1px solid var(--tinta);background:transparent;color:var(--tinta);padding:10px 18px;font-family:inherit;font-size:14px;cursor:pointer;border-radius:4px;transition:.15s;font-weight:600}
+  .btn:hover{background:var(--tinta);color:var(--crema)}
+  .btn.primary{background:var(--azul-2);color:#fff;border-color:var(--azul-2)}
+  .btn.primary:hover{background:var(--tinta);border-color:var(--tinta)}
+  .btn[disabled]{opacity:.4;cursor:not-allowed}
+  .controls{display:flex;gap:12px;margin-top:16px;flex-wrap:wrap;align-items:center}
+
+  .note{background:#E5F1FB;border-left:4px solid var(--azul);padding:14px 18px;border-radius:4px;margin-top:20px;font-size:14px;color:var(--tinta-2)}
+  .note b{color:var(--tinta)}
+  .warning{background:#FBE5DD;border-left-color:var(--rojo)}
+  .tip{background:#E0F4E8;border-left-color:var(--verde)}
+
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:16px}
+  .stat{background:#fff;border:1px solid var(--gris-2);padding:14px;border-radius:6px;text-align:center}
+  .stat .v{font-size:28px;font-weight:700;font-family:Georgia,serif}
+  .stat .v.bad{color:var(--rojo)}
+  .stat .v.good{color:var(--verde)}
+  .stat .l{font-size:11px;color:var(--gris);text-transform:uppercase;letter-spacing:.1em;margin-top:4px}
+
+  .recap{padding:48px 32px;background:var(--tinta);color:var(--crema);border-radius:12px;margin-top:48px}
+  .recap h2{color:var(--crema);font-size:38px;margin:0 0 24px}
+  .recap h2 em{color:#9DD2F8}
+  .recap .bullets{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+  .recap .b{background:rgba(255,255,255,.06);padding:18px;border-radius:6px;border-left:3px solid var(--azul)}
+  .recap .b b{font-size:15px;display:block;margin-bottom:6px}
+  .recap .b span{font-size:13px;opacity:.85}
+
+  @media (max-width:780px){
+    header h1{font-size:42px}
+    section h2{font-size:32px}
+    .grid2,.grid3,.stats,.recap .bullets{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <div class="tag upper">Tema 4 · Sesión 04 · Artefacto 1</div>
+  <h1>El pipeline de <em>GymPro</em>, paso a paso.</h1>
+  <p class="lead">Una cadena de gimnasios quiere predecir qué socios se darán de baja el próximo mes. Tienen un CSV con 8 socios. Está sucio. Vamos a recorrer las cinco fases del preprocesamiento — cargar, explorar, limpiar, transformar y escalar — y a ver, fila a fila, qué le pasa al dataset hasta dejarlo listo para un modelo.</p>
+  <div class="meta sans">
+    <div><b>Asignatura</b>Estrategia del Dato · ML &amp; DL</div>
+    <div><b>Bloque</b>Preprocesamiento · 80% del trabajo</div>
+    <div><b>Caso</b>GymPro · 8 socios · churn</div>
+    <div><b>Modo</b>Pulsa botones — el dataset cambia en directo</div>
+  </div>
+</header>
+
+<section style="border-bottom:none;padding-bottom:0">
+  <div class="step-tag upper">Recorrido</div>
+  <h2>Seis pasos. <em>En este orden.</em></h2>
+  <p class="intro">Saltarse uno te muerde después. Pulsa cada paso para avanzar — la tabla y el terminal se actualizan en directo. Al final tendrás el dataset «de oro» listo para modelar.</p>
+  <div class="stepper" id="stepper"></div>
+</section>
+
+<section style="border-bottom:none">
+  <div class="grid2">
+    <div>
+      <div class="step-tag upper" id="paso-titulo-tag">Paso 01 · Cargar</div>
+      <h2 id="paso-titulo" style="font-size:32px">Traer los datos.</h2>
+      <p class="intro" id="paso-desc">Pandas tiene <span class="mono">read_*</span> para casi cualquier formato. Un CSV es texto plano separado por comas. Una línea: <span class="mono">pd.read_csv()</span>.</p>
+
+      <pre class="code" id="paso-code"></pre>
+
+      <div class="controls">
+        <button class="btn" id="btn-prev" onclick="prev()">← Anterior</button>
+        <button class="btn primary" id="btn-next" onclick="next()">Ejecutar paso →</button>
+        <button class="btn" onclick="reset()" style="margin-left:auto">↺ Reiniciar</button>
+      </div>
+
+      <div class="term" id="term"></div>
+
+      <div class="note" id="paso-note"></div>
+    </div>
+
+    <div>
+      <div class="step-tag upper">DataFrame en vivo · <span id="df-name">df</span></div>
+      <h2 style="font-size:32px">La tabla, <em>ahora</em>.</h2>
+      <div class="stats">
+        <div class="stat"><div class="v" id="st-rows">8</div><div class="l">filas</div></div>
+        <div class="stat"><div class="v" id="st-cols">8</div><div class="l">columnas</div></div>
+        <div class="stat"><div class="v bad" id="st-nan">4</div><div class="l">NaN</div></div>
+        <div class="stat"><div class="v bad" id="st-out">2</div><div class="l">outliers</div></div>
+      </div>
+
+      <div style="overflow-x:auto;margin-top:16px">
+        <table class="df" id="tabla">
+          <thead><tr id="thead-row"></tr></thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+
+      <div class="note tip" id="paso-extra"></div>
+    </div>
+  </div>
+</section>
+
+<section style="border-bottom:none">
+  <div class="recap">
+    <div class="step-tag upper" style="color:#9DD2F8">Resumen</div>
+    <h2>Lo que <em>acabamos de hacer</em>.</h2>
+    <div class="bullets">
+      <div class="b"><b>01 · Cargar</b><span>Una línea: <span class="mono">read_csv</span>. Cualquier fuente, mismo patrón.</span></div>
+      <div class="b"><b>02 · Explorar</b><span><span class="mono">head</span>, <span class="mono">info</span>, <span class="mono">describe</span> · 80% de tus dudas iniciales.</span></div>
+      <div class="b"><b>03 · Limpiar NaN</b><span>Mediana para sesgo, media para campana, moda para categórica.</span></div>
+      <div class="b"><b>04 · Outliers</b><span>IQR detecta. Tú investigas. Corrige, no borres a ciegas.</span></div>
+      <div class="b"><b>05 · Encoding</b><span>One-Hot para categorías sin orden. Label para binarias.</span></div>
+      <div class="b"><b>06 · Escalar</b><span>StandardScaler — todas las variables en la misma liga.</span></div>
+    </div>
+  </div>
+</section>
+
+</div>
+
+<script>
+const COLS_BASE = ['ID','Nombre','Edad','Peso_kg','Visitas','Cuota_€','Plan','Baja'];
+
+const DATA_RAW = [
+  ['001','Ana',   34,  62.0, 12, 39.90, 'Premium','No'],
+  ['002','Beto',  28,  null,  2, 29.90, 'Básico','Sí'],
+  ['003','Carla', 45,  78.5, 20, 39.90, null,    'No'],
+  ['004','Diego', null,91.0,  1, 29.90, 'Básico','Sí'],
+  ['005','Eva',   31,  58.0, 847,49.90, 'Premium','No'],
+  ['006','Fer',   52,  72.0,  8, 39.90, 'Premium','No'],
+  ['007','Gala',  23,  340,  15, 29.90, 'Básico','No'],
+  ['008','Hugo',  38,  80.0,  0, null,  'Premium','Sí']
+];
+
+const PASOS = [
+  {
+    n:'01', tag:'Cargar', title:'Traer los datos.',
+    desc:'Pandas tiene <span class="mono">read_*</span> para casi cualquier formato. Un CSV es texto plano separado por comas. Una línea: <span class="mono">pd.read_csv()</span>.',
+    code:'<span class="kw">import</span> pandas <span class="kw">as</span> pd\n\ndf = pd.<span class="fn">read_csv</span>(<span class="st">\'gympro.csv\'</span>)\ndf.<span class="fn">head</span>()',
+    term:[
+      {p:'[GymPro] $', t:'python pipeline.py', cls:'prompt'},
+      {p:'>>>', t:"df = pd.read_csv('gympro.csv')", cls:'out'},
+      {p:'>>>', t:'df.head()', cls:'out'},
+      {p:'OK', t:'8 filas × 8 columnas cargadas', cls:'ok'}
+    ],
+    note:'<b>Pro tip:</b> en pandas, <span class="mono">read_csv</span>, <span class="mono">read_excel</span> y <span class="mono">read_sql</span> comparten el mismo patrón. Si manejas uno, manejas todos.',
+    extra:{cls:'tip', html:'<b>Estado:</b> dataset recién cargado. Pequeño (8 filas) pero con problemas reales que cualquier proyecto tendrá.'},
+    state:'raw',
+    name:'df'
+  },
+  {
+    n:'02', tag:'Explorar', title:'El ritual de las primeras miradas.',
+    desc:'Tres comandos que escribes <em>siempre</em>. <span class="mono">head()</span> te enseña la pinta. <span class="mono">info()</span> te dice tipos y NaN. <span class="mono">describe()</span> destapa los outliers en min/max.',
+    code:'df.<span class="fn">info</span>()      <span class="cm"># tipos y nulos</span>\ndf.<span class="fn">describe</span>()  <span class="cm"># mean, std, min, 25%, 50%, 75%, max</span>\ndf.<span class="fn">isnull</span>().<span class="fn">sum</span>()  <span class="cm"># dónde faltan</span>',
+    term:[
+      {p:'>>>', t:'df.info()', cls:'out'},
+      {p:'', t:'RangeIndex: 8 entries, 0 to 7', cls:'out'},
+      {p:'', t:'Edad      7 non-null  float64', cls:'warn'},
+      {p:'', t:'Peso_kg   7 non-null  float64', cls:'warn'},
+      {p:'', t:'Plan      7 non-null  object', cls:'warn'},
+      {p:'', t:'Cuota_€   7 non-null  float64', cls:'warn'},
+      {p:'>>>', t:'df.describe()', cls:'out'},
+      {p:'', t:'Visitas  max = 847   (¡imposible!)', cls:'err'},
+      {p:'', t:'Peso_kg  max = 340   (¡imposible!)', cls:'err'},
+      {p:'OK', t:'4 NaN y 2 outliers detectados', cls:'ok'}
+    ],
+    note:'<b>Truco mental:</b> si en <span class="mono">describe()</span> el max es absurdo (peso 340 kg, visitas 847), tienes outlier. Si <span class="mono">info()</span> dice 7 non-null en un dataset de 8, tienes NaN.',
+    extra:{cls:'warning', html:'<b>Estado:</b> ya sabemos qué está roto. <b>4 NaN</b> (Beto, Carla, Diego, Hugo) y <b>2 outliers</b> (Eva, Gala). Toca decidir qué hacer con cada uno.'},
+    state:'raw',
+    name:'df'
+  },
+  {
+    n:'03', tag:'NaN', title:'Imputar los huecos.',
+    desc:'Cuatro NaN. Eliminar filas perdería el 50% del dataset. Imputamos: <b>mediana</b> para Peso (sesgo por outlier 340) y Edad, <b>moda</b> para Plan, <b>media</b> para Cuota.',
+    code:'<span class="cm"># Mediana es robusta a outliers</span>\ndf[<span class="st">\'Peso_kg\'</span>] = df[<span class="st">\'Peso_kg\'</span>].<span class="fn">fillna</span>(df[<span class="st">\'Peso_kg\'</span>].<span class="fn">median</span>())\ndf[<span class="st">\'Edad\'</span>]    = df[<span class="st">\'Edad\'</span>].<span class="fn">fillna</span>(df[<span class="st">\'Edad\'</span>].<span class="fn">median</span>())\n\n<span class="cm"># Moda para categóricas</span>\ndf[<span class="st">\'Plan\'</span>]    = df[<span class="st">\'Plan\'</span>].<span class="fn">fillna</span>(df[<span class="st">\'Plan\'</span>].<span class="fn">mode</span>()[<span class="nm">0</span>])\ndf[<span class="st">\'Cuota_€\'</span>] = df[<span class="st">\'Cuota_€\'</span>].<span class="fn">fillna</span>(df[<span class="st">\'Cuota_€\'</span>].<span class="fn">mean</span>())',
+    term:[
+      {p:'>>>', t:'df.isnull().sum()', cls:'out'},
+      {p:'', t:'Edad      1', cls:'warn'},
+      {p:'', t:'Peso_kg   1', cls:'warn'},
+      {p:'', t:'Plan      1', cls:'warn'},
+      {p:'', t:'Cuota_€   1', cls:'warn'},
+      {p:'>>>', t:'Imputando con mediana / moda / media...', cls:'out'},
+      {p:'', t:'Beto.Peso_kg:  NaN → 76.0  (mediana)', cls:'ok'},
+      {p:'', t:'Diego.Edad:    NaN → 36    (mediana)', cls:'ok'},
+      {p:'', t:"Carla.Plan:    NaN → 'Premium'  (moda)", cls:'ok'},
+      {p:'', t:'Hugo.Cuota_€:  NaN → 38.07 (media)', cls:'ok'},
+      {p:'OK', t:'0 NaN restantes ✓', cls:'ok'}
+    ],
+    note:'<b>Por qué mediana:</b> con Gala (340 kg) en la columna, la <em>media</em> sale altísima. La mediana ignora el outlier. Regla: cola larga → mediana, campana → media.',
+    extra:{cls:'tip', html:'<b>Estado:</b> sin NaN — celdas verdes son los valores imputados. Pero ojo, los outliers de Eva y Gala siguen ahí, distorsionando todo.'},
+    state:'imputed',
+    name:'df'
+  },
+  {
+    n:'04', tag:'Outliers', title:'Tratar las ovejas negras.',
+    desc:'Eva (847 visitas) y Gala (340 kg) caen fuera de Q1−1.5·IQR / Q3+1.5·IQR. Investigamos: <b>847 = imposible</b> (un mes tiene 30 días) → corregimos a 28. <b>340 kg</b> → typo de 84 kg.',
+    code:'Q1, Q3 = df[<span class="st">\'Visitas\'</span>].<span class="fn">quantile</span>([<span class="nm">.25</span>, <span class="nm">.75</span>])\nIQR = Q3 - Q1\nlim_sup = Q3 + <span class="nm">1.5</span> * IQR\n\noutliers = df[df[<span class="st">\'Visitas\'</span>] > lim_sup]\n<span class="cm"># → Eva: 847 visitas (lim_sup=33)</span>\n\n<span class="cm"># Decisión: corregir a valor plausible</span>\ndf.<span class="fn">loc</span>[df[<span class="st">\'Nombre\'</span>]==<span class="st">\'Eva\'</span>, <span class="st">\'Visitas\'</span>] = <span class="nm">28</span>\ndf.<span class="fn">loc</span>[df[<span class="st">\'Nombre\'</span>]==<span class="st">\'Gala\'</span>, <span class="st">\'Peso_kg\'</span>] = <span class="nm">84</span>',
+    term:[
+      {p:'>>>', t:'IQR detection on Visitas', cls:'out'},
+      {p:'', t:'Q1 = 1.75 · Q3 = 14.25 · IQR = 12.5', cls:'out'},
+      {p:'', t:'lim_sup = Q3 + 1.5*IQR = 33.0', cls:'out'},
+      {p:'', t:'Eva: 847 > 33 → outlier ✗', cls:'err'},
+      {p:'>>>', t:'IQR detection on Peso_kg', cls:'out'},
+      {p:'', t:'Q1 = 67.0 · Q3 = 80.0 · IQR = 13.0', cls:'out'},
+      {p:'', t:'lim_sup = 99.5', cls:'out'},
+      {p:'', t:'Gala: 340 > 99.5 → outlier ✗', cls:'err'},
+      {p:'>>>', t:'# Investigamos. Tipos. Corregimos.', cls:'out'},
+      {p:'', t:'Eva.Visitas:   847 → 28', cls:'ok'},
+      {p:'', t:'Gala.Peso_kg:  340 → 84', cls:'ok'}
+    ],
+    note:'<b>Importante:</b> antes de borrar un outlier, <b>investiga</b>. Puede ser un error (corriges), variabilidad real (lo dejas) o exactamente lo que buscas (fraude → lo marcas y NO lo tiras).',
+    extra:{cls:'tip', html:'<b>Estado:</b> outliers corregidos. La media de Peso y de Visitas ya no están infladas — el modelo aprenderá del patrón real, no del ruido.'},
+    state:'cleaned',
+    name:'df'
+  },
+  {
+    n:'05', tag:'Encoding', title:'De palabras a números.',
+    desc:'Los modelos no entienden «Premium». Tres técnicas, tres usos. Para <span class="mono">Plan</span> (sin orden) → <b>One-Hot</b>. Para <span class="mono">Baja</span> (binaria) → <b>Label</b>.',
+    code:'<span class="cm"># One-Hot para Plan: dos categorías sin orden</span>\ndf = pd.<span class="fn">get_dummies</span>(df, columns=[<span class="st">\'Plan\'</span>])\n<span class="cm"># → crea Plan_Básico, Plan_Premium</span>\n\n<span class="cm"># Label para Baja: binaria sí/no → 1/0</span>\ndf[<span class="st">\'Baja\'</span>] = df[<span class="st">\'Baja\'</span>].<span class="fn">map</span>({<span class="st">\'Sí\'</span>: <span class="nm">1</span>, <span class="st">\'No\'</span>: <span class="nm">0</span>})',
+    term:[
+      {p:'>>>', t:"pd.get_dummies(df, columns=['Plan'])", cls:'out'},
+      {p:'', t:'Plan → Plan_Básico, Plan_Premium', cls:'ok'},
+      {p:'', t:'Ana    → 0, 1   (Premium)', cls:'out'},
+      {p:'', t:'Beto   → 1, 0   (Básico)', cls:'out'},
+      {p:'', t:'...', cls:'out'},
+      {p:'>>>', t:"df['Baja'].map({'Sí': 1, 'No': 0})", cls:'out'},
+      {p:'', t:'Sí → 1 (la baja sí ocurre)', cls:'ok'},
+      {p:'', t:'No → 0', cls:'ok'},
+      {p:'OK', t:'Dataset 100% numérico ✓', cls:'ok'}
+    ],
+    note:'<b>Por qué Label en Plan sería un error:</b> Básico=0, Premium=1 introduce un orden falso. Si añadiéramos VIP=2 el modelo aprendería que «VIP es 2× Premium». One-Hot evita ese sesgo.',
+    extra:{cls:'tip', html:'<b>Estado:</b> el dataset es ahora 100% numérico (celdas azules). Pero las escalas son muy distintas: Edad (23–52), Cuota (29.90–49.90), Visitas (0–28). Hay que escalar.'},
+    state:'encoded',
+    name:'df'
+  },
+  {
+    n:'06', tag:'Escalar', title:'Mismo tamaño para todos.',
+    desc:'Edad llega a 52, Cuota a casi 50€, Visitas a 28. Sin escalar, un SVM o KNN pensaría que la Edad es la variable «más importante» solo por tener números más grandes. <b>StandardScaler</b>: media 0, desviación 1.',
+    code:'<span class="kw">from</span> sklearn.preprocessing <span class="kw">import</span> StandardScaler\n\nscaler = <span class="fn">StandardScaler</span>()\n\nnumericas = [<span class="st">\'Edad\'</span>, <span class="st">\'Peso_kg\'</span>, <span class="st">\'Visitas\'</span>, <span class="st">\'Cuota_€\'</span>]\ndf[numericas] = scaler.<span class="fn">fit_transform</span>(df[numericas])',
+    term:[
+      {p:'>>>', t:'StandardScaler().fit_transform(df[num])', cls:'out'},
+      {p:'', t:'Edad     mean=0.00  std=1.00', cls:'ok'},
+      {p:'', t:'Peso_kg  mean=0.00  std=1.00', cls:'ok'},
+      {p:'', t:'Visitas  mean=0.00  std=1.00', cls:'ok'},
+      {p:'', t:'Cuota_€  mean=0.00  std=1.00', cls:'ok'},
+      {p:'>>>', t:'df.head()  # ¡todo en la misma liga!', cls:'out'},
+      {p:'OK', t:'Dataset listo para modelar 🎉', cls:'ok'}
+    ],
+    note:'<b>Cuidado · Data leakage:</b> en la vida real, harías <span class="mono">scaler.fit(X_train)</span> y luego <span class="mono">scaler.transform(X_test)</span>. Nunca al dataset entero — el test «se cuela» al train.',
+    extra:{cls:'tip', html:'<b>🎉 ¡Dataset «de oro»!</b> 100% numérico, sin NaN, sin outliers, escalado. Listo para regresión logística, random forest o lo que toque la próxima sesión.'},
+    state:'scaled',
+    name:'X_scaled'
+  }
+];
+
+let pasoActual = 0;
+const stepsDone = new Set();
+
+function renderStepper(){
+  const el = document.getElementById('stepper');
+  el.innerHTML = '';
+  PASOS.forEach((p,i)=>{
+    const d = document.createElement('div');
+    d.className = 'step' + (i===pasoActual?' active':'') + (stepsDone.has(i)?' done':'');
+    d.innerHTML = '<div class="n upper">Paso '+p.n+'</div><div class="t">'+p.tag+'</div>';
+    d.onclick = function(){ pasoActual = i; render(); };
+    el.appendChild(d);
+  });
+}
+
+function df_estado(state){
+  const data = DATA_RAW.map(function(r){return r.slice();});
+  let cols = COLS_BASE.slice();
+  const marks = data.map(function(r){return r.map(function(){return '';});});
+
+  function isNan(v){ return v===null || v===undefined; }
+  for(let i=0;i<data.length;i++){
+    for(let j=0;j<data[i].length;j++){
+      if(isNan(data[i][j])) marks[i][j] = 'nan';
+    }
+  }
+  marks[4][4] = 'outlier';
+  marks[6][3] = 'outlier';
+
+  if(state==='raw'){
+    for(let i=0;i<data.length;i++){
+      for(let j=0;j<data[i].length;j++){
+        if(isNan(data[i][j])) data[i][j]='NaN';
+      }
+    }
+  } else if(state==='imputed'){
+    data[1][3] = 76.0;       marks[1][3] = 'fixed';
+    data[3][2] = 36;         marks[3][2] = 'fixed';
+    data[2][6] = 'Premium';  marks[2][6] = 'fixed';
+    data[7][5] = 38.07;      marks[7][5] = 'fixed';
+  } else if(state==='cleaned'){
+    data[1][3] = 76.0;       marks[1][3] = 'fixed';
+    data[3][2] = 36;         marks[3][2] = 'fixed';
+    data[2][6] = 'Premium';  marks[2][6] = 'fixed';
+    data[7][5] = 38.07;      marks[7][5] = 'fixed';
+    data[4][4] = 28;         marks[4][4] = 'fixed';
+    data[6][3] = 84;         marks[6][3] = 'fixed';
+  } else if(state==='encoded'){
+    data[1][3] = 76.0; data[3][2] = 36; data[2][6] = 'Premium'; data[7][5] = 38.07;
+    data[4][4] = 28;   data[6][3] = 84;
+    cols = ['ID','Nombre','Edad','Peso_kg','Visitas','Cuota_€','Plan_Básico','Plan_Premium','Baja'];
+    const newData = data.map(function(r){
+      const isB = r[6]==='Básico' ? 1 : 0;
+      const isP = r[6]==='Premium' ? 1 : 0;
+      const baja = r[7]==='Sí' ? 1 : 0;
+      return [r[0],r[1],r[2],r[3],r[4],r[5], isB, isP, baja];
+    });
+    const newMarks = newData.map(function(r){return r.map(function(){return '';});});
+    for(let i=0;i<newData.length;i++){
+      newMarks[i][6]='encoded'; newMarks[i][7]='encoded'; newMarks[i][8]='encoded';
+    }
+    return {cols:cols, data:newData, marks:newMarks};
+  } else if(state==='scaled'){
+    data[1][3] = 76.0; data[3][2] = 36; data[4][4] = 28; data[6][3] = 84; data[7][5] = 38.07;
+    cols = ['ID','Nombre','Edad','Peso_kg','Visitas','Cuota_€','Plan_Básico','Plan_Premium','Baja'];
+    const num=[2,3,4,5];
+    const newData = data.map(function(r){
+      const isB = r[6]==='Básico' ? 1 : 0;
+      const isP = r[6]==='Premium' ? 1 : 0;
+      const baja = r[7]==='Sí' ? 1 : 0;
+      return [r[0],r[1],r[2],r[3],r[4],r[5], isB, isP, baja];
+    });
+    num.forEach(function(j){
+      const vals = newData.map(function(r){return +r[j];});
+      const m = vals.reduce(function(a,b){return a+b;},0)/vals.length;
+      const sd = Math.sqrt(vals.reduce(function(a,b){return a+(b-m)*(b-m);},0)/vals.length) || 1;
+      newData.forEach(function(r){ r[j] = ((+r[j]-m)/sd).toFixed(2); });
+    });
+    const newMarks = newData.map(function(r){return r.map(function(){return '';});});
+    for(let i=0;i<newData.length;i++){
+      num.forEach(function(j){ newMarks[i][j]='scaled'; });
+    }
+    return {cols:cols, data:newData, marks:newMarks};
+  }
+  return {cols:cols, data:data, marks:marks};
+}
+
+function renderTable(state){
+  const r = df_estado(state);
+  const cols = r.cols, data = r.data, marks = r.marks;
+  const thead = document.getElementById('thead-row');
+  thead.innerHTML = '<th></th>' + cols.map(function(c){return '<th>'+c+'</th>';}).join('');
+  const tbody = document.getElementById('tbody');
+  tbody.innerHTML = data.map(function(row,i){
+    return '<tr><td class="idx">'+i+'</td>' + row.map(function(v,j){
+      const cls = marks[i][j] || '';
+      let val = v;
+      if(typeof v==='number') val = Number.isInteger(v) ? v : (+v).toFixed(2);
+      return '<td class="'+cls+'">'+val+'</td>';
+    }).join('') + '</tr>';
+  }).join('');
+
+  const flat = [];
+  for(let i=0;i<marks.length;i++) for(let j=0;j<marks[i].length;j++) flat.push(marks[i][j]);
+  const nNaN = flat.filter(function(m){return m==='nan';}).length;
+  const nOut = flat.filter(function(m){return m==='outlier';}).length;
+  document.getElementById('st-rows').textContent = data.length;
+  document.getElementById('st-cols').textContent = cols.length;
+  document.getElementById('st-nan').textContent = nNaN;
+  document.getElementById('st-out').textContent = nOut;
+  document.getElementById('st-nan').className = 'v ' + (nNaN===0?'good':'bad');
+  document.getElementById('st-out').className = 'v ' + (nOut===0?'good':'bad');
+}
+
+function renderTerm(lines){
+  const term = document.getElementById('term');
+  term.innerHTML = '';
+  lines.forEach(function(l,k){
+    const div = document.createElement('div');
+    div.style.opacity = '0';
+    div.innerHTML = (l.p?'<span class="'+(l.cls||'prompt')+'">'+l.p+'</span> ':'') + '<span class="'+(l.cls||'out')+'">'+l.t+'</span>';
+    term.appendChild(div);
+    setTimeout(function(){ div.style.transition='opacity .3s'; div.style.opacity='1'; }, 60*k);
+  });
+}
+
+function render(){
+  const p = PASOS[pasoActual];
+  document.getElementById('paso-titulo-tag').innerHTML = 'Paso '+p.n+' · '+p.tag;
+  document.getElementById('paso-titulo').textContent = p.title;
+  document.getElementById('paso-desc').innerHTML = p.desc;
+  document.getElementById('paso-code').innerHTML = p.code;
+  document.getElementById('paso-note').innerHTML = p.note;
+  const ex = document.getElementById('paso-extra');
+  ex.className = 'note ' + (p.extra.cls||'');
+  ex.innerHTML = p.extra.html;
+  document.getElementById('df-name').textContent = p.name;
+  renderStepper();
+  renderTable(p.state);
+  renderTerm(p.term);
+
+  document.getElementById('btn-prev').disabled = pasoActual===0;
+  const nb = document.getElementById('btn-next');
+  if(pasoActual===PASOS.length-1){
+    nb.textContent = '🎉 Pipeline completo';
+    nb.disabled = true;
+  } else {
+    nb.textContent = 'Ejecutar paso →';
+    nb.disabled = false;
+  }
+}
+
+function next(){
+  stepsDone.add(pasoActual);
+  if(pasoActual<PASOS.length-1) pasoActual++;
+  render();
+}
+function prev(){
+  if(pasoActual>0) pasoActual--;
+  render();
+}
+function reset(){
+  pasoActual = 0;
+  stepsDone.clear();
+  render();
+}
+
+render();
+</script>
+</body>
+</html>

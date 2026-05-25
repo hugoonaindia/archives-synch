@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ejercicios de Relajación</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.2.0/dist/tabler-icons.min.css">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #ffffff;
+    --bg2: #f5f5f3;
+    --bg3: #eef8f4;
+    --text: #1a1a1a;
+    --text2: #555;
+    --text3: #888;
+    --border: rgba(0,0,0,0.12);
+    --border2: rgba(0,0,0,0.2);
+    --success-bg: #eef8f4;
+    --success-border: #5DCAA5;
+    --success-text: #085041;
+    --info-bg: #e8f2fb;
+    --info-border: #378ADD;
+    --radius: 10px;
+    --radius-lg: 14px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1a1a1a;
+      --bg2: #242424;
+      --bg3: #1e2e28;
+      --text: #f0f0f0;
+      --text2: #aaa;
+      --text3: #666;
+      --border: rgba(255,255,255,0.1);
+      --border2: rgba(255,255,255,0.2);
+      --success-bg: #1a2e26;
+      --success-border: #1D9E75;
+      --success-text: #9FE1CB;
+      --info-bg: #1a2535;
+      --info-border: #185FA5;
+    }
+  }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); padding: 24px 16px; max-width: 560px; margin: 0 auto; min-height: 100vh; }
+  h1 { font-size: 20px; font-weight: 500; margin-bottom: 4px; }
+  .subtitle { font-size: 14px; color: var(--text2); margin-bottom: 24px; line-height: 1.5; }
+  .tabs { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+  .tab { padding: 8px 16px; border-radius: var(--radius); border: 0.5px solid var(--border); background: transparent; color: var(--text2); cursor: pointer; font-size: 14px; font-family: inherit; }
+  .tab.on { border-color: var(--border2); background: var(--bg); color: var(--text); font-weight: 500; }
+  .pat-tabs { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+  .pt { padding: 6px 14px; border-radius: var(--radius); border: 0.5px solid var(--border); background: transparent; color: var(--text2); cursor: pointer; font-size: 13px; font-family: inherit; }
+  .pt.on { border-color: var(--success-border); color: var(--success-text); background: var(--success-bg); }
+  .breath-center { display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 24px 0; }
+  .phase-label { font-size: 22px; font-weight: 500; color: var(--text); min-height: 30px; text-align: center; }
+  .circle-wrap { position: relative; width: 200px; height: 200px; display: flex; align-items: center; justify-content: center; }
+  .circle-outer { position: absolute; width: 196px; height: 196px; border-radius: 50%; border: 0.5px solid var(--border); }
+  .circle-inner { position: absolute; border-radius: 50%; background: var(--success-bg); border: 0.5px solid var(--success-border); width: 80px; height: 80px; }
+  .circle-count { position: relative; z-index: 1; font-size: 38px; font-weight: 500; color: var(--success-text); }
+  .btn-row { display: flex; gap: 14px; align-items: center; }
+  .btn-primary { padding: 10px 28px; border-radius: var(--radius); border: 0.5px solid var(--border2); background: var(--bg); color: var(--text); cursor: pointer; font-size: 15px; font-weight: 500; font-family: inherit; }
+  .cycles-label { font-size: 13px; color: var(--text3); }
+  .desc-box { background: var(--bg2); border-radius: var(--radius-lg); padding: 1rem 1.25rem; font-size: 14px; color: var(--text2); line-height: 1.7; }
+  .intro { font-size: 14px; color: var(--text2); margin-bottom: 16px; line-height: 1.7; }
+  .step-list { display: flex; flex-direction: column; gap: 10px; }
+  .step-item { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 1rem 1.25rem; }
+  .step-item.cur { background: var(--info-bg); border-color: var(--info-border); }
+  .step-item.done { cursor: pointer; }
+  .step-header { display: flex; align-items: center; gap: 10px; }
+  .step-num { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 13px; font-weight: 500; background: var(--bg2); color: var(--text3); }
+  .step-num.cur-num { background: var(--info-border); color: #fff; }
+  .step-num.done-num { background: var(--success-bg); color: var(--success-text); }
+  .step-title { font-size: 15px; font-weight: 500; color: var(--text); flex: 1; }
+  .step-check { color: var(--success-text); font-size: 18px; margin-left: auto; }
+  .step-body { margin-top: 10px; font-size: 14px; color: var(--text2); line-height: 1.7; margin-bottom: 12px; }
+  .btn-next { padding: 8px 18px; border-radius: var(--radius); border: 0.5px solid var(--border2); background: var(--bg); color: var(--text); cursor: pointer; font-size: 14px; font-weight: 500; font-family: inherit; }
+  .btn-reset { margin-top: 14px; padding: 8px 18px; border-radius: var(--radius); border: 0.5px solid var(--border); background: transparent; color: var(--text2); cursor: pointer; font-size: 14px; font-family: inherit; }
+  .done-msg { text-align: center; padding: 20px; font-size: 15px; color: var(--success-text); font-weight: 500; }
+  section { display: none; }
+  section.on { display: block; }
+  @media (max-width: 400px) { .tabs { gap: 6px; } .tab { font-size: 13px; padding: 7px 12px; } }
+</style>
+</head>
+<body>
+
+<h1>Ejercicios de relajación</h1>
+<p class="subtitle">Herramientas para practicar entre sesiones. Tómate el tiempo que necesites.</p>
+
+<div class="tabs">
+  <button class="tab on" id="tb-b" onclick="sw('b')">Respiración</button>
+  <button class="tab" id="tb-g" onclick="sw('g')">Anclaje 5-4-3-2-1</button>
+  <button class="tab" id="tb-r" onclick="sw('r')">Relajación muscular</button>
+</div>
+
+<!-- BREATHING -->
+<section class="on" id="s-b">
+  <div class="pat-tabs">
+    <button class="pt on" id="pp-box" onclick="setP('box')">Cuadrada 4-4-4-4</button>
+    <button class="pt" id="pp-478" onclick="setP('478')">Técnica 4-7-8</button>
+    <button class="pt" id="pp-coh" onclick="setP('coh')">Coherente 5-5</button>
+  </div>
+  <div class="breath-center">
+    <p id="ph-lbl" class="phase-label">Presiona iniciar</p>
+    <div class="circle-wrap">
+      <div class="circle-outer"></div>
+      <div id="bcirc" class="circle-inner"></div>
+      <span id="ph-cnt" class="circle-count">—</span>
+    </div>
+    <div class="btn-row">
+      <button id="bsbtn" class="btn-primary" onclick="toggleB()">Iniciar</button>
+      <span id="b-cy" class="cycles-label"></span>
+    </div>
+  </div>
+  <div id="p-desc" class="desc-box"></div>
+</section>
+
+<!-- GROUNDING -->
+<section id="s-g">
+  <p class="intro">Activa tus sentidos para traer la atención al momento presente. Tómate el tiempo que necesites con cada paso.</p>
+  <div class="step-list" id="g-list"></div>
+  <button class="btn-reset" onclick="resetG()">Reiniciar</button>
+</section>
+
+<!-- RELAXATION -->
+<section id="s-r">
+  <p class="intro">Tensa cada grupo muscular unos 5 segundos, luego suelta lentamente. Nota el contraste entre tensión y relajación.</p>
+  <div class="step-list" id="r-list"></div>
+  <button class="btn-reset" onclick="resetR()">Reiniciar</button>
+</section>
+
+<script>
+function sw(m){
+  ['b','g','r'].forEach(x=>{
+    document.getElementById('s-'+x).classList.toggle('on',x===m);
+    document.getElementById('tb-'+x).classList.toggle('on',x===m);
+  });
+  if(m!=='b'&&bOn)toggleB();
+}
+
+// BREATHING
+const PATS={
+  box:{ph:['Inhala','Retén','Exhala','Retén'],t:[4,4,4,4],desc:'La respiración cuadrada equilibra el sistema nervioso autónomo. Inhala, retén, exhala y retén, 4 segundos cada uno. Realiza 4 a 6 ciclos para notar el efecto calmante.'},
+  '478':{ph:['Inhala','Retén','Exhala'],t:[4,7,8],desc:'La técnica 4-7-8 activa el sistema nervioso parasimpático rápidamente. Ideal antes de dormir o en momentos de ansiedad intensa. Practica 3 a 4 ciclos.'},
+  coh:{ph:['Inhala','Exhala'],t:[5,5],desc:'La respiración coherente (5-5) sincroniza el ritmo cardíaco y la respiración. Corresponde a unas 6 respiraciones por minuto, la frecuencia óptima para la regulación emocional.'}
+};
+let pat=PATS.box,bOn=false,bInt=null,bPh=0,bT=0,bCy=0;
+
+function setP(k){
+  if(bOn)toggleB();
+  document.querySelectorAll('.pt').forEach(b=>b.classList.remove('on'));
+  document.getElementById('pp-'+k).classList.add('on');
+  pat=PATS[k];
+  document.getElementById('p-desc').textContent=pat.desc;
+  resetBUI();
+}
+
+function resetBUI(){
+  bPh=0;bT=0;bCy=0;
+  document.getElementById('ph-lbl').textContent='Presiona iniciar';
+  document.getElementById('ph-cnt').textContent='—';
+  document.getElementById('b-cy').textContent='';
+  document.getElementById('bsbtn').textContent='Iniciar';
+  const c=document.getElementById('bcirc');
+  c.style.transition='none';c.style.width='80px';c.style.height='80px';
+}
+
+function toggleB(){
+  if(bOn){
+    bOn=false;clearInterval(bInt);resetBUI();
+  } else {
+    bOn=true;
+    document.getElementById('bsbtn').textContent='Detener';
+    document.getElementById('p-desc').textContent=pat.desc;
+    doPh();
+    bInt=setInterval(tick,1000);
+  }
+}
+
+function doPh(){
+  const p=pat.ph[bPh],t=pat.t[bPh];
+  document.getElementById('ph-lbl').textContent=p;
+  document.getElementById('ph-cnt').textContent=t;
+  bT=t;
+  const c=document.getElementById('bcirc');
+  if(p==='Inhala'){c.style.transition=`width ${t}s ease-in,height ${t}s ease-in`;c.style.width='160px';c.style.height='160px';}
+  else if(p==='Exhala'){c.style.transition=`width ${t}s ease-out,height ${t}s ease-out`;c.style.width='80px';c.style.height='80px';}
+  else{c.style.transition='none';}
+}
+
+function tick(){
+  bT--;
+  if(bT<=0){
+    bPh=(bPh+1)%pat.ph.length;
+    if(bPh===0){bCy++;document.getElementById('b-cy').textContent=bCy+(bCy===1?' ciclo':' ciclos');}
+    doPh();
+  } else {
+    document.getElementById('ph-cnt').textContent=bT;
+  }
+}
+document.getElementById('p-desc').textContent=pat.desc;
+
+// GROUNDING
+const GS=[
+  {n:5,lbl:'5 cosas que ves',txt:'Mira a tu alrededor. Nombra 5 cosas: una por una, fijándote en colores, formas y detalles que normalmente pasas por alto.'},
+  {n:4,lbl:'4 cosas que tocas',txt:'Pon atención a 4 superficies: la ropa sobre tu piel, la silla que te sostiene, el suelo bajo los pies. Nota textura y temperatura.'},
+  {n:3,lbl:'3 cosas que escuchas',txt:'Cierra los ojos un momento. Identifica 3 sonidos: cercanos, lejanos, suaves o fuertes. Solo observa sin juzgar.'},
+  {n:2,lbl:'2 cosas que hueles',txt:'Toma aire despacio y percibe los aromas a tu alrededor. Si no hay nada evidente, nota el olor neutro o fresco del aire mismo.'},
+  {n:1,lbl:'1 cosa que saboreas',txt:'¿Qué sabor o sensación tienes en la boca? Puede ser el sabor de una bebida, de la saliva o simplemente la neutralidad de tu lengua.'}
+];
+let gSt=0;
+
+function buildG(){
+  const c=document.getElementById('g-list');c.innerHTML='';
+  GS.forEach((s,i)=>{
+    const cur=i===gSt,done=i<gSt;
+    const d=document.createElement('div');
+    d.className='step-item'+(cur?' cur':done?' done':'');
+    if(done)d.onclick=()=>{gSt=i;buildG();};
+    d.innerHTML=`<div class="step-header">
+      <div class="step-num ${done?'done-num':cur?'cur-num':''}">${done?'<i class="ti ti-check" aria-hidden="true"></i>':s.n}</div>
+      <span class="step-title">${s.lbl}</span>
+      ${done?'<i class="ti ti-check step-check" aria-hidden="true"></i>':''}
+    </div>
+    ${cur?`<p class="step-body">${s.txt}</p><button class="btn-next" onclick="nextG(event)">${i<GS.length-1?'Siguiente →':'¡Completado!'}</button>`:''}`;
+    c.appendChild(d);
+  });
+}
+function nextG(e){
+  e.stopPropagation();
+  if(gSt<GS.length-1){gSt++;buildG();}
+  else{const d=document.createElement('div');d.className='done-msg';d.textContent='Ejercicio completado. Tómate un momento para notar cómo te sientes.';document.getElementById('g-list').appendChild(d);}
+}
+function resetG(){gSt=0;buildG();}
+buildG();
+
+// RELAXATION
+const RS=[
+  {nm:'Manos y antebrazos',tx:'Aprieta los puños con fuerza durante 5 segundos. Suelta despacio. Nota el calor y el hormigueo que queda.'},
+  {nm:'Bíceps',tx:'Dobla los codos y aprieta los bíceps. Mantén 5 segundos y suelta. Deja caer los brazos con peso.'},
+  {nm:'Hombros',tx:'Sube los hombros hacia las orejas lo más que puedas. Sostén y luego déjalos caer. Siente cuánto espacio hay ahora.'},
+  {nm:'Frente',tx:'Arruga la frente hacia arriba con fuerza. Suelta y siente cómo se alisa. Deja que los ojos se suavicen.'},
+  {nm:'Ojos y nariz',tx:'Cierra los ojos con fuerza y arruga la nariz. Suelta todo y observa la suavidad que queda en tu rostro.'},
+  {nm:'Mandíbula',tx:'Aprieta los dientes y tensa la mandíbula. Al soltar, deja que la boca se abra levemente. Nota la relajación.'},
+  {nm:'Abdomen',tx:'Contrae el abdomen como si esperaras un golpe. Aguanta 5 segundos y suelta. Respira profundamente.'},
+  {nm:'Piernas y pies',tx:'Estira las piernas y dobla los pies hacia ti. Tensa muslos, pantorrillas y pies. Suelta y siente el peso descansando.'}
+];
+let rSt=0;
+
+function buildR(){
+  const c=document.getElementById('r-list');c.innerHTML='';
+  RS.forEach((s,i)=>{
+    const cur=i===rSt,done=i<rSt;
+    const d=document.createElement('div');
+    d.className='step-item'+(cur?' cur':done?' done':'');
+    if(done)d.onclick=()=>{rSt=i;buildR();};
+    d.innerHTML=`<div class="step-header">
+      <div class="step-num ${done?'done-num':cur?'cur-num':''}">${done?'<i class="ti ti-check" aria-hidden="true"></i>':i+1}</div>
+      <span class="step-title">${s.nm}</span>
+    </div>
+    ${cur?`<p class="step-body">${s.tx}</p><button class="btn-next" onclick="nextR(event)">${i<RS.length-1?'Siguiente →':'¡Finalizar!'}</button>`:''}`;
+    c.appendChild(d);
+  });
+}
+function nextR(e){
+  e.stopPropagation();
+  if(rSt<RS.length-1){rSt++;buildR();}
+  else{const d=document.createElement('div');d.className='done-msg';d.textContent='¡Excelente! Disfruta la relajación de todo tu cuerpo durante unos momentos.';document.getElementById('r-list').appendChild(d);}
+}
+function resetR(){rSt=0;buildR();}
+buildR();
+</script>
+</body>
+</html>

@@ -63,6 +63,8 @@ logger = logging.getLogger(__name__)
 pyautogui.PAUSE    = 0.4
 pyautogui.FAILSAFE = True
 
+DEBUG_CLICKS = False  # True → mueve el ratón sin hacer clic y pide confirmación
+
 # ── CALIBRACIÓN — valores por defecto ─────────────────────────────────────────
 
 CAL_DEFAULTS: dict = {
@@ -92,6 +94,22 @@ def load_cal() -> dict:
 
 
 CAL: dict = load_cal()
+
+
+# ── CLICK HELPER ─────────────────────────────────────────────────────────────
+
+def click(x: int, y: int, label: str = "") -> None:
+    """Hace clic en (x, y). En modo DEBUG mueve el ratón y pide confirmación."""
+    tag = f" [{label}]" if label else ""
+    if DEBUG_CLICKS:
+        pyautogui.moveTo(x, y, duration=0.4)
+        resp = input(f"  🖱  Clic en ({x}, {y}){tag} — ¿OK? (s/n): ").strip().lower()
+        if resp != "s":
+            logger.warning(f"Clic cancelado en ({x}, {y}){tag}")
+            return
+    else:
+        logger.debug(f"Click ({x}, {y}){tag}")
+    pyautogui.click(x, y)
 
 
 # ── CALIBRACIÓN INTERACTIVA ───────────────────────────────────────────────────
@@ -399,7 +417,7 @@ def navigate_to_week(monday: date) -> None:
 
     print(f"   📅 Navegando {clicks}x {label}…")
     for _ in range(clicks):
-        pyautogui.click(btn_x, btn_y)
+        click(btn_x, btn_y, label)
         time.sleep(0.6)
 
 
@@ -408,8 +426,8 @@ def click_calendar_slot(wx: int, wy: int, ww: int, wh: int,
     """Hace clic en la celda del calendario para el día y hora dados."""
     _, _, _, col_w, cell_y = calc_grid_metrics(wx, wy, ww, wh, hour, minute)
     cell_x = int(wx + CAL["time_col_px"] + day_offset * col_w + col_w / 2)
-    pyautogui.click(cell_x, cell_y)
-    time.sleep(2.5)  # espera generosa a que el formulario abra completamente
+    click(cell_x, cell_y, f"slot día={day_offset} {hour}:{minute:02d}")
+    time.sleep(2.5)
 
 
 def search_and_select_patient(wx: int, wy: int, ww: int, wh: int, name: str) -> None:
@@ -417,27 +435,24 @@ def search_and_select_patient(wx: int, wy: int, ww: int, wh: int, name: str) -> 
     search_x = int(wx + ww * CAL["search_box_x"])
     search_y = int(wy + wh * CAL["search_box_y"])
 
-    # Triple clic para asegurar foco + selección total del campo
-    pyautogui.click(search_x, search_y)
+    click(search_x, search_y, "campo búsqueda")
     time.sleep(0.3)
-    pyautogui.click(search_x, search_y)
+    click(search_x, search_y, "campo búsqueda x2")
     time.sleep(0.3)
     pyautogui.hotkey("command", "a")
     time.sleep(0.2)
 
-    # Pegar vía clipboard para soportar acentos y caracteres especiales
     sp.run(["pbcopy"], input=name.encode("utf-8"), check=True)
     pyautogui.hotkey("command", "v")
-    time.sleep(2.5)  # esperar a que carguen los resultados de búsqueda
+    time.sleep(2.5)
 
-    # Seleccionar el primer resultado
-    pyautogui.click(search_x, search_y + CAL["first_result_dy"])
+    click(search_x, search_y + CAL["first_result_dy"], "primer resultado")
     time.sleep(0.8)
 
 
 def click_crear_cita(wx: int, wy: int, ww: int, wh: int) -> None:
     """Pulsa el botón '+ Crear cita'."""
-    pyautogui.click(int(wx + ww * CAL["crear_btn_x"]), int(wy + wh * CAL["crear_btn_y"]))
+    click(int(wx + ww * CAL["crear_btn_x"]), int(wy + wh * CAL["crear_btn_y"]), "crear cita")
     time.sleep(1.0)
 
 
@@ -592,13 +607,18 @@ def main() -> None:
 
     _show_cal_status()
 
-    # ── Opción de calibración al inicio ──────────────────────────────────────
-    print("\n  [C] Recalibrar pantalla ahora")
-    print("  [ENTER] Continuar con la calibración actual\n")
+    # ── Opciones al inicio ────────────────────────────────────────────────────
+    print("\n  [C] Recalibrar pantalla")
+    print("  [D] Modo debug (mueve el ratón y pide confirmación antes de cada clic)")
+    print("  [ENTER] Sincronizar\n")
     resp = input("  Opción: ").strip().lower()
     if resp == "c":
         run_calibration()
-        print("\n✅ Calibración guardada. Continuando con la sincronización...\n")
+        print("\n✅ Calibración guardada. Continuando...\n")
+    elif resp == "d":
+        global DEBUG_CLICKS
+        DEBUG_CLICKS = True
+        print("\n🐛 Modo debug activado — confirmarás cada clic antes de ejecutarlo.\n")
 
     # 1. Conectar con Google Calendar
     print("\n📅 Conectando con Google Calendar…")

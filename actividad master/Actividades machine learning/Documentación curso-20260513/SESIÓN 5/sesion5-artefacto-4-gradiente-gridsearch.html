@@ -1,0 +1,1486 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Sesión 5 · Regresión, gradiente y GridSearch</title>
+<style>
+  :root{
+    --crema:#F2EFE6;
+    --tinta:#0E1B4D;
+    --tinta-2:#1B2A6B;
+    --azul:#3FA9F5;
+    --azul-2:#1F8AD9;
+    --rojo:#D85C3E;
+    --verde:#2E9E6E;
+    --amber:#E0A23A;
+    --gris:#7A7A7A;
+    --gris-2:#C9C5B8;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--crema);color:var(--tinta);font-family:Georgia,'Times New Roman',serif;line-height:1.55}
+  .mono{font-family:'SF Mono',Menlo,Monaco,Consolas,monospace}
+  .upper{text-transform:uppercase;letter-spacing:.18em;font-weight:600}
+
+  .wrap{max-width:1240px;margin:0 auto;padding:48px 32px 96px}
+  header.hero{padding:64px 0 48px;border-bottom:1px solid var(--gris-2)}
+  header .tag{font-size:11px;color:var(--azul-2)}
+  header h1{font-size:60px;line-height:1.05;margin:24px 0 16px;font-weight:700;letter-spacing:-.02em}
+  header h1 em{font-style:italic;color:var(--azul-2);font-weight:400}
+  header p.lead{font-size:19px;color:var(--tinta-2);max-width:780px;margin:0}
+
+  section{padding:56px 0;border-bottom:1px solid var(--gris-2)}
+  section .step-tag{font-size:11px;color:var(--azul-2)}
+  section h2{font-size:42px;margin:12px 0 16px;font-weight:700;letter-spacing:-.01em;line-height:1.1}
+  section h2 em{font-style:italic;color:var(--azul-2);font-weight:400}
+  section p.intro{font-size:17px;color:var(--tinta-2);max-width:880px;margin:0 0 24px}
+
+  .card{background:#fff;border:1px solid var(--gris-2);border-radius:10px;padding:22px}
+
+  /* Métricas de regresión */
+  .metric-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:18px}
+  .mc{background:#fff;border:1px solid var(--gris-2);border-radius:8px;padding:18px;border-top:4px solid var(--azul)}
+  .mc.mae{border-top-color:var(--azul)}
+  .mc.mse{border-top-color:var(--amber)}
+  .mc.rmse{border-top-color:var(--rojo)}
+  .mc.r2{border-top-color:var(--verde)}
+  .mc .k{font-size:11px;color:var(--gris);text-transform:uppercase;letter-spacing:.12em}
+  .mc h4{margin:6px 0 4px;font-size:18px}
+  .mc .formula{font-family:'SF Mono',monospace;font-size:11px;color:var(--tinta-2);background:#FAF8F1;padding:4px 8px;border-radius:4px;display:inline-block}
+  .mc .v{font-size:28px;font-weight:700;font-family:Georgia,serif;margin-top:10px}
+  .mc .desc{font-size:11px;color:var(--tinta-2);margin-top:6px}
+
+  .lab{display:grid;grid-template-columns:1fr 1.2fr;gap:24px;margin-top:18px}
+
+  /* Sliders / controls */
+  .slider-row{display:flex;align-items:center;justify-content:space-between;font-family:'SF Mono',monospace;font-size:13px;margin-bottom:4px;margin-top:14px}
+  input[type=range]{width:100%;accent-color:var(--azul-2)}
+
+  svg.chart{width:100%;height:380px;display:block;background:#FAF8F1;border-radius:8px}
+
+  .btn{appearance:none;border:1px solid var(--tinta);background:transparent;color:var(--tinta);padding:10px 18px;font-family:inherit;font-size:14px;cursor:pointer;border-radius:4px;font-weight:600;transition:.15s}
+  .btn:hover{background:var(--tinta);color:var(--crema)}
+  .btn.primary{background:var(--azul-2);color:#fff;border-color:var(--azul-2)}
+  .btn.primary:hover{background:var(--tinta);border-color:var(--tinta)}
+  .btn[disabled]{opacity:.4;cursor:not-allowed}
+  .controls{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+
+  pre.code{background:#0a0e2c;color:#e8e8e8;padding:16px 18px;border-radius:8px;font-size:12px;line-height:1.6;overflow-x:auto;margin:14px 0 0;font-family:'SF Mono',monospace}
+  pre.code .kw{color:#c084fc}
+  pre.code .fn{color:#fbbf24}
+  pre.code .st{color:#86efac}
+  pre.code .nm{color:#f59e0b}
+  pre.code .cm{color:#7a8aa8;font-style:italic}
+
+  .note{background:#E5F1FB;border-left:4px solid var(--azul);padding:14px 18px;border-radius:4px;margin-top:18px;font-size:14px;color:var(--tinta-2)}
+  .note b{color:var(--tinta)}
+  .tip{background:#E0F4E8;border-left-color:var(--verde)}
+  .warning{background:#FBE5DD;border-left-color:var(--rojo)}
+
+  /* Param vs hiperparam */
+  .ph{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px}
+  .ph .c{background:#fff;border:1px solid var(--gris-2);border-radius:8px;padding:22px;border-top:4px solid var(--azul)}
+  .ph .c.h{border-top-color:var(--amber)}
+  .ph .c .k{font-size:11px;color:var(--gris);text-transform:uppercase;letter-spacing:.12em}
+  .ph .c h3{margin:8px 0 8px;font-size:22px}
+  .ph .c .ex{font-family:'SF Mono',monospace;font-size:12px;background:#FAF8F1;padding:8px;border-radius:4px;margin-top:10px;color:var(--tinta-2)}
+
+  /* Gradiente */
+  .gd-presets{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+  .preset{padding:12px;background:#fff;border:1px solid var(--gris-2);border-radius:6px;cursor:pointer;font-family:inherit;color:var(--tinta);font-size:13px;text-align:left;transition:.15s}
+  .preset:hover{border-color:var(--azul)}
+  .preset.active{background:var(--tinta);color:#fff;border-color:var(--tinta)}
+  .preset .t{font-weight:700;font-family:'SF Mono',monospace}
+  .preset .d{font-size:11px;opacity:.85;margin-top:2px}
+
+  .gd-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px;font-family:'SF Mono',monospace;font-size:12px}
+  .gd-stat{background:#FAF8F1;padding:10px;border-radius:6px;text-align:center}
+  .gd-stat .l{font-size:10px;color:var(--gris);text-transform:uppercase;letter-spacing:.12em}
+  .gd-stat .v{font-size:18px;font-weight:700;margin-top:2px}
+
+  /* === GridSearch · rediseño completo === */
+  .gs-intro{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-top:18px}
+  .gs-intro .item{background:#fff;border:1px solid var(--gris-2);border-radius:8px;padding:18px;border-top:4px solid var(--gris-2)}
+  .gs-intro .item.problem{border-top-color:var(--rojo)}
+  .gs-intro .item.solution{border-top-color:var(--azul)}
+  .gs-intro .item.warn{border-top-color:var(--amber)}
+  .gs-intro .item .k{font-size:11px;color:var(--gris);text-transform:uppercase;letter-spacing:.12em}
+  .gs-intro .item h4{margin:6px 0 8px;font-size:18px}
+  .gs-intro .item p{font-size:13px;color:var(--tinta-2);margin:0}
+  .gs-intro .item .big{font-size:30px;font-weight:700;font-family:Georgia,serif;color:var(--rojo);margin:6px 0}
+  .gs-intro .item.solution .big{color:var(--azul-2)}
+  .gs-intro .item.warn .big{color:var(--amber)}
+
+  /* Anatomía de una celda */
+  .anatomy{display:grid;grid-template-columns:auto 1fr;gap:18px;margin-top:18px;background:#fff;border:1px solid var(--gris-2);border-radius:8px;padding:22px}
+  .anatomy svg{width:260px;height:200px}
+  .anatomy .desc h5{margin:0 0 8px;font-size:16px}
+  .anatomy .desc p{font-size:14px;color:var(--tinta-2);margin:0 0 8px}
+  .anatomy .desc .row{display:flex;gap:10px;align-items:center;font-size:13px;margin-top:6px}
+  .anatomy .desc .row i{width:14px;height:14px;border-radius:3px;flex-shrink:0}
+
+  /* Heatmap principal */
+  .heatmap-wrapper{background:#fff;border:1px solid var(--gris-2);border-radius:10px;padding:22px;margin-top:18px}
+  .heatmap-toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+  .heatmap-toolbar .speed{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--tinta-2);font-family:'SF Mono',monospace}
+  .heatmap-toolbar select{padding:6px 10px;border:1px solid var(--gris-2);border-radius:4px;font-family:'SF Mono',monospace;font-size:12px;background:#fff;color:var(--tinta)}
+
+  .grid-heatmap{display:grid;gap:6px;font-family:'SF Mono',monospace;font-size:11px}
+  .gh-axis-label{font-size:10px;color:var(--gris);text-transform:uppercase;letter-spacing:.12em;text-align:center;padding:4px}
+  .gh-axis-label.left{writing-mode:vertical-rl;transform:rotate(180deg);align-self:center;justify-self:center}
+  .gh-cell{background:#fff;padding:12px 10px;border-radius:6px;text-align:center;color:var(--tinta);transition:background .3s,transform .15s;border:1.5px solid transparent;cursor:pointer;min-height:74px;display:flex;flex-direction:column;justify-content:center}
+  .gh-cell:hover{transform:scale(1.04);border-color:var(--tinta);z-index:2}
+  .gh-cell .v{font-weight:700;font-size:14px;letter-spacing:-.01em}
+  .gh-cell .lbl{font-size:9px;color:var(--tinta-2);opacity:.7;margin-top:2px}
+  .gh-cell .folds{display:flex;gap:1px;justify-content:center;margin-top:4px;height:6px}
+  .gh-cell .folds span{width:10px;background:rgba(14,27,77,.18);border-radius:1px;transition:background .25s}
+  .gh-cell .folds span.done{background:var(--verde)}
+  .gh-cell.best{outline:3px solid var(--verde);outline-offset:1px;box-shadow:0 4px 20px rgba(46,158,110,.3);transform:scale(1.04)}
+  .gh-cell.testing{outline:3px solid var(--amber);outline-offset:1px;animation:pulse 0.6s ease-in-out infinite}
+  @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(224,162,58,.4)}50%{box-shadow:0 0 0 8px rgba(224,162,58,0)}}
+  .gh-row-lbl{font-size:11px;color:var(--gris);padding:6px;display:flex;align-items:center;justify-content:flex-end;text-transform:uppercase;letter-spacing:.08em}
+  .gh-col-lbl{font-size:11px;color:var(--gris);padding:6px;text-align:center;text-transform:uppercase;letter-spacing:.08em}
+
+  /* Frontera SVM en vivo */
+  .svm-preview{margin-top:14px;background:#FAF8F1;border-radius:8px;padding:14px;border:1px solid var(--gris-2)}
+  .svm-preview .head{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:8px}
+  .svm-preview .head .ttl{font-family:'SF Mono',monospace;font-size:12px;color:var(--tinta);font-weight:600}
+  .svm-preview .head .params{font-family:'SF Mono',monospace;font-size:11px;color:var(--tinta-2);background:#fff;padding:4px 10px;border-radius:12px;border:1px solid var(--gris-2)}
+  .svm-preview svg{width:100%;height:240px;display:block;background:#fff;border-radius:6px}
+  .svm-preview .verdict{margin-top:8px;font-size:12px;color:var(--tinta-2);font-style:italic;text-align:center}
+  .svm-preview .verdict.under{color:var(--rojo)}
+  .svm-preview .verdict.over{color:var(--rojo)}
+  .svm-preview .verdict.good{color:var(--verde)}
+
+  /* CV inside a cell */
+  .cv-detail{margin-top:14px;background:#FAF8F1;border-radius:8px;padding:14px;border:1px solid var(--gris-2);font-family:'SF Mono',monospace;font-size:12px;display:none}
+  .cv-detail.show{display:block}
+  .cv-detail .ttl{color:var(--tinta);font-weight:700;margin-bottom:8px}
+  .cv-detail .fold-row{display:flex;align-items:center;gap:10px;margin-top:4px}
+  .cv-detail .fold-name{width:60px;color:var(--gris)}
+  .cv-detail .fold-bar{flex:1;height:18px;background:#fff;border:1px solid var(--gris-2);border-radius:3px;position:relative;overflow:hidden}
+  .cv-detail .fold-bar .fill{height:100%;background:var(--azul-2);transition:width .3s}
+  .cv-detail .fold-bar .num{position:absolute;right:6px;top:0;bottom:0;display:flex;align-items:center;font-weight:700;color:var(--tinta);font-size:11px}
+  .cv-detail .avg{margin-top:10px;padding-top:10px;border-top:1px dashed var(--gris-2);color:var(--tinta);font-weight:700}
+
+  /* Explosión combinatoria */
+  .explosion-tbl{width:100%;border-collapse:collapse;margin-top:14px;font-family:'SF Mono',monospace;font-size:12px}
+  .explosion-tbl th{background:#E5E7F5;padding:10px;text-align:left;color:var(--tinta);text-transform:uppercase;font-size:10px;letter-spacing:.12em;font-weight:600}
+  .explosion-tbl td{padding:10px;border-bottom:1px solid var(--gris-2);color:var(--tinta-2)}
+  .explosion-tbl td:last-child{font-weight:700;text-align:right;color:var(--tinta);font-family:'SF Mono',monospace}
+  .explosion-tbl tr.danger td:last-child{color:var(--rojo)}
+  .explosion-tbl tr.danger td{background:rgba(216,92,62,.04)}
+
+  /* Random vs Grid */
+  .vs{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px}
+  .vs .item{background:#fff;border:1px solid var(--gris-2);border-radius:8px;padding:22px;border-top:4px solid var(--azul)}
+  .vs .item.random{border-top-color:var(--amber)}
+  .vs .item .k{font-size:11px;color:var(--gris);text-transform:uppercase;letter-spacing:.12em}
+  .vs .item h4{margin:6px 0 8px;font-size:20px}
+  .vs .item svg{width:100%;height:180px;display:block;background:#FAF8F1;border-radius:6px;margin:10px 0}
+  .vs .item .desc{font-size:13px;color:var(--tinta-2);margin:0}
+
+  /* === Grid pro · nuevo layout con miniaturas SVG === */
+  .grid-pro{background:#fff;border:1px solid var(--gris-2);border-radius:12px;padding:24px;margin-top:18px}
+  .grid-pro-header{display:flex;justify-content:space-between;align-items:flex-end;gap:14px;margin-bottom:18px;flex-wrap:wrap}
+  .grid-pro-controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .grid-pro-controls select{padding:8px 12px;border:1px solid var(--gris-2);border-radius:6px;font-family:inherit;font-size:13px;background:#fff;color:var(--tinta);cursor:pointer}
+
+  /* Header con las etiquetas de gamma */
+  .grid-pro-gamma-labels{display:grid;grid-template-columns:90px repeat(4,1fr);gap:8px;align-items:end;padding-bottom:8px;border-bottom:2px solid var(--gris-2)}
+  .grid-pro-gamma-labels .axis-title{font-family:'SF Mono',monospace;font-size:10px;color:var(--tinta);text-transform:uppercase;letter-spacing:.1em;font-weight:700;text-align:right;padding-right:8px}
+  .grid-pro-gamma-labels .lbl{text-align:center;font-family:'SF Mono',monospace;font-size:13px;color:var(--tinta);font-weight:600}
+  .grid-pro-gamma-labels .lbl .name{font-size:10px;color:var(--gris);text-transform:uppercase;letter-spacing:.12em;font-weight:500;margin-bottom:2px}
+
+  /* Body: labels C (vertical) + cells */
+  .grid-pro-body{display:grid;grid-template-columns:90px 1fr;gap:8px;margin-top:14px}
+  .grid-pro-c-labels{display:grid;grid-template-rows:repeat(3,1fr);gap:10px}
+  .grid-pro-c-labels .lbl{display:flex;flex-direction:column;align-items:flex-end;justify-content:center;padding-right:12px;font-family:'SF Mono',monospace;font-size:13px;color:var(--tinta);font-weight:600;border-right:2px solid var(--gris-2)}
+  .grid-pro-c-labels .lbl .name{font-size:10px;color:var(--gris);text-transform:uppercase;letter-spacing:.12em;font-weight:500;margin-bottom:2px}
+
+  /* Cells: 3 filas × 4 columnas */
+  .grid-pro-cells{display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(3,1fr);gap:10px}
+  .gp-cell{background:#FAF8F1;border:2px solid var(--gris-2);border-radius:8px;padding:8px;cursor:pointer;transition:transform .2s, box-shadow .2s, border-color .2s;position:relative;display:flex;flex-direction:column;overflow:hidden}
+  .gp-cell:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(14,27,77,.12);border-color:var(--tinta);z-index:2}
+  .gp-cell.idle{opacity:.5}
+  .gp-cell.testing{border-color:var(--amber);background:#FEF5E0;animation:cellpulse 1s ease-in-out infinite}
+  .gp-cell.done{opacity:1}
+  .gp-cell.best{border-color:var(--verde);border-width:3px;background:#E8F7EF;box-shadow:0 0 0 4px rgba(46,158,110,.15)}
+  .gp-cell.selected{border-color:var(--azul-2);border-width:3px;box-shadow:0 0 0 4px rgba(63,169,245,.18)}
+  @keyframes cellpulse{0%,100%{box-shadow:0 0 0 0 rgba(224,162,58,.5)}50%{box-shadow:0 0 0 8px rgba(224,162,58,0)}}
+
+  .gp-cell-mini{width:100%;aspect-ratio:1.6/1;background:#fff;border-radius:5px;border:1px solid var(--gris-2);position:relative;overflow:hidden}
+  .gp-cell-mini svg{width:100%;height:100%;display:block}
+  .gp-cell-mini .empty-marker{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--gris-2);font-size:24px;font-weight:700;font-family:'SF Mono',monospace}
+
+  .gp-cell-info{display:flex;justify-content:space-between;align-items:center;margin-top:6px;font-family:'SF Mono',monospace}
+  .gp-cell-info .score{font-size:14px;font-weight:700;color:var(--tinta)}
+  .gp-cell-info .score.placeholder{color:var(--gris-2)}
+  .gp-cell-info .folds-track{display:flex;gap:2px}
+  .gp-cell-info .folds-track span{width:9px;height:5px;border-radius:1px;background:rgba(14,27,77,.18)}
+  .gp-cell-info .folds-track span.done{background:var(--verde)}
+  .gp-cell-info .folds-track span.fold-active{background:var(--amber);animation:foldblink .4s ease-in-out infinite}
+  @keyframes foldblink{0%,100%{opacity:.4}50%{opacity:1}}
+
+  .gp-cell-badge{position:absolute;top:6px;right:6px;background:var(--verde);color:#fff;font-family:'SF Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:.1em;padding:2px 6px;border-radius:3px;font-weight:700;display:none;z-index:3}
+  .gp-cell.best .gp-cell-badge{display:block}
+
+  /* Footer con stats */
+  .grid-pro-footer{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:18px;background:var(--tinta);border-radius:10px;padding:18px;color:#fff}
+  .grid-pro-stat{padding:6px 4px}
+  .grid-pro-stat .l{font-family:'SF Mono',monospace;font-size:10px;color:#9DD2F8;text-transform:uppercase;letter-spacing:.12em;margin-bottom:4px}
+  .grid-pro-stat .v{font-size:20px;font-weight:700;font-family:'SF Mono',monospace}
+
+  /* Panel de detalle al hacer clic */
+  .cell-detail{margin-top:18px;background:#FAF8F1;border:1px solid var(--gris-2);border-radius:10px;padding:22px;display:none}
+  .cell-detail.show{display:block;animation:fadein .3s ease-out}
+  @keyframes fadein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  .cell-detail-head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;flex-wrap:wrap;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--gris-2)}
+  .cell-detail-head h4{font-family:'SF Mono',monospace;color:var(--tinta);font-size:18px;font-weight:700}
+  .cell-detail-verdict{padding:8px 14px;border-radius:20px;font-size:12px;font-weight:700;font-family:'SF Mono',monospace;background:var(--gris-2);color:var(--tinta)}
+  .cell-detail-verdict.good{background:var(--verde);color:#fff}
+  .cell-detail-verdict.under{background:var(--amber);color:#fff}
+  .cell-detail-verdict.over{background:var(--rojo);color:#fff}
+  .cell-detail-verdict.mid{background:var(--azul-2);color:#fff}
+  .cell-detail-body{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+  .cell-detail-body svg{background:#fff;border-radius:8px;border:1px solid var(--gris-2);display:block;width:100%}
+  .cell-detail-fold{display:flex;align-items:center;gap:10px;margin-bottom:8px;font-family:'SF Mono',monospace}
+  .cell-detail-fold .name{width:60px;font-size:11px;color:var(--gris);text-transform:uppercase;letter-spacing:.1em}
+  .cell-detail-fold .bar{flex:1;height:22px;background:#fff;border:1px solid var(--gris-2);border-radius:4px;position:relative;overflow:hidden}
+  .cell-detail-fold .bar .fill{height:100%;background:linear-gradient(90deg,var(--azul-2),var(--verde));transition:width .4s}
+  .cell-detail-fold .num{position:absolute;right:8px;top:0;bottom:0;display:flex;align-items:center;font-weight:700;color:var(--tinta);font-size:12px}
+  .cell-detail-summary{margin-top:14px;padding:14px;background:#fff;border-radius:8px;border:1px solid var(--gris-2);font-family:'SF Mono',monospace}
+  .cell-detail-summary .row{display:flex;justify-content:space-between;font-size:13px;padding:4px 0}
+  .cell-detail-summary .row b{color:var(--tinta);font-weight:700}
+  .cell-detail-summary .row .v{color:var(--azul-2);font-weight:700;font-size:15px}
+
+  @media (max-width:880px){
+    .grid-pro-gamma-labels,.grid-pro-body{grid-template-columns:60px 1fr 1fr}
+    .grid-pro-c-labels{grid-template-rows:repeat(3,1fr)}
+    .grid-pro-cells{grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(6,1fr)}
+    .grid-pro-footer,.cell-detail-body{grid-template-columns:1fr}
+  }
+
+  /* Pipeline correcto */
+  .pipeline-correct{margin-top:18px;background:#fff;border:1px solid var(--gris-2);border-radius:10px;padding:22px}
+  .pipeline-correct .flow{display:flex;gap:0;align-items:stretch;flex-wrap:wrap;margin-top:14px;font-family:'SF Mono',monospace;font-size:12px}
+  .pipeline-correct .flow .step{flex:1;min-width:140px;background:#FAF8F1;padding:14px;border-radius:6px;text-align:center;position:relative;border:1px solid var(--gris-2)}
+  .pipeline-correct .flow .step.bad{background:#FBE0DA;border-color:var(--rojo);color:var(--rojo)}
+  .pipeline-correct .flow .step.good{background:#D8F1E5;border-color:var(--verde);color:var(--verde)}
+  .pipeline-correct .flow .arrow{display:flex;align-items:center;font-size:18px;color:var(--gris);padding:0 6px}
+  .pipeline-correct .flow .step .lbl{font-size:9px;text-transform:uppercase;letter-spacing:.12em;color:var(--gris);margin-bottom:4px}
+  .pipeline-correct .flow .step .nm{font-size:13px;font-weight:700;color:inherit;font-family:'SF Mono',monospace}
+  .pipeline-correct .flow .step.bad .nm,.pipeline-correct .flow .step.good .nm{color:inherit}
+
+  .winner-box{margin-top:14px;padding:16px;background:var(--tinta);color:var(--crema);border-radius:8px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+  .winner-box .l{color:#9DD2F8;font-size:11px;text-transform:uppercase;letter-spacing:.12em}
+  .winner-box .v{font-size:22px;font-weight:700;font-family:'SF Mono',monospace;margin-top:2px}
+
+  /* Recap pasos */
+  .recap{padding:48px 32px;background:var(--tinta);color:var(--crema);border-radius:12px;margin-top:24px}
+  .recap h2{color:var(--crema);font-size:38px;margin:0 0 24px}
+  .recap h2 em{color:#9DD2F8}
+  .recap .steps{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;font-size:12px}
+  .recap .step{background:rgba(255,255,255,.06);padding:14px;border-radius:6px;border-top:3px solid var(--azul)}
+  .recap .step.last{background:rgba(63,169,245,.18);border-top-color:#9DD2F8}
+  .recap .step .n{font-family:'SF Mono',monospace;font-size:10px;color:#9DD2F8;margin-bottom:6px}
+  .recap .step b{display:block;font-size:14px;margin-bottom:4px}
+  .recap .step span{font-size:11px;opacity:.85}
+
+  @media (max-width:880px){
+    header h1{font-size:42px}
+    section h2{font-size:32px}
+    .metric-cards,.lab,.ph,.gd-presets,.gd-stats,.recap .steps{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <div class="upper tag">Tema 5 · Sesión 05 · Artefacto 4</div>
+  <h1>Métricas, <em>gradiente</em> y GridSearch.</h1>
+  <p class="lead">Imagina que predices el precio de un piso. El precio real es 200 000 €, tu modelo dice 215 000 €. Te equivocaste en 15 000 €. ¿Y ahora qué? Hay cuatro formas distintas de promediar esas distancias. Luego: cómo aprende el modelo (gradiente descendente, bajar la montaña con los ojos cerrados) y cómo encontrar los mejores hiperparámetros sin probar a mano (GridSearchCV).</p>
+</header>
+
+<!-- Métricas de regresión -->
+<section style="border-bottom:none">
+  <div class="upper step-tag">Métricas de regresión · cuatro formas de medir cuánto fallaste</div>
+  <h2>Predecir es <em>tirar al centro</em>.</h2>
+  <p class="intro">El valor real es la diana. Tu predicción es donde clava el dardo. La distancia entre ambos es el error. Las cuatro métricas son distintas formas de promediar esas distancias. Mueve los puntos del scatter y mira cómo reaccionan.</p>
+
+  <div class="lab">
+    <div>
+      <div class="card">
+        <div class="upper step-tag">Caso GymPro · meses hasta la baja</div>
+        <h4 style="margin:6px 0 8px">Predecimos cuántos meses se quedará un socio</h4>
+        <p style="font-size:14px;color:var(--tinta-2)">8 socios. Real vs predicción. Mueve el slider de ruido y mira cómo cambian las cuatro métricas.</p>
+
+        <div class="slider-row"><span>Nivel de ruido del modelo</span><span><b id="noise-val">1.5</b></span></div>
+        <input type="range" id="noise-slider" min="0" max="6" step="0.1" value="1.5" />
+
+        <div class="slider-row"><span>Un outlier (predicción que se va lejos)</span><span><b id="out-val">0</b></span></div>
+        <input type="range" id="out-slider" min="0" max="15" step="0.5" value="0" />
+        <div style="font-size:11px;color:var(--gris);margin-top:4px">Añade un fallo «catastrófico» en uno de los socios.</div>
+
+        <div class="metric-cards">
+          <div class="mc mae">
+            <div class="k">MAE</div>
+            <h4>Error absoluto medio</h4>
+            <div class="formula">Σ|yᵢ−ŷᵢ| / n</div>
+            <div class="v" id="m-mae">—</div>
+            <div class="desc">«Me equivoco de media en X meses».<br>Fácil de entender.</div>
+          </div>
+          <div class="mc mse">
+            <div class="k">MSE</div>
+            <h4>Error cuadrático</h4>
+            <div class="formula">Σ(yᵢ−ŷᵢ)² / n</div>
+            <div class="v" id="m-mse">—</div>
+            <div class="desc">Castiga errores <em>grandes</em>. Útil si un fallo gordo es catastrófico.</div>
+          </div>
+          <div class="mc rmse">
+            <div class="k">RMSE</div>
+            <h4>Raíz del MSE</h4>
+            <div class="formula">√(MSE)</div>
+            <div class="v" id="m-rmse">—</div>
+            <div class="desc">El más popular. <em>«Me desvío X meses»</em>, pero penaliza fallos gordos.</div>
+          </div>
+          <div class="mc r2">
+            <div class="k">R²</div>
+            <h4>Determinación</h4>
+            <div class="formula">1 − SS_res / SS_tot</div>
+            <div class="v" id="m-r2">—</div>
+            <div class="desc">0–1. Qué fracción de la variabilidad explica el modelo.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="card">
+        <div class="upper step-tag">Real vs predicción</div>
+        <svg class="chart" id="reg-chart" viewBox="0 0 700 380"></svg>
+        <div style="font-size:13px;color:var(--tinta-2);margin-top:8px"><b style="color:var(--tinta)">Azul oscuro:</b> valor real. <b style="color:var(--rojo)">Rojo:</b> predicción. <b>Líneas grises:</b> error (residuo).</div>
+
+        <div class="note" id="reg-advice"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="note tip"><b>El símil del dardo:</b> MAE = cada metro de error pesa lo mismo. MSE/RMSE = un dardo a 10 m del centro es <em>100 veces peor</em> que uno a 1 m. R² = «¿voy mejor que tirar al bulto?». Si el R² ≈ 0, predecir la media bastaría.</div>
+</section>
+
+<!-- Param vs hiperparam -->
+<section style="border-bottom:none">
+  <div class="upper step-tag">Parámetros vs hiperparámetros</div>
+  <h2>La <em>receta</em> y el cocinero.</h2>
+  <p class="intro">La misma masa con distinta receta da pan o bizcocho. Los datos son los mismos, pero los hiperparámetros marcan qué modelo sale.</p>
+  <div class="ph">
+    <div class="c">
+      <div class="upper k">Parámetros</div>
+      <h3>Lo que <em>aprende</em> el modelo</h3>
+      <p style="color:var(--tinta-2);margin:0">Los <b>pesos</b> de una red neuronal, los coeficientes de una regresión, las divisiones de un árbol. El algoritmo los ajusta <b>solo</b>, mientras entrena.</p>
+      <div class="ex">model.coef_  =  [0.42, -1.13, 2.87]<br/>model.intercept_  =  3.5</div>
+      <p style="font-size:12px;color:var(--azul-2);margin-top:8px;font-style:italic">Analogía: los gestos que el cocinero perfecciona practicando.</p>
+    </div>
+    <div class="c h">
+      <div class="upper k">Hiperparámetros</div>
+      <h3>Lo que <em>tú</em> decides antes</h3>
+      <p style="color:var(--tinta-2);margin:0">Cuántas neuronas tiene la red, qué tipo de penalización usa el SVM, cuántos árboles en un Random Forest. Se eligen <b>antes</b> de entrenar.</p>
+      <div class="ex">RandomForestClassifier(<br/>&nbsp;&nbsp;n_estimators=100,<br/>&nbsp;&nbsp;max_depth=10,<br/>&nbsp;&nbsp;min_samples_split=2)</div>
+      <p style="font-size:12px;color:var(--amber);margin-top:8px;font-style:italic">Analogía: la receta que el chef decide seguir.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Gradiente descendente -->
+<section style="border-bottom:none">
+  <div class="upper step-tag">Cómo aprende un modelo</div>
+  <h2>El gradiente <em>descendente</em>.</h2>
+  <p class="intro">El error del modelo es una función matemática. Entrenarlo es <b>minimizar</b> esa función. El gradiente descendente es la receta universal: tocas el suelo con el pie, miras hacia dónde baja, das un paso, repites. El <em>tamaño del paso</em> (learning rate) lo es todo.</p>
+
+  <div class="lab">
+    <div>
+      <div class="card">
+        <div class="upper step-tag">Tres presets · learning rate</div>
+        <div class="gd-presets" id="gd-presets">
+          <button class="preset active" data-id="ideal"><div class="t">lr = 0.10</div><div class="d">Llega al valle</div></button>
+          <button class="preset" data-id="slow"><div class="t">lr = 0.01</div><div class="d">Demasiado lento</div></button>
+          <button class="preset" data-id="big"><div class="t">lr = 0.95</div><div class="d">Diverge · se pasa</div></button>
+        </div>
+
+        <div class="slider-row"><span>Learning rate · manual</span><span><b id="lr-val">0.10</b></span></div>
+        <input type="range" id="lr-slider" min="0.005" max="1.0" step="0.005" value="0.1" />
+
+        <div class="controls">
+          <button class="btn primary" id="gd-play">▶ Bajar la montaña</button>
+          <button class="btn" id="gd-reset">↺ Reset</button>
+        </div>
+
+        <div class="gd-stats">
+          <div class="gd-stat"><div class="l">paso actual</div><div class="v" id="gd-step">0</div></div>
+          <div class="gd-stat"><div class="l">x</div><div class="v" id="gd-x">—</div></div>
+          <div class="gd-stat"><div class="l">loss</div><div class="v" id="gd-loss">—</div></div>
+        </div>
+
+<pre class="code">w = <span class="nm">3.0</span>           <span class="cm"># punto de partida</span>
+lr = <span class="nm">0.1</span>          <span class="cm"># tamaño del paso</span>
+
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="nm">50</span>):
+    grad = <span class="fn">gradient</span>(w)
+    w = w - lr * grad</pre>
+
+        <div class="note" id="gd-note" style="margin-top:14px"></div>
+      </div>
+    </div>
+    <div>
+      <div class="card">
+        <div class="upper step-tag">La función de error · «la montaña»</div>
+        <svg class="chart" id="gd-chart" viewBox="0 0 700 380"></svg>
+        <div style="font-size:13px;color:var(--tinta-2);margin-top:8px"><b style="color:var(--rojo)">Bolita roja:</b> dónde está el modelo. <b>Líneas:</b> cada paso del gradiente. <b style="color:var(--verde)">★:</b> el mínimo (modelo óptimo).</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================ -->
+<!-- GRIDSEARCH · sección rediseñada                                   -->
+<!-- ================================================================ -->
+<section style="border-bottom:none">
+  <div class="upper step-tag">Hiperparámetros automatizados · GridSearchCV</div>
+  <h2>¿Cuál es la <em>mejor combinación</em>?</h2>
+  <p class="intro">Has visto que <b>los hiperparámetros</b> los eliges tú antes de entrenar. Pero entonces… ¿cómo sabes cuáles son los buenos? La opción ingenua es probar a mano: «pongo C=1, entreno, mido… ahora pruebo con C=10…». Aburrido, lento y rara vez óptimo. <b>GridSearchCV</b> automatiza ese paseo y, además, mete cross-validation dentro para que no te engañes con el azar de una sola partición.</p>
+
+  <!-- ===== 1. Por qué importa ===== -->
+  <div class="upper step-tag" style="margin-top:32px">Por qué importa</div>
+  <h3 style="font-size:28px;margin:8px 0 4px">El <em>mismo</em> algoritmo, tres modelos <em>distintos</em>.</h3>
+  <p style="font-size:15px;color:var(--tinta-2);max-width:880px;margin:0 0 14px">Mira un SVM con kernel RBF sobre el mismo dataset. Solo cambia los dos hiperparámetros — <span class="mono">C</span> (cuánto castiga errores) y <span class="mono">gamma</span> (cuánto curva la frontera) — y obtienes desde una línea recta inútil hasta una frontera que serpentea sobre cada punto. La diferencia entre underfitting y overfitting es elegir bien estos dos números.</p>
+
+  <div class="gs-intro">
+    <div class="item problem">
+      <div class="k">El problema</div>
+      <h4>Probar a mano = imposible</h4>
+      <div class="big">¿cuántas combinaciones?</div>
+      <p>3 hiperparámetros × 5 valores cada uno = <b>125 modelos</b>. 5 × 10 = <b>3125 modelos</b>. Y eso sin contar cross-validation.</p>
+    </div>
+    <div class="item solution">
+      <div class="k">La solución · GridSearchCV</div>
+      <h4>sklearn lo hace por ti</h4>
+      <div class="big">una sola línea</div>
+      <p>Le pasas el rango de cada hiperparámetro, te devuelve el mejor combo. Encima con cross-validation: cada combo se evalúa 5 veces para que la elección sea robusta.</p>
+    </div>
+    <div class="item warn">
+      <div class="k">El cuidado</div>
+      <h4>Solo sobre train</h4>
+      <div class="big">nunca toques el test</div>
+      <p>GridSearch evalúa miles de modelos. Si lo dejas «ver» el test, acabas eligiendo el modelo que mejor se ajusta a ese test concreto. Trampa silenciosa.</p>
+    </div>
+  </div>
+
+  <!-- ===== 2. Frontera SVM en vivo ===== -->
+  <div class="upper step-tag" style="margin-top:48px">Demo interactiva 1 · cómo C y gamma cambian el modelo</div>
+  <h3 style="font-size:28px;margin:8px 0 4px">Cada celda del grid es <em>un modelo distinto</em>.</h3>
+  <p style="font-size:15px;color:var(--tinta-2);max-width:880px;margin:0 0 14px">Mueve los sliders y mira cómo se redibuja la frontera de decisión de un SVM con kernel RBF. Es el mismo algoritmo, mismos datos — solo cambian C y gamma. La diferencia entre <em>underfitting</em> y <em>overfitting</em> está en estos dos números.</p>
+
+  <div class="lab">
+    <div class="card">
+      <div class="upper step-tag">Hiperparámetros del SVM</div>
+
+      <div class="slider-row" style="margin-top:14px"><span>C · penalización de errores</span><span><b id="svm-C-val">1.0</b></span></div>
+      <input type="range" id="svm-C" min="-2" max="2" step="0.1" value="0" />
+      <div style="font-size:11px;color:var(--gris);margin-top:4px"><b>C alto</b> → no tolera errores · frontera estricta.<br><b>C bajo</b> → tolera más errores · frontera suave.</div>
+
+      <div class="slider-row" style="margin-top:18px"><span>gamma · curvatura del kernel</span><span><b id="svm-G-val">0.10</b></span></div>
+      <input type="range" id="svm-G" min="-3" max="1.3" step="0.1" value="-1" />
+      <div style="font-size:11px;color:var(--gris);margin-top:4px"><b>gamma alto</b> → cada punto influye solo en su entorno · fronteras serpenteantes (overfit).<br><b>gamma bajo</b> → cada punto influye lejos · fronteras casi lineales (underfit).</div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:18px">
+        <button class="btn" data-preset="under" style="font-size:12px;padding:8px">Underfit<br><span style="font-family:'SF Mono',monospace;font-size:10px;opacity:.7">C=0.1, γ=0.001</span></button>
+        <button class="btn" data-preset="good" style="font-size:12px;padding:8px;background:var(--verde);color:#fff;border-color:var(--verde)">Buen ajuste<br><span style="font-family:'SF Mono',monospace;font-size:10px;opacity:.85">C=1, γ=0.5</span></button>
+        <button class="btn" data-preset="over" style="font-size:12px;padding:8px">Overfit<br><span style="font-family:'SF Mono',monospace;font-size:10px;opacity:.7">C=10, γ=20</span></button>
+      </div>
+
+<pre class="code" style="margin-top:14px"><span class="kw">from</span> sklearn.svm <span class="kw">import</span> SVC
+
+model = <span class="fn">SVC</span>(kernel=<span class="st">'rbf'</span>,
+            C=<span id="svm-code-C" class="nm">1.0</span>,
+            gamma=<span id="svm-code-G" class="nm">0.1</span>)
+model.<span class="fn">fit</span>(X_train, y_train)
+model.<span class="fn">score</span>(X_test, y_test)  <span class="cm"># <span id="svm-code-score">0.85</span></span></pre>
+
+      <div class="note" id="svm-advice"></div>
+    </div>
+
+    <div class="card">
+      <div class="upper step-tag">Frontera de decisión · en vivo</div>
+      <svg id="svm-chart" viewBox="0 0 700 360" style="width:100%;height:360px;background:#FAF8F1;border-radius:8px;display:block"></svg>
+      <div class="legend">
+        <span><i style="background:var(--azul);width:12px;height:12px;border-radius:50%"></i>clase A · interior</span>
+        <span><i style="background:var(--rojo);width:12px;height:12px;border-radius:50%"></i>clase B · exterior</span>
+        <span><i style="background:rgba(63,169,245,.35);width:14px;height:8px"></i>predicción A</span>
+        <span><i style="background:rgba(216,92,62,.35);width:14px;height:8px"></i>predicción B</span>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px;font-family:'SF Mono',monospace;font-size:12px">
+        <div style="background:#FAF8F1;padding:10px;border-radius:6px;text-align:center"><div style="font-size:10px;color:var(--gris);text-transform:uppercase;letter-spacing:.1em">accuracy train</div><div style="font-size:22px;font-weight:700;margin-top:2px" id="svm-tr">—</div></div>
+        <div style="background:#FAF8F1;padding:10px;border-radius:6px;text-align:center"><div style="font-size:10px;color:var(--gris);text-transform:uppercase;letter-spacing:.1em">accuracy test</div><div style="font-size:22px;font-weight:700;margin-top:2px" id="svm-te">—</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 3. Anatomía de una celda ===== -->
+  <div class="upper step-tag" style="margin-top:48px">Demo 2 · qué pasa dentro de cada celda del grid</div>
+  <h3 style="font-size:28px;margin:8px 0 4px">Cada combo se evalúa con <em>5-fold CV</em>, no con un único split.</h3>
+  <p style="font-size:15px;color:var(--tinta-2);max-width:880px;margin:0 0 14px">Esto es lo que hace especial al «CV» de <span class="mono">GridSearchCV</span>. Para cada combinación de hiperparámetros, sklearn entrena el modelo <b>cinco veces</b> con particiones distintas y promedia las cinco puntuaciones. Así una celda no «gana» por suerte sino por consistencia.</p>
+
+  <div class="anatomy">
+    <svg viewBox="0 0 260 200">
+      <rect x="20" y="20" width="220" height="160" rx="10" fill="#FAF8F1" stroke="#C9C5B8"/>
+      <text x="130" y="42" text-anchor="middle" font-family="Georgia" font-size="14" fill="#0E1B4D" font-weight="700">una celda</text>
+      <text x="130" y="58" text-anchor="middle" font-family="SF Mono" font-size="10" fill="#7A7A7A">C=1, γ=0.1</text>
+      <g font-family="SF Mono" font-size="9" fill="#0E1B4D">
+        <rect x="40" y="74" width="32" height="14" rx="3" fill="#3FA9F5" opacity=".9"/><text x="56" y="84" text-anchor="middle" fill="#fff">fold 1</text>
+        <rect x="76" y="74" width="32" height="14" rx="3" fill="#3FA9F5" opacity=".9"/><text x="92" y="84" text-anchor="middle" fill="#fff">fold 2</text>
+        <rect x="112" y="74" width="32" height="14" rx="3" fill="#3FA9F5" opacity=".9"/><text x="128" y="84" text-anchor="middle" fill="#fff">fold 3</text>
+        <rect x="148" y="74" width="32" height="14" rx="3" fill="#3FA9F5" opacity=".9"/><text x="164" y="84" text-anchor="middle" fill="#fff">fold 4</text>
+        <rect x="184" y="74" width="32" height="14" rx="3" fill="#3FA9F5" opacity=".9"/><text x="200" y="84" text-anchor="middle" fill="#fff">fold 5</text>
+      </g>
+      <g font-family="SF Mono" font-size="9" fill="#7A7A7A">
+        <text x="56" y="106" text-anchor="middle">0.93</text>
+        <text x="92" y="106" text-anchor="middle">0.97</text>
+        <text x="128" y="106" text-anchor="middle">0.95</text>
+        <text x="164" y="106" text-anchor="middle">0.91</text>
+        <text x="200" y="106" text-anchor="middle">0.96</text>
+      </g>
+      <line x1="40" y1="120" x2="220" y2="120" stroke="#C9C5B8" stroke-dasharray="3 3"/>
+      <text x="130" y="142" text-anchor="middle" font-family="SF Mono" font-size="10" fill="#7A7A7A">media · 5 folds</text>
+      <text x="130" y="166" text-anchor="middle" font-family="Georgia" font-size="20" fill="#2E9E6E" font-weight="700">0.944</text>
+    </svg>
+    <div class="desc">
+      <h5>Una celda = un combo de hiperparámetros = 5 entrenamientos</h5>
+      <p>El dataset de train se parte en 5 trozos iguales. En cada iteración, 4 trozos entrenan y 1 evalúa. Al cambiar el «trozo evaluador», cada combinación queda probada de 5 formas distintas.</p>
+      <div class="row"><i style="background:var(--azul-2)"></i><span>Cada barra = un fold de cross-validation. Si las 5 son parecidas → la elección es <em>robusta</em>.</span></div>
+      <div class="row"><i style="background:var(--verde)"></i><span>El número final que ves en cada celda es la <em>media</em> de los 5 folds.</span></div>
+      <div class="row"><i style="background:var(--rojo)"></i><span>Si una celda tiene folds muy dispares (0.6, 0.95, 0.7, 0.9, 0.55) → la combinación es <b>inestable</b> aunque la media parezca buena.</span></div>
+    </div>
+  </div>
+
+  <!-- ===== 4. El heatmap, ahora con miniaturas SVG ===== -->
+  <div class="upper step-tag" style="margin-top:48px">Demo 3 · GridSearchCV completo, paso a paso</div>
+  <h3 style="font-size:28px;margin:8px 0 4px">3 valores de C × 4 de gamma = <em>12 modelos × 5 folds = 60 fits</em>.</h3>
+  <p style="font-size:15px;color:var(--tinta-2);max-width:880px;margin:0 0 14px">Cada cuadrito es un SVM real con su combinación de hiperparámetros — y verás su frontera de decisión en vivo. Pulsa play y observa cómo se entrenan los 12 modelos, cómo cada uno «aprende» una frontera distinta y cómo al final el algoritmo identifica al ganador. <b>Pulsa cualquier tarjeta</b> para ver el detalle de sus 5 folds de cross-validation.</p>
+
+<pre class="code">grid = {
+    <span class="st">'C'</span>: [<span class="nm">0.1</span>, <span class="nm">1</span>, <span class="nm">10</span>],          <span class="cm"># 3 valores</span>
+    <span class="st">'gamma'</span>: [<span class="nm">0.001</span>, <span class="nm">0.1</span>, <span class="nm">1</span>, <span class="nm">10</span>]    <span class="cm"># 4 valores</span>
+}
+gs = <span class="fn">GridSearchCV</span>(SVC(kernel=<span class="st">'rbf'</span>), grid, cv=<span class="nm">5</span>, scoring=<span class="st">'accuracy'</span>)
+gs.<span class="fn">fit</span>(X_train, y_train)        <span class="cm"># entrena 3 × 4 × 5 = 60 modelos</span>
+
+gs.best_params_     <span class="cm"># {'C': 1, 'gamma': 1}</span>
+gs.best_score_      <span class="cm"># 0.953 ← media de los 5 folds del mejor combo</span>
+gs.best_estimator_  <span class="cm"># el modelo ya re-entrenado con TODO X_train</span></pre>
+
+  <div class="grid-pro">
+    <div class="grid-pro-header">
+      <div>
+        <div class="upper step-tag" style="color:var(--tinta);margin-bottom:6px">El grid completo</div>
+        <h4 style="margin:0;font-size:22px">Heatmap de fronteras de decisión</h4>
+      </div>
+      <div class="grid-pro-controls">
+        <button class="btn primary" id="grid-play">▶ Ejecutar GridSearchCV</button>
+        <button class="btn" id="grid-reset">↺ Reset</button>
+        <select id="grid-speed">
+          <option value="600">🐢 lenta</option>
+          <option value="280" selected>🚶 normal</option>
+          <option value="100">🏃 rápida</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Etiquetas del eje gamma arriba -->
+    <div class="grid-pro-gamma-labels" id="grid-pro-gamma-labels"></div>
+
+    <!-- Grid principal: labels C a la izquierda + 3×4 tarjetas -->
+    <div class="grid-pro-body">
+      <div class="grid-pro-c-labels" id="grid-pro-c-labels"></div>
+      <div class="grid-pro-cells" id="grid-pro-cells"></div>
+    </div>
+
+    <!-- Estado y leyenda -->
+    <div class="grid-pro-footer">
+      <div class="grid-pro-stat">
+        <div class="l">Mejor combinación</div>
+        <div class="v" id="best-combo">esperando ejecución…</div>
+      </div>
+      <div class="grid-pro-stat">
+        <div class="l">Mejor score (media 5-fold CV)</div>
+        <div class="v" id="best-score">—</div>
+      </div>
+      <div class="grid-pro-stat">
+        <div class="l">Modelos entrenados</div>
+        <div class="v" id="total-fits">0 / 60</div>
+      </div>
+    </div>
+
+    <!-- Panel de detalle al hacer clic -->
+    <div class="cell-detail" id="cell-detail">
+      <div class="cell-detail-head">
+        <div>
+          <div class="upper step-tag">Detalle de la celda seleccionada</div>
+          <h4 id="cell-detail-title" style="margin:6px 0 0">— · —</h4>
+        </div>
+        <div class="cell-detail-verdict" id="cell-detail-verdict">selecciona una celda</div>
+      </div>
+      <div class="cell-detail-body">
+        <div>
+          <div class="upper step-tag" style="margin-bottom:8px">Frontera del modelo · resolución alta</div>
+          <svg id="cell-detail-chart" viewBox="0 0 600 360"></svg>
+        </div>
+        <div>
+          <div class="upper step-tag" style="margin-bottom:8px">Los 5 folds de cross-validation</div>
+          <div id="cell-detail-folds"></div>
+          <div id="cell-detail-summary"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 5. Explosión combinatoria ===== -->
+  <div class="upper step-tag" style="margin-top:48px">¿Y si tengo más hiperparámetros?</div>
+  <h3 style="font-size:28px;margin:8px 0 4px">La explosión <em>combinatoria</em>.</h3>
+  <p style="font-size:15px;color:var(--tinta-2);max-width:880px;margin:0 0 14px">El grid crece <b>multiplicando</b>, no sumando. Cada hiperparámetro que añades multiplica el coste. Por eso a partir de cierto tamaño, GridSearch deja de ser práctico.</p>
+
+  <table class="explosion-tbl">
+    <thead><tr><th>Hiperparámetros</th><th>Valores por cada uno</th><th>Combos</th><th>Con 5-fold CV</th><th>Tiempo (≈ 30s/fit)</th></tr></thead>
+    <tbody>
+      <tr><td>2 (C, gamma)</td><td>3 × 4</td><td>12</td><td>60</td><td>30 min</td></tr>
+      <tr><td>3 (C, gamma, kernel)</td><td>5 × 5 × 3</td><td>75</td><td>375</td><td>3 h</td></tr>
+      <tr><td>4</td><td>5 × 5 × 5 × 5</td><td>625</td><td>3 125</td><td>26 h · 1 día</td></tr>
+      <tr class="danger"><td>5</td><td>10 × 10 × 10 × 10 × 10</td><td>100 000</td><td>500 000</td><td>173 días · medio año</td></tr>
+    </tbody>
+  </table>
+
+  <div class="note warning"><b>Cuando el grid es enorme:</b> usa <span class="mono">RandomizedSearchCV</span> (muestrea N combos al azar, suele encontrar bueno con 50–200 iteraciones) o <span class="mono">HalvingGridSearchCV</span> (descarta combos malos pronto con menos datos). Para problemas muy complejos: bayesian optimization (<span class="mono">optuna</span>, <span class="mono">hyperopt</span>).</div>
+
+  <!-- ===== 6. Grid vs Random ===== -->
+  <div class="upper step-tag" style="margin-top:48px">Grid vs Random · la imagen que lo explica</div>
+  <h3 style="font-size:28px;margin:8px 0 4px">Por qué <em>al azar</em> suele ser mejor.</h3>
+  <p style="font-size:15px;color:var(--tinta-2);max-width:880px;margin:0 0 14px">Si solo uno de los dos hiperparámetros importa de verdad — y casi siempre es así —, el grid evalúa muchos valores del que no importa y muy pocos del que sí. Random rompe esa lógica.</p>
+
+  <div class="vs">
+    <div class="item">
+      <div class="k">GridSearch · rejilla regular</div>
+      <h4>9 puntos = 3 valores únicos por eje</h4>
+      <svg viewBox="0 0 300 180">
+        <rect x="0" y="0" width="300" height="180" fill="#FAF8F1"/>
+        <!-- curva de importancia del eje x: muy importante -->
+        <path d="M 30,150 Q 150,40 270,150" stroke="#2E9E6E" stroke-width="1.5" fill="none" stroke-dasharray="4 4" opacity=".5"/>
+        <text x="265" y="170" font-family="SF Mono" font-size="9" fill="#2E9E6E" text-anchor="end" opacity=".7">f(x) · importante</text>
+        <!-- curva de importancia del eje y: poco importante -->
+        <path d="M 10,40 Q 30,90 10,140" stroke="#D85C3E" stroke-width="1.5" fill="none" stroke-dasharray="4 4" opacity=".5"/>
+        <text x="14" y="22" font-family="SF Mono" font-size="9" fill="#D85C3E" opacity=".7">f(y) · poco importante</text>
+        <!-- grid 3x3 -->
+        <g fill="#3FA9F5">
+          <circle cx="75" cy="50" r="6"/><circle cx="150" cy="50" r="6"/><circle cx="225" cy="50" r="6"/>
+          <circle cx="75" cy="100" r="6"/><circle cx="150" cy="100" r="6"/><circle cx="225" cy="100" r="6"/>
+          <circle cx="75" cy="150" r="6"/><circle cx="150" cy="150" r="6"/><circle cx="225" cy="150" r="6"/>
+        </g>
+      </svg>
+      <p class="desc">Solo prueba <b>3 valores distintos</b> del hiperparámetro que importa. Los otros 6 puntos no aportan información nueva sobre ese eje.</p>
+    </div>
+    <div class="item random">
+      <div class="k">RandomizedSearch · muestreo</div>
+      <h4>9 puntos = 9 valores únicos por eje</h4>
+      <svg viewBox="0 0 300 180">
+        <rect x="0" y="0" width="300" height="180" fill="#FAF8F1"/>
+        <path d="M 30,150 Q 150,40 270,150" stroke="#2E9E6E" stroke-width="1.5" fill="none" stroke-dasharray="4 4" opacity=".5"/>
+        <text x="265" y="170" font-family="SF Mono" font-size="9" fill="#2E9E6E" text-anchor="end" opacity=".7">f(x) · importante</text>
+        <path d="M 10,40 Q 30,90 10,140" stroke="#D85C3E" stroke-width="1.5" fill="none" stroke-dasharray="4 4" opacity=".5"/>
+        <text x="14" y="22" font-family="SF Mono" font-size="9" fill="#D85C3E" opacity=".7">f(y) · poco importante</text>
+        <g fill="#E0A23A">
+          <circle cx="62" cy="80" r="6"/>
+          <circle cx="103" cy="42" r="6"/>
+          <circle cx="135" cy="138" r="6"/>
+          <circle cx="172" cy="61" r="6"/>
+          <circle cx="195" cy="115" r="6"/>
+          <circle cx="225" cy="150" r="6"/>
+          <circle cx="248" cy="79" r="6"/>
+          <circle cx="85" cy="125" r="6"/>
+          <circle cx="270" cy="48" r="6"/>
+        </g>
+      </svg>
+      <p class="desc">Mismo presupuesto, <b>9 valores distintos</b> del hiperparámetro que importa. Probabilidad alta de caer cerca del óptimo del eje verde.</p>
+    </div>
+  </div>
+
+  <div class="note tip"><b>Argumento de Bergstra &amp; Bengio (2012):</b> con el mismo presupuesto de modelos, <em>random search encuentra mejores hiperparámetros que grid</em> en la mayoría de los problemas reales — porque casi nunca importan todos los hiperparámetros por igual.</div>
+
+  <!-- ===== 7. La trampa: pipeline correcto ===== -->
+  <div class="upper step-tag" style="margin-top:48px">El error que comete todo el mundo</div>
+  <h3 style="font-size:28px;margin:8px 0 4px">GridSearch SOLO sobre <em>train</em>.</h3>
+  <p style="font-size:15px;color:var(--tinta-2);max-width:880px;margin:0 0 14px">GridSearch entrena cientos de modelos y elige el mejor. Si lo evalúas en el test, ese «mejor» es el que mejor se ajusta a ese test concreto — y mañana, con datos nuevos, fracasará. La estimación honesta del modelo final viene de un test que <b>el GridSearch no haya tocado nunca</b>.</p>
+
+  <div class="pipeline-correct">
+    <div class="upper step-tag" style="color:var(--rojo)">✗ Mal · GridSearch ve el test</div>
+    <div class="flow">
+      <div class="step bad"><div class="lbl">paso 1</div><div class="nm">todo el dataset</div></div>
+      <div class="arrow">→</div>
+      <div class="step bad"><div class="lbl">paso 2</div><div class="nm">GridSearch</div></div>
+      <div class="arrow">→</div>
+      <div class="step bad"><div class="lbl">paso 3</div><div class="nm">mejor combo</div></div>
+      <div class="arrow">→</div>
+      <div class="step bad"><div class="lbl">paso 4</div><div class="nm">score = 99% 🎉</div></div>
+    </div>
+    <p style="font-size:13px;color:var(--rojo);margin-top:10px;font-style:italic">El 99% es falso. El GridSearch eligió el modelo que mejor se ajusta a este test concreto. En producción rendirá mucho peor.</p>
+
+    <div class="upper step-tag" style="color:var(--verde);margin-top:22px">✓ Bien · test reservado desde el inicio</div>
+    <div class="flow">
+      <div class="step"><div class="lbl">paso 1</div><div class="nm">train_test_split</div></div>
+      <div class="arrow">→</div>
+      <div class="step good"><div class="lbl">paso 2</div><div class="nm">GridSearchCV<br>solo sobre TRAIN</div></div>
+      <div class="arrow">→</div>
+      <div class="step good"><div class="lbl">paso 3</div><div class="nm">mejor combo</div></div>
+      <div class="arrow">→</div>
+      <div class="step good"><div class="lbl">paso 4</div><div class="nm">score en TEST<br>(virgen)</div></div>
+    </div>
+    <p style="font-size:13px;color:var(--verde);margin-top:10px;font-style:italic">El score del paso 4 es <b>honesto</b>. Es lo que tu modelo dará en producción. Suele ser un poco peor que el CV-score del paso 2 — y eso es <em>normal</em>, no un fallo.</p>
+
+<pre class="code" style="margin-top:14px"><span class="cm"># Patrón profesional</span>
+X_train, X_test, y_train, y_test = <span class="fn">train_test_split</span>(X, y, test_size=<span class="nm">0.2</span>, random_state=<span class="nm">42</span>)
+
+grid = {<span class="st">'C'</span>: [<span class="nm">0.1</span>,<span class="nm">1</span>,<span class="nm">10</span>], <span class="st">'gamma'</span>: [<span class="nm">.001</span>,<span class="nm">.01</span>,<span class="nm">.1</span>,<span class="nm">1</span>]}
+gs = <span class="fn">GridSearchCV</span>(SVC(), grid, cv=<span class="nm">5</span>)
+gs.<span class="fn">fit</span>(X_train, y_train)                  <span class="cm"># SOLO train</span>
+
+<span class="fn">print</span>(gs.best_params_, gs.best_score_)   <span class="cm"># mejor combo, CV-score</span>
+<span class="fn">print</span>(gs.<span class="fn">score</span>(X_test, y_test))           <span class="cm"># test honesto</span></pre>
+  </div>
+
+  <div class="note tip" style="margin-top:24px"><b>Para llevar:</b> GridSearchCV no es solo «probar combinaciones». Es <em>probar combinaciones de forma honesta</em> — con cross-validation dentro para que la elección sea robusta, y con un test reservado fuera para que la evaluación final no esté contaminada. Estas tres ideas juntas son lo que separa un proyecto de ML serio de uno que «parece» que funciona.</div>
+</section>
+
+<!-- Recap -->
+<section style="border-bottom:none">
+  <div class="recap">
+    <div class="upper step-tag" style="color:#9DD2F8">Resumen del proceso completo</div>
+    <h2>De cero a modelo afinado, en <em>siete pasos</em>.</h2>
+    <div class="steps">
+      <div class="step"><div class="n">01</div><b>Definir problema</b><span>Regresión / clasificación / clustering.</span></div>
+      <div class="step"><div class="n">02</div><b>Preprocesar</b><span>Limpiar, escalar, codificar (Sesión 4).</span></div>
+      <div class="step"><div class="n">03</div><b>Particionar</b><span>train / val / test con stratify.</span></div>
+      <div class="step"><div class="n">04</div><b>Entrenar</b><span>Baseline con valores por defecto.</span></div>
+      <div class="step"><div class="n">05</div><b>Evaluar</b><span>Métricas + cross-validation.</span></div>
+      <div class="step"><div class="n">06</div><b>Refinar</b><span>GridSearch + regularización.</span></div>
+      <div class="step last"><div class="n">07</div><b>Test final</b><span>Una sola vez, con los datos vírgenes.</span></div>
+    </div>
+    <p style="margin-top:18px;font-size:14px;color:#cfeaff">Pasos 4-6 son <em>iterativos</em>: pruebas, evalúas, refinas, vuelves. Solo cuando estás satisfecho tocas el test (paso 7).</p>
+  </div>
+</section>
+
+</div>
+
+<script>
+/* ============ Regresión: 8 socios, métricas en vivo ============ */
+const SOCIOS = [
+  {nombre:'Ana',   real:14},
+  {nombre:'Beto',  real:3},
+  {nombre:'Carla', real:22},
+  {nombre:'Diego', real:2},
+  {nombre:'Eva',   real:18},
+  {nombre:'Fer',   real:11},
+  {nombre:'Gala',  real:7},
+  {nombre:'Hugo',  real:5}
+];
+const NOISE_SEED = [0.8,-1.2,1.4,-0.5,0.3,-0.9,1.1,-0.6]; // jitters fijos
+
+let noise = 1.5;
+let outlier = 0;
+
+function getPreds(){
+  return SOCIOS.map(function(s,i){
+    let pred = s.real + NOISE_SEED[i]*noise;
+    if(i===2) pred += outlier;   // Carla recibe el outlier
+    return Math.max(0.5, pred);
+  });
+}
+
+function metrics(){
+  const preds = getPreds();
+  const reals = SOCIOS.map(function(s){return s.real;});
+  const n = reals.length;
+  let sumAbs=0, sumSq=0, meanReal=0;
+  for(let i=0;i<n;i++) meanReal += reals[i];
+  meanReal /= n;
+  let ssRes=0, ssTot=0;
+  for(let i=0;i<n;i++){
+    const d = reals[i]-preds[i];
+    sumAbs += Math.abs(d);
+    sumSq += d*d;
+    ssRes += d*d;
+    ssTot += (reals[i]-meanReal)*(reals[i]-meanReal);
+  }
+  const mae = sumAbs/n;
+  const mse = sumSq/n;
+  const rmse = Math.sqrt(mse);
+  const r2 = 1 - ssRes/(ssTot || 1);
+  return {mae:mae, mse:mse, rmse:rmse, r2:r2, preds:preds};
+}
+
+function renderReg(){
+  const m = metrics();
+  document.getElementById('m-mae').textContent  = m.mae.toFixed(2);
+  document.getElementById('m-mse').textContent  = m.mse.toFixed(2);
+  document.getElementById('m-rmse').textContent = m.rmse.toFixed(2);
+  document.getElementById('m-r2').textContent   = m.r2.toFixed(3);
+
+  // chart
+  const W=700, H=380, P=50;
+  const maxY = Math.max.apply(null, SOCIOS.map(function(s){return s.real;}).concat(m.preds))+3;
+  const minY = 0;
+  const xfn = function(i){ return P + i*(W-2*P)/(SOCIOS.length-1); };
+  const yfn = function(v){ return (H-P) - (v-minY)/(maxY-minY)*(H-2*P); };
+
+  const svg = document.getElementById('reg-chart');
+  let s='';
+  // Axes
+  s += '<line x1="'+P+'" y1="'+(H-P)+'" x2="'+(W-P)+'" y2="'+(H-P)+'" stroke="#C9C5B8" />';
+  s += '<line x1="'+P+'" y1="'+P+'" x2="'+P+'" y2="'+(H-P)+'" stroke="#C9C5B8" />';
+  // Y labels
+  for(let i=0;i<=4;i++){
+    const v = minY + (maxY-minY)*i/4;
+    s += '<text x="'+(P-8)+'" y="'+(yfn(v)+3)+'" font-family="SF Mono" font-size="10" text-anchor="end" fill="#7A7A7A">'+v.toFixed(0)+'</text>';
+  }
+  s += '<text x="20" y="'+(H/2)+'" font-family="SF Mono" font-size="11" text-anchor="middle" fill="#7A7A7A" transform="rotate(-90 20 '+(H/2)+')">meses</text>';
+
+  // Residuals
+  SOCIOS.forEach(function(soc,i){
+    s += '<line x1="'+xfn(i)+'" y1="'+yfn(soc.real)+'" x2="'+xfn(i)+'" y2="'+yfn(m.preds[i])+'" stroke="#7A7A7A" stroke-dasharray="3 3" stroke-width="1.5" />';
+  });
+  // Real
+  SOCIOS.forEach(function(soc,i){
+    s += '<circle cx="'+xfn(i)+'" cy="'+yfn(soc.real)+'" r="6" fill="#0E1B4D" />';
+  });
+  // Pred
+  SOCIOS.forEach(function(soc,i){
+    s += '<circle cx="'+xfn(i)+'" cy="'+yfn(m.preds[i])+'" r="6" fill="#D85C3E" />';
+  });
+  // Names
+  SOCIOS.forEach(function(soc,i){
+    s += '<text x="'+xfn(i)+'" y="'+(H-26)+'" font-family="SF Mono" font-size="10" fill="#7A7A7A" text-anchor="middle">'+soc.nombre+'</text>';
+  });
+
+  svg.innerHTML = s;
+
+  // Advice
+  const adv = document.getElementById('reg-advice');
+  let html = '';
+  if(outlier > 6){
+    html = '<b>Mira:</b> el outlier en Carla apenas mueve el <b>MAE</b> pero dispara el <b>MSE/RMSE</b>. Si en tu negocio un fallo gordo es catastrófico, RMSE es más fiel.';
+    adv.className = 'note warning';
+  } else if(noise < 0.5){
+    html = '<b>Modelo casi perfecto:</b> R² cerca de 1. MAE y RMSE muy bajos. Cuidado: si estos números son sospechosamente buenos en train pero malos en test, es <em>overfitting</em>.';
+    adv.className = 'note tip';
+  } else {
+    html = '<b>Regla:</b> mismo orden de magnitud entre MAE y RMSE → los errores son uniformes. RMSE mucho mayor que MAE → hay algún fallo gordo que está dominando.';
+    adv.className = 'note';
+  }
+  adv.innerHTML = html;
+}
+document.getElementById('noise-slider').addEventListener('input', function(e){
+  noise = +e.target.value;
+  document.getElementById('noise-val').textContent = noise.toFixed(1);
+  renderReg();
+});
+document.getElementById('out-slider').addEventListener('input', function(e){
+  outlier = +e.target.value;
+  document.getElementById('out-val').textContent = outlier.toFixed(1);
+  renderReg();
+});
+renderReg();
+
+/* ============ Gradiente descendente ============ */
+/* Loss(x) = (x-2)^2 + 1 — un valle */
+function loss(x){ return (x-2)*(x-2) + 1; }
+function gradLoss(x){ return 2*(x-2); }
+
+let gdState = {x:5, step:0, history:[]};
+let lr = 0.1;
+let gdRunning = false;
+
+function renderGd(){
+  const W=700, H=380, P=44;
+  const minX=-1, maxX=6, minY=0, maxY=20;
+  const xfn = function(v){return P+(v-minX)/(maxX-minX)*(W-2*P);};
+  const yfn = function(v){return (H-P)-(v-minY)/(maxY-minY)*(H-2*P);};
+
+  const svg = document.getElementById('gd-chart');
+  let s='';
+  // Axes
+  s += '<line x1="'+P+'" y1="'+(H-P)+'" x2="'+(W-P)+'" y2="'+(H-P)+'" stroke="#C9C5B8"/>';
+  s += '<line x1="'+P+'" y1="'+P+'" x2="'+P+'" y2="'+(H-P)+'" stroke="#C9C5B8"/>';
+  s += '<text x="'+(W/2)+'" y="'+(H-15)+'" font-family="SF Mono" font-size="11" text-anchor="middle" fill="#7A7A7A">x (parámetro)</text>';
+  s += '<text x="20" y="'+(H/2)+'" font-family="SF Mono" font-size="11" text-anchor="middle" fill="#7A7A7A" transform="rotate(-90 20 '+(H/2)+')">loss</text>';
+
+  // Curva
+  let path = '';
+  for(let xv=minX; xv<=maxX; xv+=0.05){
+    const yv = Math.min(maxY, loss(xv));
+    path += (path===''?'M':'L') + xfn(xv) + ',' + yfn(yv) + ' ';
+  }
+  s += '<path d="'+path+'" stroke="#0E1B4D" stroke-width="2" fill="none"/>';
+
+  // Mínimo
+  s += '<text x="'+xfn(2)+'" y="'+(yfn(1)-12)+'" font-size="22" text-anchor="middle" fill="#2E9E6E">★</text>';
+
+  // History line
+  gdState.history.forEach(function(h,i){
+    if(i===0) return;
+    const prev = gdState.history[i-1];
+    s += '<line x1="'+xfn(prev.x)+'" y1="'+yfn(Math.min(maxY,loss(prev.x)))+'" x2="'+xfn(h.x)+'" y2="'+yfn(Math.min(maxY,loss(h.x)))+'" stroke="#D85C3E" stroke-width="1.5" opacity="0.5"/>';
+  });
+  // History dots
+  gdState.history.forEach(function(h,i){
+    const op = 0.3 + 0.7*(i/Math.max(1,gdState.history.length));
+    s += '<circle cx="'+xfn(h.x)+'" cy="'+yfn(Math.min(maxY,loss(h.x)))+'" r="3" fill="#D85C3E" opacity="'+op+'"/>';
+  });
+  // Ball
+  s += '<circle cx="'+xfn(gdState.x)+'" cy="'+yfn(Math.min(maxY,loss(gdState.x)))+'" r="8" fill="#D85C3E" stroke="#fff" stroke-width="2"/>';
+
+  svg.innerHTML = s;
+
+  document.getElementById('gd-step').textContent = gdState.step;
+  document.getElementById('gd-x').textContent = gdState.x.toFixed(3);
+  document.getElementById('gd-loss').textContent = loss(gdState.x).toFixed(3);
+}
+
+function resetGd(){
+  gdState = {x:5, step:0, history:[{x:5, step:0}]};
+  renderGd();
+  document.getElementById('gd-note').className='note';
+  document.getElementById('gd-note').innerHTML='Pulsa <b>Bajar la montaña</b> para empezar.';
+}
+resetGd();
+
+function gdTick(){
+  if(!gdRunning) return;
+  const g = gradLoss(gdState.x);
+  gdState.x = gdState.x - lr*g;
+  // Cap divergencia
+  if(Math.abs(gdState.x) > 50){ gdState.x = Math.sign(gdState.x)*50; gdRunning=false; }
+  gdState.step++;
+  gdState.history.push({x:gdState.x, step:gdState.step});
+  renderGd();
+
+  // Stop conditions
+  if(gdState.step >= 60){ gdRunning=false; }
+  if(Math.abs(g) < 0.005){ gdRunning=false; }
+
+  if(gdRunning){
+    setTimeout(gdTick, 80);
+  } else {
+    finishGd();
+  }
+}
+function finishGd(){
+  const note = document.getElementById('gd-note');
+  if(Math.abs(gdState.x - 2) < 0.05){
+    note.className='note tip';
+    note.innerHTML='<b>✓ Convergió:</b> x ≈ 2.00, el mínimo. El learning rate es bueno.';
+  } else if(Math.abs(gdState.x) > 20){
+    note.className='note warning';
+    note.innerHTML='<b>⚠ Divergió:</b> el paso es demasiado grande. La bolita se «sale» del valle en vez de bajar. Reduce el lr.';
+  } else if(gdState.step >= 60){
+    note.className='note warning';
+    note.innerHTML='<b>⚠ Demasiado lento:</b> 60 pasos y aún no llega al mínimo. Necesitas un lr mayor.';
+  }
+}
+
+document.getElementById('gd-play').addEventListener('click', function(){
+  resetGd();
+  gdRunning = true;
+  gdTick();
+});
+document.getElementById('gd-reset').addEventListener('click', resetGd);
+
+document.querySelectorAll('.preset').forEach(function(b){
+  b.addEventListener('click', function(){
+    const vals = {ideal:0.1, slow:0.01, big:0.95};
+    lr = vals[b.dataset.id];
+    document.getElementById('lr-slider').value = lr;
+    document.getElementById('lr-val').textContent = lr.toFixed(2);
+    document.querySelectorAll('.preset').forEach(function(x){x.classList.remove('active');});
+    b.classList.add('active');
+    resetGd();
+  });
+});
+document.getElementById('lr-slider').addEventListener('input', function(e){
+  lr = +e.target.value;
+  document.getElementById('lr-val').textContent = lr.toFixed(2);
+  document.querySelectorAll('.preset').forEach(function(x){x.classList.remove('active');});
+  resetGd();
+});
+
+/* =====================================================================
+   GRIDSEARCH · versión rediseñada
+   1. Dataset 2D claramente no-lineal (anillos concéntricos)
+   2. SVM RBF simulado correctamente con soft-margin (C) y kernel-width (gamma)
+   3. Demo 1: sliders + frontera grande
+   4. Demo 3: grid de 12 tarjetas con miniaturas SVG reales + panel detalle
+   ===================================================================== */
+
+/* --- Valores del grid (potencias de 10 para que se vea bien la diferencia) --- */
+const C_VALS = [0.1, 1, 10];
+const G_VALS = [0.001, 0.1, 1, 10];
+
+/* === Dataset 2D · anillo (clase A) rodeado por un halo (clase B) ===
+   Esto es un caso clásico donde un SVM lineal falla y solo un RBF con
+   buen gamma resuelve. La frontera ideal es un círculo. */
+const SVM_DATA = (function(){
+  function seed(s){return function(){s=(s*9301+49297)%233280;return s/233280;};}
+  const r = seed(2024);
+  const pts = [];
+  // Clase A · disco interior (radio ≈ 1)
+  for(let i=0;i<50;i++){
+    const theta = r()*Math.PI*2;
+    const rad = Math.sqrt(r())*1.1; // disco uniforme
+    pts.push({x:rad*Math.cos(theta), y:rad*Math.sin(theta), c:0});
+  }
+  // Clase B · anillo exterior (radio entre 1.6 y 2.5)
+  for(let i=0;i<50;i++){
+    const theta = r()*Math.PI*2;
+    const rad = 1.6 + r()*0.9;
+    pts.push({x:rad*Math.cos(theta), y:rad*Math.sin(theta), c:1});
+  }
+  // Algo de ruido al borde para que no sea trivial
+  for(let i=0;i<8;i++){
+    const theta = r()*Math.PI*2;
+    const rad = 1.3 + (r()-0.5)*0.4;
+    pts.push({x:rad*Math.cos(theta), y:rad*Math.sin(theta), c:Math.round(r())});
+  }
+  return pts;
+})();
+
+/* === SVM RBF simulado ===
+   Para que el modelo se comporte como un SVM real:
+   - gamma muy bajo → kernel "ancho", todos los puntos influyen lejos → frontera casi lineal (underfit)
+   - gamma muy alto → kernel "estrecho", cada punto solo influye en su entorno → frontera serpentea (overfit)
+   - C bajo → modelo tolerante a errores en train, frontera más suave
+   - C alto → modelo estricto, sigue cada punto
+
+   Implementación: suma ponderada de kernels gaussianos centrados en cada SV,
+   con peso α dependiente de C (acotado a [-1, 1] por el soft-margin). */
+function svmScore(x, y, C, gamma){
+  // Soft-margin: el peso máximo por punto está acotado por C
+  const alphaMax = Math.min(C, 1.0);
+  let score = 0;
+  let totalW = 0;
+  for(let i=0; i<SVM_DATA.length; i++){
+    const p = SVM_DATA[i];
+    const d2 = (x-p.x)*(x-p.x) + (y-p.y)*(y-p.y);
+    const k = Math.exp(-gamma*d2);
+    const w = (p.c===0 ? 1 : -1) * alphaMax;
+    score += w*k;
+    totalW += alphaMax;
+  }
+  // Normalizamos para que el score sea comparable entre diferentes (C, gamma)
+  return totalW > 0 ? score / totalW : 0;
+}
+
+function svmPredict(x, y, C, gamma){
+  return svmScore(x, y, C, gamma) >= 0 ? 0 : 1;
+}
+
+/* Train accuracy real */
+function svmTrainAccuracy(C, gamma){
+  let ok = 0;
+  SVM_DATA.forEach(function(p){
+    if(svmPredict(p.x, p.y, C, gamma) === p.c) ok++;
+  });
+  return ok / SVM_DATA.length;
+}
+
+/* Test accuracy estimada: penalizamos por overfitting cuando gamma·C es muy alto
+   (el modelo serpentea demasiado y no generalizará). */
+function svmTestAccuracy(C, gamma){
+  const tr = svmTrainAccuracy(C, gamma);
+  // Overfitting: gamma muy alto hace que el modelo memorice cada punto del train
+  // Penalización suave que crece con log(gamma) cuando gamma > 1
+  const overPenalty = Math.max(0, Math.log10(Math.max(gamma, 1)) * 0.12);
+  // Underfitting: con gamma muy bajo, el modelo es casi una recta
+  // y este dataset (anillos) lo necesita curvo
+  const underPenalty = gamma < 0.05 ? (0.05-gamma)*3 : 0;
+  return Math.max(0.45, Math.min(0.98, tr - overPenalty - underPenalty));
+}
+
+/* =====================================================================
+   DEMO 1 · Playground SVM con sliders
+   ===================================================================== */
+function renderSVMChart(C, gamma){
+  const W=700, H=360, P=20;
+  const minR=-2.7, maxR=2.7;
+  const xfn = function(v){return P+(v-minR)/(maxR-minR)*(W-2*P);};
+  const yfn = function(v){return (H-P)-(v-minR)/(maxR-minR)*(H-2*P);};
+
+  let s='';
+  /* Mesh de la frontera */
+  const NX=60, NY=30;
+  const cellW = (W-2*P)/NX;
+  const cellH = (H-2*P)/NY;
+  for(let ix=0;ix<NX;ix++){
+    for(let iy=0;iy<NY;iy++){
+      const x = minR + (ix+0.5)*(maxR-minR)/NX;
+      const y = minR + (iy+0.5)*(maxR-minR)/NY;
+      const c = svmPredict(x, y, C, gamma);
+      const col = c===0 ? '#3FA9F5' : '#D85C3E';
+      s += '<rect x="'+(P+ix*cellW).toFixed(2)+'" y="'+(P+iy*cellH).toFixed(2)+'" width="'+(cellW+0.7).toFixed(2)+'" height="'+(cellH+0.7).toFixed(2)+'" fill="'+col+'" opacity="0.2"/>';
+    }
+  }
+  /* Puntos */
+  SVM_DATA.forEach(function(p){
+    const col = p.c===0 ? '#3FA9F5' : '#D85C3E';
+    s += '<circle cx="'+xfn(p.x).toFixed(1)+'" cy="'+yfn(p.y).toFixed(1)+'" r="4.5" fill="'+col+'" stroke="#fff" stroke-width="1.2"/>';
+  });
+  document.getElementById('svm-chart').innerHTML = s;
+}
+
+function updateSVMAdvice(C, gamma){
+  const tr = svmTrainAccuracy(C, gamma);
+  const te = svmTestAccuracy(C, gamma);
+  document.getElementById('svm-tr').textContent = tr.toFixed(3);
+  document.getElementById('svm-te').textContent = te.toFixed(3);
+  document.getElementById('svm-code-score').textContent = te.toFixed(3);
+
+  const adv = document.getElementById('svm-advice');
+  const gap = tr - te;
+  let html, cls = 'note';
+  if(gamma < 0.05){
+    cls = 'note warning';
+    html = '<b>Underfitting · gamma demasiado bajo:</b> los kernels son tan anchos que el modelo solo «ve» la media global. La frontera es casi recta — pero el dataset es circular. Train ≈ Test, pero ambos bajos.';
+  } else if(gamma > 5 && C > 1){
+    cls = 'note warning';
+    html = '<b>Overfitting · gamma demasiado alto:</b> los kernels son tan estrechos que cada punto encierra su propia zona. Excelente en train, malo en test. La frontera serpentea sin sentido.';
+  } else if(tr > 0.9 && te > 0.88){
+    cls = 'note tip';
+    html = '<b>Generalización buena:</b> frontera circular limpia que separa el disco interior del anillo. Train y Test parecidos, los dos altos. <b>Este es el tipo de combinación que GridSearchCV busca encontrar automáticamente.</b>';
+  } else {
+    html = '<b>Ajuste intermedio.</b> Prueba a probar el preset «buen ajuste» para ver la combinación óptima.';
+  }
+  adv.className = cls;
+  adv.innerHTML = html;
+}
+
+function updateSVMFromSliders(){
+  const lc = +document.getElementById('svm-C').value;
+  const lg = +document.getElementById('svm-G').value;
+  const C = Math.pow(10, lc);
+  const gamma = Math.pow(10, lg);
+  document.getElementById('svm-C-val').textContent = C >= 1 ? C.toFixed(1) : C.toFixed(3);
+  document.getElementById('svm-G-val').textContent = gamma >= 1 ? gamma.toFixed(2) : gamma.toFixed(3);
+  document.getElementById('svm-code-C').textContent = C >= 1 ? C.toFixed(1) : C.toFixed(3);
+  document.getElementById('svm-code-G').textContent = gamma >= 1 ? gamma.toFixed(2) : gamma.toFixed(3);
+  renderSVMChart(C, gamma);
+  updateSVMAdvice(C, gamma);
+}
+document.getElementById('svm-C').addEventListener('input', updateSVMFromSliders);
+document.getElementById('svm-G').addEventListener('input', updateSVMFromSliders);
+
+/* Presets del playground */
+document.querySelectorAll('[data-preset]').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    const preset = btn.dataset.preset;
+    let logC=0, logG=-1;
+    if(preset==='under'){ logC=-1; logG=-3; }
+    else if(preset==='good'){ logC=0; logG=-0.3; }
+    else if(preset==='over'){ logC=1; logG=1.3; }
+    document.getElementById('svm-C').value = logC;
+    document.getElementById('svm-G').value = logG;
+    updateSVMFromSliders();
+  });
+});
+
+updateSVMFromSliders();
+
+
+/* =====================================================================
+   DEMO 3 · GRID con miniaturas SVG
+   ===================================================================== */
+
+/* Genera 5 puntuaciones de fold con un poco de variabilidad */
+function cellFoldScores(C, gamma, seedBase){
+  function seed(s){return function(){s=(s*9301+49297)%233280;return s/233280;};}
+  const r = seed(seedBase || 1);
+  const base = svmTestAccuracy(C, gamma);
+  const folds = [];
+  for(let i=0;i<5;i++){
+    const noise = (r()-0.5)*0.05;
+    folds.push(Math.max(0.4, Math.min(0.99, base + noise)));
+  }
+  return folds;
+}
+
+/* Estado */
+const gridScores = new Array(C_VALS.length*G_VALS.length).fill(null);
+let testingIdx = -1;
+let bestIdx = -1;
+let foldProgress = 0;
+let selectedIdx = -1;
+
+/* Mini-SVG de la frontera dentro de una tarjeta (resolución baja para velocidad) */
+function miniFrontierSVG(C, gamma){
+  const W=160, H=100;
+  const minR=-2.7, maxR=2.7;
+  const NX=24, NY=15;
+  const cellW = W/NX;
+  const cellH = H/NY;
+  let s = '';
+  for(let ix=0;ix<NX;ix++){
+    for(let iy=0;iy<NY;iy++){
+      const x = minR + (ix+0.5)*(maxR-minR)/NX;
+      const y = minR + (iy+0.5)*(maxR-minR)/NY;
+      const c = svmPredict(x, y, C, gamma);
+      const col = c===0 ? '#3FA9F5' : '#D85C3E';
+      s += '<rect x="'+(ix*cellW).toFixed(2)+'" y="'+(iy*cellH).toFixed(2)+'" width="'+(cellW+0.4).toFixed(2)+'" height="'+(cellH+0.4).toFixed(2)+'" fill="'+col+'" opacity="0.22"/>';
+    }
+  }
+  /* Puntos pequeñitos */
+  const xfn = function(v){return (v-minR)/(maxR-minR)*W;};
+  const yfn = function(v){return H-(v-minR)/(maxR-minR)*H;};
+  SVM_DATA.forEach(function(p){
+    const col = p.c===0 ? '#3FA9F5' : '#D85C3E';
+    s += '<circle cx="'+xfn(p.x).toFixed(1)+'" cy="'+yfn(p.y).toFixed(1)+'" r="1.8" fill="'+col+'" stroke="#fff" stroke-width="0.4"/>';
+  });
+  return '<svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none">'+s+'</svg>';
+}
+
+/* Render del grid completo de 12 tarjetas */
+function renderGrid(){
+  // Etiquetas gamma arriba
+  const gammaLabels = document.getElementById('grid-pro-gamma-labels');
+  let html = '<div class="axis-title">↓ C · gamma →</div>';
+  G_VALS.forEach(function(g){
+    html += '<div class="lbl"><div class="name">gamma</div>'+g+'</div>';
+  });
+  gammaLabels.innerHTML = html;
+
+  // Etiquetas C laterales
+  const cLabels = document.getElementById('grid-pro-c-labels');
+  html = '';
+  C_VALS.forEach(function(C){
+    html += '<div class="lbl"><div class="name">C</div>'+C+'</div>';
+  });
+  cLabels.innerHTML = html;
+
+  // Las 12 tarjetas
+  const cells = document.getElementById('grid-pro-cells');
+  html = '';
+  C_VALS.forEach(function(C, ci){
+    G_VALS.forEach(function(g, gi){
+      const idx = ci*G_VALS.length + gi;
+      const cellData = gridScores[idx];
+      let cls = 'gp-cell';
+      let scoreText = '<span class="score placeholder">—</span>';
+      let foldsHtml = '<span></span><span></span><span></span><span></span><span></span>';
+      let miniSVG = '<div class="empty-marker">?</div>';
+
+      if(cellData != null){
+        cls += ' done';
+        scoreText = '<span class="score">'+cellData.mean.toFixed(3)+'</span>';
+        foldsHtml = '<span class="done"></span><span class="done"></span><span class="done"></span><span class="done"></span><span class="done"></span>';
+        miniSVG = miniFrontierSVG(C, g);
+      } else if(idx === testingIdx){
+        cls += ' testing';
+        let f = '';
+        for(let k=0;k<5;k++){
+          if(k < foldProgress) f += '<span class="done"></span>';
+          else if(k === foldProgress) f += '<span class="fold-active"></span>';
+          else f += '<span></span>';
+        }
+        foldsHtml = f;
+        scoreText = '<span class="score" style="color:var(--amber)">'+Math.max(1,foldProgress)+'/5</span>';
+        miniSVG = miniFrontierSVG(C, g);
+      } else {
+        cls += ' idle';
+      }
+      if(idx === bestIdx) cls += ' best';
+      if(idx === selectedIdx) cls += ' selected';
+
+      html += '<div class="'+cls+'" data-idx="'+idx+'">'
+            + '<div class="gp-cell-badge">★ MEJOR</div>'
+            + '<div class="gp-cell-mini">'+miniSVG+'</div>'
+            + '<div class="gp-cell-info">'+scoreText+'<div class="folds-track">'+foldsHtml+'</div></div>'
+            + '</div>';
+    });
+  });
+  cells.innerHTML = html;
+
+  // Listeners
+  cells.querySelectorAll('.gp-cell').forEach(function(el){
+    el.addEventListener('click', function(){
+      const idx = +el.dataset.idx;
+      selectedIdx = idx;
+      renderGrid();
+      showCellDetail(idx);
+    });
+  });
+}
+
+/* Panel de detalle (al hacer click) */
+function showCellDetail(idx){
+  const ci = Math.floor(idx/G_VALS.length);
+  const gi = idx % G_VALS.length;
+  const C = C_VALS[ci], gamma = G_VALS[gi];
+  const cellData = gridScores[idx];
+
+  document.getElementById('cell-detail').classList.add('show');
+  document.getElementById('cell-detail-title').textContent = 'C = '+C+' · gamma = '+gamma;
+
+  // Veredicto
+  const verd = document.getElementById('cell-detail-verdict');
+  const tr = svmTrainAccuracy(C, gamma);
+  const te = svmTestAccuracy(C, gamma);
+  if(gamma < 0.05){
+    verd.className = 'cell-detail-verdict under';
+    verd.textContent = '⚠ underfitting';
+  } else if(gamma > 5 && C > 1){
+    verd.className = 'cell-detail-verdict over';
+    verd.textContent = '⚠ overfitting';
+  } else if(tr > 0.9 && te > 0.88){
+    verd.className = 'cell-detail-verdict good';
+    verd.textContent = '✓ buen ajuste';
+  } else {
+    verd.className = 'cell-detail-verdict mid';
+    verd.textContent = '· intermedio';
+  }
+
+  // SVG grande de la frontera
+  renderCellDetailChart(C, gamma);
+
+  // Folds
+  if(cellData){
+    let folds = '';
+    cellData.folds.forEach(function(f, i){
+      folds += '<div class="cell-detail-fold">'
+             + '<div class="name">fold '+(i+1)+'</div>'
+             + '<div class="bar"><div class="fill" style="width:'+(f*100).toFixed(1)+'%"></div>'
+             + '<div class="num">'+f.toFixed(3)+'</div></div>'
+             + '</div>';
+    });
+    document.getElementById('cell-detail-folds').innerHTML = folds;
+
+    const stability = cellData.std < 0.02 ? '<span style="color:var(--verde)">estable ✓</span>' : cellData.std > 0.05 ? '<span style="color:var(--rojo)">inestable ⚠</span>' : '<span style="color:var(--azul-2)">aceptable</span>';
+    document.getElementById('cell-detail-summary').innerHTML =
+        '<div class="cell-detail-summary"><div class="row"><b>media · cv_score</b><span class="v">'+cellData.mean.toFixed(3)+'</span></div>'
+      + '<div class="row"><b>desviación estándar</b><span class="v">'+cellData.std.toFixed(3)+'</span></div>'
+      + '<div class="row"><b>estabilidad entre folds</b><span class="v">'+stability+'</span></div></div>';
+  } else {
+    document.getElementById('cell-detail-folds').innerHTML = '<div style="color:var(--gris);font-family:\'SF Mono\',monospace;font-size:13px;padding:10px">Esta celda aún no se ha evaluado. Pulsa <b>Ejecutar GridSearchCV</b> arriba para que se entrene.</div>';
+    document.getElementById('cell-detail-summary').innerHTML = '';
+  }
+}
+
+function renderCellDetailChart(C, gamma){
+  const W=600, H=360, P=18;
+  const minR=-2.7, maxR=2.7;
+  const xfn = function(v){return P+(v-minR)/(maxR-minR)*(W-2*P);};
+  const yfn = function(v){return (H-P)-(v-minR)/(maxR-minR)*(H-2*P);};
+
+  let s='';
+  const NX=50, NY=30;
+  const cellW = (W-2*P)/NX;
+  const cellH = (H-2*P)/NY;
+  for(let ix=0;ix<NX;ix++){
+    for(let iy=0;iy<NY;iy++){
+      const x = minR + (ix+0.5)*(maxR-minR)/NX;
+      const y = minR + (iy+0.5)*(maxR-minR)/NY;
+      const c = svmPredict(x, y, C, gamma);
+      const col = c===0 ? '#3FA9F5' : '#D85C3E';
+      s += '<rect x="'+(P+ix*cellW).toFixed(2)+'" y="'+(P+iy*cellH).toFixed(2)+'" width="'+(cellW+0.7).toFixed(2)+'" height="'+(cellH+0.7).toFixed(2)+'" fill="'+col+'" opacity="0.2"/>';
+    }
+  }
+  SVM_DATA.forEach(function(p){
+    const col = p.c===0 ? '#3FA9F5' : '#D85C3E';
+    s += '<circle cx="'+xfn(p.x).toFixed(1)+'" cy="'+yfn(p.y).toFixed(1)+'" r="3.8" fill="'+col+'" stroke="#fff" stroke-width="1"/>';
+  });
+  document.getElementById('cell-detail-chart').innerHTML = s;
+}
+
+/* === Ejecución animada del GridSearch === */
+let gridRunning = false;
+
+function resetGrid(){
+  for(let i=0;i<gridScores.length;i++) gridScores[i] = null;
+  testingIdx = -1;
+  bestIdx = -1;
+  foldProgress = 0;
+  selectedIdx = -1;
+  renderGrid();
+  document.getElementById('best-combo').textContent = 'esperando ejecución…';
+  document.getElementById('best-score').textContent = '—';
+  document.getElementById('total-fits').textContent = '0 / 60';
+  document.getElementById('cell-detail').classList.remove('show');
+}
+
+function runGrid(){
+  if(gridRunning) return;
+  gridRunning = true;
+  resetGrid();
+  const cellTime = +document.getElementById('grid-speed').value;
+  const total = C_VALS.length * G_VALS.length;
+  let i = 0;
+  let totalFits = 0;
+
+  function nextCell(){
+    if(i >= total){
+      testingIdx = -1;
+      let best = -Infinity;
+      gridScores.forEach(function(s, k){
+        if(s && s.mean > best){ best = s.mean; bestIdx = k; }
+      });
+      const ci = Math.floor(bestIdx / G_VALS.length);
+      const gi = bestIdx % G_VALS.length;
+      document.getElementById('best-combo').textContent = 'C = '+C_VALS[ci]+' · γ = '+G_VALS[gi];
+      document.getElementById('best-score').textContent = gridScores[bestIdx].mean.toFixed(3);
+      selectedIdx = bestIdx;
+      renderGrid();
+      showCellDetail(bestIdx);
+      gridRunning = false;
+      return;
+    }
+    testingIdx = i;
+    foldProgress = 0;
+    const ci = Math.floor(i / G_VALS.length);
+    const gi = i % G_VALS.length;
+    const C = C_VALS[ci], gamma = G_VALS[gi];
+    const folds = cellFoldScores(C, gamma, (i+1)*13);
+
+    function nextFold(){
+      if(foldProgress >= 5){
+        const mean = folds.reduce(function(a,b){return a+b;},0)/folds.length;
+        const variance = folds.reduce(function(s,v){return s+(v-mean)*(v-mean);},0)/folds.length;
+        const std = Math.sqrt(variance);
+        gridScores[i] = {folds:folds, mean:mean, std:std};
+        renderGrid();
+        i++;
+        setTimeout(nextCell, Math.max(50, cellTime/3));
+        return;
+      }
+      foldProgress++;
+      totalFits++;
+      document.getElementById('total-fits').textContent = totalFits + ' / 60';
+      renderGrid();
+      setTimeout(nextFold, cellTime);
+    }
+    nextFold();
+  }
+  nextCell();
+}
+
+document.getElementById('grid-play').addEventListener('click', runGrid);
+document.getElementById('grid-reset').addEventListener('click', function(){
+  gridRunning = false;
+  resetGrid();
+});
+
+resetGrid();
+</script>
+</body>
+</html>

@@ -1,0 +1,55 @@
+{
+  "_meta": {
+    "project": "Clinical/Trading Automation Engine",
+    "version": "1.0.0",
+    "schema_version": "v2",
+    "last_updated": "2026-05-15T19:58:40Z"
+  },
+  "active_context": {
+    "current_milestone": "M1: Core Architecture",
+    "active_feature_id": "FEAT-002",
+    "working_files": [
+      "src/models/database.py",
+      "src/ui/components/base.py"
+    ]
+  },
+  "backlog": [
+    {
+      "id": "FEAT-001",
+      "title": "Bootstrapping del entorno y DB",
+      "status": "done",
+      "priority": "p0",
+      "dod": "Base de datos inicializada en modo WAL y conexión testeada.",
+      "completed_at": "2026-05-14T10:00:00Z"
+    },
+    {
+      "id": "FEAT-002",
+      "title": "Implementación de layout base NiceGUI",
+      "status": "in-progress",
+      "priority": "p0",
+      "dod": "El layout principal carga sin errores con el menú lateral colapsable.",
+      "notes": "Mantener la estética minimalista y premium; usar paleta de colores monocromática."
+    },
+    {
+      "id": "FEAT-003",
+      "title": "Integración del motor LLM local",
+      "status": "pending",
+      "priority": "p1",
+      "dod": "Endpoint de inferencia local responde en < 2000ms.",
+      "dependencies": ["FEAT-001"]
+    }
+  ],
+  "technical_debt": [
+    {
+      "id": "TD-001",
+      "description": "El logger actual escribe de forma síncrona, migrar a asíncrono para evitar bloqueos en la UI.",
+      "impact": "medium",
+      "status": "open"
+    }
+  ],
+  "handoff_log": {
+    "previous_session_summary": "Se configuró la base de datos y se prepararon los archivos base de la UI.",
+    "current_blockers": null,
+    "next_immediate_action": "Abrir src/ui/components/base.py y comenzar a maquetar el header."
+  }
+}

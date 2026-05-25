@@ -1,0 +1,1637 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Laboratorio Interactivo — Estrategia de Datos | Tema 1 | Máster IA aplicada a CCSS</title>
+<style>
+  :root {
+    --navy: #1a1a4e;
+    --navy-soft: #2a2a6e;
+    --blue: #5b8fa8;
+    --blue-light: #e8f4f8;
+    --light-bg: #f5f0eb;
+    --white: #ffffff;
+    --dark: #2d2d2d;
+    --accent: #d4a853;
+    --accent-soft: #fef3d0;
+    --green: #2d8659;
+    --green-light: #e8f8ee;
+    --red: #c0392b;
+    --red-light: #fde8e8;
+    --gray: #6b7280;
+    --gray-light: #f0f0f0;
+    --shadow: 0 2px 16px rgba(0,0,0,0.08);
+    --shadow-hover: 0 6px 24px rgba(0,0,0,0.12);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--light-bg); color: var(--dark); line-height: 1.65; }
+
+  /* ===== TOP BAR ===== */
+  .top-bar { background: var(--navy); color: #fff; padding: 14px 32px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+  .top-bar h1 { font-size: 1.05rem; font-weight: 600; letter-spacing: .3px; }
+  .top-bar .breadcrumb { font-size: .8rem; opacity: .75; }
+  .top-bar .progress-mini { display: flex; align-items: center; gap: 10px; }
+  .top-bar .progress-mini-bar { width: 120px; height: 6px; background: rgba(255,255,255,0.2); border-radius: 3px; overflow: hidden; }
+  .top-bar .progress-mini-fill { height: 100%; background: var(--accent); border-radius: 3px; transition: width .4s; }
+  .top-bar .progress-mini-text { font-size: .75rem; opacity: .85; }
+
+  /* ===== TABS ===== */
+  .tabs { display: flex; flex-wrap: wrap; background: var(--white); border-bottom: 2px solid #e5e5e5; padding: 0 18px; gap: 0; position: sticky; top: 50px; z-index: 99; overflow-x: auto; }
+  .tab-btn { padding: 14px 16px; border: none; background: transparent; cursor: pointer; font-size: .85rem; font-weight: 500; color: var(--gray); border-bottom: 3px solid transparent; transition: all .2s; white-space: nowrap; display: flex; align-items: center; gap: 6px; }
+  .tab-btn:hover { color: var(--navy); }
+  .tab-btn.active { color: var(--navy); border-bottom-color: var(--blue); font-weight: 700; }
+  .tab-btn .tab-num { background: var(--blue-light); color: var(--blue); padding: 2px 8px; border-radius: 12px; font-size: .7rem; font-weight: 700; }
+  .tab-btn.active .tab-num { background: var(--navy); color: #fff; }
+
+  /* ===== SECTIONS ===== */
+  .section { display: none; padding: 32px 24px; max-width: 1180px; margin: 0 auto; animation: fadeIn .35s ease; }
+  .section.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  h2 { font-size: 1.7rem; color: var(--navy); margin-bottom: 6px; }
+  h3 { font-size: 1.15rem; color: var(--blue); margin: 28px 0 10px; }
+  h4 { color: var(--navy); }
+  .subtitle { color: var(--gray); font-size: .95rem; margin-bottom: 24px; font-style: italic; }
+  p { margin-bottom: 12px; }
+  .lead { font-size: 1.02rem; color: #444; margin-bottom: 18px; }
+
+  /* ===== CARDS ===== */
+  .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px; margin: 18px 0; }
+  .card { background: var(--white); border-radius: 12px; padding: 22px; box-shadow: var(--shadow); border-left: 4px solid var(--blue); transition: all .25s; }
+  .card:hover { transform: translateY(-3px); box-shadow: var(--shadow-hover); }
+  .card.green { border-left-color: var(--green); }
+  .card.red { border-left-color: var(--red); }
+  .card.gold { border-left-color: var(--accent); }
+  .card.navy { border-left-color: var(--navy); }
+  .card h4 { font-size: 1rem; margin-bottom: 8px; }
+  .card p { font-size: .88rem; color: #555; margin-bottom: 0; }
+  .card .tag { display: inline-block; background: var(--blue-light); color: var(--blue); padding: 2px 10px; border-radius: 20px; font-size: .72rem; font-weight: 700; margin-bottom: 8px; text-transform: uppercase; letter-spacing: .5px; }
+  .card.red .tag { background: var(--red-light); color: var(--red); }
+  .card.green .tag { background: var(--green-light); color: var(--green); }
+  .card.gold .tag { background: var(--accent-soft); color: #8a6d1b; }
+
+  /* ===== INFO BOXES ===== */
+  .info-box { background: var(--blue-light); border-left: 4px solid var(--blue); padding: 14px 20px; border-radius: 0 10px 10px 0; margin: 14px 0; font-size: .9rem; }
+  .info-box.warning { background: var(--accent-soft); border-left-color: var(--accent); }
+  .info-box.success { background: var(--green-light); border-left-color: var(--green); }
+  .info-box.danger { background: var(--red-light); border-left-color: var(--red); }
+  .info-box strong { color: var(--navy); }
+  .info-box-icon { display: inline-block; font-weight: 700; margin-right: 6px; }
+
+  /* ===== BUTTONS ===== */
+  .btn { padding: 10px 22px; border: none; border-radius: 8px; font-size: .88rem; font-weight: 600; cursor: pointer; transition: all .2s; font-family: inherit; }
+  .btn:disabled { opacity: .4; cursor: not-allowed; }
+  .btn-primary { background: var(--navy); color: #fff; }
+  .btn-primary:hover:not(:disabled) { background: var(--navy-soft); }
+  .btn-secondary { background: var(--blue); color: #fff; }
+  .btn-secondary:hover:not(:disabled) { background: #4a7e97; }
+  .btn-success { background: var(--green); color: #fff; }
+  .btn-reset { background: var(--gray-light); color: var(--dark); }
+  .btn-reset:hover { background: #ddd; }
+  .btn-group { display: flex; gap: 10px; margin: 16px 0; flex-wrap: wrap; }
+
+  /* ===== TIMELINE INTERACTIVA ===== */
+  .timeline-eras { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin: 20px 0; }
+  .era-card { background: var(--white); border-radius: 14px; padding: 20px; cursor: pointer; transition: all .3s; border-top: 4px solid var(--blue); position: relative; box-shadow: var(--shadow); }
+  .era-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-hover); }
+  .era-card.selected { background: var(--navy); color: #fff; border-top-color: var(--accent); }
+  .era-card.selected .era-year { color: var(--accent); }
+  .era-card.selected p { color: rgba(255,255,255,0.8); }
+  .era-card.selected .era-metric .v { color: var(--accent); }
+  .era-card.selected .era-metric .l { color: rgba(255,255,255,0.6); }
+  .era-year { font-size: 1.6rem; font-weight: 800; color: var(--navy); margin-bottom: 4px; }
+  .era-card h4 { font-size: 1rem; margin-bottom: 8px; }
+  .era-card p { font-size: .82rem; color: #666; margin-bottom: 12px; }
+  .era-metrics { display: flex; gap: 12px; flex-wrap: wrap; }
+  .era-metric { background: rgba(0,0,0,0.04); padding: 6px 10px; border-radius: 8px; }
+  .era-card.selected .era-metric { background: rgba(255,255,255,0.1); }
+  .era-metric .v { font-weight: 800; color: var(--navy); font-size: .95rem; }
+  .era-metric .l { font-size: .65rem; color: var(--gray); display: block; text-transform: uppercase; }
+
+  .era-detail-panel { background: var(--white); border-radius: 14px; padding: 28px; margin: 18px 0; box-shadow: var(--shadow); border-top: 4px solid var(--accent); display: none; }
+  .era-detail-panel.active { display: block; animation: fadeIn .3s; }
+  .era-detail-panel h3 { margin-top: 0; }
+  .era-detail-panel ul { padding-left: 20px; margin: 8px 0; }
+  .era-detail-panel li { margin-bottom: 6px; font-size: .92rem; }
+
+  /* ===== ROI CALCULATOR ===== */
+  .roi-calculator { background: var(--white); border-radius: 14px; padding: 28px; box-shadow: var(--shadow); margin: 20px 0; }
+  .roi-calculator h4 { margin-bottom: 14px; }
+  .roi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
+  @media (max-width: 800px) { .roi-grid { grid-template-columns: 1fr; } }
+  .control-row { margin: 14px 0; }
+  .control-row label { display: block; font-weight: 600; color: var(--navy); margin-bottom: 6px; font-size: .88rem; }
+  .control-row .slider-line { display: flex; align-items: center; gap: 12px; }
+  .control-row input[type="range"] { flex: 1; accent-color: var(--blue); height: 6px; }
+  .control-row .value-tag { min-width: 80px; text-align: center; font-size: .92rem; font-weight: 700; color: var(--navy); background: var(--blue-light); padding: 5px 10px; border-radius: 6px; }
+  .roi-result-card { background: linear-gradient(135deg, var(--navy), var(--navy-soft)); color: #fff; border-radius: 12px; padding: 24px; text-align: center; }
+  .roi-result-card .roi-label { font-size: .8rem; opacity: .7; text-transform: uppercase; letter-spacing: 1px; }
+  .roi-result-card .roi-value { font-size: 2.4rem; font-weight: 800; color: var(--accent); margin: 8px 0; }
+  .roi-result-card .roi-detail { font-size: .85rem; opacity: .85; margin-top: 8px; }
+  .roi-bar { height: 18px; background: rgba(255,255,255,0.15); border-radius: 9px; margin: 14px 0 6px; overflow: hidden; position: relative; }
+  .roi-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent), #f0c062); transition: width .4s; }
+  .roi-verdict { font-size: .85rem; padding: 8px 14px; border-radius: 8px; margin-top: 12px; display: inline-block; font-weight: 600; }
+  .roi-verdict.good { background: var(--green); }
+  .roi-verdict.warning { background: var(--accent); color: var(--navy); }
+  .roi-verdict.bad { background: var(--red); }
+
+  /* ===== CASE EXPLORER ===== */
+  .domain-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin: 18px 0 12px; }
+  .domain-tab { padding: 8px 16px; background: var(--white); border: 2px solid var(--gray-light); border-radius: 20px; cursor: pointer; font-size: .85rem; font-weight: 600; color: var(--gray); transition: all .2s; }
+  .domain-tab:hover { border-color: var(--blue); color: var(--blue); }
+  .domain-tab.active { background: var(--navy); color: #fff; border-color: var(--navy); }
+  .domain-content { background: var(--white); border-radius: 12px; padding: 24px; box-shadow: var(--shadow); display: none; }
+  .domain-content.active { display: block; animation: fadeIn .3s; }
+  .case-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 12px; }
+  @media (max-width: 800px) { .case-row { grid-template-columns: 1fr; } }
+  .case-item { background: var(--blue-light); padding: 14px 16px; border-radius: 10px; border-left: 3px solid var(--blue); font-size: .88rem; }
+  .case-item strong { color: var(--navy); display: block; margin-bottom: 4px; }
+
+  /* ===== BIAS SIMULATOR ===== */
+  .bias-sim { background: var(--white); border-radius: 14px; padding: 24px; box-shadow: var(--shadow); margin: 20px 0; }
+  .bias-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: center; margin-top: 16px; }
+  @media (max-width: 800px) { .bias-grid { grid-template-columns: 1fr; } }
+  .bias-canvas-wrap { background: var(--light-bg); padding: 14px; border-radius: 10px; }
+  .bias-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
+  .bias-stat { background: var(--white); padding: 10px 14px; border-radius: 8px; text-align: center; box-shadow: var(--shadow); }
+  .bias-stat .v { font-size: 1.3rem; font-weight: 800; color: var(--navy); }
+  .bias-stat .l { font-size: .72rem; color: var(--gray); text-transform: uppercase; }
+  .bias-stat.bad .v { color: var(--red); }
+  .bias-stat.good .v { color: var(--green); }
+
+  /* ===== RADAR ===== */
+  .radar-section { background: var(--white); border-radius: 14px; padding: 24px; box-shadow: var(--shadow); margin: 20px 0; }
+  .radar-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; }
+  @media (max-width: 800px) { .radar-grid { grid-template-columns: 1fr; } }
+  .maturity-controls { display: flex; flex-direction: column; gap: 10px; }
+  .maturity-control { display: flex; align-items: center; gap: 10px; }
+  .maturity-control label { flex: 1; font-size: .85rem; font-weight: 600; color: var(--navy); }
+  .maturity-control input[type="range"] { flex: 1; accent-color: var(--blue); }
+  .maturity-control .mc-val { width: 32px; text-align: center; font-weight: 700; color: var(--navy); background: var(--blue-light); padding: 3px 6px; border-radius: 6px; font-size: .85rem; }
+  .scenario-pills { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0; }
+  .scenario-pill { padding: 6px 12px; background: var(--gray-light); border: 1px solid #ddd; border-radius: 16px; font-size: .78rem; cursor: pointer; transition: all .2s; }
+  .scenario-pill:hover { background: var(--blue-light); border-color: var(--blue); }
+  .scenario-pill.active { background: var(--navy); color: #fff; border-color: var(--navy); }
+  .maturity-verdict { background: var(--blue-light); padding: 14px; border-radius: 10px; margin-top: 14px; font-size: .88rem; }
+  .maturity-verdict strong { color: var(--navy); }
+
+  /* ===== ROLE-PLAY ===== */
+  .roleplay { background: linear-gradient(135deg, var(--navy), var(--navy-soft)); color: #fff; border-radius: 14px; padding: 28px; margin: 20px 0; box-shadow: var(--shadow); }
+  .roleplay h3 { color: #fff; margin-top: 0; }
+  .roleplay-context { background: rgba(255,255,255,0.08); padding: 16px 20px; border-radius: 10px; margin: 14px 0; font-size: .92rem; }
+  .roleplay-context strong { color: var(--accent); }
+  .scenario-step { background: var(--white); color: var(--dark); border-radius: 12px; padding: 22px; margin: 14px 0; }
+  .scenario-step .step-tag { display: inline-block; background: var(--accent); color: var(--navy); padding: 3px 12px; border-radius: 20px; font-size: .72rem; font-weight: 700; margin-bottom: 10px; text-transform: uppercase; }
+  .scenario-step h4 { margin-bottom: 8px; }
+  .scenario-options { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+  .scenario-opt { padding: 12px 16px; background: var(--blue-light); border: 2px solid transparent; border-radius: 8px; cursor: pointer; font-size: .9rem; transition: all .2s; text-align: left; font-family: inherit; }
+  .scenario-opt:hover:not(.disabled) { border-color: var(--blue); background: #d8e8ee; }
+  .scenario-opt.chosen-good { background: var(--green-light); border-color: var(--green); }
+  .scenario-opt.chosen-bad { background: var(--red-light); border-color: var(--red); }
+  .scenario-opt.disabled { opacity: .55; cursor: not-allowed; }
+  .scenario-feedback { margin-top: 12px; padding: 14px; border-radius: 8px; font-size: .88rem; display: none; }
+  .scenario-feedback.show { display: block; }
+  .scenario-feedback.good { background: var(--green-light); border-left: 4px solid var(--green); }
+  .scenario-feedback.bad { background: var(--red-light); border-left: 4px solid var(--red); }
+  .roleplay-score { background: rgba(255,255,255,0.1); padding: 16px 20px; border-radius: 10px; margin-top: 16px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+  .roleplay-score .rs-circle { width: 56px; height: 56px; border-radius: 50%; background: var(--accent); color: var(--navy); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.3rem; }
+
+  /* ===== ROLES TABLE + DRAG ===== */
+  .roles-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin: 20px 0; }
+  .role-card { background: var(--white); border-radius: 12px; padding: 20px; box-shadow: var(--shadow); border-top: 4px solid var(--blue); }
+  .role-card.cdo { border-top-color: var(--accent); }
+  .role-card.scientist { border-top-color: var(--navy); }
+  .role-card.engineer { border-top-color: var(--green); }
+  .role-card.architect { border-top-color: var(--blue); }
+  .role-card.analyst { border-top-color: var(--red); }
+  .role-card h4 { font-size: 1rem; margin-bottom: 6px; }
+  .role-card .role-sub { font-size: .75rem; color: var(--gray); text-transform: uppercase; margin-bottom: 10px; letter-spacing: .5px; }
+  .role-card p { font-size: .85rem; color: #555; margin-bottom: 8px; }
+  .role-tools { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; }
+  .role-tool { background: var(--gray-light); padding: 2px 8px; border-radius: 6px; font-size: .7rem; color: #555; }
+
+  .task-assign { background: var(--white); border-radius: 14px; padding: 24px; box-shadow: var(--shadow); margin: 24px 0; }
+  .task-assign h4 { margin-bottom: 14px; }
+  .task-pool { display: flex; flex-wrap: wrap; gap: 8px; padding: 16px; background: var(--light-bg); border-radius: 10px; min-height: 60px; }
+  .task-chip { background: var(--navy); color: #fff; padding: 6px 12px; border-radius: 8px; cursor: grab; font-size: .82rem; font-weight: 500; user-select: none; transition: all .2s; }
+  .task-chip:active { cursor: grabbing; }
+  .task-chip.placed.correct { background: var(--green); }
+  .task-chip.placed.wrong { background: var(--red); }
+  .role-zones { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-top: 14px; }
+  .role-zone { background: var(--blue-light); border: 2px dashed var(--blue); border-radius: 10px; padding: 12px; min-height: 90px; }
+  .role-zone.highlight { background: #d4e8ef; border-style: solid; }
+  .role-zone h5 { color: var(--navy); margin-bottom: 8px; font-size: .85rem; text-align: center; }
+  .role-zone .placed-tasks { display: flex; flex-wrap: wrap; gap: 5px; }
+
+  /* ===== PIPELINE SIMULATOR ===== */
+  .pipeline-sim { background: var(--white); border-radius: 14px; padding: 24px; box-shadow: var(--shadow); margin: 20px 0; }
+  .pipeline-stages { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 18px 0; }
+  @media (max-width: 700px) { .pipeline-stages { grid-template-columns: 1fr; } }
+  .ps-stage { background: var(--blue-light); border-radius: 10px; padding: 18px; text-align: center; cursor: pointer; transition: all .25s; border: 2px solid transparent; }
+  .ps-stage:hover { transform: translateY(-2px); }
+  .ps-stage.active { background: var(--navy); color: #fff; border-color: var(--accent); }
+  .ps-stage h4 { margin-bottom: 4px; font-size: .95rem; color: inherit; }
+  .ps-stage p { font-size: .78rem; opacity: .85; margin: 0; }
+  .ps-stage .ps-num { display: inline-block; background: var(--blue); color: #fff; width: 28px; height: 28px; border-radius: 50%; line-height: 28px; font-size: .8rem; font-weight: 700; margin-bottom: 8px; }
+  .ps-stage.active .ps-num { background: var(--accent); color: var(--navy); }
+
+  .pipeline-detail { background: var(--blue-light); border-radius: 10px; padding: 20px; margin-top: 12px; display: none; }
+  .pipeline-detail.active { display: block; animation: fadeIn .3s; }
+  .pipeline-detail h4 { margin-bottom: 8px; }
+  .pipeline-detail ul { padding-left: 20px; margin: 8px 0; }
+  .pipeline-detail li { font-size: .9rem; margin-bottom: 6px; }
+
+  .quality-sim { background: var(--white); border-radius: 14px; padding: 24px; box-shadow: var(--shadow); margin: 20px 0; }
+  .quality-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 14px 0; }
+  @media (max-width: 700px) { .quality-controls { grid-template-columns: 1fr; } }
+  .quality-output { background: var(--light-bg); padding: 18px; border-radius: 10px; margin-top: 14px; text-align: center; }
+  .quality-output .accuracy-num { font-size: 2.6rem; font-weight: 800; color: var(--navy); }
+  .quality-output .accuracy-label { font-size: .8rem; color: var(--gray); text-transform: uppercase; }
+  .quality-bar { width: 100%; height: 14px; background: var(--gray-light); border-radius: 7px; overflow: hidden; margin: 10px 0; }
+  .quality-bar-fill { height: 100%; transition: all .4s; }
+  .gigo-tag { display: inline-block; padding: 4px 12px; border-radius: 16px; font-size: .8rem; font-weight: 700; margin-top: 8px; }
+
+  /* ===== QUIZ ===== */
+  .quiz-box { background: var(--white); border-radius: 12px; padding: 24px; margin: 18px 0; box-shadow: var(--shadow); }
+  .quiz-box h4 { margin-bottom: 12px; font-size: 1rem; }
+  .quiz-question { font-size: .92rem; margin-bottom: 12px; }
+  .quiz-option { display: block; padding: 11px 16px; margin: 6px 0; background: var(--light-bg); border: 2px solid transparent; border-radius: 8px; cursor: pointer; font-size: .88rem; transition: all .2s; }
+  .quiz-option:hover:not(.disabled) { border-color: var(--blue); background: var(--blue-light); }
+  .quiz-option.correct { background: var(--green-light); border-color: var(--green); }
+  .quiz-option.wrong { background: var(--red-light); border-color: var(--red); }
+  .quiz-option.disabled { pointer-events: none; opacity: .75; }
+  .quiz-feedback { margin-top: 10px; padding: 11px 14px; border-radius: 8px; font-size: .87rem; display: none; }
+  .quiz-feedback.show { display: block; }
+  .quiz-feedback.ok { background: var(--green-light); color: #155724; border-left: 3px solid var(--green); }
+  .quiz-feedback.nok { background: var(--red-light); color: #721c24; border-left: 3px solid var(--red); }
+
+  /* ===== FINAL CHALLENGE ===== */
+  .challenge-card { background: linear-gradient(135deg, var(--accent), #c89640); color: var(--navy); padding: 28px; border-radius: 14px; margin: 20px 0; box-shadow: var(--shadow-hover); }
+  .challenge-card h3 { color: var(--navy); margin: 0 0 12px; }
+  .challenge-list { padding-left: 20px; }
+  .challenge-list li { margin-bottom: 10px; font-size: .92rem; }
+
+  /* ===== SCORE PANEL ===== */
+  .score-panel { background: var(--white); border-radius: 12px; padding: 18px 24px; box-shadow: var(--shadow); display: flex; align-items: center; gap: 18px; margin: 18px 0; flex-wrap: wrap; }
+  .score-circle { width: 64px; height: 64px; border-radius: 50%; background: var(--navy); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; font-weight: 800; }
+  .score-circle.gold { background: var(--accent); color: var(--navy); }
+  .score-circle.green { background: var(--green); }
+  .score-info { flex: 1; min-width: 180px; }
+  .score-info strong { color: var(--navy); }
+
+  /* ===== TIPS ===== */
+  .tip { font-size: .8rem; color: var(--gray); font-style: italic; margin-top: 6px; }
+
+  /* ===== FOOTER ===== */
+  footer { text-align: center; padding: 30px 20px; color: var(--gray); font-size: .82rem; border-top: 1px solid #e5e5e5; margin-top: 40px; }
+
+  /* ===== UTILITIES ===== */
+  .row { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; }
+  .grow { flex: 1; }
+  .small { font-size: .82rem; color: var(--gray); }
+
+  @media (max-width: 768px) {
+    .top-bar { padding: 12px 16px; flex-direction: column; gap: 8px; align-items: flex-start; }
+    .tabs { padding: 0 8px; top: 80px; }
+    .tab-btn { padding: 10px 12px; font-size: .78rem; }
+    .section { padding: 22px 14px; }
+    h2 { font-size: 1.4rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <div>
+    <h1>Laboratorio Interactivo — Estrategia de Datos</h1>
+    <span class="breadcrumb">Tema 1 · Máster IA aplicada a las Ciencias del Comportamiento</span>
+  </div>
+  <div class="progress-mini">
+    <span class="progress-mini-text" id="prog-text">0% completado</span>
+    <div class="progress-mini-bar"><div class="progress-mini-fill" id="prog-fill" style="width:0%"></div></div>
+  </div>
+</div>
+
+<div class="tabs" id="tabs">
+  <button class="tab-btn active" data-tab="mapa"><span class="tab-num">0</span> Mapa</button>
+  <button class="tab-btn" data-tab="evolucion"><span class="tab-num">1</span> Evolución</button>
+  <button class="tab-btn" data-tab="concepto"><span class="tab-num">2</span> Concepto + ROI</button>
+  <button class="tab-btn" data-tab="ccss"><span class="tab-num">3</span> IA en CCSS</button>
+  <button class="tab-btn" data-tab="madurez"><span class="tab-num">4</span> Madurez del dato</button>
+  <button class="tab-btn" data-tab="roleplay"><span class="tab-num">5</span> Caso CDO</button>
+  <button class="tab-btn" data-tab="roles"><span class="tab-num">6</span> Roles del equipo</button>
+  <button class="tab-btn" data-tab="pipeline"><span class="tab-num">7</span> Pipeline + Calidad</button>
+  <button class="tab-btn" data-tab="reto"><span class="tab-num">8</span> Reto final</button>
+</div>
+
+<!-- ===================== SECCION 0: MAPA ===================== -->
+<div class="section active" id="sec-mapa">
+  <h2>Bienvenido al Laboratorio del Tema 1</h2>
+  <p class="subtitle">El recorrido que vamos a hacer juntos en clase</p>
+
+  <p class="lead">Este laboratorio está diseñado para que <strong>experimentes</strong>, no solo leas. En cada sección vas a tomar decisiones, manipular variables y ver cómo cambia el resultado. El objetivo es que salgas de aquí entendiendo no solo <em>qué</em> es una estrategia de datos, sino <em>por qué</em> tu mirada como profesional de las ciencias del comportamiento es estratégica en cualquier proyecto de IA.</p>
+
+  <div class="info-box">
+    <strong><span class="info-box-icon">▶</span> Cómo navegar:</strong> usa las pestañas superiores para moverte entre secciones. Cada bloque tiene <strong>un simulador, un caso o un ejercicio</strong>. La barra superior te muestra tu progreso global. No hay forma errónea de explorar — pero te recomiendo seguir el orden la primera vez.
+  </div>
+
+  <h3>Las 8 paradas del recorrido</h3>
+  <div class="card-grid">
+    <div class="card navy"><span class="tag">01 · Evolución</span><h4>De almacenar a competir</h4><p>Recorre las 4 eras del dato con métricas reales (volumen, hitos tecnológicos). Compara cómo cambió la mentalidad organizacional.</p></div>
+    <div class="card gold"><span class="tag">02 · Concepto + ROI</span><h4>Calculadora de retorno</h4><p>Mueve los sliders y descubre en qué condiciones invertir en estrategia de datos genera ROI positivo y cuándo no.</p></div>
+    <div class="card"><span class="tag">03 · IA en CCSS</span><h4>Casos por disciplina + sesgo</h4><p>Explora aplicaciones reales en psicología, sociología, salud... y simula cómo un dataset sesgado contamina al modelo.</p></div>
+    <div class="card green"><span class="tag">04 · Madurez</span><h4>Diagnóstico organizacional</h4><p>Puntúa 6 dimensiones de una organización y ve su perfil de madurez en un radar dinámico.</p></div>
+    <div class="card navy"><span class="tag">05 · Caso CDO</span><h4>Role-play de decisiones</h4><p>Eres CDO de una ONG de salud mental. Toma 4 decisiones — cada una afecta a técnica, confianza y ética.</p></div>
+    <div class="card"><span class="tag">06 · Roles</span><h4>Quién hace qué</h4><p>Asigna 10 tareas reales a los 5 perfiles clave de un equipo de datos. ¿Sabes quién hace cada cosa?</p></div>
+    <div class="card red"><span class="tag">07 · Pipeline + GIGO</span><h4>Calidad y consecuencias</h4><p>Manipula la calidad de los datos de entrada y observa cómo cambia la precisión del modelo final.</p></div>
+    <div class="card gold"><span class="tag">08 · Reto final</span><h4>Diseña tu estrategia</h4><p>Caso integrador: aplica todo lo aprendido a un proyecto real de intervención social.</p></div>
+  </div>
+
+  <div class="info-box warning">
+    <strong>Para trabajar en clase:</strong> cada sección está pensada para abrirse en directo y dedicarle entre 5 y 10 minutos. Los ejercicios son individuales pero ideales para comentar en grupo. La barra de progreso superior te ayuda a no perder secciones por el camino.
+  </div>
+</div>
+
+<!-- ===================== SECCION 1: EVOLUCION ===================== -->
+<div class="section" id="sec-evolucion">
+  <h2>1 · La evolución de las estrategias de datos</h2>
+  <p class="subtitle">De tener datos a competir con datos</p>
+
+  <p class="lead">Las estrategias de datos no nacieron como las conocemos hoy. Han recorrido un camino claro, y entender ese camino te ayuda a situar dónde está <strong>tu organización</strong> y dónde está la <strong>frontera del estado del arte</strong>. Haz clic en cada era para ver detalles, hitos y el contexto tecnológico.</p>
+
+  <div class="timeline-eras" id="eras-grid">
+    <div class="era-card" data-era="0" onclick="selectEra(0)">
+      <div class="era-year">80s — 90s</div>
+      <h4>Era del almacenamiento</h4>
+      <p>El reto era guardar los datos sin perderlos. La pregunta dominante: "¿dónde lo metemos?"</p>
+      <div class="era-metrics">
+        <div class="era-metric"><span class="v">~MB</span><span class="l">vol. típico</span></div>
+        <div class="era-metric"><span class="v">RDBMS</span><span class="l">tecnología</span></div>
+      </div>
+    </div>
+    <div class="era-card" data-era="1" onclick="selectEra(1)">
+      <div class="era-year">2000s</div>
+      <h4>Era de la gobernanza</h4>
+      <p>Calidad, seguridad y trazabilidad. Aparecen las primeras políticas y los primeros CDOs.</p>
+      <div class="era-metrics">
+        <div class="era-metric"><span class="v">~TB</span><span class="l">vol. típico</span></div>
+        <div class="era-metric"><span class="v">DW</span><span class="l">tecnología</span></div>
+      </div>
+    </div>
+    <div class="era-card" data-era="2" onclick="selectEra(2)">
+      <div class="era-year">2010s</div>
+      <h4>Era analítica</h4>
+      <p>Big Data, ML y nube. El dato pasa a generar valor: ya no se guarda, se explota.</p>
+      <div class="era-metrics">
+        <div class="era-metric"><span class="v">~PB</span><span class="l">vol. típico</span></div>
+        <div class="era-metric"><span class="v">Hadoop/ML</span><span class="l">tecnología</span></div>
+      </div>
+    </div>
+    <div class="era-card" data-era="3" onclick="selectEra(3)">
+      <div class="era-year">2020+</div>
+      <h4>Democratización + IA generativa</h4>
+      <p>Acceso a datos para no técnicos, MLOps, foundation models y datos como producto.</p>
+      <div class="era-metrics">
+        <div class="era-metric"><span class="v">~ZB</span><span class="l">vol. típico</span></div>
+        <div class="era-metric"><span class="v">LLMs</span><span class="l">tecnología</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="era-detail-panel active" id="era-detail">
+    <!-- Se rellena por JS -->
+  </div>
+
+  <div class="info-box">
+    <strong>Lo que cambia es la mentalidad:</strong> en los 80s el dato era un coste (había que guardarlo). En los 2000s era un riesgo (había que protegerlo). En los 2010s es un activo (había que explotarlo). Hoy es <strong>un producto y una ventaja competitiva</strong>. Si tu organización todavía piensa el dato como en los 90s, tienes una conversación pendiente.
+  </div>
+
+  <div class="quiz-box">
+    <h4>Comprueba tu intuición</h4>
+    <p class="quiz-question">¿Qué cambio cultural es más característico de la era actual frente a la era analítica de los 2010s?</p>
+    <div class="quiz-option" onclick="checkQuiz(this, false, 'q-evo-1')">a) Mayor capacidad de almacenamiento en disco</div>
+    <div class="quiz-option" onclick="checkQuiz(this, true, 'q-evo-1')">b) El acceso al dato se democratiza: perfiles no técnicos manejan dashboards y modelos predictivos</div>
+    <div class="quiz-option" onclick="checkQuiz(this, false, 'q-evo-1')">c) Vuelven los mainframes</div>
+    <div class="quiz-option" onclick="checkQuiz(this, false, 'q-evo-1')">d) Se prohíbe el uso de IA en sectores regulados</div>
+    <div class="quiz-feedback" id="fb-q-evo-1"></div>
+  </div>
+</div>
+
+<!-- ===================== SECCION 2: CONCEPTO + ROI ===================== -->
+<div class="section" id="sec-concepto">
+  <h2>2 · Concepto de estrategia de datos · Calculadora de ROI</h2>
+  <p class="subtitle">Una definición operativa y una herramienta para defenderla ante un comité de dirección</p>
+
+  <div class="info-box">
+    <strong>Definición operativa:</strong> una estrategia de datos es un <strong>plan a largo plazo</strong> que define cómo una organización <strong>recopila, gestiona y utiliza</strong> sus datos. Abarca tres capas: <strong>tecnologías</strong> (qué herramientas), <strong>procesos</strong> (cómo fluyen) y <strong>políticas</strong> (qué se permite y qué no). El objetivo final: <em>maximizar el valor extraído del dato</em>.
+  </div>
+
+  <h3>Ventajas e inconvenientes — visión equilibrada</h3>
+  <div class="card-grid">
+    <div class="card green"><span class="tag">Ventaja</span><h4>Decisiones basadas en evidencia</h4><p>Sustituye intuición y opinión por inferencia estadística. Reduce errores costosos y permite cuantificar el riesgo.</p></div>
+    <div class="card green"><span class="tag">Ventaja</span><h4>Detección de patrones invisibles</h4><p>Modelos sobre grandes volúmenes revelan correlaciones y tendencias que ningún humano detectaría a mano.</p></div>
+    <div class="card green"><span class="tag">Ventaja</span><h4>Personalización a escala</h4><p>De miles de "tratamientos" diferentes en marketing a intervenciones psicosociales adaptadas al perfil del usuario.</p></div>
+    <div class="card green"><span class="tag">Ventaja</span><h4>Cumplimiento normativo</h4><p>Una buena estrategia integra RGPD, AI Act y normativa sectorial desde el diseño (privacy by design).</p></div>
+    <div class="card red"><span class="tag">Riesgo</span><h4>Inversión inicial alta</h4><p>Infra, licencias, talento. La curva de coste es fuerte los primeros 12-24 meses.</p></div>
+    <div class="card red"><span class="tag">Riesgo</span><h4>Brecha de talento</h4><p>El mercado de Data Scientists y Engineers es competitivo. Atraerlos y retenerlos no es trivial.</p></div>
+    <div class="card red"><span class="tag">Riesgo</span><h4>Resistencia organizacional</h4><p>El cambio cultural fracasa más a menudo que el técnico. Sin liderazgo, no hay estrategia que sobreviva.</p></div>
+    <div class="card red"><span class="tag">Riesgo</span><h4>Impacto medioambiental</h4><p>Los grandes data centers consumen energía. Sostenibilidad ya es métrica de board.</p></div>
+  </div>
+
+  <h3>Calculadora interactiva de ROI</h3>
+  <p>Simula la decisión de invertir en una estrategia de datos. Ajusta los parámetros y observa si tiene sentido económico. <strong>Esta es la conversación que vas a tener con un director financiero.</strong></p>
+
+  <div class="roi-calculator">
+    <div class="roi-grid">
+      <div>
+        <div class="control-row">
+          <label>Inversión inicial (k€)</label>
+          <div class="slider-line">
+            <input type="range" id="roi-inv" min="50" max="2000" step="10" value="400" oninput="recalcROI()">
+            <span class="value-tag" id="roi-inv-v">400 k€</span>
+          </div>
+          <div class="tip">Infra, licencias, contratación inicial</div>
+        </div>
+        <div class="control-row">
+          <label>Coste anual de mantenimiento (k€)</label>
+          <div class="slider-line">
+            <input type="range" id="roi-mant" min="20" max="800" step="5" value="120" oninput="recalcROI()">
+            <span class="value-tag" id="roi-mant-v">120 k€</span>
+          </div>
+        </div>
+        <div class="control-row">
+          <label>Eficiencia esperada (% reducción de costes)</label>
+          <div class="slider-line">
+            <input type="range" id="roi-eff" min="0" max="40" step="1" value="8" oninput="recalcROI()">
+            <span class="value-tag" id="roi-eff-v">8%</span>
+          </div>
+        </div>
+        <div class="control-row">
+          <label>Costes operativos actuales (k€/año)</label>
+          <div class="slider-line">
+            <input type="range" id="roi-ops" min="500" max="20000" step="50" value="3000" oninput="recalcROI()">
+            <span class="value-tag" id="roi-ops-v">3.000 k€</span>
+          </div>
+        </div>
+        <div class="control-row">
+          <label>Madurez digital de la organización</label>
+          <div class="slider-line">
+            <input type="range" id="roi-mad" min="1" max="5" step="1" value="3" oninput="recalcROI()">
+            <span class="value-tag" id="roi-mad-v">3 / 5</span>
+          </div>
+          <div class="tip">A menor madurez, más fricción en el despliegue</div>
+        </div>
+        <div class="control-row">
+          <label>Horizonte de análisis (años)</label>
+          <div class="slider-line">
+            <input type="range" id="roi-h" min="1" max="7" step="1" value="3" oninput="recalcROI()">
+            <span class="value-tag" id="roi-h-v">3 años</span>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="roi-result-card">
+          <div class="roi-label">ROI estimado a horizonte</div>
+          <div class="roi-value" id="roi-val">+0%</div>
+          <div class="roi-bar"><div class="roi-bar-fill" id="roi-bar" style="width:0%"></div></div>
+          <div class="roi-detail" id="roi-detail">Ajusta los parámetros para ver el resultado</div>
+          <div class="roi-verdict good" id="roi-verdict" style="display:none;">Inversión recomendada</div>
+        </div>
+        <div class="info-box warning" style="margin-top:14px;">
+          <strong>Lo que aprendes con esta calculadora:</strong> el ROI de una estrategia de datos depende de tres palancas reales — el <strong>tamaño de la base de costes</strong> sobre la que actúa, la <strong>capacidad de la organización para absorber el cambio</strong> (madurez), y el <strong>tiempo</strong> que se le da para madurar. Una estrategia con horizonte de 1 año casi siempre da ROI negativo.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="quiz-box">
+    <h4>Reflexión estratégica</h4>
+    <p class="quiz-question">Si tu organización tiene madurez 1/5 y horizonte de 1 año, ¿qué decisión es la más sensata?</p>
+    <div class="quiz-option" onclick="checkQuiz(this, false, 'q-roi-1')">a) Invertir 1M€ en una plataforma cloud avanzada para acelerar</div>
+    <div class="quiz-option" onclick="checkQuiz(this, true, 'q-roi-1')">b) Empezar con un piloto de bajo coste y demostrar valor antes de escalar</div>
+    <div class="quiz-option" onclick="checkQuiz(this, false, 'q-roi-1')">c) Contratar un equipo de 20 data scientists desde el día 1</div>
+    <div class="quiz-option" onclick="checkQuiz(this, false, 'q-roi-1')">d) No hacer nada hasta tener madurez 5/5</div>
+    <div class="quiz-feedback" id="fb-q-roi-1"></div>
+  </div>
+</div>
+
+<!-- ===================== SECCION 3: IA EN CCSS + SESGO ===================== -->
+<div class="section" id="sec-ccss">
+  <h2>3 · IA en las ciencias del comportamiento</h2>
+  <p class="subtitle">Donde la ciencia del dato se cruza con la comprensión del ser humano — y cuidado con los sesgos</p>
+
+  <p class="lead">La ciencia del comportamiento estudia las acciones y reacciones humanas. Cuando integras estrategias de datos e IA, ambos campos <strong>se potencian</strong>: la IA detecta patrones imposibles a mano; vosotros aportáis <strong>la pregunta correcta, el contexto y el filtro ético</strong>. Sin lo segundo, lo primero genera tecnología sofisticada y socialmente irrelevante (o dañina).</p>
+
+  <h3>Explorador de aplicaciones por disciplina</h3>
+  <p>Selecciona una disciplina para ver casos reales de aplicación de IA, su impacto y los riesgos asociados:</p>
+
+  <div class="domain-tabs" id="domain-tabs">
+    <div class="domain-tab active" data-domain="psico" onclick="selectDomain('psico')">Psicología</div>
+    <div class="domain-tab" data-domain="econ" onclick="selectDomain('econ')">Economía conductual</div>
+    <div class="domain-tab" data-domain="socio" onclick="selectDomain('socio')">Sociología</div>
+    <div class="domain-tab" data-domain="salud" onclick="selectDomain('salud')">Salud pública</div>
+    <div class="domain-tab" data-domain="edu" onclick="selectDomain('edu')">Educación</div>
+    <div class="domain-tab" data-domain="mkt" onclick="selectDomain('mkt')">Marketing y consumo</div>
+  </div>
+
+  <div class="domain-content active" id="dc-psico">
+    <h4>Psicología</h4>
+    <p>La IA puede revelar <strong>insights sobre procesos cognitivos y emocionales</strong> ayudando a profesionales a comprender motivaciones y reacciones individuales.</p>
+    <div class="case-row">
+      <div class="case-item"><strong>Caso real — NLP en terapia</strong>Modelos de lenguaje analizan transcripciones de sesiones para detectar patrones lingüísticos asociados a depresión o ideación suicida. Ej.: Ellipsis Health, X2AI.</div>
+      <div class="case-item"><strong>Predicción de abandono terapéutico</strong>Modelos predictivos sobre datos de adherencia y respuesta clínica anticipan qué pacientes están en riesgo de dejar el tratamiento.</div>
+      <div class="case-item"><strong>Métrica clave</strong>Sensibilidad &gt; especificidad: prefieres falsos positivos (alertar de más) que falsos negativos (perder a alguien en riesgo).</div>
+      <div class="case-item"><strong>Riesgo</strong>Sobrediagnóstico, paternalismo algorítmico, posible reemplazo de juicio clínico por output del modelo.</div>
+    </div>
+  </div>
+
+  <div class="domain-content" id="dc-econ">
+    <h4>Economía conductual</h4>
+    <p>Algoritmos detectan <strong>anomalías en decisiones económicas</strong>, ayudando a entender cómo las personas toman decisiones financieras reales (no las que predice la teoría).</p>
+    <div class="case-row">
+      <div class="case-item"><strong>Caso — Nudges adaptativos</strong>Apps bancarias ajustan recordatorios de ahorro según el perfil de gasto del usuario. Eficacia documentada del +15-30% en tasas de ahorro.</div>
+      <div class="case-item"><strong>Detección de sesgos</strong>Modelos identifican el efecto anclaje, aversión a la pérdida o sesgo de confirmación en decisiones financieras reales.</div>
+      <div class="case-item"><strong>Aplicación pública</strong>Diseño de políticas (pensiones, seguros, salud) usando IA + behavioral economics. Caso: nudge units gubernamentales (Reino Unido, EE.UU.).</div>
+      <div class="case-item"><strong>Riesgo</strong>Manipulación: el mismo motor de personalización puede usarse para ayudar al usuario o para extraer valor de él (dark patterns).</div>
+    </div>
+  </div>
+
+  <div class="domain-content" id="dc-socio">
+    <h4>Sociología</h4>
+    <p>La IA ofrece análisis de <strong>estructuras sociales, dinámicas de grupo e interacción social</strong> a una escala antes impensable.</p>
+    <div class="case-row">
+      <div class="case-item"><strong>Análisis de redes sociales</strong>Detección de comunidades, líderes de opinión y vías de propagación de información (o desinformación) usando grafos.</div>
+      <div class="case-item"><strong>NLP sobre discurso público</strong>Detección de polarización, marcos discursivos dominantes y cambios de narrativa en tiempo real.</div>
+      <div class="case-item"><strong>Predicción de tendencias sociales</strong>Modelos sobre datos longitudinales anticipan migraciones, conflictos urbanos o cambios en valores.</div>
+      <div class="case-item"><strong>Riesgo</strong>Vigilancia masiva, predicción de comportamiento usado para control social, sesgos en la representación de minorías.</div>
+    </div>
+  </div>
+
+  <div class="domain-content" id="dc-salud">
+    <h4>Salud pública</h4>
+    <p>IA sobre <strong>factores de riesgo y hábitos de vida</strong> para diseñar intervenciones personalizadas y anticipar problemas a escala poblacional.</p>
+    <div class="case-row">
+      <div class="case-item"><strong>Modelos epidemiológicos</strong>Predicción de brotes, dispersión geográfica y carga hospitalaria (COVID-19 fue el gran ejemplo, pero también se usa en gripe, dengue, etc.).</div>
+      <div class="case-item"><strong>Personalización preventiva</strong>Recomendaciones de hábitos basadas en perfil bio-psico-social. Apps de salud, programas de bienestar corporativo.</div>
+      <div class="case-item"><strong>Asignación de recursos</strong>Optimización de centros de vacunación, equipos médicos, políticas de cribado.</div>
+      <div class="case-item"><strong>Riesgo</strong>Inequidad: si el modelo se entrena con datos de poblaciones sobrerrepresentadas, falla con las infrarrepresentadas.</div>
+    </div>
+  </div>
+
+  <div class="domain-content" id="dc-edu">
+    <h4>Educación</h4>
+    <p>IA adaptada al <strong>ritmo y estilo de aprendizaje</strong> de cada estudiante. Evaluación continua, recursos personalizados, retroalimentación instantánea.</p>
+    <div class="case-row">
+      <div class="case-item"><strong>Sistemas tutoriales inteligentes (ITS)</strong>Plataformas como Khan Academy, Duolingo, ALEKS ajustan dificultad y secuencia según el progreso individual.</div>
+      <div class="case-item"><strong>Detección temprana de abandono</strong>Modelos sobre datos de asistencia, calificaciones y participación predicen riesgo de abandono escolar para activar tutorías.</div>
+      <div class="case-item"><strong>Evaluación automática</strong>NLP corrige ensayos y proporciona feedback instantáneo (con supervisión docente).</div>
+      <div class="case-item"><strong>Riesgo</strong>Reduccionismo: medir lo que es fácil de medir, no lo que importa. Riesgo de sustituir vínculo docente-alumno por dashboard.</div>
+    </div>
+  </div>
+
+  <div class="domain-content" id="dc-mkt">
+    <h4>Marketing y comportamiento del consumidor</h4>
+    <p>Análisis de datos de comportamiento para <strong>experiencias personalizadas y campañas dirigidas</strong>.</p>
+    <div class="case-row">
+      <div class="case-item"><strong>Sistemas de recomendación</strong>Netflix, Amazon, Spotify: el patrón "datos → modelo → recomendación" en su forma más madura. Mejoran retención de forma demostrable.</div>
+      <div class="case-item"><strong>Segmentación dinámica</strong>Clusters de usuarios que se actualizan en tiempo real según comportamiento, no solo según demografía estática.</div>
+      <div class="case-item"><strong>Predicción de churn</strong>Modelos identifican qué clientes están a punto de abandonar, permitiendo intervenciones de retención.</div>
+      <div class="case-item"><strong>Riesgo</strong>Burbujas de filtro, manipulación de preferencias, dark patterns que explotan sesgos cognitivos.</div>
+    </div>
+  </div>
+
+  <h3>Simulador: el sesgo nace en los datos, no en el modelo</h3>
+  <p>Uno de los principios más importantes que vais a oír este máster: <strong>"Bias in, bias out"</strong>. Si entrenas un modelo con datos donde una población está infrarrepresentada o estereotipada, el modelo amplifica el sesgo. Mueve los sliders y observa qué pasa con la <strong>tasa de falsos negativos</strong> en cada grupo.</p>
+
+  <div class="bias-sim">
+    <h4>Modelo de "predicción de éxito laboral" — datos sintéticos</h4>
+    <p class="small">Imagina que entrenas un modelo para preseleccionar candidatos. Manipula la composición del dataset y mira el impacto.</p>
+    <div class="bias-grid">
+      <div>
+        <div class="control-row">
+          <label>Proporción de Grupo A en datos de entrenamiento</label>
+          <div class="slider-line">
+            <input type="range" id="bias-prop" min="50" max="98" value="85" oninput="updateBias()">
+            <span class="value-tag" id="bias-prop-v">85%</span>
+          </div>
+          <div class="tip">Si solo el 2% son del Grupo B, el modelo apenas "ve" a este grupo</div>
+        </div>
+        <div class="control-row">
+          <label>Etiquetas históricas sesgadas (% de éxito etiquetado correctamente para Grupo B)</label>
+          <div class="slider-line">
+            <input type="range" id="bias-label" min="40" max="100" value="70" oninput="updateBias()">
+            <span class="value-tag" id="bias-label-v">70%</span>
+          </div>
+          <div class="tip">Si los managers históricamente subvaloraron al Grupo B, las etiquetas heredan ese sesgo</div>
+        </div>
+        <div class="control-row">
+          <label>Calidad técnica del modelo (regularización, validación cruzada)</label>
+          <div class="slider-line">
+            <input type="range" id="bias-quality" min="50" max="100" value="85" oninput="updateBias()">
+            <span class="value-tag" id="bias-quality-v">85%</span>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="bias-canvas-wrap">
+          <canvas id="bias-canvas" width="380" height="220"></canvas>
+        </div>
+        <div class="bias-stats">
+          <div class="bias-stat" id="bs-acc-a"><div class="v">—</div><div class="l">Precisión Grupo A</div></div>
+          <div class="bias-stat" id="bs-acc-b"><div class="v">—</div><div class="l">Precisión Grupo B</div></div>
+          <div class="bias-stat" id="bs-fn-a"><div class="v">—</div><div class="l">Falsos negativos A</div></div>
+          <div class="bias-stat" id="bs-fn-b"><div class="v">—</div><div class="l">Falsos negativos B</div></div>
+        </div>
+        <div class="info-box danger" id="bias-verdict" style="margin-top:12px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="info-box warning">
+    <strong>Lección clave para CCSS:</strong> el sesgo no se "limpia con más matemáticas". Se previene en el diseño del estudio, en la selección de la muestra, en la elección de las etiquetas y en la validación post-deployment. Aquí es donde un científico del comportamiento es <em>insustituible</em>.
+  </div>
+</div>
+
+<!-- ===================== SECCION 4: MADUREZ ===================== -->
+<div class="section" id="sec-madurez">
+  <h2>4 · Diagnóstico de madurez del dato</h2>
+  <p class="subtitle">¿En qué punto está realmente tu organización? — un radar dinámico</p>
+
+  <p class="lead">Los <strong>6 componentes clave</strong> de una estrategia de datos no son binarios (existen / no existen). Cada uno tiene un nivel de madurez. Una organización con tecnología puntera y cultura nula es disfuncional. Una con cultura espectacular y sin gobernanza, también. <strong>El equilibrio importa.</strong></p>
+
+  <div class="card-grid">
+    <div class="card"><span class="tag">01</span><h4>Metas y objetivos comerciales claros</h4><p>Alineación con la estrategia general. Sin "para qué", la estrategia de datos no tiene dirección.</p></div>
+    <div class="card"><span class="tag">02</span><h4>Gestión y calidad de datos</h4><p>Procesos para asegurar integridad, precisión y consistencia: limpieza, validación, deduplicación, enriquecimiento.</p></div>
+    <div class="card"><span class="tag">03</span><h4>Tecnología e infraestructura</h4><p>Cloud, bases de datos, herramientas BI, frameworks ML. Adecuadas al volumen y complejidad real.</p></div>
+    <div class="card"><span class="tag">04</span><h4>Talento cualificado y formación</h4><p>No solo contratar perfiles técnicos: formar a toda la organización en pensamiento de datos.</p></div>
+    <div class="card"><span class="tag">05</span><h4>Cultura y liderazgo</h4><p>El liderazgo predica con el ejemplo. La cultura valora el dato en la toma de decisiones cotidianas.</p></div>
+    <div class="card"><span class="tag">06</span><h4>Privacidad, seguridad y cumplimiento</h4><p>RGPD, AI Act, normativa sectorial. Privacy by design, no privacy by accident.</p></div>
+  </div>
+
+  <h3>Radar interactivo de madurez</h3>
+  <p>Ajusta cada dimensión del 0 al 5 y observa el perfil. Prueba los escenarios precargados:</p>
+
+  <div class="radar-section">
+    <div class="scenario-pills">
+      <div class="scenario-pill" onclick="loadScenario('startup', this)">Startup tech (3 años)</div>
+      <div class="scenario-pill" onclick="loadScenario('ong', this)">ONG salud mental</div>
+      <div class="scenario-pill" onclick="loadScenario('publica', this)">Administración pública</div>
+      <div class="scenario-pill" onclick="loadScenario('faang', this)">Big Tech</div>
+      <div class="scenario-pill" onclick="loadScenario('reset', this)">Reset</div>
+    </div>
+    <div class="radar-grid">
+      <div>
+        <div class="maturity-controls">
+          <div class="maturity-control"><label>Objetivos comerciales</label><input type="range" id="m-objectives" min="0" max="5" value="3" oninput="updateRadar()"><span class="mc-val" id="m-objectives-v">3</span></div>
+          <div class="maturity-control"><label>Calidad de datos</label><input type="range" id="m-quality" min="0" max="5" value="3" oninput="updateRadar()"><span class="mc-val" id="m-quality-v">3</span></div>
+          <div class="maturity-control"><label>Tecnología</label><input type="range" id="m-tech" min="0" max="5" value="3" oninput="updateRadar()"><span class="mc-val" id="m-tech-v">3</span></div>
+          <div class="maturity-control"><label>Talento</label><input type="range" id="m-talent" min="0" max="5" value="3" oninput="updateRadar()"><span class="mc-val" id="m-talent-v">3</span></div>
+          <div class="maturity-control"><label>Cultura y liderazgo</label><input type="range" id="m-culture" min="0" max="5" value="3" oninput="updateRadar()"><span class="mc-val" id="m-culture-v">3</span></div>
+          <div class="maturity-control"><label>Privacidad y seguridad</label><input type="range" id="m-privacy" min="0" max="5" value="3" oninput="updateRadar()"><span class="mc-val" id="m-privacy-v">3</span></div>
+        </div>
+        <div class="maturity-verdict" id="maturity-verdict"></div>
+      </div>
+      <div style="text-align:center;">
+        <canvas id="radar-canvas" width="400" height="400" style="max-width:100%;"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="info-box">
+    <strong>Cómo leer el radar:</strong> un perfil "redondo" (todo equilibrado a nivel 3) es saludable aunque no excelente. Un perfil con una "punta" muy alta y otras dimensiones bajas suele ser una organización con <em>data debt</em>: ha invertido mucho en una sola dimensión y arrastra los demás. La intervención más rentable suele ser <strong>subir la dimensión más baja</strong>.
+  </div>
+</div>
+
+<!-- ===================== SECCION 5: ROLE-PLAY CDO ===================== -->
+<div class="section" id="sec-roleplay">
+  <h2>5 · Caso de decisión · Eres el nuevo CDO</h2>
+  <p class="subtitle">Role-play: 4 decisiones, consecuencias reales, feedback razonado</p>
+
+  <div class="roleplay">
+    <h3>Situación inicial</h3>
+    <div class="roleplay-context">
+      Acabas de incorporarte como <strong>Chief Data Officer</strong> en <strong>Mente Abierta</strong>, una ONG de salud mental con 40 empleados que opera en 6 ciudades. La dirección quiere usar IA para <strong>personalizar los itinerarios terapéuticos</strong> y reducir el abandono (actualmente ~45%). Tienen <strong>presupuesto limitado</strong>, datos dispersos en Excel y un Drive desordenado, y un consejo que mezcla entusiasmo y miedo a "deshumanizar" la atención.
+      <br><br>Vas a tomar 4 decisiones. Cada una afecta a tu marcador de <strong>ejecución técnica</strong>, <strong>confianza del equipo</strong> y <strong>cumplimiento ético</strong>.
+    </div>
+
+    <div class="roleplay-score">
+      <div class="rs-circle" id="rp-tech">0</div>
+      <div>
+        <strong style="color:#fff;">Ejecución técnica</strong>
+        <div class="small" style="color:rgba(255,255,255,0.7);">Calidad de la solución a largo plazo</div>
+      </div>
+      <div class="rs-circle" id="rp-trust">0</div>
+      <div>
+        <strong style="color:#fff;">Confianza del equipo</strong>
+        <div class="small" style="color:rgba(255,255,255,0.7);">¿Te están siguiendo?</div>
+      </div>
+      <div class="rs-circle" id="rp-ethics">0</div>
+      <div>
+        <strong style="color:#fff;">Cumplimiento ético</strong>
+        <div class="small" style="color:rgba(255,255,255,0.7);">Privacidad, sesgo, consentimiento</div>
+      </div>
+    </div>
+
+    <!-- DECISION 1 -->
+    <div class="scenario-step">
+      <span class="step-tag">Decisión 1 / 4</span>
+      <h4>Primera semana: ¿por dónde empiezas?</h4>
+      <p>Tienes los primeros 30 días para "marcar agenda". El director general te pide "resultados visibles rápido".</p>
+      <div class="scenario-options" data-decision="1">
+        <button class="scenario-opt" onclick="rpChoose(this, 1, 'a')">a) Comprar una plataforma cloud y empezar a entrenar modelos. Velocidad ante todo.</button>
+        <button class="scenario-opt" onclick="rpChoose(this, 1, 'b')">b) Hacer un diagnóstico de datos existentes y entrevistar a 10 personas clave del equipo.</button>
+        <button class="scenario-opt" onclick="rpChoose(this, 1, 'c')">c) Contratar 3 data scientists senior antes de hacer nada más.</button>
+        <button class="scenario-opt" onclick="rpChoose(this, 1, 'd')">d) Diseñar un dashboard con métricas que ya tenéis para enseñar al consejo en la siguiente reunión.</button>
+      </div>
+      <div class="scenario-feedback" id="fb-rp-1"></div>
+    </div>
+
+    <!-- DECISION 2 -->
+    <div class="scenario-step">
+      <span class="step-tag">Decisión 2 / 4</span>
+      <h4>Segundo mes: el responsable clínico se opone</h4>
+      <p>La psicóloga jefa, con 25 años de experiencia, dice en reunión: <em>"Yo no necesito que un algoritmo me diga qué paciente va a abandonar. Esto despersonaliza la atención."</em> El director general te mira esperando respuesta.</p>
+      <div class="scenario-options" data-decision="2">
+        <button class="scenario-opt" onclick="rpChoose(this, 2, 'a')">a) Defender la IA como "objetiva" y argumentar que su intuición tiene sesgos cognitivos.</button>
+        <button class="scenario-opt" onclick="rpChoose(this, 2, 'b')">b) Reconocer su preocupación, posicionar la IA como "asistente que prioriza casos para que ella decida", e invitarla a co-diseñar las métricas.</button>
+        <button class="scenario-opt" onclick="rpChoose(this, 2, 'c')">c) Pedirle que confíe en el proceso porque "los datos no mienten".</button>
+        <button class="scenario-opt" onclick="rpChoose(this, 2, 'd')">d) Posponer el proyecto hasta que ella se jubile.</button>
+      </div>
+      <div class="scenario-feedback" id="fb-rp-2"></div>
+    </div>
+
+    <!-- DECISION 3 -->
+    <div class="scenario-step">
+      <span class="step-tag">Decisión 3 / 4</span>
+      <h4>Tercer mes: dilema de calidad de datos</h4>
+      <p>Los datos de los últimos 5 años solo cubren bien al perfil "mujer 25-45 con depresión leve". El 80% de tu base. Si entrenas con esto, tendrás un buen modelo... para ese segmento. ¿Qué haces?</p>
+      <div class="scenario-options" data-decision="3">
+        <button class="scenario-opt" onclick="rpChoose(this, 3, 'a')">a) Entrenar igualmente y desplegar para todos los pacientes. Es lo que hay.</button>
+        <button class="scenario-opt" onclick="rpChoose(this, 3, 'b')">b) Entrenar y desplegar solo para el segmento bien representado. Documentar limitaciones.</button>
+        <button class="scenario-opt" onclick="rpChoose(this, 3, 'c')">c) Posponer el modelo y diseñar un plan de recopilación de datos que enriquezca los segmentos infrarrepresentados.</button>
+        <button class="scenario-opt" onclick="rpChoose(this, 3, 'd')">d) Combinar (b) y (c): desplegar acotado mientras recopilas datos para ampliar.</button>
+      </div>
+      <div class="scenario-feedback" id="fb-rp-3"></div>
+    </div>
+
+    <!-- DECISION 4 -->
+    <div class="scenario-step">
+      <span class="step-tag">Decisión 4 / 4</span>
+      <h4>Sexto mes: el modelo predice riesgo alto en una paciente concreta</h4>
+      <p>El modelo señala con probabilidad 0.87 que María (paciente real) abandonará el tratamiento. La psicóloga que la trata dice que "está bien, va de buena". ¿Qué proceso institucionalizas?</p>
+      <div class="scenario-options" data-decision="4">
+        <button class="scenario-opt" onclick="rpChoose(this, 4, 'a')">a) El modelo manda. Forzar una intervención adicional.</button>
+        <button class="scenario-opt" onclick="rpChoose(this, 4, 'b')">b) La psicóloga manda. El modelo solo se usa para casos donde no hay seguimiento clínico cercano.</button>
+        <button class="scenario-opt" onclick="rpChoose(this, 4, 'c')">c) El modelo lanza una alerta. La psicóloga revisa contexto y decide. Documentamos la decisión y el resultado para mejorar el modelo.</button>
+        <button class="scenario-opt" onclick="rpChoose(this, 4, 'd')">d) Mostramos a María su score y le pedimos que decida si necesita más seguimiento.</button>
+      </div>
+      <div class="scenario-feedback" id="fb-rp-4"></div>
+    </div>
+
+    <div class="info-box success" id="rp-summary" style="display:none; margin-top:18px;"></div>
+  </div>
+</div>
+
+<!-- ===================== SECCION 6: ROLES ===================== -->
+<div class="section" id="sec-roles">
+  <h2>6 · Los 5 roles clave del equipo de datos</h2>
+  <p class="subtitle">Quién hace qué — y dónde encajáis vosotros como profesionales de CCSS</p>
+
+  <div class="roles-grid">
+    <div class="role-card cdo">
+      <h4>CDO</h4>
+      <div class="role-sub">Chief Data Officer</div>
+      <p>Lidera la <strong>estrategia de datos</strong>, garantiza calidad y gobernanza a nivel organizacional. Interlocutor con la dirección.</p>
+      <div class="role-tools"><span class="role-tool">Frameworks</span><span class="role-tool">KPIs</span><span class="role-tool">Políticas</span></div>
+    </div>
+    <div class="role-card scientist">
+      <h4>Data Scientist</h4>
+      <div class="role-sub">Análisis avanzado y ML</div>
+      <p>Construye <strong>modelos predictivos</strong>, hace experimentación, extrae insights complejos. Vuestro contexto del comportamiento humano es oro para ellos.</p>
+      <div class="role-tools"><span class="role-tool">Python</span><span class="role-tool">R</span><span class="role-tool">TensorFlow</span><span class="role-tool">Jupyter</span></div>
+    </div>
+    <div class="role-card engineer">
+      <h4>Data Engineer</h4>
+      <div class="role-sub">Infraestructura y pipelines</div>
+      <p>Diseña y mantiene <strong>pipelines de datos</strong>, almacenes y la "fontanería" que hace que el dato llegue limpio.</p>
+      <div class="role-tools"><span class="role-tool">SQL</span><span class="role-tool">Spark</span><span class="role-tool">Airflow</span><span class="role-tool">dbt</span></div>
+    </div>
+    <div class="role-card architect">
+      <h4>Data Architect</h4>
+      <div class="role-sub">Visión de sistema</div>
+      <p>Define <strong>arquitectura de datos</strong>: cómo se conectan sistemas, dónde vive cada dato, cómo escala todo.</p>
+      <div class="role-tools"><span class="role-tool">Diagramas</span><span class="role-tool">ERD</span><span class="role-tool">Cloud</span></div>
+    </div>
+    <div class="role-card analyst">
+      <h4>Data Analyst</h4>
+      <div class="role-sub">Insight cotidiano</div>
+      <p>Interpreta datos y genera <strong>informes y dashboards</strong> que informan decisiones del día a día. La interfaz cotidiana con el dato.</p>
+      <div class="role-tools"><span class="role-tool">Excel</span><span class="role-tool">SQL</span><span class="role-tool">Tableau</span><span class="role-tool">PowerBI</span></div>
+    </div>
+  </div>
+
+  <div class="card gold" style="margin: 18px 0;">
+    <span class="tag">Vuestro papel</span>
+    <h4>¿Dónde encajáis los profesionales de las ciencias del comportamiento?</h4>
+    <p>Vuestro rol natural está al lado del CDO y del Data Scientist. Aportáis <strong>la pregunta correcta</strong>, el <strong>contexto del comportamiento humano</strong> y el <strong>filtro ético</strong>. No tenéis que programar — pero sí saber colaborar hablando un idioma común. En las organizaciones más maduras, aparecen perfiles híbridos: <em>behavioral data analyst</em>, <em>research scientist</em>, <em>UX researcher con datos</em>.</p>
+  </div>
+
+  <h3>Asigna las tareas al rol correcto</h3>
+  <p>Arrastra cada tarea al rol que la lideraría principalmente. Algunas son obvias, otras requieren pensar:</p>
+
+  <div class="task-assign">
+    <h4>Tareas pendientes en el equipo</h4>
+    <div class="task-pool" id="task-pool">
+      <div class="task-chip" draggable="true" data-role="engineer" id="t1">Construir un pipeline ETL desde Google Forms a BigQuery</div>
+      <div class="task-chip" draggable="true" data-role="scientist" id="t2">Entrenar un modelo de clasificación de riesgo de abandono</div>
+      <div class="task-chip" draggable="true" data-role="analyst" id="t3">Crear un dashboard mensual de adherencia terapéutica</div>
+      <div class="task-chip" draggable="true" data-role="cdo" id="t4">Negociar con el comité de ética la política de uso de datos</div>
+      <div class="task-chip" draggable="true" data-role="architect" id="t5">Decidir entre arquitectura Data Lake o Data Warehouse</div>
+      <div class="task-chip" draggable="true" data-role="cdo" id="t6">Definir KPIs estratégicos del proyecto frente al consejo</div>
+      <div class="task-chip" draggable="true" data-role="scientist" id="t7">Validar el rendimiento del modelo en producción y detectar drift</div>
+      <div class="task-chip" draggable="true" data-role="engineer" id="t8">Programar la sincronización nocturna de datos clínicos</div>
+      <div class="task-chip" draggable="true" data-role="analyst" id="t9">Hacer un análisis ad-hoc de qué barrios tienen más demanda</div>
+      <div class="task-chip" draggable="true" data-role="architect" id="t10">Diseñar el modelo de datos para integrar 4 sistemas legacy</div>
+    </div>
+
+    <div class="role-zones">
+      <div class="role-zone" data-accept="cdo"><h5>CDO</h5><div class="placed-tasks"></div></div>
+      <div class="role-zone" data-accept="scientist"><h5>Data Scientist</h5><div class="placed-tasks"></div></div>
+      <div class="role-zone" data-accept="engineer"><h5>Data Engineer</h5><div class="placed-tasks"></div></div>
+      <div class="role-zone" data-accept="architect"><h5>Data Architect</h5><div class="placed-tasks"></div></div>
+      <div class="role-zone" data-accept="analyst"><h5>Data Analyst</h5><div class="placed-tasks"></div></div>
+    </div>
+
+    <div class="btn-group">
+      <button class="btn btn-reset" onclick="resetTasks()">Reiniciar tareas</button>
+      <span class="small" id="task-score" style="align-self:center;">0 / 10 correctas</span>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== SECCION 7: PIPELINE + GIGO ===================== -->
+<div class="section" id="sec-pipeline">
+  <h2>7 · Pipeline de datos · Calidad importa (GIGO)</h2>
+  <p class="subtitle">Las 3 fases operativas y un simulador del principio "Garbage In, Garbage Out"</p>
+
+  <p class="lead">Toda estrategia de datos se materializa en un <strong>pipeline</strong>: la cadena de procesos por la que el dato bruto se convierte en conocimiento accionable. Tres fases — pero la calidad de cada eslabón determina el rendimiento del siguiente.</p>
+
+  <div class="pipeline-sim">
+    <h4>Las 3 fases — explora cada una</h4>
+    <div class="pipeline-stages">
+      <div class="ps-stage active" data-stage="recoleccion" onclick="selectStage('recoleccion')">
+        <div class="ps-num">1</div>
+        <h4>Recolección</h4>
+        <p>Decidir qué datos generar, capturar o adquirir</p>
+      </div>
+      <div class="ps-stage" data-stage="almacenamiento" onclick="selectStage('almacenamiento')">
+        <div class="ps-num">2</div>
+        <h4>Almacenamiento y gestión</h4>
+        <p>Dónde viven los datos y cómo se gobiernan</p>
+      </div>
+      <div class="ps-stage" data-stage="analisis" onclick="selectStage('analisis')">
+        <div class="ps-num">3</div>
+        <h4>Análisis, modelado y visualización</h4>
+        <p>Convertir datos en conocimiento</p>
+      </div>
+    </div>
+
+    <div class="pipeline-detail active" id="pd-recoleccion">
+      <h4>Fase 1 · Recolección</h4>
+      <p>Los datos <strong>alimentan y entrenan los algoritmos</strong>. Una mala recolección invalida el resto del pipeline, por bueno que sea.</p>
+      <p><strong>Métodos típicos en CCSS:</strong></p>
+      <ul>
+        <li><strong>Encuestas estructuradas:</strong> Likert, escalas validadas (PHQ-9, GAD-7, etc.).</li>
+        <li><strong>Entrevistas semi-estructuradas:</strong> generan datos cualitativos ricos pero costosos de procesar.</li>
+        <li><strong>Observación sistemática:</strong> registro estructurado de comportamiento (ABC, time sampling).</li>
+        <li><strong>Datos administrativos y registros:</strong> historiales clínicos, registros académicos, logs digitales.</li>
+        <li><strong>Trazas digitales (digital phenotyping):</strong> uso de móvil, geolocalización, voz, sueño.</li>
+      </ul>
+      <p><strong>Consideraciones críticas:</strong> representatividad, consentimiento informado, sesgos de muestreo, RGPD/AI Act. Aquí es donde un científico del comportamiento previene el 80% de los problemas que surgen 6 meses después.</p>
+    </div>
+
+    <div class="pipeline-detail" id="pd-almacenamiento">
+      <h4>Fase 2 · Almacenamiento y gestión</h4>
+      <p>La estructura del almacenamiento determina <strong>qué preguntas podrás hacer rápido y cuáles serán imposibles</strong>.</p>
+      <p><strong>Tecnologías típicas:</strong></p>
+      <ul>
+        <li><strong>Cloud object storage:</strong> AWS S3, Google Cloud Storage, Azure Blob — datos brutos a bajo coste.</li>
+        <li><strong>Data Warehouse:</strong> BigQuery, Snowflake, Redshift — datos estructurados para analítica.</li>
+        <li><strong>Data Lake:</strong> almacén heterogéneo (texto, imagen, audio) sin esquema rígido.</li>
+        <li><strong>Lakehouse:</strong> arquitectura híbrida moderna (Databricks, Iceberg) que combina lo mejor de ambos.</li>
+        <li><strong>Feature Store:</strong> capa especializada para servir features a modelos en producción (Feast, Tecton).</li>
+      </ul>
+      <p><strong>Pipelines ETL/ELT:</strong> Airflow, dbt, Fivetran. Garantizan que el dato fluye, se transforma y queda trazable.</p>
+    </div>
+
+    <div class="pipeline-detail" id="pd-analisis">
+      <h4>Fase 3 · Análisis, modelado y visualización</h4>
+      <p>Convierte volúmenes de datos crudos en <strong>información comprensible y accionable</strong>.</p>
+      <p><strong>Análisis vs. Modelado:</strong></p>
+      <ul>
+        <li><strong>Análisis:</strong> "¿qué pasó? ¿por qué?" — examen, interpretación, transformación. Estadística descriptiva e inferencial.</li>
+        <li><strong>Modelado:</strong> "¿qué pasará? ¿qué pasa si...?" — modelos predictivos, prescriptivos, generativos.</li>
+        <li>Son <strong>complementarios y secuenciales</strong>: no se modela bien sin haber analizado primero.</li>
+      </ul>
+      <p><strong>Visualización:</strong></p>
+      <ul>
+        <li>Convierte análisis en representaciones gráficas intuitivas.</li>
+        <li>Las <strong>visualizaciones interactivas</strong> permiten explorar desde múltiples perspectivas.</li>
+        <li>Cuadros de mando para decisiones ágiles. Tableau, Power BI, Looker, Metabase.</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>Simulador GIGO — la calidad del dato determina la precisión del modelo</h3>
+  <p>El principio <strong>"Garbage In, Garbage Out"</strong> dice algo simple pero brutal: si los datos de entrada son de mala calidad, ningún modelo, por sofisticado que sea, dará buenos resultados. Manipula las dimensiones de calidad y observa la precisión final.</p>
+
+  <div class="quality-sim">
+    <div class="quality-controls">
+      <div class="control-row">
+        <label>Completitud (% de campos rellenos)</label>
+        <div class="slider-line">
+          <input type="range" id="q-comp" min="40" max="100" value="90" oninput="updateQuality()">
+          <span class="value-tag" id="q-comp-v">90%</span>
+        </div>
+      </div>
+      <div class="control-row">
+        <label>Precisión (% de valores correctos)</label>
+        <div class="slider-line">
+          <input type="range" id="q-acc" min="50" max="100" value="92" oninput="updateQuality()">
+          <span class="value-tag" id="q-acc-v">92%</span>
+        </div>
+      </div>
+      <div class="control-row">
+        <label>Consistencia entre fuentes</label>
+        <div class="slider-line">
+          <input type="range" id="q-cons" min="40" max="100" value="85" oninput="updateQuality()">
+          <span class="value-tag" id="q-cons-v">85%</span>
+        </div>
+      </div>
+      <div class="control-row">
+        <label>Actualidad (frescura del dato)</label>
+        <div class="slider-line">
+          <input type="range" id="q-fresh" min="30" max="100" value="80" oninput="updateQuality()">
+          <span class="value-tag" id="q-fresh-v">80%</span>
+        </div>
+      </div>
+      <div class="control-row">
+        <label>Representatividad de la muestra</label>
+        <div class="slider-line">
+          <input type="range" id="q-rep" min="30" max="100" value="75" oninput="updateQuality()">
+          <span class="value-tag" id="q-rep-v">75%</span>
+        </div>
+      </div>
+      <div class="control-row">
+        <label>Trazabilidad y documentación</label>
+        <div class="slider-line">
+          <input type="range" id="q-trace" min="30" max="100" value="70" oninput="updateQuality()">
+          <span class="value-tag" id="q-trace-v">70%</span>
+        </div>
+      </div>
+    </div>
+    <div class="quality-output">
+      <div class="accuracy-label">Precisión esperada del modelo</div>
+      <div class="accuracy-num" id="q-out">—</div>
+      <div class="quality-bar"><div class="quality-bar-fill" id="q-bar" style="width:0%; background: var(--green);"></div></div>
+      <span class="gigo-tag" id="q-tag" style="background:var(--green-light); color:var(--green);">—</span>
+      <p class="small" id="q-msg" style="margin-top:10px;"></p>
+    </div>
+  </div>
+
+  <div class="info-box warning">
+    <strong>Lección operativa:</strong> mejorar la calidad de los datos suele dar <em>más rendimiento adicional</em> que cambiar de modelo. Una organización con datos al 95% de calidad y un modelo simple gana a una con datos al 60% y deep learning. Esto es contraintuitivo y hay que repetirlo en cada reunión técnica.
+  </div>
+
+  <div class="quiz-box">
+    <h4>Caso práctico</h4>
+    <p class="quiz-question">Una ONG quiere predecir el riesgo de abandono escolar. Tienen datos de asistencia (90% completitud), calificaciones (95%), pero solo cubren bien a alumnos de Primaria (la muestra de Secundaria es del 20%). ¿Cuál es el problema más urgente a resolver?</p>
+    <div class="quiz-option" onclick="checkQuiz(this, false, 'q-pip-1')">a) Mejorar la completitud de asistencia al 100%</div>
+    <div class="quiz-option" onclick="checkQuiz(this, false, 'q-pip-1')">b) Comprar un modelo más sofisticado</div>
+    <div class="quiz-option" onclick="checkQuiz(this, true, 'q-pip-1')">c) Recoger más datos representativos de Secundaria antes de generalizar el modelo</div>
+    <div class="quiz-option" onclick="checkQuiz(this, false, 'q-pip-1')">d) Aplicar el modelo igual a Primaria y a Secundaria asumiendo que es transferible</div>
+    <div class="quiz-feedback" id="fb-q-pip-1"></div>
+  </div>
+</div>
+
+<!-- ===================== SECCION 8: RETO FINAL ===================== -->
+<div class="section" id="sec-reto">
+  <h2>8 · Reto integrador final</h2>
+  <p class="subtitle">Aplica todo lo aprendido a un caso real de intervención social</p>
+
+  <div class="challenge-card">
+    <h3>Caso: "Calle Cero"</h3>
+    <p><strong>Contexto:</strong> trabajas en <em>Calle Cero</em>, una organización del tercer sector que atiende a personas sin hogar en Madrid. La organización quiere usar IA para <strong>personalizar los itinerarios de reinserción social</strong> y aumentar la tasa de reinserción exitosa (actualmente del 32%).</p>
+    <p><strong>Recursos disponibles:</strong> 250.000€ para los próximos 18 meses, equipo de 25 educadores sociales y trabajadores sociales, 3 años de registros (mayoritariamente en papel y Excel), datos públicos del SAMUR y de servicios sociales municipales.</p>
+    <p><strong>Tu reto:</strong> diseña la estrategia de datos respondiendo a los 5 ejes siguientes. Esta es la respuesta que un comité de dirección esperaría de ti.</p>
+
+    <ol class="challenge-list">
+      <li><strong>Objetivos:</strong> ¿Qué predicciones específicas necesitas hacer? ¿A qué decisión operativa va a alimentar cada modelo? Define 2-3 objetivos medibles.</li>
+      <li><strong>Datos y calidad:</strong> ¿Qué datos ya tienes? ¿Cuáles te faltan? ¿Cómo evaluarás representatividad? ¿Qué consentimientos vas a necesitar?</li>
+      <li><strong>Componentes y madurez:</strong> Mira el radar de la sección 4 — ¿en qué dimensiones empezarías a invertir y por qué? ¿Qué pospondrías para una segunda fase?</li>
+      <li><strong>Roles y equipo:</strong> Con 250.000€, ¿qué perfiles contratarías o externalizarías? ¿Cómo encaja tu mirada como profesional de CCSS en el organigrama?</li>
+      <li><strong>Ética y evaluación:</strong> ¿Qué riesgos éticos identificas? ¿Cómo evitarías que el modelo perpetúe sesgos del pasado? ¿Qué métricas usarás para evaluar éxito en 12 meses?</li>
+    </ol>
+  </div>
+
+  <div class="info-box">
+    <strong>Cómo trabajar este reto en clase:</strong> en grupos de 3-4 personas, dedicad 20 minutos a redactar respuestas concisas (máximo 5 líneas por eje). Después, pondremos en común y debatiremos las decisiones más controvertidas.
+  </div>
+
+  <h3>Tu progreso global en el laboratorio</h3>
+  <div class="score-panel">
+    <div class="score-circle gold" id="final-score">0</div>
+    <div class="score-info">
+      <strong>Puntuación de quizzes</strong><br>
+      <span class="small">Aciertos en los tests interactivos a lo largo del laboratorio.</span>
+    </div>
+    <div class="score-circle green" id="final-tasks">0/10</div>
+    <div class="score-info">
+      <strong>Asignación de roles</strong><br>
+      <span class="small">Tareas correctamente asignadas en la sección 6.</span>
+    </div>
+    <button class="btn btn-reset" onclick="resetAll()">Reiniciar laboratorio</button>
+  </div>
+
+  <div class="info-box success">
+    <strong>Has completado el laboratorio.</strong> Lo que llevas dentro: una definición operativa de estrategia de datos, una intuición cuantitativa del ROI, claridad sobre roles, sensibilidad ante el sesgo, y un marco para diagnosticar madurez en cualquier organización con la que trabajes. Pero sobre todo, llevas la convicción de que <em>la mirada del comportamiento humano no es accesoria — es estratégica</em>.
+  </div>
+</div>
+
+<footer>
+  Laboratorio Interactivo · Tema 1 — Estrategia de Datos · Máster IA aplicada a las Ciencias del Comportamiento y las Ciencias Sociales · Universidad Internacional de La Rioja (UNIR)
+</footer>
+
+<script>
+/* ============================================================
+   NAVEGACION DE PESTAÑAS
+   ============================================================ */
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('sec-' + btn.dataset.tab).classList.add('active');
+    window.scrollTo({top: 0, behavior: 'smooth'});
+    updateGlobalProgress();
+  });
+});
+
+/* ============================================================
+   ERA TIMELINE
+   ============================================================ */
+const eras = [
+  {
+    title: '80s - 90s · Era del almacenamiento',
+    body: `<h3>Era del almacenamiento (80s - 90s)</h3>
+    <p>El foco estaba en <strong>la infraestructura y la tecnología</strong> necesarias para almacenar grandes volúmenes. Las primeras estrategias de datos se centraban en definir qué hardware y software se necesitaba para "no perder" la información operativa de la empresa.</p>
+    <ul>
+      <li><strong>Tecnologías dominantes:</strong> Mainframes, RDBMS (Oracle, DB2, Informix), bases de datos relacionales.</li>
+      <li><strong>Mentalidad:</strong> el dato es un coste — algo que mantener.</li>
+      <li><strong>Hito:</strong> SQL se convierte en estándar (1986).</li>
+      <li><strong>Limitación:</strong> no se planteaba "extraer valor", solo "no perder".</li>
+    </ul>`
+  },
+  {
+    title: '2000s · Era de la gobernanza',
+    body: `<h3>Era de la gobernanza (2000s)</h3>
+    <p>Con la proliferación de datos y las primeras capacidades analíticas, las organizaciones se dan cuenta de que <strong>no basta con almacenar</strong>: hay que garantizar calidad, consistencia y seguridad. Nacen los primeros roles de gobernanza y las primeras políticas formales de acceso al dato.</p>
+    <ul>
+      <li><strong>Tecnologías dominantes:</strong> Data Warehouses (Teradata, Oracle DW), primeras herramientas de BI (Cognos, BusinessObjects), ETL (Informatica).</li>
+      <li><strong>Mentalidad:</strong> el dato es un riesgo regulatorio y reputacional.</li>
+      <li><strong>Hito:</strong> aparición de los primeros <em>Chief Data Officer</em> (Capital One, 2002).</li>
+      <li><strong>Marco normativo:</strong> Sarbanes-Oxley (EE.UU., 2002), primeras directivas europeas de protección de datos.</li>
+    </ul>`
+  },
+  {
+    title: '2010s · Era analítica',
+    body: `<h3>Era analítica (2010s)</h3>
+    <p>Big Data, Machine Learning y la nube cambian las reglas del juego. Los datos se convierten en un <strong>activo estratégico</strong> comparable a los financieros o humanos. La pregunta deja de ser "¿qué pasó?" para convertirse en "¿qué pasará?".</p>
+    <ul>
+      <li><strong>Tecnologías dominantes:</strong> Hadoop, Spark, NoSQL (MongoDB, Cassandra), AWS / GCP / Azure, primeros frameworks ML accesibles (scikit-learn, TensorFlow).</li>
+      <li><strong>Mentalidad:</strong> el dato es un activo estratégico.</li>
+      <li><strong>Hitos:</strong> nacimiento del rol de <em>Data Scientist</em> ("the sexiest job of the 21st century", HBR 2012). Auge de la Data Science aplicada.</li>
+      <li><strong>Cambio cultural:</strong> aparece el "data-driven decision making" como principio organizacional.</li>
+    </ul>`
+  },
+  {
+    title: '2020+ · Democratización + IA generativa',
+    body: `<h3>Era de la democratización + IA generativa (2020+)</h3>
+    <p>El acceso a los datos se extiende a <strong>todos los niveles de la organización</strong>. Herramientas no-code, MLOps maduros y modelos fundacionales transforman la velocidad y el alcance de lo posible. El dato se vuelve <strong>producto</strong>.</p>
+    <ul>
+      <li><strong>Tecnologías:</strong> Lakehouse (Databricks), Snowflake, dbt, Feature Stores, MLOps (MLflow, Weights & Biases), LLMs (GPT-4, Claude, Llama).</li>
+      <li><strong>Mentalidad:</strong> el dato es un producto y una ventaja competitiva difícil de replicar.</li>
+      <li><strong>Hito clave:</strong> ChatGPT (2022) democratiza la IA conversacional. AI Act europea (2024).</li>
+      <li><strong>Reto emergente:</strong> equilibrar velocidad de adopción con responsabilidad ética y sostenibilidad energética.</li>
+    </ul>`
+  }
+];
+
+let currentEra = 0;
+function selectEra(i) {
+  currentEra = i;
+  document.querySelectorAll('.era-card').forEach((c, idx) => {
+    c.classList.toggle('selected', idx === i);
+  });
+  document.getElementById('era-detail').innerHTML = eras[i].body;
+  document.getElementById('era-detail').classList.add('active');
+}
+selectEra(0);
+
+/* ============================================================
+   ROI CALCULATOR
+   ============================================================ */
+function recalcROI() {
+  const inv = +document.getElementById('roi-inv').value;
+  const mant = +document.getElementById('roi-mant').value;
+  const eff = +document.getElementById('roi-eff').value;
+  const ops = +document.getElementById('roi-ops').value;
+  const mad = +document.getElementById('roi-mad').value;
+  const h = +document.getElementById('roi-h').value;
+
+  document.getElementById('roi-inv-v').textContent = inv + ' k€';
+  document.getElementById('roi-mant-v').textContent = mant + ' k€';
+  document.getElementById('roi-eff-v').textContent = eff + '%';
+  document.getElementById('roi-ops-v').textContent = ops.toLocaleString('es') + ' k€';
+  document.getElementById('roi-mad-v').textContent = mad + ' / 5';
+  document.getElementById('roi-h-v').textContent = h + (h === 1 ? ' año' : ' años');
+
+  // Madurez baja penaliza eficiencia real
+  const madFactor = 0.4 + (mad - 1) * 0.15; // 0.4 a 1.0
+  // Curva de aprendizaje: año 1 da 30% del ahorro, año 2 = 70%, año 3+ = 100%
+  let totalSavings = 0;
+  for (let y = 1; y <= h; y++) {
+    let yearFactor = y === 1 ? 0.3 : y === 2 ? 0.7 : 1.0;
+    totalSavings += ops * (eff / 100) * madFactor * yearFactor;
+  }
+  const totalCost = inv + mant * h;
+  const netBenefit = totalSavings - totalCost;
+  const roi = (netBenefit / totalCost) * 100;
+
+  document.getElementById('roi-val').textContent = (roi >= 0 ? '+' : '') + roi.toFixed(0) + '%';
+  document.getElementById('roi-detail').innerHTML = `Ahorro acumulado: <strong>${totalSavings.toFixed(0)} k€</strong> · Coste total: <strong>${totalCost.toFixed(0)} k€</strong> · Beneficio neto: <strong>${netBenefit.toFixed(0)} k€</strong>`;
+
+  const barW = Math.max(0, Math.min(100, 50 + roi / 4));
+  document.getElementById('roi-bar').style.width = barW + '%';
+
+  const v = document.getElementById('roi-verdict');
+  v.style.display = 'inline-block';
+  if (roi > 30) { v.className = 'roi-verdict good'; v.textContent = '✓ Inversión recomendada'; }
+  else if (roi > 0) { v.className = 'roi-verdict warning'; v.textContent = '⚠ ROI marginal — refinar plan'; }
+  else { v.className = 'roi-verdict bad'; v.textContent = '✗ ROI negativo en este horizonte'; }
+}
+recalcROI();
+
+/* ============================================================
+   DOMAIN EXPLORER (CCSS)
+   ============================================================ */
+function selectDomain(d) {
+  document.querySelectorAll('.domain-tab').forEach(t => t.classList.toggle('active', t.dataset.domain === d));
+  document.querySelectorAll('.domain-content').forEach(c => c.classList.remove('active'));
+  document.getElementById('dc-' + d).classList.add('active');
+}
+
+/* ============================================================
+   BIAS SIMULATOR
+   ============================================================ */
+function updateBias() {
+  const prop = +document.getElementById('bias-prop').value; // % grupo A
+  const labelQuality = +document.getElementById('bias-label').value;
+  const modelQuality = +document.getElementById('bias-quality').value;
+
+  document.getElementById('bias-prop-v').textContent = prop + '%';
+  document.getElementById('bias-label-v').textContent = labelQuality + '%';
+  document.getElementById('bias-quality-v').textContent = modelQuality + '%';
+
+  // Precisión grupo A: alta porque está bien representado
+  const accA = Math.min(99, modelQuality + (prop - 50) * 0.1);
+  // Precisión grupo B: penalizada por baja representación + etiquetas sesgadas
+  const repPenalty = (prop - 50) * 0.6;
+  const labelPenalty = (100 - labelQuality) * 0.5;
+  const accB = Math.max(30, modelQuality - repPenalty - labelPenalty);
+
+  // Falsos negativos
+  const fnA = Math.max(1, 100 - accA);
+  const fnB = Math.max(1, 100 - accB);
+
+  document.querySelector('#bs-acc-a .v').textContent = accA.toFixed(0) + '%';
+  document.querySelector('#bs-acc-b .v').textContent = accB.toFixed(0) + '%';
+  document.querySelector('#bs-fn-a .v').textContent = fnA.toFixed(0) + '%';
+  document.querySelector('#bs-fn-b .v').textContent = fnB.toFixed(0) + '%';
+
+  document.getElementById('bs-acc-b').className = 'bias-stat ' + (accB > 80 ? 'good' : accB > 65 ? '' : 'bad');
+  document.getElementById('bs-fn-b').className = 'bias-stat ' + (fnB < 20 ? 'good' : fnB < 35 ? '' : 'bad');
+
+  // Verdict
+  const gap = accA - accB;
+  const v = document.getElementById('bias-verdict');
+  if (gap < 5) { v.className = 'info-box success'; v.innerHTML = '<strong>Modelo equitativo:</strong> la diferencia entre grupos es aceptable. El modelo trata a ambos colectivos con calidad similar.'; }
+  else if (gap < 15) { v.className = 'info-box warning'; v.innerHTML = `<strong>Sesgo moderado:</strong> el modelo funciona ${gap.toFixed(0)} puntos peor para Grupo B. Aceptable solo si está documentado y supervisado.`; }
+  else { v.className = 'info-box danger'; v.innerHTML = `<strong>Sesgo grave:</strong> el modelo tiene una brecha de ${gap.toFixed(0)} puntos entre grupos. <em>Esto es lo que pasa cuando el dataset no representa a toda la población.</em> No desplegar.`; }
+
+  drawBiasChart(accA, accB);
+}
+
+function drawBiasChart(accA, accB) {
+  const c = document.getElementById('bias-canvas');
+  const ctx = c.getContext('2d');
+  const W = c.width, H = c.height;
+  ctx.clearRect(0, 0, W, H);
+
+  // Fondo grid
+  ctx.strokeStyle = '#e5e5e5';
+  ctx.lineWidth = 1;
+  for (let y = 0; y <= 100; y += 25) {
+    const yp = 30 + (170) * (1 - y/100);
+    ctx.beginPath(); ctx.moveTo(60, yp); ctx.lineTo(W - 20, yp); ctx.stroke();
+    ctx.fillStyle = '#888'; ctx.font = '10px sans-serif'; ctx.textAlign = 'right';
+    ctx.fillText(y + '%', 56, yp + 3);
+  }
+
+  // Barras
+  const barW = 100;
+  const groupWidth = W - 80;
+  const xA = 60 + groupWidth * 0.2;
+  const xB = 60 + groupWidth * 0.6;
+
+  // Barra A
+  const hA = (accA / 100) * 170;
+  ctx.fillStyle = '#5b8fa8';
+  ctx.fillRect(xA, 200 - hA, barW, hA);
+  ctx.fillStyle = '#1a1a4e'; ctx.font = 'bold 12px sans-serif'; ctx.textAlign = 'center';
+  ctx.fillText('Grupo A', xA + barW/2, 215);
+  ctx.fillStyle = '#fff'; ctx.font = 'bold 14px sans-serif';
+  ctx.fillText(accA.toFixed(0) + '%', xA + barW/2, 200 - hA + 18);
+
+  // Barra B
+  const hB = (accB / 100) * 170;
+  ctx.fillStyle = accB > 80 ? '#2d8659' : accB > 65 ? '#d4a853' : '#c0392b';
+  ctx.fillRect(xB, 200 - hB, barW, hB);
+  ctx.fillStyle = '#1a1a4e'; ctx.font = 'bold 12px sans-serif';
+  ctx.fillText('Grupo B', xB + barW/2, 215);
+  ctx.fillStyle = '#fff'; ctx.font = 'bold 14px sans-serif';
+  ctx.fillText(accB.toFixed(0) + '%', xB + barW/2, 200 - hB + 18);
+
+  // Título
+  ctx.fillStyle = '#1a1a4e'; ctx.font = 'bold 13px sans-serif';
+  ctx.fillText('Precisión del modelo por grupo', W/2, 18);
+}
+updateBias();
+
+/* ============================================================
+   RADAR DE MADUREZ
+   ============================================================ */
+const dims = ['m-objectives', 'm-quality', 'm-tech', 'm-talent', 'm-culture', 'm-privacy'];
+const labels = ['Objetivos', 'Calidad', 'Tecnología', 'Talento', 'Cultura', 'Privacidad'];
+
+const scenarios = {
+  startup: [4, 2, 5, 4, 3, 2],
+  ong: [3, 1, 1, 2, 4, 3],
+  publica: [3, 2, 2, 2, 2, 5],
+  faang: [5, 5, 5, 5, 4, 4],
+  reset: [3, 3, 3, 3, 3, 3]
+};
+
+function loadScenario(name, btn) {
+  document.querySelectorAll('.scenario-pill').forEach(p => p.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  const vals = scenarios[name];
+  dims.forEach((d, i) => {
+    document.getElementById(d).value = vals[i];
+  });
+  updateRadar();
+}
+
+function updateRadar() {
+  const vals = dims.map(d => +document.getElementById(d).value);
+  dims.forEach((d, i) => {
+    document.getElementById(d + '-v').textContent = vals[i];
+  });
+
+  drawRadar(vals);
+
+  // Verdict
+  const avg = vals.reduce((a, b) => a + b, 0) / vals.length;
+  const min = Math.min(...vals);
+  const max = Math.max(...vals);
+  const minDim = labels[vals.indexOf(min)];
+
+  let verdict;
+  if (avg >= 4) verdict = `<strong>Madurez avanzada (media ${avg.toFixed(1)}/5).</strong> Organización en estado del arte. Foco: mantener y diferenciarse.`;
+  else if (avg >= 3) verdict = `<strong>Madurez media (${avg.toFixed(1)}/5).</strong> Lo más estratégico ahora es reforzar <strong>${minDim}</strong> (tu dimensión más baja: ${min}/5) — desbloqueará el resto.`;
+  else if (avg >= 2) verdict = `<strong>Madurez incipiente (${avg.toFixed(1)}/5).</strong> Empezar por <strong>Cultura y Objetivos</strong>: sin ellos, ninguna inversión técnica funciona. <strong>${minDim}</strong> es tu cuello de botella inmediato.`;
+  else verdict = `<strong>Madurez muy baja (${avg.toFixed(1)}/5).</strong> Un piloto de bajo coste con foco en cultura es más realista que un proyecto técnico ambicioso.`;
+
+  if (max - min >= 3) verdict += `<br><br><strong>Atención al desequilibrio:</strong> tienes una diferencia de ${max - min} puntos entre dimensiones. Eso suele indicar <em>data debt</em>: una "punta" sin base. Antes de invertir más en lo alto, levantar lo bajo.`;
+
+  document.getElementById('maturity-verdict').innerHTML = verdict;
+}
+
+function drawRadar(vals) {
+  const c = document.getElementById('radar-canvas');
+  const ctx = c.getContext('2d');
+  const W = c.width, H = c.height;
+  ctx.clearRect(0, 0, W, H);
+  const cx = W / 2, cy = H / 2;
+  const R = 140;
+  const N = vals.length;
+
+  // Grid concentric
+  ctx.strokeStyle = '#ddd';
+  for (let lvl = 1; lvl <= 5; lvl++) {
+    ctx.beginPath();
+    for (let i = 0; i < N; i++) {
+      const ang = -Math.PI/2 + i * 2 * Math.PI / N;
+      const x = cx + Math.cos(ang) * R * lvl/5;
+      const y = cy + Math.sin(ang) * R * lvl/5;
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.closePath();
+    ctx.stroke();
+  }
+
+  // Axes
+  ctx.strokeStyle = '#ccc';
+  for (let i = 0; i < N; i++) {
+    const ang = -Math.PI/2 + i * 2 * Math.PI / N;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(cx + Math.cos(ang) * R, cy + Math.sin(ang) * R);
+    ctx.stroke();
+  }
+
+  // Polygon
+  ctx.beginPath();
+  for (let i = 0; i < N; i++) {
+    const ang = -Math.PI/2 + i * 2 * Math.PI / N;
+    const r = R * vals[i] / 5;
+    const x = cx + Math.cos(ang) * r;
+    const y = cy + Math.sin(ang) * r;
+    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  }
+  ctx.closePath();
+  ctx.fillStyle = 'rgba(91,143,168,0.35)';
+  ctx.fill();
+  ctx.strokeStyle = '#1a1a4e';
+  ctx.lineWidth = 2.5;
+  ctx.stroke();
+
+  // Points
+  for (let i = 0; i < N; i++) {
+    const ang = -Math.PI/2 + i * 2 * Math.PI / N;
+    const r = R * vals[i] / 5;
+    const x = cx + Math.cos(ang) * r;
+    const y = cy + Math.sin(ang) * r;
+    ctx.beginPath();
+    ctx.arc(x, y, 5, 0, Math.PI*2);
+    ctx.fillStyle = '#d4a853';
+    ctx.fill();
+    ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.stroke();
+  }
+
+  // Labels
+  ctx.fillStyle = '#1a1a4e';
+  ctx.font = 'bold 12px sans-serif';
+  ctx.textAlign = 'center';
+  for (let i = 0; i < N; i++) {
+    const ang = -Math.PI/2 + i * 2 * Math.PI / N;
+    const x = cx + Math.cos(ang) * (R + 22);
+    const y = cy + Math.sin(ang) * (R + 22) + 4;
+    ctx.fillText(labels[i], x, y);
+  }
+}
+updateRadar();
+
+/* ============================================================
+   ROLE-PLAY CDO
+   ============================================================ */
+const decisions = {
+  1: {
+    a: { tech: -1, trust: 1, ethics: -1, fb: 'Velocidad sin diagnóstico = inversión sobre arena. Comprar tecnología antes de saber qué tienes y qué necesitas suele acabar en herramientas infrautilizadas. El director general estará feliz unos meses; tú estarás corrigiendo decisiones 12 meses después.' },
+    b: { tech: 2, trust: 2, ethics: 1, fb: 'Decisión de manual. Diagnóstico + entrevistas en el primer mes te da contexto, te genera aliados y te permite priorizar bien. No es "lento": es invertir ahora para ahorrar 6 meses después.' },
+    c: { tech: -1, trust: -2, ethics: 0, fb: 'Contratar antes de saber qué necesitas y antes de tener cultura para acogerlos los frustra. Suelen irse en 12 meses. Y el equipo existente se siente sustituido en lugar de potenciado.' },
+    d: { tech: 0, trust: 1, ethics: 0, fb: 'No es la mejor primera decisión, pero no es mala: enseñar valor al consejo con lo que ya tienes te compra credibilidad. Funciona bien combinado con (b).' }
+  },
+  2: {
+    a: { tech: 0, trust: -2, ethics: -1, fb: 'Argumentar "objetividad" contra alguien con 25 años de experiencia clínica es perder a tu mejor aliada. Y técnicamente es falso: los modelos también tienen sesgos.' },
+    b: { tech: 2, trust: 2, ethics: 2, fb: 'Posición magistral. Reformulas la IA como herramienta de apoyo (no de sustitución), reconoces el conocimiento clínico, y conviertes a una crítica en co-diseñadora. Esta es la conversación que define si tu proyecto sobrevive.' },
+    c: { tech: 0, trust: -2, ethics: -1, fb: '"Los datos no mienten" es la frase más peligrosa que puede decir un CDO. Los datos siempre cuentan una historia parcial. Tu credibilidad técnica baja en cuanto la dices.' },
+    d: { tech: -2, trust: 0, ethics: 0, fb: 'Posponer hasta una jubilación no es una estrategia. Es renunciar al cambio cultural — y sin cambio cultural, no hay estrategia de datos que funcione.' }
+  },
+  3: {
+    a: { tech: -2, trust: 0, ethics: -2, fb: 'Desplegar un modelo entrenado solo con un perfil para todos los pacientes es la receta del sesgo algorítmico. Los pacientes infrarrepresentados recibirán predicciones poco fiables y posibles intervenciones erróneas.' },
+    b: { tech: 1, trust: 1, ethics: 1, fb: 'Aceptable: limitas el alcance del modelo a la población donde es fiable y documentas las limitaciones. Es honesto y manejable. Pero deja a otros pacientes sin la mejora.' },
+    c: { tech: 1, trust: 0, ethics: 2, fb: 'Éticamente impecable, pero quizás demasiado conservador. Posponer indefinidamente puede frustrar al equipo y al consejo. Combina mejor con un piloto controlado.' },
+    d: { tech: 2, trust: 2, ethics: 2, fb: 'La mejor opción: despliegue acotado donde el modelo es fiable + plan activo de recopilación para ampliar. Demuestras valor, mitigas riesgo y construyes el futuro al mismo tiempo. Esto es estrategia de datos hecha bien.' }
+  },
+  4: {
+    a: { tech: -1, trust: -2, ethics: -2, fb: '"El modelo manda" elimina el juicio profesional y traslada responsabilidad al algoritmo. Cuando algo salga mal (y saldrá), la responsabilidad legal y ética es tuya, no del modelo.' },
+    b: { tech: -1, trust: 1, ethics: 0, fb: 'Confianza ciega en el clínico anula el valor del modelo. Si el modelo solo se usa donde "no hay seguimiento", no aprenderá del feedback de los casos donde sí lo hay.' },
+    c: { tech: 2, trust: 2, ethics: 2, fb: 'Patrón "human-in-the-loop" hecho bien. El modelo prioriza, el humano decide, el sistema aprende. Esto es lo que dice la literatura de IA aplicada y lo que exige el AI Act europeo en aplicaciones de alto riesgo.' },
+    d: { tech: 0, trust: -1, ethics: -1, fb: 'Mostrar a un paciente vulnerable un score de probabilidad sin contexto ni acompañamiento puede ser dañino. La transparencia algorítmica no equivale a lanzar predicciones crudas a los usuarios.' }
+  }
+};
+
+const rpScores = { tech: 0, trust: 0, ethics: 0 };
+const rpAnswered = {};
+
+function rpChoose(btn, decisionId, opt) {
+  if (rpAnswered[decisionId]) return;
+  rpAnswered[decisionId] = true;
+
+  const d = decisions[decisionId][opt];
+  rpScores.tech += d.tech;
+  rpScores.trust += d.trust;
+  rpScores.ethics += d.ethics;
+
+  const container = document.querySelector(`.scenario-options[data-decision="${decisionId}"]`);
+  container.querySelectorAll('.scenario-opt').forEach(o => o.classList.add('disabled'));
+
+  const isGood = (d.tech + d.trust + d.ethics) >= 4;
+  btn.classList.add(isGood ? 'chosen-good' : 'chosen-bad');
+
+  const fb = document.getElementById('fb-rp-' + decisionId);
+  fb.className = 'scenario-feedback show ' + (isGood ? 'good' : 'bad');
+  fb.innerHTML = `<strong>${isGood ? '✓ Buena decisión.' : '⚠ Decisión problemática.'}</strong> ${d.fb}<br><br><span class="small">Impacto: técnica ${d.tech > 0 ? '+' : ''}${d.tech} · confianza ${d.trust > 0 ? '+' : ''}${d.trust} · ética ${d.ethics > 0 ? '+' : ''}${d.ethics}</span>`;
+
+  document.getElementById('rp-tech').textContent = rpScores.tech;
+  document.getElementById('rp-trust').textContent = rpScores.trust;
+  document.getElementById('rp-ethics').textContent = rpScores.ethics;
+
+  if (Object.keys(rpAnswered).length === 4) {
+    const total = rpScores.tech + rpScores.trust + rpScores.ethics;
+    const summary = document.getElementById('rp-summary');
+    let msg;
+    if (total >= 18) msg = `<strong>Excelente liderazgo.</strong> Has equilibrado técnica, gestión de personas y ética. Es exactamente el perfil que necesita un CDO en una organización del tercer sector.`;
+    else if (total >= 10) msg = `<strong>Liderazgo sólido con áreas de mejora.</strong> Has tomado buenas decisiones en general, pero alguna te ha costado. Revisa los feedbacks marcados en rojo.`;
+    else if (total >= 0) msg = `<strong>Reflexiona.</strong> Algunas decisiones han comprometido ejecución, confianza o ética. Vuelve a leer cada feedback — son los errores típicos en proyectos de IA mal liderados.`;
+    else msg = `<strong>Aviso.</strong> El proyecto está en serio riesgo. Las decisiones tomadas comprometen viabilidad técnica y aceptación organizacional. Es lo que pasa cuando se prioriza velocidad sobre proceso.`;
+    summary.innerHTML = `Puntuación final: <strong>${total} puntos</strong>. ${msg}`;
+    summary.style.display = 'block';
+  }
+  updateGlobalProgress();
+}
+
+/* ============================================================
+   ROLE TASK ASSIGNMENT (drag & drop)
+   ============================================================ */
+let draggedTask = null;
+function attachTaskHandlers() {
+  document.querySelectorAll('.task-chip').forEach(chip => {
+    chip.addEventListener('dragstart', e => {
+      draggedTask = e.target;
+      e.dataTransfer.effectAllowed = 'move';
+      setTimeout(() => e.target.style.opacity = '0.4', 0);
+    });
+    chip.addEventListener('dragend', e => { e.target.style.opacity = '1'; });
+  });
+
+  document.querySelectorAll('.role-zone').forEach(zone => {
+    zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('highlight'); });
+    zone.addEventListener('dragleave', () => zone.classList.remove('highlight'));
+    zone.addEventListener('drop', e => {
+      e.preventDefault();
+      zone.classList.remove('highlight');
+      if (!draggedTask) return;
+      const expected = zone.dataset.accept;
+      const actual = draggedTask.dataset.role;
+      const placedTasks = zone.querySelector('.placed-tasks');
+      placedTasks.appendChild(draggedTask);
+      draggedTask.classList.remove('correct', 'wrong');
+      draggedTask.classList.add('placed');
+      draggedTask.classList.add(expected === actual ? 'correct' : 'wrong');
+      draggedTask = null;
+      updateTaskScore();
+    });
+  });
+}
+attachTaskHandlers();
+
+function updateTaskScore() {
+  let correct = 0;
+  document.querySelectorAll('.task-chip.placed.correct').forEach(() => correct++);
+  document.getElementById('task-score').textContent = correct + ' / 10 correctas';
+  document.getElementById('final-tasks').textContent = correct + '/10';
+  updateGlobalProgress();
+}
+
+function resetTasks() {
+  const pool = document.getElementById('task-pool');
+  document.querySelectorAll('.task-chip').forEach(c => {
+    c.classList.remove('placed', 'correct', 'wrong');
+    c.style.opacity = '1';
+    pool.appendChild(c);
+  });
+  updateTaskScore();
+}
+
+/* ============================================================
+   PIPELINE STAGES
+   ============================================================ */
+function selectStage(s) {
+  document.querySelectorAll('.ps-stage').forEach(st => st.classList.toggle('active', st.dataset.stage === s));
+  document.querySelectorAll('.pipeline-detail').forEach(d => d.classList.remove('active'));
+  document.getElementById('pd-' + s).classList.add('active');
+}
+
+/* ============================================================
+   QUALITY (GIGO) SIMULATOR
+   ============================================================ */
+function updateQuality() {
+  const qDims = ['q-comp', 'q-acc', 'q-cons', 'q-fresh', 'q-rep', 'q-trace'];
+  const weights = [0.15, 0.20, 0.15, 0.10, 0.25, 0.15];
+  let weighted = 0;
+  qDims.forEach((d, i) => {
+    const v = +document.getElementById(d).value;
+    document.getElementById(d + '-v').textContent = v + '%';
+    weighted += v * weights[i];
+  });
+
+  const minDim = Math.min(...qDims.map(d => +document.getElementById(d).value));
+  const accuracy = Math.max(20, weighted * 0.92 - (100 - minDim) * 0.15);
+
+  document.getElementById('q-out').textContent = accuracy.toFixed(0) + '%';
+  const bar = document.getElementById('q-bar');
+  bar.style.width = accuracy + '%';
+  const tag = document.getElementById('q-tag');
+  const msg = document.getElementById('q-msg');
+
+  let color, label, message;
+  if (accuracy >= 85) {
+    color = '#2d8659'; label = 'GOOD'; message = 'Modelo de alta calidad. Adelante con el despliegue (validando en producción).';
+  } else if (accuracy >= 70) {
+    color = '#d4a853'; label = 'MEDIA'; message = 'Modelo aceptable pero con margen de mejora. Identifica la dimensión más baja y empieza por ahí.';
+  } else if (accuracy >= 50) {
+    color = '#e67e22'; label = 'GIGO'; message = 'Garbage In, Garbage Out: las debilidades de los datos están comprometiendo el modelo. No desplegar sin mejorar calidad.';
+  } else {
+    color = '#c0392b'; label = 'INVÁLIDO'; message = 'El modelo no es utilizable. Cualquier decisión basada en él es peor que el azar.';
+  }
+  bar.style.background = color;
+  tag.textContent = label;
+  tag.style.background = color;
+  tag.style.color = '#fff';
+  msg.textContent = message;
+}
+updateQuality();
+
+/* ============================================================
+   QUIZ HANDLER
+   ============================================================ */
+const answeredQuizzes = {};
+let quizScore = 0;
+
+function checkQuiz(el, correct, qid) {
+  if (answeredQuizzes[qid]) return;
+  answeredQuizzes[qid] = true;
+  const parent = el.parentElement;
+  parent.querySelectorAll('.quiz-option').forEach(o => o.classList.add('disabled'));
+  el.classList.add(correct ? 'correct' : 'wrong');
+  const fb = document.getElementById('fb-' + qid);
+  fb.classList.add('show');
+  if (correct) {
+    quizScore++;
+    fb.className = 'quiz-feedback show ok';
+    fb.textContent = '✓ Correcto.';
+  } else {
+    fb.className = 'quiz-feedback show nok';
+    fb.textContent = '✗ Incorrecto. Revisa el contenido de la sección.';
+  }
+  document.getElementById('final-score').textContent = quizScore;
+  updateGlobalProgress();
+}
+
+function updateGlobalProgress() {
+  // 3 quizzes + 4 decisiones role-play + 10 tareas drag&drop = 17
+  const totalChecks = 3 + 4 + 10;
+  const completed = Object.keys(answeredQuizzes).length + Object.keys(rpAnswered).length + document.querySelectorAll('.task-chip.placed').length;
+  const pct = Math.min(100, Math.round((completed / totalChecks) * 100));
+  document.getElementById('prog-fill').style.width = pct + '%';
+  document.getElementById('prog-text').textContent = pct + '% completado';
+}
+
+function resetAll() {
+  // Reset quizzes
+  Object.keys(answeredQuizzes).forEach(k => delete answeredQuizzes[k]);
+  quizScore = 0;
+  document.querySelectorAll('.quiz-option').forEach(o => o.classList.remove('correct', 'wrong', 'disabled'));
+  document.querySelectorAll('.quiz-feedback').forEach(f => { f.classList.remove('show', 'ok', 'nok'); f.textContent = ''; });
+  document.getElementById('final-score').textContent = '0';
+
+  // Reset role-play
+  Object.keys(rpAnswered).forEach(k => delete rpAnswered[k]);
+  rpScores.tech = 0; rpScores.trust = 0; rpScores.ethics = 0;
+  document.getElementById('rp-tech').textContent = '0';
+  document.getElementById('rp-trust').textContent = '0';
+  document.getElementById('rp-ethics').textContent = '0';
+  document.querySelectorAll('.scenario-opt').forEach(o => o.classList.remove('chosen-good', 'chosen-bad', 'disabled'));
+  document.querySelectorAll('.scenario-feedback').forEach(f => { f.classList.remove('show', 'good', 'bad'); f.innerHTML = ''; });
+  document.getElementById('rp-summary').style.display = 'none';
+
+  // Reset tasks
+  resetTasks();
+
+  updateGlobalProgress();
+}
+</script>
+</body>
+</html>

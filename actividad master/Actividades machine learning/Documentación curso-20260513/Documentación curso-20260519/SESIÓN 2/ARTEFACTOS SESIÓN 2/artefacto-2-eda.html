@@ -1,0 +1,1424 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Artefacto 2 · Análisis Exploratorio de Datos (EDA)</title>
+<style>
+  :root {
+    --cream: #F5F1E8;
+    --cream-dark: #ECE6D6;
+    --navy: #0F1B4D;
+    --navy-soft: #1E2A5E;
+    --blue: #3FA9F5;
+    --blue-light: #B8DEF9;
+    --ink: #1A1A2E;
+    --muted: #6B6B7C;
+    --line: #C9C2B0;
+    --good: #2E8B57;
+    --bad: #C8453F;
+    --amber: #D9994E;
+    --code-bg: #0F1B2E;
+    --code-text: #E8E8EE;
+    --code-keyword: #82AAFF;
+    --code-string: #C3E88D;
+    --code-num: #F78C6C;
+    --code-comment: #6B7891;
+    --code-fn: #82AAFF;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--cream);
+    color: var(--ink);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 48px 32px 80px; }
+
+  /* ===== Hero ===== */
+  header.hero { border-bottom: 1px solid var(--line); padding-bottom: 32px; margin-bottom: 48px; }
+  .tag {
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+    font-size: 11px; letter-spacing: 0.18em; color: var(--navy);
+    text-transform: uppercase; margin-bottom: 24px;
+  }
+  .tag .dot { color: var(--blue); }
+  h1.title {
+    font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 500;
+    font-size: clamp(40px, 6vw, 76px); line-height: 1.02; margin: 0 0 20px;
+    color: var(--navy); letter-spacing: -0.02em;
+  }
+  h1.title em { color: var(--blue); font-style: italic; }
+  .subtitle {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: clamp(18px, 2vw, 22px); color: var(--navy-soft); max-width: 720px; margin: 0;
+  }
+
+  /* ===== TOC sticky ===== */
+  .toc {
+    background: white; border: 1px solid var(--line); border-radius: 6px;
+    padding: 20px 24px; margin: 32px 0;
+  }
+  .toc-title {
+    font-family: 'JetBrains Mono', monospace; font-size: 10.5px;
+    letter-spacing: 0.2em; color: var(--muted); text-transform: uppercase; margin-bottom: 12px;
+  }
+  .toc ol {
+    columns: 2; column-gap: 32px; margin: 0; padding-left: 20px;
+    font-family: 'Cormorant Garamond', serif; font-size: 17px; color: var(--navy);
+  }
+  @media (max-width: 700px) { .toc ol { columns: 1; } }
+  .toc li { margin: 6px 0; break-inside: avoid; }
+  .toc a { color: var(--navy); text-decoration: none; border-bottom: 1px dotted var(--line); }
+  .toc a:hover { color: var(--blue); border-bottom-color: var(--blue); }
+
+  /* ===== Parts ===== */
+  section { margin: 80px 0; scroll-margin-top: 24px; }
+  .section-tag {
+    font-family: 'JetBrains Mono', monospace; font-size: 10.5px;
+    letter-spacing: 0.18em; color: var(--navy); text-transform: uppercase; margin-bottom: 14px;
+  }
+  h2 {
+    font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 500;
+    font-size: clamp(32px, 4vw, 48px); line-height: 1.05; margin: 0 0 24px;
+    color: var(--navy); letter-spacing: -0.015em;
+  }
+  h2 em { color: var(--blue); font-style: italic; }
+  h3 {
+    font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 600;
+    font-size: 26px; color: var(--navy); margin: 32px 0 12px;
+  }
+  h3 em { color: var(--blue); font-style: italic; }
+  h4 {
+    font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 600;
+    font-size: 20px; color: var(--navy-soft); margin: 24px 0 10px;
+  }
+  p { font-size: 16px; color: var(--ink); }
+  p.lead { font-size: 18px; color: var(--navy-soft); max-width: 760px; }
+  .pull {
+    font-family: 'Cormorant Garamond', Georgia, serif; font-size: 26px;
+    font-style: italic; color: var(--navy); border-left: 3px solid var(--blue);
+    padding: 8px 24px; margin: 32px 0; line-height: 1.3;
+  }
+
+  /* ===== Concept cards ===== */
+  .grid-3 {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 24px 0;
+  }
+  .grid-2 {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin: 24px 0;
+  }
+  @media (max-width: 800px) { .grid-3 { grid-template-columns: 1fr; } .grid-2 { grid-template-columns: 1fr; } }
+  .card {
+    background: white; border: 1px solid var(--line); border-radius: 6px; padding: 24px;
+  }
+  .card .lab {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    letter-spacing: 0.15em; color: var(--blue); margin-bottom: 8px;
+  }
+  .card h4 {
+    font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 600;
+    color: var(--navy); margin: 0 0 8px;
+  }
+  .card p { font-size: 14px; color: var(--muted); line-height: 1.55; margin: 0; }
+
+  /* ===== Inline data table ===== */
+  .data-table {
+    width: 100%; border-collapse: collapse; margin: 16px 0;
+    font-family: 'JetBrains Mono', monospace; font-size: 12px;
+    background: white; border: 1px solid var(--line); border-radius: 4px; overflow: hidden;
+  }
+  .data-table th, .data-table td {
+    padding: 8px 12px; text-align: left; border-bottom: 1px dashed var(--line);
+  }
+  .data-table th {
+    background: var(--cream); color: var(--navy);
+    font-size: 10.5px; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 600;
+  }
+  .data-table tr:last-child td { border-bottom: none; }
+  .data-table tr:hover td { background: var(--cream); }
+  .data-table .target { color: var(--blue); font-weight: 600; }
+  .data-table .nan { color: var(--bad); font-style: italic; opacity: 0.7; }
+
+  /* ===== Notebook / Jupyter style ===== */
+  .notebook {
+    background: white; border: 1px solid var(--line); border-radius: 8px;
+    padding: 0; margin: 32px 0; overflow: hidden;
+  }
+  .notebook-header {
+    background: var(--navy); color: white; padding: 14px 20px;
+    display: flex; align-items: center; justify-content: space-between;
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.15em;
+  }
+  .notebook-header .name { color: var(--blue-light); }
+  .notebook-header .kernel { color: rgba(255,255,255,0.5); }
+  .notebook-header .kernel::before { content: "● "; color: var(--good); }
+
+  .cell { border-bottom: 1px solid var(--line); }
+  .cell:last-child { border-bottom: none; }
+
+  .cell-md {
+    padding: 24px 28px; background: white;
+  }
+  .cell-md h5 {
+    font-family: 'Cormorant Garamond', serif; font-size: 22px; color: var(--navy);
+    margin: 0 0 10px; font-weight: 600;
+  }
+  .cell-md p { font-size: 15px; color: var(--ink); margin: 8px 0; }
+  .cell-md ul { margin: 8px 0; padding-left: 22px; }
+  .cell-md li { margin: 4px 0; font-size: 15px; color: var(--ink); }
+  .cell-md code {
+    background: var(--cream); padding: 2px 6px; border-radius: 3px;
+    font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--navy);
+  }
+
+  .cell-code-wrap {
+    display: grid; grid-template-columns: 50px 1fr; align-items: stretch;
+  }
+  .cell-gutter {
+    background: var(--cream-dark); padding: 14px 0; text-align: center;
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--blue);
+    letter-spacing: 0.05em; border-right: 1px solid var(--line);
+  }
+  .cell-code {
+    background: var(--code-bg); color: var(--code-text); padding: 16px 20px;
+    font-family: 'JetBrains Mono', 'Courier New', monospace; font-size: 13px;
+    line-height: 1.65; overflow-x: auto;
+  }
+  .cell-code .kw { color: var(--code-keyword); }
+  .cell-code .str { color: var(--code-string); }
+  .cell-code .num { color: var(--code-num); }
+  .cell-code .com { color: var(--code-comment); font-style: italic; }
+  .cell-code .fn { color: #FFCB6B; }
+  .cell-code .var { color: #C792EA; }
+  .cell-code .op { color: #89DDFF; }
+
+  .cell-out-wrap {
+    display: grid; grid-template-columns: 50px 1fr; background: #FAFAF7;
+  }
+  .cell-out-gutter {
+    background: var(--cream); padding: 14px 0; text-align: center;
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--bad);
+    letter-spacing: 0.05em; border-right: 1px solid var(--line);
+  }
+  .cell-out {
+    padding: 14px 20px; font-family: 'JetBrains Mono', monospace; font-size: 12px;
+    line-height: 1.6; color: var(--ink); overflow-x: auto;
+  }
+  .cell-out pre { margin: 0; white-space: pre-wrap; word-wrap: break-word; }
+  .cell-out .out-table {
+    border-collapse: collapse; font-size: 11px; margin: 4px 0;
+  }
+  .cell-out .out-table th, .cell-out .out-table td {
+    padding: 4px 10px; text-align: right; border-bottom: 1px solid #E8E5DC;
+  }
+  .cell-out .out-table th { color: var(--navy); font-weight: 600; background: var(--cream); }
+  .cell-out .out-table td.idx { text-align: left; color: var(--muted); font-weight: 600; }
+  .cell-out .out-comment {
+    color: var(--good); font-style: italic; margin-top: 8px; padding: 6px 10px;
+    background: rgba(46,139,87,0.07); border-left: 2px solid var(--good); font-size: 11.5px;
+  }
+
+  /* ===== Charts ===== */
+  .chart {
+    background: white; padding: 20px; border-radius: 4px; margin: 4px 0;
+    border: 1px solid #E8E5DC;
+  }
+  .chart-title {
+    font-family: 'Cormorant Garamond', serif; font-size: 16px; color: var(--navy);
+    margin-bottom: 12px; font-weight: 600;
+  }
+  .chart svg { display: block; width: 100%; height: auto; }
+  .chart-legend {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--muted);
+    margin-top: 8px; display: flex; gap: 16px; flex-wrap: wrap;
+  }
+  .legend-dot { display: inline-block; width: 10px; height: 10px; border-radius: 2px; vertical-align: middle; margin-right: 4px; }
+
+  /* ===== Callouts ===== */
+  .callout {
+    background: white; border: 1px solid var(--line); border-left: 3px solid var(--blue);
+    border-radius: 4px; padding: 18px 22px; margin: 24px 0;
+  }
+  .callout strong { color: var(--navy); }
+  .callout .title {
+    font-family: 'JetBrains Mono', monospace; font-size: 10.5px;
+    letter-spacing: 0.15em; color: var(--blue); margin-bottom: 8px; text-transform: uppercase;
+  }
+  .callout p { margin: 4px 0; font-size: 14.5px; }
+  .callout.warn { border-left-color: var(--amber); }
+  .callout.warn .title { color: var(--amber); }
+  .callout.danger { border-left-color: var(--bad); }
+  .callout.danger .title { color: var(--bad); }
+  .callout.good { border-left-color: var(--good); }
+  .callout.good .title { color: var(--good); }
+
+  /* ===== Process steps ===== */
+  .steps {
+    display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin: 24px 0;
+  }
+  @media (max-width: 900px) { .steps { grid-template-columns: 1fr 1fr; } }
+  .step {
+    background: white; border: 1px solid var(--line); border-radius: 4px;
+    padding: 16px; text-align: center;
+  }
+  .step .n {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--blue);
+    letter-spacing: 0.15em;
+  }
+  .step .t {
+    font-family: 'Cormorant Garamond', serif; font-size: 18px; color: var(--navy);
+    font-weight: 600; margin: 4px 0;
+  }
+  .step .d { font-size: 12px; color: var(--muted); }
+
+  /* ===== Quiz at end ===== */
+  .check {
+    background: white; border: 1px solid var(--line); border-radius: 6px;
+    padding: 24px; margin: 16px 0;
+  }
+  .check h4 { margin: 0 0 8px; font-family: 'Cormorant Garamond', serif; font-size: 20px; color: var(--navy); }
+  .check .q-options { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0; }
+  .check .q-opt {
+    background: var(--cream); border: 1px solid var(--line); padding: 10px 16px;
+    border-radius: 3px; cursor: pointer; font-family: inherit; font-size: 14px;
+    color: var(--navy); transition: all 0.15s;
+  }
+  .check .q-opt:hover:not(:disabled) { border-color: var(--navy); background: white; }
+  .check .q-opt.ok { background: rgba(46,139,87,0.12); border-color: var(--good); color: var(--good); }
+  .check .q-opt.ko { background: rgba(200,69,63,0.08); border-color: var(--bad); color: var(--bad); }
+  .check .q-fb { font-size: 13.5px; color: var(--ink); margin-top: 8px; padding: 8px 12px; background: var(--cream); border-radius: 3px; display: none; }
+  .check .q-fb.show { display: block; }
+
+  /* ===== Footer ===== */
+  footer {
+    margin-top: 80px; padding-top: 24px; border-top: 1px solid var(--line);
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted);
+    letter-spacing: 0.1em; text-transform: uppercase;
+    display: flex; justify-content: space-between;
+  }
+
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <div class="tag">MÁSTER IA · UNIR · TEMA 02 <span class="dot">·</span> ARTEFACTO 02</div>
+    <h1 class="title">Análisis exploratorio<br>de <em>datos</em>.</h1>
+    <p class="subtitle">Antes de entrenar nada, hay que mirar los datos a la cara. Esta es la parte menos glamurosa del machine learning, y la que más distingue a un buen proyecto de uno que falla. Aquí aprenderás qué es un EDA, cómo se hace, y al final lo veremos paso a paso con código Python real.</p>
+  </header>
+
+  <div class="toc">
+    <div class="toc-title">Contenidos</div>
+    <ol>
+      <li><a href="#parte-1">Por qué importa mirar los datos</a></li>
+      <li><a href="#parte-2">¿Qué es exactamente un EDA?</a></li>
+      <li><a href="#parte-3">Anatomía de un dataset</a></li>
+      <li><a href="#parte-4">Tipos de variables</a></li>
+      <li><a href="#parte-5">Las 6 preguntas del EDA</a></li>
+      <li><a href="#parte-6">Problemas habituales en datos</a></li>
+      <li><a href="#parte-7">Visualizaciones por tipo</a></li>
+      <li><a href="#parte-8">Notebook · EDA en Python</a></li>
+      <li><a href="#parte-9">Comprobación final</a></li>
+    </ol>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- PARTE 1 · POR QUÉ IMPORTA -->
+  <!-- ============================================================ -->
+  <section id="parte-1">
+    <div class="section-tag">PARTE I · MOTIVACIÓN</div>
+    <h2>Por qué <em>mirar los datos</em> es la mitad del trabajo.</h2>
+    <p class="lead">Muchos proyectos de IA fallan no porque el algoritmo sea malo, sino porque los datos eran un desastre y nadie se molestó en revisarlos. Un buen análisis exploratorio detecta errores, ahorra semanas de trabajo y convierte un modelo mediocre en uno que funciona.</p>
+
+    <div class="pull">«Garbage in, garbage out». Si entran datos basura, salen modelos basura. Por mucho que afines el algoritmo, no hay magia que arregle <em>datos malos</em>.</div>
+
+    <h3>Tres razones para hacer un EDA antes de entrenar</h3>
+    <div class="grid-3">
+      <div class="card">
+        <div class="lab">RAZÓN 01</div>
+        <h4>Detectar problemas pronto</h4>
+        <p>Valores ausentes, duplicados, errores de unidades, fechas imposibles. Lo que no detectes ahora, lo pagarás en producción.</p>
+      </div>
+      <div class="card">
+        <div class="lab">RAZÓN 02</div>
+        <h4>Entender qué hay</h4>
+        <p>¿Cuántas filas? ¿Qué variables? ¿Cómo se distribuyen? Sin esta foto mental, eliges el algoritmo a ciegas.</p>
+      </div>
+      <div class="card">
+        <div class="lab">RAZÓN 03</div>
+        <h4>Generar hipótesis</h4>
+        <p>«La supervivencia parece depender del sexo y la clase». Las relaciones que sospeches aquí guían el resto del proyecto.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- PARTE 2 · QUÉ ES UN EDA -->
+  <!-- ============================================================ -->
+  <section id="parte-2">
+    <div class="section-tag">PARTE II · DEFINICIÓN</div>
+    <h2>¿Qué es <em>exactamente</em> un EDA?</h2>
+    <p class="lead">EDA significa Exploratory Data Analysis: análisis exploratorio de datos. El término lo acuñó John Tukey en los años 70 y hoy es un estándar en cualquier proyecto serio de datos.</p>
+
+    <div class="callout">
+      <div class="title">DEFINICIÓN</div>
+      <p>Un EDA es el proceso sistemático de <strong>resumir, visualizar y cuestionar</strong> un dataset antes de modelar. No tiene un guion fijo; sí tiene un objetivo: entender qué tienes entre manos.</p>
+    </div>
+
+    <h3>EDA frente a estadística confirmatoria</h3>
+    <div class="grid-2">
+      <div class="card">
+        <div class="lab">EXPLORATORIO · EDA</div>
+        <h4>Pregunta sin hipótesis</h4>
+        <p>«¿Qué hay aquí? ¿Qué patrones aparecen? ¿Qué variables se relacionan?». Es abierto, iterativo, gráfico. Genera hipótesis.</p>
+      </div>
+      <div class="card">
+        <div class="lab">CONFIRMATORIO</div>
+        <h4>Pone hipótesis a prueba</h4>
+        <p>«¿Es estadísticamente significativa esta diferencia?». Es cerrado, formal, con tests y p-valores. Confirma o rechaza hipótesis.</p>
+      </div>
+    </div>
+    <p style="margin-top: 12px;">En machine learning siempre empezamos por el primero. El segundo viene después, si es que viene.</p>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- PARTE 3 · ANATOMÍA -->
+  <!-- ============================================================ -->
+  <section id="parte-3">
+    <div class="section-tag">PARTE III · ANATOMÍA</div>
+    <h2>La <em>anatomía</em> de un dataset.</h2>
+    <p class="lead">Antes de ir a un caso real, asegurémonos del vocabulario. Un dataset es una tabla. Cada elemento tiene un nombre.</p>
+
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>id</th><th>edad</th><th>sexo</th><th>ingresos (€)</th><th class="target">compra · target</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>001</td><td>34</td><td>F</td><td>32 000</td><td class="target">SÍ</td></tr>
+        <tr><td>002</td><td>28</td><td>M</td><td>45 000</td><td class="target">NO</td></tr>
+        <tr><td>003</td><td>52</td><td>F</td><td>61 000</td><td class="target">SÍ</td></tr>
+        <tr><td>004</td><td>41</td><td>M</td><td>—</td><td class="target">NO</td></tr>
+        <tr><td>005</td><td class="nan">NaN</td><td>F</td><td>28 500</td><td class="target">SÍ</td></tr>
+      </tbody>
+    </table>
+
+    <div class="grid-3">
+      <div class="card">
+        <div class="lab">FILA · OBSERVACIÓN · MUESTRA</div>
+        <h4>Un ejemplo individual</h4>
+        <p>Cada fila representa un caso: un cliente, una transacción, un paciente. Es lo que el modelo «ve» de uno en uno.</p>
+      </div>
+      <div class="card">
+        <div class="lab">COLUMNA · VARIABLE · FEATURE</div>
+        <h4>Una característica</h4>
+        <p>Cada columna mide algo (edad, ingresos, sexo). Las llamadas «features» son las columnas que el modelo recibe como entrada.</p>
+      </div>
+      <div class="card">
+        <div class="lab">TARGET · ETIQUETA · y</div>
+        <h4>Lo que queremos predecir</h4>
+        <p>Una columna especial — solo en supervisado — con la respuesta correcta. El modelo aprende a reproducirla.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- PARTE 4 · TIPOS DE VARIABLES -->
+  <!-- ============================================================ -->
+  <section id="parte-4">
+    <div class="section-tag">PARTE IV · TIPOS DE VARIABLES</div>
+    <h2>No todas las columnas se <em>analizan igual</em>.</h2>
+    <p class="lead">El primer paso al ver un dataset es identificar qué tipo es cada variable, porque eso decide qué gráficos usar, qué resumen tiene sentido y qué tratamiento necesita.</p>
+
+    <h3>Numéricas</h3>
+    <div class="grid-2">
+      <div class="card">
+        <div class="lab">CONTINUA</div>
+        <h4>Cualquier valor en un rango</h4>
+        <p><strong>Ejemplos:</strong> edad, ingresos, temperatura, peso, tiempo. Pueden tener decimales y son comparables matemáticamente.</p>
+        <p style="color:var(--blue);font-size:12px;margin-top:8px;font-family:'JetBrains Mono',monospace;">→ media · mediana · histograma · boxplot</p>
+      </div>
+      <div class="card">
+        <div class="lab">DISCRETA</div>
+        <h4>Solo valores enteros</h4>
+        <p><strong>Ejemplos:</strong> número de hijos, número de habitaciones, ventas diarias. Se cuentan, no se miden.</p>
+        <p style="color:var(--blue);font-size:12px;margin-top:8px;font-family:'JetBrains Mono',monospace;">→ moda · histograma · barras</p>
+      </div>
+    </div>
+
+    <h3>Categóricas</h3>
+    <div class="grid-2">
+      <div class="card">
+        <div class="lab">NOMINAL</div>
+        <h4>Sin orden natural</h4>
+        <p><strong>Ejemplos:</strong> color, ciudad, idioma, sexo. No tiene sentido decir «F &lt; M». Solo son etiquetas distintas.</p>
+        <p style="color:var(--blue);font-size:12px;margin-top:8px;font-family:'JetBrains Mono',monospace;">→ frecuencias · barras · countplot</p>
+      </div>
+      <div class="card">
+        <div class="lab">ORDINAL</div>
+        <h4>Con orden, sin distancia</h4>
+        <p><strong>Ejemplos:</strong> talla (S/M/L/XL), nivel educativo, satisfacción (1–5). Hay orden, pero la distancia entre niveles no es uniforme.</p>
+        <p style="color:var(--blue);font-size:12px;margin-top:8px;font-family:'JetBrains Mono',monospace;">→ frecuencias en orden · barras</p>
+      </div>
+    </div>
+
+    <div class="callout warn" style="margin-top:24px;">
+      <div class="title">CUIDADO · UN ERROR FRECUENTE</div>
+      <p>Las variables categóricas que vienen como números (códigos postales, IDs, niveles 1–5) <strong>no son numéricas en sentido analítico</strong>. Promediar códigos postales no significa nada. Hay que reconocerlas y tratarlas como categorías.</p>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- PARTE 5 · LAS 6 PREGUNTAS -->
+  <!-- ============================================================ -->
+  <section id="parte-5">
+    <div class="section-tag">PARTE V · MÉTODO</div>
+    <h2>Las <em>seis preguntas</em> que siempre hago.</h2>
+    <p class="lead">Cuando empiezo un EDA, recorro siempre las mismas seis preguntas. Es una checklist mental que evita olvidos y da un orden al caos.</p>
+
+    <div class="steps">
+      <div class="step"><div class="n">01</div><div class="t">Forma</div><div class="d">¿Cuántas filas y columnas?</div></div>
+      <div class="step"><div class="n">02</div><div class="t">Tipos</div><div class="d">¿Qué tipo es cada variable?</div></div>
+      <div class="step"><div class="n">03</div><div class="t">Faltantes</div><div class="d">¿Hay nulos? ¿Dónde?</div></div>
+      <div class="step"><div class="n">04</div><div class="t">Distribución</div><div class="d">¿Cómo se reparten los valores?</div></div>
+      <div class="step"><div class="n">05</div><div class="t">Relaciones</div><div class="d">¿Qué variables se relacionan?</div></div>
+      <div class="step"><div class="n">06</div><div class="t">Anomalías</div><div class="d">¿Outliers, duplicados, errores?</div></div>
+    </div>
+
+    <p style="margin-top:24px;">No son fases rígidas; son lentes. Pasas por ellas, vuelves, descubres algo nuevo, vuelves otra vez. El EDA es <strong>iterativo</strong>.</p>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- PARTE 6 · PROBLEMAS HABITUALES -->
+  <!-- ============================================================ -->
+  <section id="parte-6">
+    <div class="section-tag">PARTE VI · QUÉ DETECTAR</div>
+    <h2>Los <em>fantasmas</em> que aparecen en los datos.</h2>
+    <p class="lead">Estos son los problemas más típicos. Si los detectas en el EDA, los arreglas pronto. Si no, te explotan en producción.</p>
+
+    <h3>Valores faltantes (<em>missing values</em>)</h3>
+    <p>Aparecen como NaN, None, vacíos, "?", -1, "N/A"… Hay tres preguntas críticas:</p>
+    <ul>
+      <li><strong>¿Cuántos hay?</strong> Si una columna tiene 80% nulos, quizá es mejor eliminarla.</li>
+      <li><strong>¿Por qué faltan?</strong> ¿Aleatorio, sistemático, o sesgado? Cambia el tratamiento.</li>
+      <li><strong>¿Qué hacer?</strong> Eliminar filas, imputar (media/mediana/moda), o usar algoritmos que toleran nulos.</li>
+    </ul>
+
+    <h3>Outliers</h3>
+    <p>Valores extremos. Pueden ser errores (edad = 250) o casos reales pero raros (un cliente que gasta 50× la media). Hay que <strong>investigarlos uno a uno</strong> antes de eliminarlos. Un outlier real puede ser justo el caso que el modelo necesita aprender.</p>
+
+    <h3>Duplicados</h3>
+    <p>Filas idénticas o casi idénticas. Inflan el tamaño aparente del dataset y sesgan el entrenamiento. Suelen venir de errores en la recogida o concatenaciones mal hechas.</p>
+
+    <h3>Tipos incorrectos</h3>
+    <p>Fechas leídas como texto, números con comas decimales que vienen como strings, booleanos guardados como 0/1/Sí/No mezclados… Casi siempre hay algo que arreglar.</p>
+
+    <h3>Desbalanceo de clases</h3>
+    <p>En clasificación, si el 99% de los ejemplos son una clase, el modelo aprenderá a decir siempre esa clase y tendrá «99% accuracy» sin haber aprendido nada. Detectarlo en el EDA es esencial.</p>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- PARTE 7 · VISUALIZACIONES -->
+  <!-- ============================================================ -->
+  <section id="parte-7">
+    <div class="section-tag">PARTE VII · VISUALIZACIÓN</div>
+    <h2>El <em>gráfico correcto</em> para cada pregunta.</h2>
+    <p class="lead">Una imagen vale más que mil filas de tabla. Pero solo si eliges bien. Esta es la chuleta básica.</p>
+
+    <div class="grid-3">
+      <div class="card">
+        <div class="lab">UNA NUMÉRICA</div>
+        <h4>Histograma</h4>
+        <div class="chart" style="margin:8px 0;">
+          <svg viewBox="0 0 200 110">
+            <line x1="20" y1="95" x2="190" y2="95" stroke="#0F1B4D" stroke-width="0.8"/>
+            <line x1="20" y1="95" x2="20" y2="15" stroke="#0F1B4D" stroke-width="0.8"/>
+            <rect x="25" y="75" width="18" height="20" fill="#3FA9F5" opacity="0.85"/>
+            <rect x="45" y="55" width="18" height="40" fill="#3FA9F5" opacity="0.85"/>
+            <rect x="65" y="35" width="18" height="60" fill="#3FA9F5" opacity="0.85"/>
+            <rect x="85" y="25" width="18" height="70" fill="#3FA9F5" opacity="0.85"/>
+            <rect x="105" y="40" width="18" height="55" fill="#3FA9F5" opacity="0.85"/>
+            <rect x="125" y="60" width="18" height="35" fill="#3FA9F5" opacity="0.85"/>
+            <rect x="145" y="78" width="18" height="17" fill="#3FA9F5" opacity="0.85"/>
+            <rect x="165" y="88" width="18" height="7" fill="#3FA9F5" opacity="0.85"/>
+          </svg>
+        </div>
+        <p>Muestra la distribución: dónde se concentran los valores, si hay sesgo, si parece normal.</p>
+      </div>
+
+      <div class="card">
+        <div class="lab">UNA CATEGÓRICA</div>
+        <h4>Gráfico de barras</h4>
+        <div class="chart" style="margin:8px 0;">
+          <svg viewBox="0 0 200 110">
+            <line x1="20" y1="95" x2="190" y2="95" stroke="#0F1B4D" stroke-width="0.8"/>
+            <line x1="20" y1="95" x2="20" y2="15" stroke="#0F1B4D" stroke-width="0.8"/>
+            <rect x="35" y="30" width="30" height="65" fill="#0F1B4D"/>
+            <rect x="80" y="50" width="30" height="45" fill="#3FA9F5"/>
+            <rect x="125" y="65" width="30" height="30" fill="#1E2A5E"/>
+            <text x="50" y="105" font-size="7" fill="#6B6B7C" text-anchor="middle">A</text>
+            <text x="95" y="105" font-size="7" fill="#6B6B7C" text-anchor="middle">B</text>
+            <text x="140" y="105" font-size="7" fill="#6B6B7C" text-anchor="middle">C</text>
+          </svg>
+        </div>
+        <p>Cuenta cuántos casos hay por categoría. Útil para ver desbalanceo y categorías raras.</p>
+      </div>
+
+      <div class="card">
+        <div class="lab">DOS NUMÉRICAS</div>
+        <h4>Scatter plot</h4>
+        <div class="chart" style="margin:8px 0;">
+          <svg viewBox="0 0 200 110">
+            <line x1="20" y1="95" x2="190" y2="95" stroke="#0F1B4D" stroke-width="0.8"/>
+            <line x1="20" y1="95" x2="20" y2="15" stroke="#0F1B4D" stroke-width="0.8"/>
+            <circle cx="35" cy="80" r="2.5" fill="#0F1B4D"/>
+            <circle cx="50" cy="72" r="2.5" fill="#0F1B4D"/>
+            <circle cx="65" cy="68" r="2.5" fill="#0F1B4D"/>
+            <circle cx="80" cy="55" r="2.5" fill="#0F1B4D"/>
+            <circle cx="95" cy="50" r="2.5" fill="#0F1B4D"/>
+            <circle cx="110" cy="42" r="2.5" fill="#0F1B4D"/>
+            <circle cx="125" cy="38" r="2.5" fill="#0F1B4D"/>
+            <circle cx="140" cy="30" r="2.5" fill="#0F1B4D"/>
+            <circle cx="155" cy="25" r="2.5" fill="#0F1B4D"/>
+            <circle cx="170" cy="20" r="2.5" fill="#0F1B4D"/>
+          </svg>
+        </div>
+        <p>Cada punto es una observación con (x, y). Revela correlaciones, formas, agrupamientos.</p>
+      </div>
+
+      <div class="card">
+        <div class="lab">UNA NUM + UNA CAT</div>
+        <h4>Boxplot</h4>
+        <div class="chart" style="margin:8px 0;">
+          <svg viewBox="0 0 200 110">
+            <line x1="20" y1="95" x2="190" y2="95" stroke="#0F1B4D" stroke-width="0.8"/>
+            <!-- Box 1 -->
+            <line x1="50" y1="30" x2="50" y2="70" stroke="#0F1B4D" stroke-width="1"/>
+            <rect x="38" y="45" width="24" height="22" fill="#B8DEF9" stroke="#0F1B4D" stroke-width="0.8"/>
+            <line x1="38" y1="56" x2="62" y2="56" stroke="#0F1B4D" stroke-width="1.2"/>
+            <line x1="42" y1="30" x2="58" y2="30" stroke="#0F1B4D" stroke-width="0.8"/>
+            <line x1="42" y1="70" x2="58" y2="70" stroke="#0F1B4D" stroke-width="0.8"/>
+            <!-- Box 2 -->
+            <line x1="100" y1="50" x2="100" y2="85" stroke="#0F1B4D" stroke-width="1"/>
+            <rect x="88" y="60" width="24" height="20" fill="#B8DEF9" stroke="#0F1B4D" stroke-width="0.8"/>
+            <line x1="88" y1="70" x2="112" y2="70" stroke="#0F1B4D" stroke-width="1.2"/>
+            <line x1="92" y1="50" x2="108" y2="50" stroke="#0F1B4D" stroke-width="0.8"/>
+            <line x1="92" y1="85" x2="108" y2="85" stroke="#0F1B4D" stroke-width="0.8"/>
+            <!-- Box 3 -->
+            <line x1="150" y1="20" x2="150" y2="60" stroke="#0F1B4D" stroke-width="1"/>
+            <rect x="138" y="30" width="24" height="22" fill="#B8DEF9" stroke="#0F1B4D" stroke-width="0.8"/>
+            <line x1="138" y1="42" x2="162" y2="42" stroke="#0F1B4D" stroke-width="1.2"/>
+            <line x1="142" y1="20" x2="158" y2="20" stroke="#0F1B4D" stroke-width="0.8"/>
+            <line x1="142" y1="60" x2="158" y2="60" stroke="#0F1B4D" stroke-width="0.8"/>
+            <text x="50" y="105" font-size="7" fill="#6B6B7C" text-anchor="middle">A</text>
+            <text x="100" y="105" font-size="7" fill="#6B6B7C" text-anchor="middle">B</text>
+            <text x="150" y="105" font-size="7" fill="#6B6B7C" text-anchor="middle">C</text>
+          </svg>
+        </div>
+        <p>Resume la distribución de una variable numérica por cada categoría. Ideal para comparar grupos.</p>
+      </div>
+
+      <div class="card">
+        <div class="lab">VARIAS NUMÉRICAS</div>
+        <h4>Heatmap de correlación</h4>
+        <div class="chart" style="margin:8px 0;">
+          <svg viewBox="0 0 200 110">
+            <g transform="translate(40,15)">
+              <rect x="0" y="0" width="22" height="22" fill="#0F1B4D"/>
+              <rect x="22" y="0" width="22" height="22" fill="#3FA9F5" opacity="0.7"/>
+              <rect x="44" y="0" width="22" height="22" fill="#C8453F" opacity="0.4"/>
+              <rect x="66" y="0" width="22" height="22" fill="#B8DEF9"/>
+              <rect x="0" y="22" width="22" height="22" fill="#3FA9F5" opacity="0.7"/>
+              <rect x="22" y="22" width="22" height="22" fill="#0F1B4D"/>
+              <rect x="44" y="22" width="22" height="22" fill="#3FA9F5"/>
+              <rect x="66" y="22" width="22" height="22" fill="#C8453F" opacity="0.3"/>
+              <rect x="0" y="44" width="22" height="22" fill="#C8453F" opacity="0.4"/>
+              <rect x="22" y="44" width="22" height="22" fill="#3FA9F5"/>
+              <rect x="44" y="44" width="22" height="22" fill="#0F1B4D"/>
+              <rect x="66" y="44" width="22" height="22" fill="#3FA9F5" opacity="0.6"/>
+              <rect x="0" y="66" width="22" height="22" fill="#B8DEF9"/>
+              <rect x="22" y="66" width="22" height="22" fill="#C8453F" opacity="0.3"/>
+              <rect x="44" y="66" width="22" height="22" fill="#3FA9F5" opacity="0.6"/>
+              <rect x="66" y="66" width="22" height="22" fill="#0F1B4D"/>
+            </g>
+          </svg>
+        </div>
+        <p>Muestra todas las correlaciones a la vez. Detecta de un vistazo qué variables se mueven juntas.</p>
+      </div>
+
+      <div class="card">
+        <div class="lab">DOS CATEGÓRICAS</div>
+        <h4>Tabla cruzada</h4>
+        <div class="chart" style="margin:8px 0;">
+          <svg viewBox="0 0 200 110">
+            <g transform="translate(40,15)" font-family="JetBrains Mono" font-size="9">
+              <rect x="0" y="0" width="120" height="25" fill="#F5F1E8" stroke="#0F1B4D"/>
+              <text x="40" y="16" fill="#0F1B4D">Cat A</text>
+              <text x="90" y="16" fill="#0F1B4D">Cat B</text>
+              <rect x="0" y="25" width="120" height="25" fill="white" stroke="#0F1B4D"/>
+              <text x="5" y="41" fill="#6B6B7C">F</text>
+              <text x="40" y="41" fill="#0F1B4D">42</text>
+              <text x="90" y="41" fill="#0F1B4D">18</text>
+              <rect x="0" y="50" width="120" height="25" fill="white" stroke="#0F1B4D"/>
+              <text x="5" y="66" fill="#6B6B7C">M</text>
+              <text x="40" y="66" fill="#0F1B4D">15</text>
+              <text x="90" y="66" fill="#0F1B4D">38</text>
+            </g>
+          </svg>
+        </div>
+        <p>Cuenta combinaciones de dos categorías. Revela asociaciones que un solo gráfico no ve.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- PARTE 8 · NOTEBOOK -->
+  <!-- ============================================================ -->
+  <section id="parte-8">
+    <div class="section-tag">PARTE VIII · CÓDIGO · NIVEL INTRODUCTORIO</div>
+    <h2>EDA en <em>Python</em>, paso a paso.</h2>
+    <p class="lead">Hasta aquí la teoría. Ahora vamos a hacer un EDA real sobre el dataset <strong>Titanic</strong>: 891 pasajeros, sabemos quién sobrevivió. Lo presentamos como un Jupyter Notebook — celdas de texto, celdas de código, celdas de salida. No hace falta que ejecutes nada: cada celda ya tiene su resultado para que solo te concentres en entender qué hace.</p>
+
+    <div class="callout">
+      <div class="title">CÓMO LEER ESTE NOTEBOOK</div>
+      <p>Las celdas <code>In [n]:</code> son código Python. Las celdas <code>Out [n]:</code> son lo que el código devuelve. Entre ellas, hay celdas explicativas que cuentan qué estamos haciendo y por qué. Léelo en orden: cada celda construye sobre la anterior.</p>
+    </div>
+
+    <div class="notebook">
+      <div class="notebook-header">
+        <span class="name">📓 titanic_eda.ipynb</span>
+        <span class="kernel">Python 3.11 · pandas 2.0</span>
+      </div>
+
+      <!-- CELDA MARKDOWN -->
+      <div class="cell">
+        <div class="cell-md">
+          <h5>1 · Importar las librerías</h5>
+          <p>Toda sesión de EDA empieza importando las herramientas. Hay tres que verás siempre:</p>
+          <ul>
+            <li><code>pandas</code>: para manejar tablas (DataFrames). Es la base de todo.</li>
+            <li><code>numpy</code>: cálculos numéricos rápidos.</li>
+            <li><code>matplotlib</code> y <code>seaborn</code>: para visualizar.</li>
+          </ul>
+          <p>El alias <code>pd</code> y <code>np</code> son convenciones que verás en todo el mundo.</p>
+        </div>
+      </div>
+
+      <!-- CELDA CÓDIGO -->
+      <div class="cell">
+        <div class="cell-code-wrap">
+          <div class="cell-gutter">In [1]:</div>
+          <div class="cell-code"><span class="kw">import</span> pandas <span class="kw">as</span> pd
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+<span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
+<span class="kw">import</span> seaborn <span class="kw">as</span> sns
+
+<span class="com"># Estilo agradable para los gráficos</span>
+sns.set_style(<span class="str">"whitegrid"</span>)</div>
+        </div>
+      </div>
+
+      <!-- CELDA MD -->
+      <div class="cell">
+        <div class="cell-md">
+          <h5>2 · Cargar los datos</h5>
+          <p>Cargamos el CSV en un DataFrame. Un DataFrame es la tabla en memoria con la que vas a trabajar. La función <code>read_csv</code> es la más usada del mundo del análisis de datos.</p>
+        </div>
+      </div>
+
+      <div class="cell">
+        <div class="cell-code-wrap">
+          <div class="cell-gutter">In [2]:</div>
+          <div class="cell-code">df = pd.read_csv(<span class="str">"titanic.csv"</span>)</div>
+        </div>
+      </div>
+
+      <!-- CELDA MD -->
+      <div class="cell">
+        <div class="cell-md">
+          <h5>3 · Primera mirada · <code>.head()</code></h5>
+          <p>El primer comando <em>siempre</em> es <code>.head()</code>: muestra las primeras filas. Es como abrir el dataset y echarle un vistazo. No te resuelve nada, pero te da un mapa mental de qué hay.</p>
+        </div>
+      </div>
+
+      <div class="cell">
+        <div class="cell-code-wrap">
+          <div class="cell-gutter">In [3]:</div>
+          <div class="cell-code">df.head()</div>
+        </div>
+        <div class="cell-out-wrap">
+          <div class="cell-out-gutter">Out [3]:</div>
+          <div class="cell-out">
+            <table class="out-table">
+              <thead><tr><th></th><th>PassengerId</th><th>Survived</th><th>Pclass</th><th>Sex</th><th>Age</th><th>SibSp</th><th>Fare</th><th>Embarked</th></tr></thead>
+              <tbody>
+                <tr><td class="idx">0</td><td>1</td><td>0</td><td>3</td><td>male</td><td>22.0</td><td>1</td><td>7.25</td><td>S</td></tr>
+                <tr><td class="idx">1</td><td>2</td><td>1</td><td>1</td><td>female</td><td>38.0</td><td>1</td><td>71.28</td><td>C</td></tr>
+                <tr><td class="idx">2</td><td>3</td><td>1</td><td>3</td><td>female</td><td>26.0</td><td>0</td><td>7.92</td><td>S</td></tr>
+                <tr><td class="idx">3</td><td>4</td><td>1</td><td>1</td><td>female</td><td>35.0</td><td>1</td><td>53.10</td><td>S</td></tr>
+                <tr><td class="idx">4</td><td>5</td><td>0</td><td>3</td><td>male</td><td>35.0</td><td>0</td><td>8.05</td><td>S</td></tr>
+              </tbody>
+            </table>
+            <div class="out-comment">→ Vemos columnas mezcladas: numéricas (Age, Fare) y categóricas (Sex, Embarked). El target es <strong>Survived</strong> (0 = murió, 1 = sobrevivió).</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CELDA MD -->
+      <div class="cell">
+        <div class="cell-md">
+          <h5>4 · ¿Cuántas filas y columnas? · <code>.shape</code></h5>
+          <p>Pregunta uno del checklist: <strong>la forma</strong>. Sin esto, no sabes si tienes 100 datos o 100 millones, y eso cambia todo el enfoque.</p>
+        </div>
+      </div>
+
+      <div class="cell">
+        <div class="cell-code-wrap">
+          <div class="cell-gutter">In [4]:</div>
+          <div class="cell-code">df.shape</div>
+        </div>
+        <div class="cell-out-wrap">
+          <div class="cell-out-gutter">Out [4]:</div>
+          <div class="cell-out">
+<pre>(891, 12)</pre>
+            <div class="out-comment">→ 891 filas (pasajeros) y 12 columnas (variables). Dataset pequeño, perfecto para aprender.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CELDA MD -->
+      <div class="cell">
+        <div class="cell-md">
+          <h5>5 · Tipos y nulos · <code>.info()</code></h5>
+          <p>Pregunta dos y tres del checklist en una sola llamada. <code>.info()</code> nos dice el <strong>tipo</strong> de cada columna y cuántos <strong>valores no nulos</strong> tiene cada una.</p>
+        </div>
+      </div>
+
+      <div class="cell">
+        <div class="cell-code-wrap">
+          <div class="cell-gutter">In [5]:</div>
+          <div class="cell-code">df.info()</div>
+        </div>
+        <div class="cell-out-wrap">
+          <div class="cell-out-gutter">Out [5]:</div>
+          <div class="cell-out">
+<pre>&lt;class 'pandas.core.frame.DataFrame'&gt;
+RangeIndex: 891 entries, 0 to 890
+Data columns (total 12 columns):
+ #   Column       Non-Null Count  Dtype
+---  ------       --------------  -----
+ 0   PassengerId  891 non-null    int64
+ 1   Survived     891 non-null    int64
+ 2   Pclass       891 non-null    int64
+ 3   Name         891 non-null    object
+ 4   Sex          891 non-null    object
+ 5   Age          714 non-null    float64
+ 6   SibSp        891 non-null    int64
+ 7   Parch        891 non-null    int64
+ 8   Ticket       891 non-null    object
+ 9   Fare         891 non-null    float64
+ 10  Cabin        204 non-null    object
+ 11  Embarked     889 non-null    object
+dtypes: float64(2), int64(5), object(5)</pre>
+            <div class="out-comment">→ <strong>Age tiene 177 nulos</strong> (891 − 714). <strong>Cabin solo tiene 204 valores</strong> sobre 891 — un 77% perdido, casi inservible. <strong>Embarked tiene 2 nulos</strong>. El resto está completo.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CELDA MD -->
+      <div class="cell">
+        <div class="cell-md">
+          <h5>6 · Resumen estadístico · <code>.describe()</code></h5>
+          <p>Para todas las columnas <strong>numéricas</strong>, calcula media, desviación, mínimo, máximo y cuartiles. Es la primera foto de la distribución.</p>
+        </div>
+      </div>
+
+      <div class="cell">
+        <div class="cell-code-wrap">
+          <div class="cell-gutter">In [6]:</div>
+          <div class="cell-code">df.describe()</div>
+        </div>
+        <div class="cell-out-wrap">
+          <div class="cell-out-gutter">Out [6]:</div>
+          <div class="cell-out">
+            <table class="out-table">
+              <thead><tr><th></th><th>Survived</th><th>Pclass</th><th>Age</th><th>SibSp</th><th>Parch</th><th>Fare</th></tr></thead>
+              <tbody>
+                <tr><td class="idx">count</td><td>891</td><td>891</td><td>714</td><td>891</td><td>891</td><td>891</td></tr>
+                <tr><td class="idx">mean</td><td>0.38</td><td>2.31</td><td>29.70</td><td>0.52</td><td>0.38</td><td>32.20</td></tr>
+                <tr><td class="idx">std</td><td>0.49</td><td>0.84</td><td>14.53</td><td>1.10</td><td>0.81</td><td>49.69</td></tr>
+                <tr><td class="idx">min</td><td>0</td><td>1</td><td>0.42</td><td>0</td><td>0</td><td>0.00</td></tr>
+                <tr><td class="idx">25%</td><td>0</td><td>2</td><td>20.12</td><td>0</td><td>0</td><td>7.91</td></tr>
+                <tr><td class="idx">50%</td><td>0</td><td>3</td><td>28.00</td><td>0</td><td>0</td><td>14.45</td></tr>
+                <tr><td class="idx">75%</td><td>1</td><td>3</td><td>38.00</td><td>1</td><td>0</td><td>31.00</td></tr>
+                <tr><td class="idx">max</td><td>1</td><td>3</td><td>80.00</td><td>8</td><td>6</td><td>512.33</td></tr>
+              </tbody>
+            </table>
+            <div class="out-comment">→ <strong>Survived mean = 0.38</strong>: solo el 38% sobrevivió. <strong>Age</strong> va de 0.42 (un bebé) a 80. <strong>Fare máximo 512</strong> con media 32: hay outliers fuertes (billetes carísimos).</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CELDA MD -->
+      <div class="cell">
+        <div class="cell-md">
+          <h5>7 · Contar los nulos exactamente · <code>.isnull().sum()</code></h5>
+          <p>Una manera más limpia de ver dónde están los huecos. Devuelve cuántos NaN hay por columna.</p>
+        </div>
+      </div>
+
+      <div class="cell">
+        <div class="cell-code-wrap">
+          <div class="cell-gutter">In [7]:</div>
+          <div class="cell-code">df.isnull().sum()</div>
+        </div>
+        <div class="cell-out-wrap">
+          <div class="cell-out-gutter">Out [7]:</div>
+          <div class="cell-out">
+<pre>PassengerId      0
+Survived         0
+Pclass           0
+Name             0
+Sex              0
+Age            177
+SibSp            0
+Parch            0
+Ticket           0
+Fare             0
+Cabin          687
+Embarked         2
+dtype: int64</pre>
+            <div class="out-comment">→ Decisión: <strong>Cabin</strong> (687/891 = 77% nulos) la eliminaremos. <strong>Age</strong> (177 nulos) la imputaremos con la mediana. <strong>Embarked</strong> (2 nulos) con la moda.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CELDA MD -->
+      <div class="cell">
+        <div class="cell-md">
+          <h5>8 · Distribución de la variable target</h5>
+          <p>Cuando trabajamos con clasificación, lo primero que hay que ver es el balance de clases. ¿Es 50/50? ¿80/20? ¿Hay desbalanceo?</p>
+        </div>
+      </div>
+
+      <div class="cell">
+        <div class="cell-code-wrap">
+          <div class="cell-gutter">In [8]:</div>
+          <div class="cell-code">df[<span class="str">"Survived"</span>].value_counts()</div>
+        </div>
+        <div class="cell-out-wrap">
+          <div class="cell-out-gutter">Out [8]:</div>
+          <div class="cell-out">
+<pre>Survived
+0    549
+1    342
+Name: count, dtype: int64</pre>
+            <div class="cell" style="margin-top:12px; border:none;">
+              <div class="chart">
+                <div class="chart-title">Distribución del target · 549 vs 342</div>
+                <svg viewBox="0 0 600 200">
+                  <line x1="60" y1="170" x2="580" y2="170" stroke="#0F1B4D" stroke-width="1"/>
+                  <line x1="60" y1="170" x2="60" y2="20" stroke="#0F1B4D" stroke-width="1"/>
+                  <text x="35" y="175" font-size="11" fill="#6B6B7C" font-family="JetBrains Mono">0</text>
+                  <text x="20" y="100" font-size="11" fill="#6B6B7C" font-family="JetBrains Mono">300</text>
+                  <text x="20" y="35" font-size="11" fill="#6B6B7C" font-family="JetBrains Mono">600</text>
+                  <rect x="180" y="33" width="100" height="137" fill="#C8453F" opacity="0.85"/>
+                  <text x="230" y="190" font-size="13" fill="#0F1B4D" font-family="Cormorant Garamond" text-anchor="middle">No sobrevive (549)</text>
+                  <text x="230" y="22" font-size="13" fill="white" font-weight="bold" font-family="JetBrains Mono" text-anchor="middle">549</text>
+
+                  <rect x="360" y="85" width="100" height="85" fill="#3FA9F5" opacity="0.85"/>
+                  <text x="410" y="190" font-size="13" fill="#0F1B4D" font-family="Cormorant Garamond" text-anchor="middle">Sobrevive (342)</text>
+                  <text x="410" y="75" font-size="13" fill="#0F1B4D" font-weight="bold" font-family="JetBrains Mono" text-anchor="middle">342</text>
+                </svg>
+              </div>
+            </div>
+            <div class="out-comment">→ 62% murió, 38% sobrevivió. Hay <strong>desbalanceo moderado</strong>, pero manejable. Si fuera 99/1 tendríamos un problema serio.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CELDA MD -->
+      <div class="cell">
+        <div class="cell-md">
+          <h5>9 · Distribución de la edad · histograma</h5>
+          <p>Pasamos a una variable numérica. El histograma reparte los valores en «bins» (rangos) y cuenta cuántos caen en cada uno.</p>
+        </div>
+      </div>
+
+      <div class="cell">
+        <div class="cell-code-wrap">
+          <div class="cell-gutter">In [9]:</div>
+          <div class="cell-code">df[<span class="str">"Age"</span>].hist(bins=<span class="num">30</span>, color=<span class="str">"#3FA9F5"</span>)
+plt.title(<span class="str">"Distribución de la edad"</span>)
+plt.xlabel(<span class="str">"Edad"</span>); plt.ylabel(<span class="str">"Frecuencia"</span>)
+plt.show()</div>
+        </div>
+        <div class="cell-out-wrap">
+          <div class="cell-out-gutter">Out [9]:</div>
+          <div class="cell-out">
+            <div class="chart">
+              <div class="chart-title">Distribución de la edad · histograma</div>
+              <svg viewBox="0 0 600 250">
+                <line x1="50" y1="220" x2="580" y2="220" stroke="#0F1B4D" stroke-width="1"/>
+                <line x1="50" y1="220" x2="50" y2="20" stroke="#0F1B4D" stroke-width="1"/>
+                <!-- eje x -->
+                <text x="50" y="240" font-size="10" fill="#6B6B7C" font-family="JetBrains Mono" text-anchor="middle">0</text>
+                <text x="170" y="240" font-size="10" fill="#6B6B7C" font-family="JetBrains Mono" text-anchor="middle">20</text>
+                <text x="290" y="240" font-size="10" fill="#6B6B7C" font-family="JetBrains Mono" text-anchor="middle">40</text>
+                <text x="410" y="240" font-size="10" fill="#6B6B7C" font-family="JetBrains Mono" text-anchor="middle">60</text>
+                <text x="530" y="240" font-size="10" fill="#6B6B7C" font-family="JetBrains Mono" text-anchor="middle">80</text>
+                <!-- bins (datos del histograma del Titanic) -->
+                <rect x="55"  y="208" width="17" height="12" fill="#3FA9F5" opacity="0.85"/>
+                <rect x="73"  y="186" width="17" height="34" fill="#3FA9F5" opacity="0.85"/>
+                <rect x="91"  y="200" width="17" height="20" fill="#3FA9F5" opacity="0.85"/>
+                <rect x="109" y="208" width="17" height="12" fill="#3FA9F5" opacity="0.85"/>
+                <rect x="127" y="195" width="17" height="25" fill="#3FA9F5" opacity="0.85"/>
+                <rect x="145" y="170" width="17" height="50" fill="#3FA9F5" opacity="0.85"/>
+                <rect x="163" y="120" width="17" height="100" fill="#3FA9F5" opacity="0.85"/>
+                <rect x="181" y="60" width="17" height="160" fill="#3FA9F5" opacity="0.85"/>
+                <rect x="199" y="30" width="17" height="190" fill="#0F1B4D" opacity="0.9"/>
+                <rect x="217" y="50" width="17" height="170" fill="#3FA9F5" opacity="0.85"/>
+                <rect x="235" y="80" width="17" height="140" fill="#3FA9F5" opacity="0.85"/>
+                <rect x="253" y="100" width="17" height="120" fill="#3FA9F5" opacity="0.85"/>
+                <rect x="271" y="115" width="17" height="105" fill="#3FA9F5" opacity="0.85"/>
+                <rect x="289" y="125" width="17" height="95" fill="#3FA9F5" opacity="0.85"/>
+                <rect x="307" y="135" width="17" height="85" fill="#3FA9F5" opacity="0.85"/>
+                <rect x="325" y="155" width="17" height="65" fill="#3FA9F5" opacity="0.85"/>
+                <rect x="343" y="160" width="17" height="60" fill="#3FA9F5" opacity="0.85"/>
+                <rect x="361" y="170" width="17" height="50" fill="#3FA9F5" opacity="0.85"/>
+                <rect x="379" y="178" width="17" height="42" fill="#3FA9F5" opacity="0.85"/>
+                <rect x="397" y="185" width="17" height="35" fill="#3FA9F5" opacity="0.85"/>
+                <rect x="415" y="190" width="17" height="30" fill="#3FA9F5" opacity="0.85"/>
+                <rect x="433" y="195" width="17" height="25" fill="#3FA9F5" opacity="0.85"/>
+                <rect x="451" y="200" width="17" height="20" fill="#3FA9F5" opacity="0.85"/>
+                <rect x="469" y="205" width="17" height="15" fill="#3FA9F5" opacity="0.85"/>
+                <rect x="487" y="210" width="17" height="10" fill="#3FA9F5" opacity="0.85"/>
+                <rect x="505" y="213" width="17" height="7" fill="#3FA9F5" opacity="0.85"/>
+                <rect x="523" y="215" width="17" height="5" fill="#3FA9F5" opacity="0.85"/>
+                <rect x="541" y="217" width="17" height="3" fill="#3FA9F5" opacity="0.85"/>
+                <text x="20" y="35" font-size="10" fill="#6B6B7C" font-family="JetBrains Mono">90</text>
+                <text x="20" y="125" font-size="10" fill="#6B6B7C" font-family="JetBrains Mono">45</text>
+                <text x="20" y="220" font-size="10" fill="#6B6B7C" font-family="JetBrains Mono">0</text>
+              </svg>
+            </div>
+            <div class="out-comment">→ La mayoría de pasajeros tiene entre <strong>20 y 35 años</strong>. Hay un pico llamativo de niños pequeños (0-5) y una cola larga hacia edades altas. Distribución <strong>asimétrica positiva</strong>.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CELDA MD -->
+      <div class="cell">
+        <div class="cell-md">
+          <h5>10 · Categóricas · sexo y clase</h5>
+          <p>Para variables categóricas, contamos cuántos hay de cada valor.</p>
+        </div>
+      </div>
+
+      <div class="cell">
+        <div class="cell-code-wrap">
+          <div class="cell-gutter">In [10]:</div>
+          <div class="cell-code">df[<span class="str">"Sex"</span>].value_counts()</div>
+        </div>
+        <div class="cell-out-wrap">
+          <div class="cell-out-gutter">Out [10]:</div>
+          <div class="cell-out">
+<pre>Sex
+male      577
+female    314
+Name: count, dtype: int64</pre>
+            <div class="out-comment">→ Casi 2/3 hombres, 1/3 mujeres. Importa porque seguramente el sexo influya en la supervivencia.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CELDA MD -->
+      <div class="cell">
+        <div class="cell-md">
+          <h5>11 · La pregunta clave · supervivencia por sexo</h5>
+          <p>Aquí empieza la parte interesante: cruzar variables. Vamos a ver si el sexo influye en sobrevivir.</p>
+        </div>
+      </div>
+
+      <div class="cell">
+        <div class="cell-code-wrap">
+          <div class="cell-gutter">In [11]:</div>
+          <div class="cell-code">df.groupby(<span class="str">"Sex"</span>)[<span class="str">"Survived"</span>].mean()</div>
+        </div>
+        <div class="cell-out-wrap">
+          <div class="cell-out-gutter">Out [11]:</div>
+          <div class="cell-out">
+<pre>Sex
+female    0.742
+male      0.189
+Name: Survived, dtype: float64</pre>
+            <div class="chart" style="margin-top:8px;">
+              <div class="chart-title">% de supervivencia por sexo</div>
+              <svg viewBox="0 0 600 220">
+                <line x1="60" y1="190" x2="580" y2="190" stroke="#0F1B4D" stroke-width="1"/>
+                <line x1="60" y1="190" x2="60" y2="20" stroke="#0F1B4D" stroke-width="1"/>
+                <text x="50" y="195" font-size="10" fill="#6B6B7C" font-family="JetBrains Mono" text-anchor="end">0%</text>
+                <text x="50" y="105" font-size="10" fill="#6B6B7C" font-family="JetBrains Mono" text-anchor="end">50%</text>
+                <text x="50" y="25" font-size="10" fill="#6B6B7C" font-family="JetBrains Mono" text-anchor="end">100%</text>
+                <line x1="60" y1="105" x2="580" y2="105" stroke="#C9C2B0" stroke-width="0.5" stroke-dasharray="3,3"/>
+
+                <rect x="180" y="58" width="100" height="132" fill="#3FA9F5" opacity="0.9"/>
+                <text x="230" y="50" font-size="14" fill="#0F1B4D" font-family="JetBrains Mono" font-weight="bold" text-anchor="middle">74.2%</text>
+                <text x="230" y="210" font-size="13" fill="#0F1B4D" font-family="Cormorant Garamond" text-anchor="middle">female</text>
+
+                <rect x="360" y="156" width="100" height="34" fill="#C8453F" opacity="0.85"/>
+                <text x="410" y="148" font-size="14" fill="#0F1B4D" font-family="JetBrains Mono" font-weight="bold" text-anchor="middle">18.9%</text>
+                <text x="410" y="210" font-size="13" fill="#0F1B4D" font-family="Cormorant Garamond" text-anchor="middle">male</text>
+              </svg>
+            </div>
+            <div class="out-comment">→ <strong>Hallazgo enorme</strong>: las mujeres tenían 4× más probabilidad de sobrevivir. El protocolo «mujeres y niños primero» se ve clarísimo en los datos.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CELDA MD -->
+      <div class="cell">
+        <div class="cell-md">
+          <h5>12 · Supervivencia por clase del billete</h5>
+          <p>Otra hipótesis natural: ¿la clase del pasajero (1ª, 2ª o 3ª) afectó a sus posibilidades?</p>
+        </div>
+      </div>
+
+      <div class="cell">
+        <div class="cell-code-wrap">
+          <div class="cell-gutter">In [12]:</div>
+          <div class="cell-code">df.groupby(<span class="str">"Pclass"</span>)[<span class="str">"Survived"</span>].mean()</div>
+        </div>
+        <div class="cell-out-wrap">
+          <div class="cell-out-gutter">Out [12]:</div>
+          <div class="cell-out">
+<pre>Pclass
+1    0.630
+2    0.473
+3    0.242
+Name: Survived, dtype: float64</pre>
+            <div class="chart" style="margin-top:8px;">
+              <div class="chart-title">% de supervivencia por clase</div>
+              <svg viewBox="0 0 600 220">
+                <line x1="60" y1="190" x2="580" y2="190" stroke="#0F1B4D" stroke-width="1"/>
+                <line x1="60" y1="190" x2="60" y2="20" stroke="#0F1B4D" stroke-width="1"/>
+                <text x="50" y="195" font-size="10" fill="#6B6B7C" font-family="JetBrains Mono" text-anchor="end">0%</text>
+                <text x="50" y="105" font-size="10" fill="#6B6B7C" font-family="JetBrains Mono" text-anchor="end">50%</text>
+                <text x="50" y="25" font-size="10" fill="#6B6B7C" font-family="JetBrains Mono" text-anchor="end">100%</text>
+
+                <rect x="120" y="80" width="100" height="110" fill="#0F1B4D"/>
+                <text x="170" y="72" font-size="13" fill="#0F1B4D" font-weight="bold" font-family="JetBrains Mono" text-anchor="middle">63%</text>
+                <text x="170" y="210" font-size="13" fill="#0F1B4D" font-family="Cormorant Garamond" text-anchor="middle">1ª clase</text>
+
+                <rect x="260" y="108" width="100" height="82" fill="#3FA9F5"/>
+                <text x="310" y="100" font-size="13" fill="#0F1B4D" font-weight="bold" font-family="JetBrains Mono" text-anchor="middle">47%</text>
+                <text x="310" y="210" font-size="13" fill="#0F1B4D" font-family="Cormorant Garamond" text-anchor="middle">2ª clase</text>
+
+                <rect x="400" y="148" width="100" height="42" fill="#C8453F" opacity="0.85"/>
+                <text x="450" y="140" font-size="13" fill="#0F1B4D" font-weight="bold" font-family="JetBrains Mono" text-anchor="middle">24%</text>
+                <text x="450" y="210" font-size="13" fill="#0F1B4D" font-family="Cormorant Garamond" text-anchor="middle">3ª clase</text>
+              </svg>
+            </div>
+            <div class="out-comment">→ Los pasajeros de <strong>1ª clase</strong> sobrevivieron casi 3 veces más que los de 3ª. La clase social era determinante. Otra feature que va a ser clave para el modelo.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CELDA MD -->
+      <div class="cell">
+        <div class="cell-md">
+          <h5>13 · Edad de los que sobreviven · boxplot</h5>
+          <p>El boxplot compara distribuciones entre grupos. Cada caja resume cuartiles, mediana y outliers.</p>
+        </div>
+      </div>
+
+      <div class="cell">
+        <div class="cell-code-wrap">
+          <div class="cell-gutter">In [13]:</div>
+          <div class="cell-code">sns.boxplot(data=df, x=<span class="str">"Survived"</span>, y=<span class="str">"Age"</span>, palette=[<span class="str">"#C8453F"</span>, <span class="str">"#3FA9F5"</span>])
+plt.title(<span class="str">"Edad por supervivencia"</span>)
+plt.show()</div>
+        </div>
+        <div class="cell-out-wrap">
+          <div class="cell-out-gutter">Out [13]:</div>
+          <div class="cell-out">
+            <div class="chart">
+              <div class="chart-title">Edad por supervivencia · boxplot</div>
+              <svg viewBox="0 0 600 260">
+                <line x1="80" y1="220" x2="580" y2="220" stroke="#0F1B4D" stroke-width="1"/>
+                <line x1="80" y1="220" x2="80" y2="20" stroke="#0F1B4D" stroke-width="1"/>
+                <text x="70" y="225" font-size="10" fill="#6B6B7C" font-family="JetBrains Mono" text-anchor="end">0</text>
+                <text x="70" y="125" font-size="10" fill="#6B6B7C" font-family="JetBrains Mono" text-anchor="end">40</text>
+                <text x="70" y="30" font-size="10" fill="#6B6B7C" font-family="JetBrains Mono" text-anchor="end">80</text>
+
+                <!-- Box no superviviente -->
+                <line x1="200" y1="50" x2="200" y2="220" stroke="#0F1B4D" stroke-width="1"/>
+                <rect x="160" y="105" width="80" height="70" fill="#C8453F" opacity="0.5" stroke="#0F1B4D"/>
+                <line x1="160" y1="148" x2="240" y2="148" stroke="#0F1B4D" stroke-width="2"/>
+                <line x1="180" y1="50" x2="220" y2="50" stroke="#0F1B4D" stroke-width="0.8"/>
+                <line x1="180" y1="220" x2="220" y2="220" stroke="#0F1B4D" stroke-width="0.8"/>
+                <circle cx="200" cy="35" r="2" fill="#0F1B4D"/>
+                <circle cx="200" cy="40" r="2" fill="#0F1B4D"/>
+                <text x="200" y="245" font-size="13" fill="#0F1B4D" font-family="Cormorant Garamond" text-anchor="middle">No sobrevive</text>
+
+                <!-- Box superviviente -->
+                <line x1="420" y1="60" x2="420" y2="220" stroke="#0F1B4D" stroke-width="1"/>
+                <rect x="380" y="115" width="80" height="65" fill="#3FA9F5" opacity="0.5" stroke="#0F1B4D"/>
+                <line x1="380" y1="155" x2="460" y2="155" stroke="#0F1B4D" stroke-width="2"/>
+                <line x1="400" y1="60" x2="440" y2="60" stroke="#0F1B4D" stroke-width="0.8"/>
+                <line x1="400" y1="220" x2="440" y2="220" stroke="#0F1B4D" stroke-width="0.8"/>
+                <circle cx="420" cy="40" r="2" fill="#0F1B4D"/>
+                <text x="420" y="245" font-size="13" fill="#0F1B4D" font-family="Cormorant Garamond" text-anchor="middle">Sobrevive</text>
+              </svg>
+            </div>
+            <div class="out-comment">→ Las dos distribuciones son <strong>muy parecidas</strong>. La edad por sí sola no separa bien. Pero ojo a la cola baja: hay más niños supervivientes proporcionalmente. La edad sola no manda; combinada con sexo y clase, sí importa.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CELDA MD -->
+      <div class="cell">
+        <div class="cell-md">
+          <h5>14 · Correlaciones · matriz numérica</h5>
+          <p>Cruzamos todas las variables numéricas a la vez. La correlación va de −1 (relación inversa total) a +1 (relación directa total). 0 significa sin relación lineal.</p>
+        </div>
+      </div>
+
+      <div class="cell">
+        <div class="cell-code-wrap">
+          <div class="cell-gutter">In [14]:</div>
+          <div class="cell-code">df.select_dtypes(include=<span class="str">"number"</span>).corr().round(<span class="num">2</span>)</div>
+        </div>
+        <div class="cell-out-wrap">
+          <div class="cell-out-gutter">Out [14]:</div>
+          <div class="cell-out">
+            <table class="out-table">
+              <thead><tr><th></th><th>Survived</th><th>Pclass</th><th>Age</th><th>SibSp</th><th>Parch</th><th>Fare</th></tr></thead>
+              <tbody>
+                <tr><td class="idx">Survived</td><td>1.00</td><td>−0.34</td><td>−0.08</td><td>−0.04</td><td>0.08</td><td>0.26</td></tr>
+                <tr><td class="idx">Pclass</td><td>−0.34</td><td>1.00</td><td>−0.37</td><td>0.08</td><td>0.02</td><td>−0.55</td></tr>
+                <tr><td class="idx">Age</td><td>−0.08</td><td>−0.37</td><td>1.00</td><td>−0.31</td><td>−0.19</td><td>0.10</td></tr>
+                <tr><td class="idx">SibSp</td><td>−0.04</td><td>0.08</td><td>−0.31</td><td>1.00</td><td>0.41</td><td>0.16</td></tr>
+                <tr><td class="idx">Parch</td><td>0.08</td><td>0.02</td><td>−0.19</td><td>0.41</td><td>1.00</td><td>0.22</td></tr>
+                <tr><td class="idx">Fare</td><td>0.26</td><td>−0.55</td><td>0.10</td><td>0.16</td><td>0.22</td><td>1.00</td></tr>
+              </tbody>
+            </table>
+            <div class="out-comment">→ <strong>Pclass vs Survived = −0.34</strong>: a peor clase, menos supervivencia. <strong>Fare vs Survived = +0.26</strong>: pagar más se asocia con sobrevivir. <strong>Pclass vs Fare = −0.55</strong>: las dos columnas miden algo parecido (correlación alta entre features = posible redundancia).</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CELDA MD -->
+      <div class="cell">
+        <div class="cell-md">
+          <h5>15 · Detección de outliers en Fare</h5>
+          <p>El boxplot de una sola variable es ideal para detectar valores extremos.</p>
+        </div>
+      </div>
+
+      <div class="cell">
+        <div class="cell-code-wrap">
+          <div class="cell-gutter">In [15]:</div>
+          <div class="cell-code">sns.boxplot(x=df[<span class="str">"Fare"</span>], color=<span class="str">"#3FA9F5"</span>)
+plt.title(<span class="str">"Tarifas pagadas (Fare)"</span>)
+plt.show()</div>
+        </div>
+        <div class="cell-out-wrap">
+          <div class="cell-out-gutter">Out [15]:</div>
+          <div class="cell-out">
+            <div class="chart">
+              <div class="chart-title">Fare · boxplot horizontal</div>
+              <svg viewBox="0 0 600 140">
+                <line x1="40" y1="110" x2="580" y2="110" stroke="#0F1B4D" stroke-width="1"/>
+                <line x1="40" y1="105" x2="40" y2="115" stroke="#0F1B4D"/>
+                <text x="40" y="128" font-size="10" fill="#6B6B7C" font-family="JetBrains Mono" text-anchor="middle">0</text>
+                <line x1="180" y1="105" x2="180" y2="115" stroke="#0F1B4D"/>
+                <text x="180" y="128" font-size="10" fill="#6B6B7C" font-family="JetBrains Mono" text-anchor="middle">100</text>
+                <line x1="320" y1="105" x2="320" y2="115" stroke="#0F1B4D"/>
+                <text x="320" y="128" font-size="10" fill="#6B6B7C" font-family="JetBrains Mono" text-anchor="middle">200</text>
+                <line x1="460" y1="105" x2="460" y2="115" stroke="#0F1B4D"/>
+                <text x="460" y="128" font-size="10" fill="#6B6B7C" font-family="JetBrains Mono" text-anchor="middle">400</text>
+
+                <line x1="40" y1="60" x2="80" y2="60" stroke="#0F1B4D" stroke-width="1"/>
+                <rect x="50" y="35" width="65" height="50" fill="#3FA9F5" opacity="0.6" stroke="#0F1B4D"/>
+                <line x1="60" y1="35" x2="60" y2="85" stroke="#0F1B4D" stroke-width="2"/>
+                <line x1="115" y1="60" x2="180" y2="60" stroke="#0F1B4D" stroke-width="1"/>
+                <!-- outliers -->
+                <circle cx="200" cy="60" r="3" fill="#C8453F"/>
+                <circle cx="240" cy="60" r="3" fill="#C8453F"/>
+                <circle cx="270" cy="60" r="3" fill="#C8453F"/>
+                <circle cx="320" cy="60" r="3" fill="#C8453F"/>
+                <circle cx="360" cy="60" r="3" fill="#C8453F"/>
+                <circle cx="380" cy="60" r="3" fill="#C8453F"/>
+                <circle cx="430" cy="60" r="3" fill="#C8453F"/>
+                <circle cx="535" cy="60" r="4" fill="#C8453F" stroke="#0F1B4D"/>
+                <text x="535" y="48" font-size="10" fill="#C8453F" font-family="JetBrains Mono" text-anchor="middle">512$ →</text>
+              </svg>
+            </div>
+            <div class="out-comment">→ La caja está concentrada bajo 50$, pero hay <strong>varios outliers extremos</strong>, llegando a 512$. ¿Son errores? No: corresponden a billetes de lujo de primera clase. Outliers <strong>reales</strong>, no errores. No los eliminamos.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CELDA MD -->
+      <div class="cell">
+        <div class="cell-md">
+          <h5>16 · Conclusiones del EDA</h5>
+          <p>Resumimos los hallazgos. Esto es lo que el científico de datos lleva a la siguiente fase del proyecto.</p>
+        </div>
+      </div>
+
+      <div class="cell">
+        <div class="cell-code-wrap">
+          <div class="cell-gutter">In [16]:</div>
+          <div class="cell-code"><span class="com"># --- Resumen de hallazgos ---</span>
+<span class="com"># 1. Dataset: 891 filas, 12 columnas. Pequeño y manejable.</span>
+<span class="com"># 2. Target Survived (38% positivos): desbalanceo moderado.</span>
+<span class="com"># 3. Nulos: Cabin (77%, eliminar), Age (20%, imputar), Embarked (2 filas).</span>
+<span class="com"># 4. Variables más predictivas:</span>
+<span class="com">#       Sex   (mujeres 74% vs hombres 19%)</span>
+<span class="com">#       Pclass (1ª clase 63% vs 3ª 24%)</span>
+<span class="com">#       Fare   (correlación +0.26 con Survived)</span>
+<span class="com"># 5. Edad por sí sola no discrimina, pero los niños sí sobreviven más.</span>
+<span class="com"># 6. Outliers en Fare son reales (billetes de lujo), no eliminar.</span>
+<span class="com"># 7. Pclass y Fare están correlacionadas (-0.55) → posible redundancia.</span>
+
+<span class="kw">print</span>(<span class="str">"EDA completado. Siguiente paso: limpieza + feature engineering."</span>)</div>
+        </div>
+        <div class="cell-out-wrap">
+          <div class="cell-out-gutter">Out [16]:</div>
+          <div class="cell-out">
+<pre>EDA completado. Siguiente paso: limpieza + feature engineering.</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout good" style="margin-top:32px;">
+      <div class="title">LO QUE NOS LLEVAMOS</div>
+      <p>El EDA no «entrena» nada. Pero después de él, sabemos: qué columnas usar, cuáles tirar, qué imputar, cómo de balanceado está el problema, qué hipótesis seguir. <strong>Sin esa foto, modelar es ir a ciegas</strong>.</p>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- PARTE 9 · COMPROBACIÓN -->
+  <!-- ============================================================ -->
+  <section id="parte-9">
+    <div class="section-tag">PARTE IX · COMPROBACIÓN</div>
+    <h2>¿Lo has <em>interiorizado</em>?</h2>
+    <p class="lead">Cinco preguntas rápidas, una sola respuesta correcta cada una. Ideal para usar en clase.</p>
+
+    <div class="check" data-q="1" data-correct="b">
+      <h4>1. ¿Cuál es el primer comando que sueles ejecutar al cargar un dataset?</h4>
+      <div class="q-options">
+        <button class="q-opt" data-i="a">df.corr()</button>
+        <button class="q-opt" data-i="b">df.head()</button>
+        <button class="q-opt" data-i="c">df.dropna()</button>
+        <button class="q-opt" data-i="d">model.fit(df)</button>
+      </div>
+      <div class="q-fb"></div>
+    </div>
+
+    <div class="check" data-q="2" data-correct="c">
+      <h4>2. Una columna tiene 80% de valores nulos. ¿Qué decisión es la más razonable por defecto?</h4>
+      <div class="q-options">
+        <button class="q-opt" data-i="a">Imputar con la media</button>
+        <button class="q-opt" data-i="b">Imputar con cero</button>
+        <button class="q-opt" data-i="c">Eliminar la columna</button>
+        <button class="q-opt" data-i="d">Eliminar todas las filas con nulo</button>
+      </div>
+      <div class="q-fb"></div>
+    </div>
+
+    <div class="check" data-q="3" data-correct="a">
+      <h4>3. Quieres comparar la edad media entre supervivientes y no supervivientes. ¿Qué gráfico eliges?</h4>
+      <div class="q-options">
+        <button class="q-opt" data-i="a">Boxplot</button>
+        <button class="q-opt" data-i="b">Heatmap</button>
+        <button class="q-opt" data-i="c">Pie chart</button>
+        <button class="q-opt" data-i="d">Histograma simple</button>
+      </div>
+      <div class="q-fb"></div>
+    </div>
+
+    <div class="check" data-q="4" data-correct="d">
+      <h4>4. Encuentras que dos features tienen correlación de 0.95. ¿Qué interpretación es correcta?</h4>
+      <div class="q-options">
+        <button class="q-opt" data-i="a">Una causa la otra</button>
+        <button class="q-opt" data-i="b">Son independientes</button>
+        <button class="q-opt" data-i="c">Hay que eliminar la variable target</button>
+        <button class="q-opt" data-i="d">Posible redundancia: aportan información parecida</button>
+      </div>
+      <div class="q-fb"></div>
+    </div>
+
+    <div class="check" data-q="5" data-correct="b">
+      <h4>5. Tu target tiene 99% de clase 0 y 1% de clase 1. ¿Qué problema deberías marcar?</h4>
+      <div class="q-options">
+        <button class="q-opt" data-i="a">Demasiados outliers</button>
+        <button class="q-opt" data-i="b">Desbalanceo grave de clases</button>
+        <button class="q-opt" data-i="c">Falta de variables</button>
+        <button class="q-opt" data-i="d">Multicolinealidad</button>
+      </div>
+      <div class="q-fb"></div>
+    </div>
+  </section>
+
+  <footer>
+    <span>UNIR · ESTRATEGIA DEL DATO · TEMA 02</span>
+    <span>ARTEFACTO 02 / 03</span>
+  </footer>
+
+</div>
+
+<script>
+  // ===== Comprobación final =====
+  const feedbacks = {
+    1: { b: "Correcto. .head() es la primera mirada — confirma que los datos cargaron bien y te da un mapa mental.",
+         a: "df.corr() es útil más adelante, no nada más cargar. Primero hay que ver qué hay.",
+         c: "dropna() elimina nulos. Pero antes hay que SABER si los hay y dónde.",
+         d: "Entrenar antes de explorar es exactamente lo que este artefacto trata de evitar." },
+    2: { c: "Correcto. Con 80% nulos la columna apenas aporta y suele ser mejor descartarla. Si la información es crítica, conviene buscar otra fuente.",
+         a: "Imputar el 80% con la media generaría una columna casi constante, sin información real.",
+         b: "Imputar con cero confunde el modelo: trata «nulo» como un valor real y muy concreto.",
+         d: "Eliminar todas las filas con nulo en esa columna borraría el 80% del dataset." },
+    3: { a: "Correcto. El boxplot compara distribuciones de una variable numérica entre dos o más grupos categóricos. Ideal para esto.",
+         b: "El heatmap es para correlaciones entre muchas variables numéricas, no para comparar grupos.",
+         c: "El pie chart sirve para proporciones de una sola variable categórica. No compara distribuciones.",
+         d: "Un histograma simple muestra una variable; aquí queremos compararla por grupo." },
+    4: { d: "Correcto. Una correlación de 0.95 sugiere que las dos variables miden cosas muy parecidas. Suele convenir conservar solo una.",
+         a: "Correlación no implica causalidad — uno de los principios fundamentales de la estadística.",
+         b: "Lo opuesto: correlación 0.95 indica una relación muy fuerte.",
+         c: "El target no se elimina por una correlación entre features." },
+    5: { b: "Correcto. Si una clase es solo el 1%, el modelo «naive» que dice siempre la clase 0 acierta el 99%. Hay que detectarlo y aplicar técnicas (oversampling, métricas adecuadas).",
+         a: "Outliers son valores extremos, no proporciones de clase.",
+         c: "El número de variables no se mide así.",
+         d: "La multicolinealidad es entre features; aquí hablamos del target." }
+  };
+
+  document.querySelectorAll('.check').forEach(check => {
+    const correct = check.dataset.correct;
+    const fb = check.querySelector('.q-fb');
+    check.querySelectorAll('.q-opt').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const chosen = btn.dataset.i;
+        check.querySelectorAll('.q-opt').forEach(b => { b.disabled = true; });
+        if (chosen === correct) {
+          btn.classList.add('ok');
+        } else {
+          btn.classList.add('ko');
+          check.querySelector(`[data-i="${correct}"]`).classList.add('ok');
+        }
+        const qNum = parseInt(check.dataset.q);
+        fb.textContent = feedbacks[qNum][chosen] || "";
+        fb.classList.add('show');
+      });
+    });
+  });
+</script>
+</body>
+</html>

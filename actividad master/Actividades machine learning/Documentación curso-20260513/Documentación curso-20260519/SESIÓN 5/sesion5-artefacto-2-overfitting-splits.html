@@ -1,0 +1,511 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Sesión 5 · Sobreajuste, particiones y validación cruzada</title>
+<style>
+  :root{
+    --crema:#F2EFE6;
+    --tinta:#0E1B4D;
+    --tinta-2:#1B2A6B;
+    --azul:#3FA9F5;
+    --azul-2:#1F8AD9;
+    --rojo:#D85C3E;
+    --verde:#2E9E6E;
+    --amber:#E0A23A;
+    --gris:#7A7A7A;
+    --gris-2:#C9C5B8;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--crema);color:var(--tinta);font-family:Georgia,'Times New Roman',serif;line-height:1.55}
+  .mono{font-family:'SF Mono',Menlo,Monaco,Consolas,monospace}
+  .upper{text-transform:uppercase;letter-spacing:.18em;font-weight:600}
+
+  .wrap{max-width:1240px;margin:0 auto;padding:48px 32px 96px}
+  header.hero{padding:64px 0 48px;border-bottom:1px solid var(--gris-2)}
+  header .tag{font-size:11px;color:var(--azul-2)}
+  header h1{font-size:60px;line-height:1.05;margin:24px 0 16px;font-weight:700;letter-spacing:-.02em}
+  header h1 em{font-style:italic;color:var(--azul-2);font-weight:400}
+  header p.lead{font-size:19px;color:var(--tinta-2);max-width:780px;margin:0}
+
+  section{padding:56px 0;border-bottom:1px solid var(--gris-2)}
+  section .step-tag{font-size:11px;color:var(--azul-2)}
+  section h2{font-size:42px;margin:12px 0 16px;font-weight:700;letter-spacing:-.01em;line-height:1.1}
+  section h2 em{font-style:italic;color:var(--azul-2);font-weight:400}
+  section p.intro{font-size:17px;color:var(--tinta-2);max-width:880px;margin:0 0 24px}
+
+  .card{background:#fff;border:1px solid var(--gris-2);border-radius:10px;padding:22px}
+
+  /* Empollon vs generalizador */
+  .compare2{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px}
+  .compare2 .c{background:#fff;border:1px solid var(--gris-2);border-radius:8px;padding:22px;border-top:4px solid var(--gris-2)}
+  .compare2 .c.bad{border-top-color:var(--rojo)}
+  .compare2 .c.good{border-top-color:var(--verde)}
+  .compare2 .c .k{font-size:11px;color:var(--gris);text-transform:uppercase;letter-spacing:.12em}
+  .compare2 .c h3{margin:8px 0 8px;font-size:22px}
+  .compare2 .c.bad h3{color:var(--rojo)}
+  .compare2 .c.good h3{color:var(--verde)}
+  .compare2 .c .res{font-family:'SF Mono',monospace;background:#FAF8F1;padding:10px;border-radius:6px;font-size:13px;margin-top:14px}
+
+  /* Lab overfitting */
+  .lab{display:grid;grid-template-columns:1fr 1.2fr;gap:24px;margin-top:18px}
+  .grades{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:14px 0}
+  .gr{padding:12px;background:#fff;border:1px solid var(--gris-2);border-radius:6px;cursor:pointer;font-family:inherit;color:var(--tinta);font-size:13px;text-align:left;transition:.15s}
+  .gr:hover{border-color:var(--azul)}
+  .gr.active{background:var(--tinta);color:#fff;border-color:var(--tinta)}
+  .gr .t{font-weight:700;font-family:'SF Mono',monospace}
+  .gr .d{font-size:11px;opacity:.85;margin-top:2px}
+
+  svg.chart{width:100%;height:380px;display:block;background:#FAF8F1;border-radius:8px}
+
+  .stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:14px;font-family:'SF Mono',monospace;font-size:12px}
+  .stat{background:#FAF8F1;padding:12px;border-radius:6px;text-align:center}
+  .stat .l{font-size:10px;color:var(--gris);text-transform:uppercase;letter-spacing:.12em}
+  .stat .v{font-size:20px;font-weight:700;margin-top:2px}
+  .stat .v.bad{color:var(--rojo)}
+  .stat .v.good{color:var(--verde)}
+  .stat .v.warn{color:var(--amber)}
+
+  .legend{display:flex;gap:16px;margin-top:10px;flex-wrap:wrap;font-size:13px;color:var(--tinta-2)}
+  .legend span{display:inline-flex;align-items:center;gap:6px}
+  .legend i{width:14px;height:4px;border-radius:2px;display:inline-block}
+  .legend i.dot{width:10px;height:10px;border-radius:50%}
+
+  /* Split bar */
+  .splitbar{display:flex;width:100%;border-radius:8px;overflow:hidden;font-family:'SF Mono',monospace;font-size:13px;color:#fff;font-weight:600;margin-top:18px;height:64px;line-height:64px;text-align:center}
+  .splitbar .train{background:var(--tinta)}
+  .splitbar .val{background:var(--azul-2)}
+  .splitbar .test{background:var(--azul)}
+
+  /* K-fold */
+  .kfold-table{width:100%;border-collapse:separate;border-spacing:4px;margin-top:14px;font-family:'SF Mono',monospace;font-size:11px}
+  .kfold-table td{padding:14px 8px;text-align:center;color:#fff;border-radius:4px;font-weight:600}
+  .kfold-table td.train{background:var(--tinta)}
+  .kfold-table td.test{background:var(--azul)}
+  .kfold-table td.lbl{background:transparent;color:var(--tinta);text-align:left;width:80px;font-weight:700}
+  .kfold-table td.score{background:transparent;color:var(--tinta);text-align:left;padding-left:14px;width:120px;font-weight:600}
+  .kfold-table tr.active td.train, .kfold-table tr.active td.test{box-shadow:0 0 0 3px var(--amber)}
+
+  .kfold-final{margin-top:18px;padding:18px;background:var(--tinta);color:var(--crema);border-radius:8px;font-family:'SF Mono',monospace;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+  .kfold-final .l{color:#9DD2F8;font-size:11px;text-transform:uppercase;letter-spacing:.1em}
+  .kfold-final .v{font-size:32px;font-weight:700;font-family:Georgia,serif}
+
+  .btn{appearance:none;border:1px solid var(--tinta);background:transparent;color:var(--tinta);padding:10px 18px;font-family:inherit;font-size:14px;cursor:pointer;border-radius:4px;font-weight:600;transition:.15s}
+  .btn:hover{background:var(--tinta);color:var(--crema)}
+  .btn.primary{background:var(--azul-2);color:#fff;border-color:var(--azul-2)}
+  .btn.primary:hover{background:var(--tinta);border-color:var(--tinta)}
+  .controls{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+
+  pre.code{background:#0a0e2c;color:#e8e8e8;padding:16px 18px;border-radius:8px;font-size:12px;line-height:1.6;overflow-x:auto;margin:14px 0 0;font-family:'SF Mono',monospace}
+  pre.code .kw{color:#c084fc}
+  pre.code .fn{color:#fbbf24}
+  pre.code .st{color:#86efac}
+  pre.code .nm{color:#f59e0b}
+  pre.code .cm{color:#7a8aa8;font-style:italic}
+
+  .note{background:#E5F1FB;border-left:4px solid var(--azul);padding:14px 18px;border-radius:4px;margin-top:18px;font-size:14px;color:var(--tinta-2)}
+  .note b{color:var(--tinta)}
+  .tip{background:#E0F4E8;border-left-color:var(--verde)}
+  .warning{background:#FBE5DD;border-left-color:var(--rojo)}
+
+  .slider-row{display:flex;align-items:center;justify-content:space-between;font-family:'SF Mono',monospace;font-size:13px;margin-bottom:4px;margin-top:14px}
+  input[type=range]{width:100%;accent-color:var(--azul-2)}
+
+  @media (max-width:880px){
+    header h1{font-size:42px}
+    section h2{font-size:32px}
+    .compare2,.lab,.grades,.stats{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <div class="upper tag">Tema 5 · Sesión 05 · Artefacto 2</div>
+  <h1>El sobreajuste y el <em>jurado rotativo</em>.</h1>
+  <p class="lead">Un modelo sobreajustado <em>memoriza</em> los datos de entrenamiento al milímetro, pero se hunde con datos nuevos. Aprendió el libro, no la asignatura. La defensa: partir el dataset en train, val y test, y — cuando los datos escasean — turnar el examen entre todos los trozos con <b>k-fold cross-validation</b>. Aquí lo ves en directo.</p>
+</header>
+
+<!-- Concepto -->
+<section style="border-bottom:none">
+  <div class="upper step-tag">El enemigo número uno</div>
+  <h2>El empollón <em>vs</em> el que entiende.</h2>
+  <p class="intro">Imagina dos alumnos. Uno se sabe los ejercicios del libro al dedillo, palabra por palabra. El otro no se sabe cada ejercicio, pero ha entendido el concepto. En el examen les ponen problemas <em>parecidos pero distintos</em>.</p>
+  <div class="compare2">
+    <div class="c bad">
+      <div class="upper k">El empollón · overfitting</div>
+      <h3>Sobreajuste</h3>
+      <p style="color:var(--tinta-2);margin:0">Memoriza palabra por palabra. En el examen le ponen un problema parecido y se queda en blanco.</p>
+      <div class="res"><b>Train:</b> 100% · <b>Test:</b> 60%<br/><span style="color:var(--rojo)">→ desastre en producción</span></div>
+    </div>
+    <div class="c good">
+      <div class="upper k">El que entiende · generaliza</div>
+      <h3>Generalización</h3>
+      <p style="color:var(--tinta-2);margin:0">No se sabe cada ejercicio, pero ha captado la idea. En el examen razona y resuelve cualquier variante.</p>
+      <div class="res"><b>Train:</b> 85% · <b>Test:</b> 84%<br/><span style="color:var(--verde)">→ funciona en la vida real</span></div>
+    </div>
+  </div>
+  <div class="note warning"><b>Cómo detectarlo:</b> si el modelo acierta casi todo en entrenamiento pero falla en datos nuevos, tienes sobreajuste. Por eso <b>siempre</b> hay que reservar datos que el modelo nunca haya visto.</div>
+</section>
+
+<!-- Lab Overfitting -->
+<section style="border-bottom:none">
+  <div class="upper step-tag">Demo interactiva · regresión polinómica</div>
+  <h2>Tres modelos, los <em>mismos datos</em>.</h2>
+  <p class="intro">El mismo dataset, distinto grado del polinomio. Mira qué pasa con el R² en train y en test. ¿Cuál generaliza mejor?</p>
+
+  <div class="lab">
+    <div>
+      <div class="card">
+        <div class="upper step-tag">Complejidad del modelo</div>
+        <div class="grades" id="grades">
+          <button class="gr active" data-id="1"><div class="t">grado 1</div><div class="d">Recta · underfitting</div></button>
+          <button class="gr" data-id="3"><div class="t">grado 3</div><div class="d">Curva suave · bien</div></button>
+          <button class="gr" data-id="15"><div class="t">grado 15</div><div class="d">Serpentea · overfitting</div></button>
+        </div>
+
+        <div class="slider-row"><span>Tamaño del train (%)</span><span><b id="tr-val">70</b></span></div>
+        <input type="range" id="tr-slider" min="30" max="90" step="5" value="70" />
+
+        <div class="stats">
+          <div class="stat"><div class="l">R² train</div><div class="v" id="r2-tr">—</div></div>
+          <div class="stat"><div class="l">R² test</div><div class="v" id="r2-te">—</div></div>
+        </div>
+
+        <pre class="code" id="over-code"></pre>
+
+        <div class="note" id="over-note" style="margin-top:14px"></div>
+      </div>
+    </div>
+
+    <div>
+      <div class="card">
+        <div class="upper step-tag">Función real vs predicción</div>
+        <svg class="chart" id="over-chart" viewBox="0 0 700 380"></svg>
+        <div class="legend">
+          <span><i class="dot" style="background:var(--tinta)"></i>train · el modelo lo ve</span>
+          <span><i class="dot" style="background:var(--azul)"></i>test · escondido durante fit</span>
+          <span><i style="background:var(--rojo);height:3px;width:18px"></i>predicción del modelo</span>
+          <span><i style="background:var(--gris);height:3px;width:18px"></i>función real</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Particiones -->
+<section style="border-bottom:none">
+  <div class="upper step-tag">Particiones · La regla de oro</div>
+  <h2>Nunca examines con las <em>mismas preguntas</em> con las que estudiaste.</h2>
+  <p class="intro">Partes el dataset en dos (o tres) trozos: con uno entrenas, con el otro examinas. El modelo nunca debe «ver» el conjunto de test hasta el final.</p>
+
+  <div class="upper step-tag" style="margin-top:24px">Reparto típico · 60 / 20 / 20</div>
+  <div class="splitbar">
+    <div class="train" style="width:60%">TRAIN · 60% · LAS CLASES</div>
+    <div class="val" style="width:20%">VAL · 20%</div>
+    <div class="test" style="width:20%">TEST · 20%</div>
+  </div>
+
+  <div class="compare2" style="margin-top:18px">
+    <div class="card" style="border-left:4px solid var(--tinta)">
+      <div class="upper step-tag">Train · 60%</div>
+      <h4 style="margin:6px 0 6px">Los apuntes del curso</h4>
+      <p style="font-size:14px;color:var(--tinta-2)">El modelo lo ve, aprende patrones, ajusta sus pesos.</p>
+    </div>
+    <div class="card" style="border-left:4px solid var(--azul-2)">
+      <div class="upper step-tag">Val · 20%</div>
+      <h4 style="margin:6px 0 6px">Los simulacros</h4>
+      <p style="font-size:14px;color:var(--tinta-2)">Exámenes de prueba durante el curso. Si suspendes, ajustas la forma de estudiar (hiperparámetros).</p>
+    </div>
+  </div>
+  <div class="card" style="border-left:4px solid var(--azul);margin-top:14px">
+    <div class="upper step-tag">Test · 20%</div>
+    <h4 style="margin:6px 0 6px">El examen oficial</h4>
+    <p style="font-size:14px;color:var(--tinta-2)">Una sola oportunidad. No se toca hasta el final. Si el modelo «ve» el test mientras entrena, los resultados están <em>inflados</em>.</p>
+  </div>
+
+<pre class="code"><span class="kw">from</span> sklearn.model_selection <span class="kw">import</span> train_test_split
+
+X_train, X_test, y_train, y_test = <span class="fn">train_test_split</span>(
+    X, y,
+    test_size=<span class="nm">0.3</span>,        <span class="cm"># 30% al test</span>
+    random_state=<span class="nm">42</span>,      <span class="cm"># reproducibilidad</span>
+    stratify=y             <span class="cm"># mantener proporciones</span>
+)</pre>
+
+  <div class="note warning"><b>Sin stratify</b>, podrías acabar con un test que es 100% no-baja por azar. El modelo nunca sería evaluado sobre la clase que de verdad importa.</div>
+</section>
+
+<!-- K-fold -->
+<section style="border-bottom:none">
+  <div class="upper step-tag">Validación cruzada · k-fold</div>
+  <h2>El <em>jurado rotativo</em>.</h2>
+  <p class="intro">Si tienes pocos datos, partirlos en train/test es un lujo. La validación cruzada <b>k-fold</b> los aprovecha al máximo: cada trozo hace de test una vez. Tienes 5 jueces — en cada ronda, uno actúa de crítico y los otros cuatro entrenan al modelo. Al final promedias las 5 puntuaciones.</p>
+
+  <div class="card">
+    <div class="upper step-tag">5-fold cross-validation · cada iteración rota el test</div>
+    <table class="kfold-table" id="kfold-table"></table>
+
+    <div class="controls">
+      <button class="btn primary" id="kfold-play">▶ Ejecutar cross_val_score</button>
+      <button class="btn" id="kfold-reset">↺ Reset</button>
+    </div>
+
+    <div class="kfold-final">
+      <div><div class="l">Promedio</div><div class="v" id="kf-mean">—</div></div>
+      <div><div class="l">Desv. estándar</div><div class="v" id="kf-std">—</div></div>
+      <div><div class="l">Veredicto</div><div class="v" id="kf-verdict" style="font-style:italic">esperando…</div></div>
+    </div>
+
+<pre class="code"><span class="kw">from</span> sklearn.model_selection <span class="kw">import</span> cross_val_score
+<span class="kw">from</span> sklearn.svm <span class="kw">import</span> LinearSVC
+
+model = <span class="fn">LinearSVC</span>(random_state=<span class="nm">42</span>)
+scores = <span class="fn">cross_val_score</span>(model, X, y, cv=<span class="nm">5</span>)
+
+<span class="fn">print</span>(scores)          <span class="cm"># [0.97, 0.93, 0.97, 0.97, 1.00]</span>
+<span class="fn">print</span>(scores.<span class="fn">mean</span>())   <span class="cm"># 0.968</span></pre>
+
+    <div class="note tip" style="margin-top:18px"><b>Qué te dice esto:</b> si las 5 puntuaciones son parecidas, el resultado es estable. Si una fuera 60% y otra 95%, sospechosísimo. Variantes útiles: <b>StratifiedKFold</b> para clasificación · <b>TimeSeriesSplit</b> para series temporales (¡nunca mezclar pasado y futuro!).</div>
+  </div>
+</section>
+
+</div>
+
+<script>
+/* ============ Demo overfitting con polinomios ============ */
+/* Datos sintéticos: y = sin(x) + ruido */
+const N_POINTS = 30;
+const DATA = (function(){
+  function seed(s){return function(){s=(s*9301+49297)%233280;return s/233280;};}
+  const r = seed(42);
+  const arr = [];
+  for(let i=0;i<N_POINTS;i++){
+    const x = -3 + 6*i/(N_POINTS-1);
+    const noise = (r()-.5)*0.6;
+    arr.push({x:x, y:Math.sin(x*1.2) + noise});
+  }
+  return arr;
+})();
+
+function trueFn(x){ return Math.sin(x*1.2); }
+
+/* Ajustar polinomio de grado d por mínimos cuadrados */
+function polyFit(points, d){
+  // Resolver (X^T X) w = X^T y  con X = matriz de Vandermonde
+  const n = points.length;
+  const k = d+1;
+  // X[i][j] = points[i].x^j
+  const X = [];
+  for(let i=0;i<n;i++){
+    const row=[];
+    for(let j=0;j<k;j++) row.push(Math.pow(points[i].x, j));
+    X.push(row);
+  }
+  // XtX (k×k) y XtY (k)
+  const XtX = [];
+  for(let a=0;a<k;a++){
+    const row=[];
+    for(let b=0;b<k;b++){
+      let s=0;
+      for(let i=0;i<n;i++) s += X[i][a]*X[i][b];
+      row.push(s);
+    }
+    XtX.push(row);
+  }
+  const XtY = [];
+  for(let a=0;a<k;a++){
+    let s=0;
+    for(let i=0;i<n;i++) s += X[i][a]*points[i].y;
+    XtY.push(s);
+  }
+  // Resolver con Gauss-Jordan + ridge mínimo para estabilidad
+  const lambda = 1e-6;
+  for(let i=0;i<k;i++) XtX[i][i] += lambda;
+  // Aumentada
+  const A = XtX.map(function(row,i){ return row.concat([XtY[i]]); });
+  for(let i=0;i<k;i++){
+    // pivot
+    let maxRow=i;
+    for(let r=i+1;r<k;r++) if(Math.abs(A[r][i])>Math.abs(A[maxRow][i])) maxRow=r;
+    [A[i],A[maxRow]] = [A[maxRow],A[i]];
+    const piv = A[i][i] || 1e-9;
+    for(let j=i;j<=k;j++) A[i][j] /= piv;
+    for(let r=0;r<k;r++) if(r!==i){
+      const f = A[r][i];
+      for(let j=i;j<=k;j++) A[r][j] -= f*A[i][j];
+    }
+  }
+  return A.map(function(row){return row[k];});
+}
+function polyEval(coef, x){
+  let s=0;
+  for(let i=0;i<coef.length;i++) s += coef[i]*Math.pow(x,i);
+  return s;
+}
+function r2(actual, predicted){
+  const m = actual.reduce(function(a,b){return a+b;},0)/actual.length;
+  const ssRes = actual.reduce(function(s,v,i){return s+(v-predicted[i])*(v-predicted[i]);},0);
+  const ssTot = actual.reduce(function(s,v){return s+(v-m)*(v-m);},0);
+  return 1 - ssRes/(ssTot || 1);
+}
+
+let currentGrade = 1;
+let trainPct = 70;
+
+const OVER_CODE = {
+  1:'<span class="kw">from</span> sklearn.preprocessing <span class="kw">import</span> PolynomialFeatures\n<span class="kw">from</span> sklearn.linear_model <span class="kw">import</span> LinearRegression\n\npoly = <span class="fn">PolynomialFeatures</span>(degree=<span class="nm">1</span>)\nmodel = <span class="fn">LinearRegression</span>()\nmodel.<span class="fn">fit</span>(poly.<span class="fn">fit_transform</span>(X_train), y_train)\n\n<span class="cm"># grado 1 = recta · demasiado simple para sin(x)</span>',
+  3:'poly = <span class="fn">PolynomialFeatures</span>(degree=<span class="nm">3</span>)\nmodel = <span class="fn">LinearRegression</span>()\nmodel.<span class="fn">fit</span>(poly.<span class="fn">fit_transform</span>(X_train), y_train)\n\n<span class="cm"># grado 3 = curva suave · captura la forma</span>',
+  15:'poly = <span class="fn">PolynomialFeatures</span>(degree=<span class="nm">15</span>)\nmodel = <span class="fn">LinearRegression</span>()\nmodel.<span class="fn">fit</span>(poly.<span class="fn">fit_transform</span>(X_train), y_train)\n\n<span class="cm"># grado 15 = serpentea sobre cada punto · OVERFIT</span>'
+};
+
+const OVER_NOTES = {
+  1:{cls:'warning', html:'<b>Grado 1 (underfitting):</b> el modelo es demasiado simple. No puede capturar la forma sinusoidal. R² bajo tanto en train como en test. Aprende muy poco.'},
+  3:{cls:'tip', html:'<b>Grado 3 (justo):</b> captura la forma general. R² train y R² test son <em>parecidos</em>. Generaliza. Este es el objetivo.'},
+  15:{cls:'warning', html:'<b>Grado 15 (overfitting):</b> el modelo serpentea sobre cada punto del train. R² train casi perfecto pero R² test se desploma. El modelo memorizó, no entendió.'}
+};
+
+function renderOver(){
+  const grade = currentGrade;
+  document.getElementById('over-code').innerHTML = OVER_CODE[grade];
+  const nt = OVER_NOTES[grade];
+  const no = document.getElementById('over-note');
+  no.className = 'note ' + (nt.cls||'');
+  no.innerHTML = nt.html;
+  document.querySelectorAll('.gr').forEach(function(b){
+    b.classList.toggle('active', +b.dataset.id===grade);
+  });
+
+  // Split train/test deterministically
+  const shuffled = DATA.map(function(d,i){return Object.assign({},d,{idx:i});});
+  // Mezcla determinista
+  shuffled.sort(function(a,b){return ((a.idx*7+13)%17)-((b.idx*7+13)%17);});
+  const nTrain = Math.round(shuffled.length*trainPct/100);
+  const train = shuffled.slice(0,nTrain);
+  const test = shuffled.slice(nTrain);
+
+  // Fit
+  const coef = polyFit(train, grade);
+  const trPred = train.map(function(p){return polyEval(coef,p.x);});
+  const tePred = test.map(function(p){return polyEval(coef,p.x);});
+  const r2tr = r2(train.map(function(p){return p.y;}), trPred);
+  const r2te = test.length ? r2(test.map(function(p){return p.y;}), tePred) : 0;
+
+  const trEl = document.getElementById('r2-tr');
+  const teEl = document.getElementById('r2-te');
+  trEl.textContent = r2tr.toFixed(3);
+  teEl.textContent = r2te.toFixed(3);
+  // Color
+  trEl.className = 'v ' + (r2tr>0.7?'good':(r2tr>0.4?'warn':'bad'));
+  teEl.className = 'v ' + (r2te>0.7?'good':(r2te>0.4?'warn':'bad'));
+
+  // Render chart
+  const W=700, H=380, P=44;
+  const minX=-3.3, maxX=3.3, minY=-2.0, maxY=2.0;
+  const xfn = function(v){return P+(v-minX)/(maxX-minX)*(W-2*P);};
+  const yfn = function(v){return (H-P)-(v-minY)/(maxY-minY)*(H-2*P);};
+
+  const svg = document.getElementById('over-chart');
+  svg.innerHTML = '';
+  // Axes
+  svg.innerHTML += '<line x1="'+P+'" y1="'+yfn(0)+'" x2="'+(W-P)+'" y2="'+yfn(0)+'" stroke="#C9C5B8" stroke-dasharray="2 2"/>';
+  svg.innerHTML += '<line x1="'+P+'" y1="'+P+'" x2="'+P+'" y2="'+(H-P)+'" stroke="#C9C5B8"/>';
+  svg.innerHTML += '<line x1="'+P+'" y1="'+(H-P)+'" x2="'+(W-P)+'" y2="'+(H-P)+'" stroke="#C9C5B8"/>';
+  // X labels
+  for(let i=-3;i<=3;i++){
+    svg.innerHTML += '<text x="'+xfn(i)+'" y="'+(H-26)+'" font-family="SF Mono" font-size="10" fill="#7A7A7A" text-anchor="middle">'+i+'</text>';
+  }
+  // True function
+  let dTrue='';
+  for(let x=minX; x<=maxX; x+=0.05){
+    const y = trueFn(x);
+    const cx=xfn(x), cy=yfn(y);
+    dTrue += (dTrue===''?'M':'L') + cx + ',' + cy + ' ';
+  }
+  svg.innerHTML += '<path d="'+dTrue+'" stroke="#7A7A7A" stroke-width="1.5" stroke-dasharray="6 4" fill="none"/>';
+  // Predicción
+  let dPred='';
+  for(let x=minX; x<=maxX; x+=0.05){
+    const y = Math.max(-3, Math.min(3, polyEval(coef, x)));
+    const cx=xfn(x), cy=yfn(y);
+    dPred += (dPred===''?'M':'L') + cx + ',' + cy + ' ';
+  }
+  svg.innerHTML += '<path d="'+dPred+'" stroke="#D85C3E" stroke-width="2.5" fill="none"/>';
+
+  // Train points
+  train.forEach(function(p){
+    svg.innerHTML += '<circle cx="'+xfn(p.x)+'" cy="'+yfn(p.y)+'" r="5" fill="#0E1B4D" />';
+  });
+  // Test points
+  test.forEach(function(p){
+    svg.innerHTML += '<circle cx="'+xfn(p.x)+'" cy="'+yfn(p.y)+'" r="5" fill="#3FA9F5" stroke="#fff" stroke-width="1.5" />';
+  });
+}
+
+document.querySelectorAll('.gr').forEach(function(b){
+  b.addEventListener('click', function(){
+    currentGrade = +b.dataset.id;
+    renderOver();
+  });
+});
+document.getElementById('tr-slider').addEventListener('input', function(e){
+  trainPct = +e.target.value;
+  document.getElementById('tr-val').textContent = trainPct;
+  renderOver();
+});
+
+/* ============ K-fold cross-validation ============ */
+const FOLDS = 5;
+const FOLD_SCORES = [0.97, 0.93, 0.97, 0.97, 1.00];
+
+function renderKfold(highlightIdx, runningScores){
+  const tab = document.getElementById('kfold-table');
+  tab.innerHTML = '';
+  for(let f=0;f<FOLDS;f++){
+    let row = '<tr'+(highlightIdx===f?' class="active"':'')+'><td class="lbl">FOLD '+(f+1)+'</td>';
+    for(let i=0;i<FOLDS;i++){
+      if(i===f) row += '<td class="test">TEST</td>';
+      else row += '<td class="train">TRAIN</td>';
+    }
+    const sc = runningScores && f<=highlightIdx ? FOLD_SCORES[f] : null;
+    row += '<td class="score">' + (sc!==null?'score = '+sc.toFixed(2):'—') + '</td>';
+    row += '</tr>';
+    tab.innerHTML += row;
+  }
+}
+function resetKfold(){
+  renderKfold(-1, false);
+  document.getElementById('kf-mean').textContent = '—';
+  document.getElementById('kf-std').textContent = '—';
+  document.getElementById('kf-verdict').textContent = 'esperando…';
+}
+function runKfold(){
+  let i = 0;
+  resetKfold();
+  function tick(){
+    renderKfold(i, true);
+    if(i<FOLDS-1){
+      i++;
+      setTimeout(tick, 500);
+    } else {
+      // Calcular mean y std
+      const m = FOLD_SCORES.reduce(function(a,b){return a+b;},0)/FOLD_SCORES.length;
+      const sd = Math.sqrt(FOLD_SCORES.reduce(function(s,v){return s+(v-m)*(v-m);},0)/FOLD_SCORES.length);
+      document.getElementById('kf-mean').textContent = (m*100).toFixed(1)+'%';
+      document.getElementById('kf-std').textContent = '±'+(sd*100).toFixed(1)+'%';
+      document.getElementById('kf-verdict').textContent = sd<0.05 ? 'modelo estable ✓' : 'inestable ⚠';
+    }
+  }
+  tick();
+}
+document.getElementById('kfold-play').addEventListener('click', runKfold);
+document.getElementById('kfold-reset').addEventListener('click', resetKfold);
+
+/* Init */
+renderOver();
+resetKfold();
+</script>
+</body>
+</html>

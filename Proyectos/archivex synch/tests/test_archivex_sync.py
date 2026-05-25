@@ -64,17 +64,21 @@ class TestCalcGridMetrics:
         assert cell_y > 0
 
     def test_calc_grid_metrics_edge_cases(self, load_module):
-        """Test grid metrics at grid boundaries."""
+        """Test grid metrics at grid boundaries using the loaded CAL values."""
         calc_grid_metrics = load_module.calc_grid_metrics
-        # At grid start (8:00)
+        CAL = load_module.CAL
+
+        # At grid start hour → y_ratio must be 0.0
         _, _, y_ratio_start, _, _ = calc_grid_metrics(
-            wx=0, wy=0, ww=1000, wh=800, hour=8, minute=0
+            wx=0, wy=0, ww=1000, wh=800,
+            hour=CAL["grid_start_h"], minute=0
         )
         assert y_ratio_start == 0.0
 
-        # At grid end (20:00)
+        # At grid end hour → y_ratio must be 1.0
         _, _, y_ratio_end, _, _ = calc_grid_metrics(
-            wx=0, wy=0, ww=1000, wh=800, hour=20, minute=0
+            wx=0, wy=0, ww=1000, wh=800,
+            hour=CAL["grid_end_h"], minute=0
         )
         assert y_ratio_end == 1.0
 

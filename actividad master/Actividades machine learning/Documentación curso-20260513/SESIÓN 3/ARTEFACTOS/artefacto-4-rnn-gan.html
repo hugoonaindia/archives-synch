@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Artefacto 4 · RNN, LSTM y GAN</title>
+<style>
+:root{
+  --crema:#f5f1e8; --crema-2:#ede6d3; --marino:#1a2b4a; --marino-2:#2d4368;
+  --azul:#5b8fb9; --azul-claro:#a8c5e2; --acento:#d4915d;
+  --verde:#6b8e6b; --rojo:#b85450; --texto:#2a2a2a; --gris:#6b6b6b;
+  --gan-gen:#7a3a8c; --gan-disc:#2a6f8c;
+  color-scheme: light;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:Georgia,'Times New Roman',serif;
+  background:var(--crema); color:var(--texto);
+  line-height:1.6;
+}
+.contenedor{max-width:1100px; margin:0 auto; padding:40px 24px}
+header{
+  border-bottom:3px solid var(--marino);
+  padding-bottom:24px; margin-bottom:36px;
+}
+.kicker{
+  font-family:'Helvetica Neue',Arial,sans-serif;
+  font-size:11px; letter-spacing:3px; color:var(--azul);
+  text-transform:uppercase; margin-bottom:8px;
+}
+h1{font-size:42px; color:var(--marino); margin-bottom:8px; font-weight:normal}
+.subtitulo{color:var(--gris); font-size:17px; font-style:italic}
+
+.seccion{
+  background:#fff; border-radius:6px; padding:32px;
+  margin-bottom:28px;
+  box-shadow:0 2px 12px rgba(26,43,74,0.08);
+  border-left:4px solid var(--azul);
+}
+.seccion h2{
+  font-size:26px; color:var(--marino); margin-bottom:14px;
+  font-weight:normal;
+}
+.seccion h3{
+  font-size:17px; color:var(--marino-2); margin:18px 0 10px;
+  font-family:'Helvetica Neue',Arial,sans-serif;
+  letter-spacing:1px; text-transform:uppercase; font-weight:600;
+}
+.seccion p{margin-bottom:12px}
+
+.btn{
+  padding:11px 20px; border:none; cursor:pointer;
+  font-family:'Helvetica Neue',Arial,sans-serif; font-size:13px;
+  border-radius:4px; transition:all 0.2s; font-weight:600;
+  letter-spacing:0.5px;
+}
+.btn-primary{background:var(--acento); color:#fff}
+.btn-primary:hover{background:var(--marino)}
+.btn-secondary{background:var(--marino); color:#fff}
+.btn-secondary:hover{background:var(--marino-2)}
+.btn-outline{background:#fff; color:var(--marino); border:2px solid var(--marino)}
+.btn-outline:hover{background:var(--marino); color:#fff}
+
+/* RNN */
+.rnn-frase{
+  display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px;
+  background:var(--crema-2); padding:14px; border-radius:6px;
+}
+.tok{
+  padding:8px 14px; background:#fff; border-radius:4px;
+  font-family:Georgia,serif; font-size:15px; color:var(--gris);
+  border:2px solid #ddd; transition:all 0.3s;
+}
+.tok.activo{
+  background:var(--marino); color:#fff; border-color:var(--marino);
+  transform:scale(1.05);
+}
+.tok.procesado{
+  background:#cee0ed; color:var(--marino); border-color:var(--azul);
+}
+
+.estado-oculto{
+  background:var(--crema-2); padding:18px; border-radius:6px;
+  margin-bottom:14px;
+}
+.estado-oculto h3{margin-top:0}
+.estado-bars{
+  display:flex; gap:6px; align-items:flex-end;
+  height:140px; background:#fff; padding:10px;
+  border-radius:6px; margin-top:8px;
+}
+.bar{
+  flex:1; background:linear-gradient(to top, var(--azul), var(--azul-claro));
+  border-radius:3px 3px 0 0;
+  min-height:4px;
+  transition:height 0.4s ease;
+  position:relative;
+}
+.bar::after{
+  content: attr(data-val);
+  position:absolute; top:-20px; left:50%; transform:translateX(-50%);
+  font-family:'Courier New',monospace; font-size:11px;
+  color:var(--marino); font-weight:bold;
+}
+
+.prediccion{
+  background:var(--crema); padding:16px; border-radius:6px;
+  margin-top:14px; border-left:3px solid var(--acento);
+  font-size:15px;
+}
+.prediccion .pred-tok{
+  display:inline-block; padding:6px 12px; background:#fdf2e8;
+  border:2px solid var(--acento); border-radius:4px;
+  font-weight:bold; color:var(--acento); margin:0 4px;
+}
+
+.controles-rnn{
+  display:flex; gap:10px; margin-top:14px; flex-wrap:wrap;
+}
+
+/* LSTM compuertas */
+.compuertas{
+  display:grid; grid-template-columns:repeat(3,1fr); gap:14px;
+  margin-top:18px;
+}
+.compuerta{
+  background:var(--crema-2); padding:18px; border-radius:6px;
+  border-top:4px solid var(--azul);
+  cursor:pointer; transition:all 0.2s;
+}
+.compuerta:hover{transform:translateY(-2px)}
+.compuerta.olvido{border-color:var(--rojo)}
+.compuerta.entrada{border-color:var(--verde)}
+.compuerta.salida{border-color:var(--acento)}
+.compuerta .ico{font-size:32px; margin-bottom:8px}
+.compuerta h4{
+  font-family:'Helvetica Neue',Arial,sans-serif; font-size:14px;
+  color:var(--marino); letter-spacing:1px; margin-bottom:8px;
+}
+.compuerta .activacion{
+  margin-top:10px; padding:8px; background:#fff;
+  border-radius:4px; font-family:'Courier New',monospace;
+  font-size:12px; color:var(--gris);
+}
+
+.libreta-lab{margin-top:18px}
+.libreta{
+  background:#fffbe8; padding:18px; border:2px dashed var(--gris);
+  border-radius:6px; min-height:200px;
+  font-family:'Courier New',monospace; font-size:14px;
+  white-space:pre-wrap; line-height:1.8;
+}
+.libreta .receta{
+  display:inline-block; padding:4px 10px;
+  background:#fff; border-radius:4px; margin:3px;
+  border:2px solid var(--marino); transition:all 0.3s;
+}
+.libreta .receta.olvidada{
+  text-decoration:line-through; opacity:0.4;
+  background:#f5d8d4; border-color:var(--rojo);
+}
+.libreta .receta.nueva{
+  background:#d8eed8; border-color:var(--verde);
+  animation:pop 0.5s;
+}
+.libreta .receta.consultada{
+  background:#fdf2e8; border-color:var(--acento);
+  box-shadow:0 0 8px rgba(212,145,93,0.3);
+}
+@keyframes pop {
+  0%{transform:scale(0.8)} 50%{transform:scale(1.1)} 100%{transform:scale(1)}
+}
+
+.btn-libreta{
+  display:flex; gap:10px; margin-top:14px; flex-wrap:wrap;
+}
+
+/* GAN */
+.gan-arena{
+  display:grid; grid-template-columns:1fr 1fr; gap:24px;
+  margin-top:18px;
+}
+.peleador{
+  background:var(--crema-2); padding:24px; border-radius:6px;
+  text-align:center;
+}
+.peleador h3{margin:0 0 12px}
+.peleador.gen h3{color:var(--gan-gen)}
+.peleador.disc h3{color:var(--gan-disc)}
+.peleador .ico{font-size:54px; margin-bottom:8px}
+.billete{
+  font-family:'Courier New',monospace;
+  font-size:24px; line-height:1.2;
+  background:#fff; padding:14px; border-radius:6px;
+  margin-bottom:14px; min-height:90px;
+  display:flex; align-items:center; justify-content:center;
+}
+.calidad{
+  background:#fff; padding:10px; border-radius:6px;
+  margin-bottom:8px;
+}
+.barra{
+  height:12px; background:#ddd; border-radius:6px; overflow:hidden;
+  margin-top:6px;
+}
+.barra .fill{
+  height:100%; transition:width 0.6s ease;
+  background:linear-gradient(90deg, var(--gan-gen), #b87ac4);
+}
+.barra .fill.disc{background:linear-gradient(90deg, var(--gan-disc), #5fa8c2)}
+
+.veredicto-gan{
+  background:#fff; padding:14px; border-radius:6px;
+  margin-top:14px; min-height:80px;
+  font-style:italic; color:var(--marino);
+}
+
+.ronda-info{
+  text-align:center; margin:18px 0; font-family:'Helvetica Neue',Arial,sans-serif;
+  font-size:14px; letter-spacing:2px; color:var(--marino); font-weight:600;
+}
+
+/* Tabla comparativa */
+.comparativa{margin-top:18px}
+.comp-tabla{
+  width:100%; border-collapse:collapse; margin-top:14px;
+  font-size:14px;
+}
+.comp-tabla th, .comp-tabla td{
+  padding:14px; text-align:left; vertical-align:top;
+  border-bottom:1px solid var(--crema-2);
+}
+.comp-tabla th{
+  background:var(--marino); color:#fff;
+  font-family:'Helvetica Neue',Arial,sans-serif; font-size:13px;
+  letter-spacing:1px;
+}
+.comp-tabla tr:nth-child(even){background:var(--crema)}
+.comp-tabla .col-cnn{color:#3a6478; font-weight:bold}
+.comp-tabla .col-rnn{color:#7a3a1c; font-weight:bold}
+.comp-tabla .col-gan{color:var(--gan-gen); font-weight:bold}
+
+/* Quiz final */
+.preg-final{
+  background:var(--crema-2); padding:18px; border-radius:6px;
+  margin-bottom:14px;
+}
+.preg-final .enunciado{
+  font-size:16px; color:var(--marino); margin-bottom:12px;
+  font-weight:bold;
+}
+.preg-final .opciones{
+  display:flex; flex-direction:column; gap:8px;
+}
+.preg-final .opcion{
+  padding:11px 14px; background:#fff; border:2px solid #ddd;
+  cursor:pointer; border-radius:4px; transition:all 0.2s;
+  font-size:14px;
+}
+.preg-final .opcion:hover{border-color:var(--azul)}
+.preg-final .opcion.correcta{background:#d8eed8; border-color:var(--verde); color:#1f3a1f}
+.preg-final .opcion.incorrecta{background:#f5d8d4; border-color:var(--rojo); color:#3a1f1d}
+.preg-final .feedback{
+  margin-top:10px; padding:11px; border-radius:4px;
+  font-size:14px; display:none;
+}
+.preg-final .feedback.activo{display:block}
+.preg-final .feedback.bien{background:#d8eed8; color:#1f3a1f}
+.preg-final .feedback.mal{background:#f5d8d4; color:#3a1f1d}
+
+footer{
+  text-align:center; color:var(--gris); font-size:13px;
+  padding:24px 0; font-style:italic;
+}
+
+@media(max-width:780px){
+  .compuertas, .gan-arena{grid-template-columns:1fr}
+  .estado-bars{height:100px}
+  .comp-tabla{font-size:12px}
+  .comp-tabla th, .comp-tabla td{padding:8px}
+}
+</style>
+</head>
+<body>
+<div class="contenedor">
+
+<header>
+  <div class="kicker">SESIÓN 03 · ARTEFACTO 04 · DEEP LEARNING</div>
+  <h1>Memoria y creatividad</h1>
+  <p class="subtitulo">RNN, LSTM y GAN — las redes que recuerdan, las que olvidan a propósito y las que crean.</p>
+</header>
+
+<!-- INTRO RNN -->
+<div class="seccion">
+  <h2>Por qué hace falta memoria</h2>
+  <p>Una CNN ve una imagen entera de una vez. Pero si quieres traducir una frase, completar una oración o predecir el siguiente precio bursátil, <strong>el orden importa</strong>. «No como patatas» significa lo opuesto a «como no patatas».</p>
+  <p>Las <strong>RNN</strong> (Recurrent Neural Networks) resuelven esto pasando un <strong>estado oculto</strong> de paso en paso: la red arrastra un resumen de lo que ha visto hasta ahora.</p>
+  <p style="font-family:'Courier New',monospace; background:var(--crema-2); padding:16px; border-radius:6px; text-align:center; font-size:15px; color:var(--marino);">
+    h<sub>t</sub> = f(h<sub>t-1</sub>, x<sub>t</sub>)<br>
+    ŷ<sub>t</sub> = g(h<sub>t</sub>)
+  </p>
+  <p><em>«Mi memoria de ahora (h<sub>t</sub>) depende de mi memoria de antes (h<sub>t-1</sub>) y de lo que veo ahora (x<sub>t</sub>). La salida sale de esa memoria.»</em></p>
+</div>
+
+<!-- LAB RNN -->
+<div class="seccion">
+  <h2>Laboratorio 1 · Una RNN procesando una frase</h2>
+  <p>Pulsa <strong>«Siguiente palabra»</strong> y observa cómo el estado oculto (las barras) cambia con cada token. Cada barra es una neurona de la memoria. La predicción de la siguiente palabra se vuelve más informada a medida que la red acumula contexto.</p>
+
+  <div class="rnn-frase" id="rnnFrase">
+    <span class="tok">Vamos</span>
+    <span class="tok">a</span>
+    <span class="tok">por</span>
+    <span class="tok">una</span>
+    <span class="tok">...</span>
+  </div>
+
+  <div class="estado-oculto">
+    <h3>Estado oculto h<sub>t</sub> · la memoria de la red</h3>
+    <div class="estado-bars" id="estadoBars"></div>
+    <p style="margin-top:8px; font-size:13px; color:var(--gris); font-style:italic;" id="estadoExplica">Estado inicial: vacío. La red aún no ha visto nada.</p>
+  </div>
+
+  <div class="prediccion" id="prediccionRNN">
+    <strong>Siguiente palabra (predicción):</strong> — pulsa «Siguiente palabra» —
+  </div>
+
+  <div class="controles-rnn">
+    <button class="btn btn-primary" onclick="rnnSiguiente()">→ Siguiente palabra</button>
+    <button class="btn btn-outline" onclick="rnnReset()">↺ Reset</button>
+  </div>
+
+  <div style="margin-top:16px; padding:14px; background:var(--crema); border-radius:6px; border-left:3px solid var(--rojo); font-size:14px;">
+    <strong>⚠️ Memoria de pez:</strong> una RNN simple olvida rápido. Si la frase es larga, lo que dijiste al principio se desvanece (<em>gradiente desvaneciente</em>). Para eso se inventaron las LSTM.
+  </div>
+</div>
+
+<!-- LSTM -->
+<div class="seccion">
+  <h2>LSTM · La libreta de la abuela con tres llaves</h2>
+  <p>Una <strong>LSTM</strong> (Long Short-Term Memory, Hochreiter &amp; Schmidhuber, 1997) es una RNN con tres compuertas que deciden, en cada paso, qué olvidar, qué guardar y qué consultar. Resuelve el problema del gradiente desvaneciente arrastrando un <strong>estado de celda</strong> a lo largo de toda la secuencia.</p>
+
+  <div class="compuertas">
+    <div class="compuerta olvido">
+      <div class="ico">🗑️</div>
+      <h4>FORGET GATE</h4>
+      <p>Decide qué información del estado anterior <strong>olvidar</strong>. Tachas la receta del bizcocho que nunca sale.</p>
+      <div class="activacion">f<sub>t</sub> = σ(W<sub>f</sub>·[h<sub>t-1</sub>, x<sub>t</sub>] + b<sub>f</sub>)</div>
+    </div>
+    <div class="compuerta entrada">
+      <div class="ico">📝</div>
+      <h4>INPUT GATE</h4>
+      <p>Decide qué información nueva <strong>guardar</strong> en el estado de celda. Apuntas la receta del cocido nueva.</p>
+      <div class="activacion">i<sub>t</sub> = σ(W<sub>i</sub>·[h<sub>t-1</sub>, x<sub>t</sub>] + b<sub>i</sub>)</div>
+    </div>
+    <div class="compuerta salida">
+      <div class="ico">📖</div>
+      <h4>OUTPUT GATE</h4>
+      <p>Decide qué parte del estado <strong>consultar</strong> ahora. Abres la libreta para sacar lo que necesitas.</p>
+      <div class="activacion">o<sub>t</sub> = σ(W<sub>o</sub>·[h<sub>t-1</sub>, x<sub>t</sub>] + b<sub>o</sub>)</div>
+    </div>
+  </div>
+
+  <h3 style="margin-top:24px">Laboratorio 2 · La libreta de la abuela en directo</h3>
+  <p>La libreta empieza con varias recetas. En cada paso, las compuertas deciden qué hacer. Pulsa «Siguiente paso» para ver cómo evoluciona la memoria.</p>
+
+  <div class="libreta-lab">
+    <div class="libreta" id="libreta"></div>
+
+    <div class="btn-libreta">
+      <button class="btn btn-primary" onclick="libretaSiguiente()">→ Siguiente paso</button>
+      <button class="btn btn-outline" onclick="libretaReset()">↺ Reset libreta</button>
+    </div>
+    <div style="margin-top:12px; padding:12px; background:var(--crema); border-radius:6px; font-size:14px; color:var(--marino);" id="libretaExplica">
+      Estado inicial: la libreta tiene 4 recetas. Las compuertas decidirán qué hacer con cada una.
+    </div>
+  </div>
+</div>
+
+<!-- GAN -->
+<div class="seccion">
+  <h2>GAN · Falsificador y policía</h2>
+  <p>Goodfellow, 2014. <strong>Idea genial:</strong> en vez de pedirle a una red que «genere un cuadro de Picasso», pones a dos redes a competir. Una intenta engañar; la otra intenta no ser engañada. El resultado tras miles de rondas: imágenes indistinguibles de las reales.</p>
+
+  <h3>Laboratorio 3 · Pulsa «Siguiente ronda» y observa la mejora</h3>
+
+  <div class="ronda-info" id="rondaInfo">RONDA 0 / 10</div>
+
+  <div class="gan-arena">
+    <div class="peleador gen">
+      <div class="ico">🎭</div>
+      <h3>FALSIFICADOR (G)</h3>
+      <div class="billete" id="billeteGen">░░░░░░<br>░░░░░░<br>░░░░░░</div>
+      <div class="calidad">
+        <div style="display:flex; justify-content:space-between; font-family:'Helvetica Neue',Arial,sans-serif; font-size:12px; color:var(--gris);">
+          <span>CALIDAD DEL BILLETE</span><span id="calidadGenN">10%</span>
+        </div>
+        <div class="barra"><div class="fill" id="calidadGenBar" style="width:10%"></div></div>
+      </div>
+    </div>
+
+    <div class="peleador disc">
+      <div class="ico">👮</div>
+      <h3>POLICÍA (D)</h3>
+      <div class="veredicto-gan" id="veredictoDisc">«Aún no he visto nada. Espero.»</div>
+      <div class="calidad">
+        <div style="display:flex; justify-content:space-between; font-family:'Helvetica Neue',Arial,sans-serif; font-size:12px; color:var(--gris);">
+          <span>TASA DE ACIERTOS</span><span id="aciertosDiscN">95%</span>
+        </div>
+        <div class="barra"><div class="fill disc" id="aciertosDiscBar" style="width:95%"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="controles-rnn" style="justify-content:center; margin-top:20px">
+    <button class="btn btn-primary" onclick="ganSiguiente()">→ Siguiente ronda</button>
+    <button class="btn btn-secondary" onclick="ganAuto()">▶ Auto (10 rondas)</button>
+    <button class="btn btn-outline" onclick="ganReset()">↺ Reset</button>
+  </div>
+
+  <div style="margin-top:18px; padding:16px; background:var(--crema); border-radius:6px; border-left:3px solid var(--acento); font-size:14px;">
+    <strong>Tras miles de rondas reales:</strong> los billetes son indistinguibles de los reales. Y las caras de <a href="https://thispersondoesnotexist.com" target="_blank" style="color:var(--azul);">thispersondoesnotexist.com</a> son humanos que no existen, generados por <strong>StyleGAN</strong>.
+  </div>
+</div>
+
+<!-- COMPARATIVA -->
+<div class="seccion">
+  <h2>¿Cuál usar para qué?</h2>
+  <p>Esta es la chuleta a la que volverás durante el resto del curso:</p>
+
+  <div class="comparativa">
+    <table class="comp-tabla">
+      <thead>
+        <tr>
+          <th></th>
+          <th>CNN</th>
+          <th>RNN / LSTM</th>
+          <th>GAN</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>DATOS</strong></td>
+          <td class="col-cnn">Imágenes, vídeo, datos espaciales</td>
+          <td class="col-rnn">Texto, voz, música, series temporales</td>
+          <td class="col-gan">Cualquiera, sobre todo imágenes</td>
+        </tr>
+        <tr>
+          <td><strong>¿QUÉ HACE?</strong></td>
+          <td class="col-cnn">Reconoce: clasifica, detecta, segmenta</td>
+          <td class="col-rnn">Predice lo siguiente: traduce, completa</td>
+          <td class="col-gan">Genera: crea ejemplos sintéticos</td>
+        </tr>
+        <tr>
+          <td><strong>ANALOGÍA</strong></td>
+          <td class="col-cnn">Pasar una lupa por la imagen</td>
+          <td class="col-rnn">El WhatsApp predictivo con memoria</td>
+          <td class="col-gan">Falsificador vs policía</td>
+        </tr>
+        <tr>
+          <td><strong>CASOS REALES</strong></td>
+          <td class="col-cnn">Diagnóstico médico, coche autónomo, filtros Instagram</td>
+          <td class="col-rnn">Spotify autoplay, traducción, completion del teclado</td>
+          <td class="col-gan">Deepfakes, thispersondoesnotexist, Midjourney (variantes)</td>
+        </tr>
+        <tr>
+          <td><strong>FAMOSAS</strong></td>
+          <td class="col-cnn">AlexNet, ResNet, EfficientNet, YOLO</td>
+          <td class="col-rnn">LSTM, GRU, seq2seq</td>
+          <td class="col-gan">DCGAN, StyleGAN, CycleGAN, pix2pix</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- QUIZ FINAL -->
+<div class="seccion">
+  <h2>Quiz integrador final</h2>
+  <p>Seis preguntas que tocan todos los conceptos de la sesión. Una intentona por pregunta.</p>
+
+  <div>
+    <div class="preg-final" data-correcta="2">
+      <div class="enunciado">1. ¿Cuál de estas afirmaciones describe mejor el deep learning?</div>
+      <div class="opciones">
+        <div class="opcion">Es lo mismo que machine learning, sólo cambia el nombre.</div>
+        <div class="opcion">Es un tipo de programación clásica donde el humano escribe muchas reglas.</div>
+        <div class="opcion">Es una rama del machine learning que usa redes neuronales con muchas capas para aprender directamente de datos crudos.</div>
+        <div class="opcion">Es una técnica que sólo sirve para datos tabulares pequeños.</div>
+      </div>
+      <div class="feedback"></div>
+    </div>
+
+    <div class="preg-final" data-correcta="1">
+      <div class="enunciado">2. ¿Por qué se llama «deep» learning?</div>
+      <div class="opciones">
+        <div class="opcion">Porque genera resultados profundos emocionalmente.</div>
+        <div class="opcion">Porque las redes neuronales tienen muchas capas (son profundas).</div>
+        <div class="opcion">Porque busca en bases de datos profundas.</div>
+        <div class="opcion">Porque requiere reflexión profunda del usuario.</div>
+      </div>
+      <div class="feedback"></div>
+    </div>
+
+    <div class="preg-final" data-correcta="0">
+      <div class="enunciado">3. Tienes una imagen 28×28 en escala de grises y quieres clasificarla en 10 clases. ¿Cuántas neuronas tiene la capa de entrada y la de salida?</div>
+      <div class="opciones">
+        <div class="opcion">Entrada: 784 (28×28). Salida: 10 (una por clase).</div>
+        <div class="opcion">Entrada: 28. Salida: 10.</div>
+        <div class="opcion">Entrada: 1. Salida: 1.</div>
+        <div class="opcion">Entrada: 100. Salida: 100.</div>
+      </div>
+      <div class="feedback"></div>
+    </div>
+
+    <div class="preg-final" data-correcta="2">
+      <div class="enunciado">4. En una LSTM, ¿qué hace la forget gate?</div>
+      <div class="opciones">
+        <div class="opcion">Apaga la red al final del entrenamiento.</div>
+        <div class="opcion">Borra los datos de entrenamiento para ahorrar memoria.</div>
+        <div class="opcion">Decide qué información del estado de celda se descarta en el paso actual.</div>
+        <div class="opcion">Olvida el último gradiente para evitar overfitting.</div>
+      </div>
+      <div class="feedback"></div>
+    </div>
+
+    <div class="preg-final" data-correcta="1">
+      <div class="enunciado">5. En una GAN, ¿qué hace el discriminador (D)?</div>
+      <div class="opciones">
+        <div class="opcion">Genera imágenes nuevas a partir de ruido aleatorio.</div>
+        <div class="opcion">Distingue si una muestra es real (del dataset) o falsa (creada por el generador).</div>
+        <div class="opcion">Discrimina entre clases: perro, gato, hámster.</div>
+        <div class="opcion">Reduce la dimensionalidad de la imagen antes de entrenar.</div>
+      </div>
+      <div class="feedback"></div>
+    </div>
+
+    <div class="preg-final" data-correcta="0">
+      <div class="enunciado">6. Tu modelo CNN clasifica imágenes pero entrenando se queda en 50% de precisión (azar para 2 clases). Pruebas a multiplicar el learning rate por 10 y la pérdida explota. ¿Próximo paso razonable?</div>
+      <div class="opciones">
+        <div class="opcion">Volver al learning rate original y revisar la arquitectura: ¿hay suficientes capas conv? ¿el dataset está balanceado? ¿las imágenes están normalizadas?</div>
+        <div class="opcion">Multiplicarlo por 100 más para asegurarse.</div>
+        <div class="opcion">Cambiar a una RNN porque las RNN siempre funcionan mejor.</div>
+        <div class="opcion">Eliminar la capa de salida y dejar sólo capas ocultas.</div>
+      </div>
+      <div class="feedback"></div>
+    </div>
+  </div>
+</div>
+
+<footer>Sesión 03 · Fundamentos de Deep Learning · Estrategia del Dato, ML &amp; DL · UNIR</footer>
+
+</div>
+
+<script>
+// ============= RNN =============
+const fraseRNN = ['Vamos','a','por','una','...'];
+const candidatos = [
+  ['cerveza','caña','cosa','vida','solución'],
+  ['caña','vuelta','lección','idea','salida'],
+  ['caña','foto','mesa','copa','silla'],
+  ['caña','cerveza','siesta','vuelta','ducha'],
+  ['caña','cerveza']
+];
+const explicaciones = [
+  'Estado vacío. La red sólo ha visto «Vamos» — todavía hay muchas opciones razonables.',
+  'Memoria con «Vamos a». Empieza a perfilarse: «vamos a por algo», «vamos a casa», «vamos a comer»…',
+  'Memoria con «Vamos a por». La construcción se concreta: «por una» suele ir seguido de un sustantivo singular femenino.',
+  'Memoria con «Vamos a por una». La red ha aprendido que en español coloquial, esta secuencia precede casi siempre a una bebida (¡o una bronca!).',
+  'Predicción terminada. La red ha procesado los 4 tokens y propone su mejor candidata.'
+];
+let pasoRNN = 0;
+let estado = [0,0,0,0,0,0,0,0];
+
+function dibujarBars(){
+  const cont = document.getElementById('estadoBars');
+  cont.innerHTML = '';
+  estado.forEach(v => {
+    const bar = document.createElement('div');
+    bar.className = 'bar';
+    bar.style.height = (Math.abs(v)*100)+'%';
+    bar.dataset.val = v.toFixed(2);
+    if(v < 0) bar.style.background = 'linear-gradient(to top, #b85450, #e8a8a4)';
+    cont.appendChild(bar);
+  });
+}
+
+function rnnSiguiente(){
+  if(pasoRNN >= 4){
+    document.getElementById('prediccionRNN').innerHTML = `<strong>Predicción final:</strong> <span class="pred-tok">${candidatos[3][0]}</span> · La red ha procesado toda la frase.`;
+    return;
+  }
+  // Marcar tokens
+  const toks = document.querySelectorAll('#rnnFrase .tok');
+  toks.forEach((t,i) => {
+    t.classList.remove('activo');
+    if(i < pasoRNN) t.classList.add('procesado');
+  });
+  toks[pasoRNN].classList.add('activo');
+
+  // Actualizar estado (de manera "fake" pero coherente)
+  estado = estado.map((v,i) => {
+    const factor = (i+1)*0.13 + pasoRNN*0.05;
+    return Math.tanh(v*0.6 + Math.sin(pasoRNN*1.5+i)*factor);
+  });
+  dibujarBars();
+
+  // Predicción
+  const c = candidatos[pasoRNN];
+  let html = `<strong>Predicción del siguiente token:</strong> `;
+  c.slice(0,3).forEach((p,i) => {
+    const opacity = 1 - i*0.3;
+    html += `<span class="pred-tok" style="opacity:${opacity}">${p}</span>`;
+  });
+  html += `<br><span style="color:var(--gris); font-size:13px; font-style:italic">${explicaciones[pasoRNN]}</span>`;
+  document.getElementById('prediccionRNN').innerHTML = html;
+  document.getElementById('estadoExplica').textContent = explicaciones[pasoRNN];
+
+  pasoRNN++;
+}
+
+function rnnReset(){
+  pasoRNN = 0;
+  estado = [0,0,0,0,0,0,0,0];
+  document.querySelectorAll('#rnnFrase .tok').forEach(t => {
+    t.classList.remove('activo','procesado');
+  });
+  dibujarBars();
+  document.getElementById('prediccionRNN').innerHTML = `<strong>Siguiente palabra (predicción):</strong> — pulsa «Siguiente palabra» —`;
+  document.getElementById('estadoExplica').textContent = 'Estado inicial: vacío. La red aún no ha visto nada.';
+}
+dibujarBars();
+
+// ============= LSTM LIBRETA =============
+const recetasIniciales = [
+  {nombre:'Bizcocho de la abuela', estado:'normal'},
+  {nombre:'Cocido madrileño', estado:'normal'},
+  {nombre:'Tarta que nunca sube', estado:'normal'},
+  {nombre:'Sopa de pollo', estado:'normal'}
+];
+const pasosLibreta = [
+  {accion:'olvidar', target:2, expl:'<strong>FORGET GATE.</strong> La tarta nunca sale bien — la libreta decide olvidarla. f<sub>t</sub> ≈ 0 para esa entrada del estado de celda.'},
+  {accion:'guardar', nueva:'Crema catalana (NUEVA)', expl:'<strong>INPUT GATE.</strong> Hoy la nieta cocina crema catalana y sale rica. Se apunta. i<sub>t</sub> ≈ 1, candidato nuevo aceptado en el estado.'},
+  {accion:'consultar', target:1, expl:'<strong>OUTPUT GATE.</strong> Toca cocido. La libreta consulta esa receta — el estado de celda se proyecta a la salida h<sub>t</sub>. o<sub>t</sub> ≈ 1 para esa parte.'},
+  {accion:'olvidar', target:0, expl:'<strong>FORGET GATE.</strong> Pasaron muchos años — el bizcocho ya no se hace. Se olvida poco a poco.'},
+  {accion:'guardar', nueva:'Pan de masa madre', expl:'<strong>INPUT GATE.</strong> Pandemia, todo el mundo hace pan. La libreta lo apunta como nueva entrada en el estado.'},
+  {accion:'consultar', target:5, expl:'<strong>OUTPUT GATE.</strong> Hoy se hornea pan. Se proyecta esa receta a la salida.'},
+];
+let recetas = JSON.parse(JSON.stringify(recetasIniciales));
+let pasoLib = 0;
+
+function dibujarLibreta(){
+  const cont = document.getElementById('libreta');
+  cont.innerHTML = '<strong>📚 ESTADO DE CELDA (la memoria):</strong><br><br>';
+  recetas.forEach((r,i) => {
+    cont.innerHTML += `<span class="receta ${r.estado}">${r.nombre}</span>`;
+  });
+}
+
+function libretaSiguiente(){
+  if(pasoLib >= pasosLibreta.length){
+    document.getElementById('libretaExplica').innerHTML = '✓ Has completado todos los pasos. La libreta ha aprendido qué olvidar y qué guardar — eso es lo que hace una LSTM en cada paso de tiempo.';
+    return;
+  }
+  // Limpiar estados temporales
+  recetas.forEach(r => {
+    if(r.estado === 'consultada') r.estado = 'normal';
+    if(r.estado === 'nueva') r.estado = 'normal';
+  });
+  const p = pasosLibreta[pasoLib];
+  if(p.accion === 'olvidar'){
+    if(recetas[p.target]) recetas[p.target].estado = 'olvidada';
+  }else if(p.accion === 'guardar'){
+    recetas.push({nombre:p.nueva, estado:'nueva'});
+  }else if(p.accion === 'consultar'){
+    if(recetas[p.target]) recetas[p.target].estado = 'consultada';
+  }
+  document.getElementById('libretaExplica').innerHTML = p.expl;
+  dibujarLibreta();
+  pasoLib++;
+}
+
+function libretaReset(){
+  recetas = JSON.parse(JSON.stringify(recetasIniciales));
+  pasoLib = 0;
+  dibujarLibreta();
+  document.getElementById('libretaExplica').innerHTML = 'Estado inicial: la libreta tiene 4 recetas. Las compuertas decidirán qué hacer con cada una.';
+}
+dibujarLibreta();
+
+// ============= GAN =============
+let rondaGAN = 0;
+const N_RONDAS = 10;
+const billetes = [
+  '░░░░░░\n░░░░░░\n░░░░░░',
+  '▓░░░░░\n░▓░░░░\n░░▓░░░',
+  '▓▓░░░░\n░▓░▓░░\n░▓░░▓░',
+  '▓▓░▓░░\n░▓▓░▓░\n▓░▓░▓░',
+  '▓▓▓▓░░\n▓▓░▓▓░\n▓░▓▓▓░',
+  '▓▓▓▓▓░\n▓▓█▓▓░\n▓▓▓▓▓░',
+  '▓▓▓▓▓▓\n▓▓█▓▓▓\n▓▓▓▓▓▓',
+  '▓███▓▓\n▓████▓\n▓███▓▓',
+  '██████\n██████\n██████',
+  '██████\n██████\n██████',
+  '██████\n██████\n██████'
+];
+const veredictos = [
+  '«Aún no he visto nada. Espero.»',
+  '«¡Falso! Esto es una fotocopia, hombre.»',
+  '«¡Falso! Sigue siendo evidente.»',
+  '«¡Falso! Pero algo mejor que antes…»',
+  '«Hmm. Esto ya cuesta más distinguirlo.»',
+  '«Casi me la cuelas. Casi.»',
+  '«Mmm… esto puede ser real. Espera, no, FALSO.»',
+  '«Es que ya no sé. Es que ya no sé qué decir.»',
+  '«Lanzo una moneda. Que decida ella.»',
+  '«No los distingo de los reales. He fracasado.»',
+  '«No los distingo de los reales. He fracasado.»'
+];
+const calidades = [10, 18, 28, 38, 50, 62, 72, 82, 90, 96, 99];
+const aciertos = [95, 92, 88, 80, 70, 60, 52, 50, 50, 50, 50];
+
+function dibujarGAN(){
+  document.getElementById('rondaInfo').textContent = `RONDA ${rondaGAN} / ${N_RONDAS}`;
+  document.getElementById('billeteGen').innerHTML = billetes[rondaGAN].replace(/\n/g,'<br>');
+  document.getElementById('veredictoDisc').textContent = veredictos[rondaGAN];
+  document.getElementById('calidadGenN').textContent = calidades[rondaGAN] + '%';
+  document.getElementById('calidadGenBar').style.width = calidades[rondaGAN] + '%';
+  document.getElementById('aciertosDiscN').textContent = aciertos[rondaGAN] + '%';
+  document.getElementById('aciertosDiscBar').style.width = aciertos[rondaGAN] + '%';
+}
+function ganSiguiente(){
+  if(rondaGAN >= N_RONDAS) return;
+  rondaGAN++;
+  dibujarGAN();
+}
+function ganReset(){
+  rondaGAN = 0;
+  dibujarGAN();
+}
+let ganT = null;
+function ganAuto(){
+  if(ganT){ clearInterval(ganT); ganT=null; return; }
+  ganReset();
+  ganT = setInterval(()=>{
+    ganSiguiente();
+    if(rondaGAN >= N_RONDAS){ clearInterval(ganT); ganT=null; }
+  }, 800);
+}
+dibujarGAN();
+
+// ============= QUIZ FINAL =============
+const explica = [
+  'El DL es un subconjunto del ML que usa redes neuronales con muchas capas y aprende directamente de datos crudos (imágenes, texto, audio) sin que el humano tenga que diseñar features a mano.',
+  '«Deep» se refiere a la profundidad de la arquitectura: muchas capas apiladas. Una red de 2 capas no es deep; una de 50, sí.',
+  'La capa de entrada tiene una neurona por cada dimensión del dato — una imagen 28×28 aplanada son 784 valores. La capa de salida tiene una neurona por clase, con softmax para producir probabilidades que suman 1.',
+  'La forget gate produce un valor entre 0 y 1 para cada componente del estado de celda. 0 = «olvidar completamente», 1 = «mantener completamente». Esto resuelve el problema del gradiente desvaneciente.',
+  'En una GAN, G crea muestras falsas a partir de ruido y D intenta clasificarlas como reales o falsas. Compiten: cuando G mejora, D tiene que mejorar también. El equilibrio se alcanza cuando D no puede distinguir mejor que el azar.',
+  'Cuando el modelo no aprende, la solución casi nunca es subir el LR a lo bestia. Lo correcto es revisar arquitectura, datos y preprocesamiento. Multiplicar por 100 es el manual del Hulk.'
+];
+
+document.querySelectorAll('.preg-final').forEach((p, idx) => {
+  const correcta = parseInt(p.dataset.correcta);
+  p.querySelectorAll('.opcion').forEach((op,i) => {
+    op.addEventListener('click', () => {
+      if(p.dataset.respondida) return;
+      p.dataset.respondida = '1';
+      const fb = p.querySelector('.feedback');
+      if(i === correcta){
+        op.classList.add('correcta');
+        fb.className = 'feedback activo bien';
+        fb.innerHTML = '✓ ' + explica[idx];
+      }else{
+        op.classList.add('incorrecta');
+        p.querySelectorAll('.opcion')[correcta].classList.add('correcta');
+        fb.className = 'feedback activo mal';
+        fb.innerHTML = '✗ La correcta era la verde. ' + explica[idx];
+      }
+    });
+  });
+});
+</script>
+
+</body>
+</html>

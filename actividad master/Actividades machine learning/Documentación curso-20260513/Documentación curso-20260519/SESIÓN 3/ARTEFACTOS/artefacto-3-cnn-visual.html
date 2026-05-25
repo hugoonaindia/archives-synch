@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Artefacto 3 · CNN Visual Explorer</title>
+<style>
+:root{
+  --crema:#f5f1e8; --crema-2:#ede6d3; --marino:#1a2b4a; --marino-2:#2d4368;
+  --azul:#5b8fb9; --azul-claro:#a8c5e2; --acento:#d4915d;
+  --verde:#6b8e6b; --rojo:#b85450; --texto:#2a2a2a; --gris:#6b6b6b;
+  color-scheme: light;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:Georgia,'Times New Roman',serif;
+  background:var(--crema); color:var(--texto);
+  line-height:1.6;
+}
+.contenedor{max-width:1100px; margin:0 auto; padding:40px 24px}
+header{
+  border-bottom:3px solid var(--marino);
+  padding-bottom:24px; margin-bottom:36px;
+}
+.kicker{
+  font-family:'Helvetica Neue',Arial,sans-serif;
+  font-size:11px; letter-spacing:3px; color:var(--azul);
+  text-transform:uppercase; margin-bottom:8px;
+}
+h1{font-size:42px; color:var(--marino); margin-bottom:8px; font-weight:normal}
+.subtitulo{color:var(--gris); font-size:17px; font-style:italic}
+
+.seccion{
+  background:#fff; border-radius:6px; padding:32px;
+  margin-bottom:28px;
+  box-shadow:0 2px 12px rgba(26,43,74,0.08);
+  border-left:4px solid var(--azul);
+}
+.seccion h2{
+  font-size:26px; color:var(--marino); margin-bottom:14px;
+  font-weight:normal;
+}
+.seccion h3{
+  font-size:17px; color:var(--marino-2); margin:18px 0 10px;
+  font-family:'Helvetica Neue',Arial,sans-serif;
+  letter-spacing:1px; text-transform:uppercase; font-weight:600;
+}
+.seccion p{margin-bottom:12px}
+
+/* CONVOLUCIÓN */
+.convo-lab{
+  display:grid; grid-template-columns:1fr 0.4fr 1fr;
+  gap:20px; align-items:center; margin-top:18px;
+}
+.matriz{
+  display:grid; gap:2px;
+  padding:10px; background:var(--crema-2); border-radius:6px;
+  margin:0 auto;
+}
+.matriz5{grid-template-columns:repeat(5,1fr); width:280px; height:280px}
+.matriz3{grid-template-columns:repeat(3,1fr); width:180px; height:180px}
+.matriz3map{grid-template-columns:repeat(3,1fr); width:240px; height:240px}
+.celda{
+  background:#fff; border-radius:3px;
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Courier New',monospace; font-size:13px;
+  color:var(--marino); font-weight:bold;
+  border:2px solid #fff; transition:all 0.3s;
+}
+.celda.activa{
+  border-color:var(--acento); background:#fdf2e8;
+  box-shadow:0 0 8px rgba(212,145,93,0.4);
+}
+.celda.kernel{background:var(--azul-claro)}
+.celda.kernel.pos{background:#d8eed8}
+.celda.kernel.neg{background:#f5d8d4}
+.celda.featurefilled{background:#fdf2e8}
+
+.flecha{
+  text-align:center;
+  font-size:32px; color:var(--marino);
+  font-weight:bold;
+}
+.flecha .op{font-size:18px; font-family:'Courier New',monospace}
+
+.titulos-matriz{
+  display:grid; grid-template-columns:1fr 0.4fr 1fr;
+  gap:20px; text-align:center; margin-bottom:8px;
+  font-family:'Helvetica Neue',Arial,sans-serif; font-size:12px;
+  letter-spacing:1px; color:var(--marino); font-weight:600;
+}
+
+.controles-conv{
+  display:flex; gap:10px; flex-wrap:wrap; margin-top:18px;
+  justify-content:center;
+}
+.btn{
+  padding:10px 18px; border:none; cursor:pointer;
+  font-family:'Helvetica Neue',Arial,sans-serif; font-size:13px;
+  border-radius:4px; transition:all 0.2s; font-weight:600;
+  letter-spacing:0.5px;
+}
+.btn-primary{background:var(--acento); color:#fff}
+.btn-primary:hover{background:var(--marino)}
+.btn-secondary{background:var(--marino); color:#fff}
+.btn-secondary:hover{background:var(--marino-2)}
+.btn-outline{background:#fff; color:var(--marino); border:2px solid var(--marino)}
+.btn-outline:hover{background:var(--marino); color:#fff}
+
+.calculo-conv{
+  background:var(--crema); padding:14px; border-radius:6px;
+  margin-top:14px; font-family:'Courier New',monospace;
+  font-size:13px; color:var(--marino); border-left:3px solid var(--acento);
+  white-space:pre-wrap; min-height:60px;
+}
+
+/* SELECTOR KERNELS */
+.kernels-row{
+  display:grid; grid-template-columns:repeat(4,1fr); gap:14px;
+  margin-bottom:18px;
+}
+.kernel-opt{
+  background:var(--crema-2); padding:14px; border-radius:6px;
+  cursor:pointer; transition:all 0.2s;
+  text-align:center; border:2px solid transparent;
+}
+.kernel-opt:hover{border-color:var(--azul); transform:translateY(-2px)}
+.kernel-opt.activa{border-color:var(--acento); background:#fdf2e8}
+.kernel-opt h4{
+  font-family:'Helvetica Neue',Arial,sans-serif; font-size:13px;
+  color:var(--marino); margin-bottom:8px; letter-spacing:1px;
+}
+.mini-kernel{
+  display:grid; grid-template-columns:repeat(3,1fr); gap:2px;
+  width:80px; margin:0 auto 8px;
+}
+.mini-kernel .c{
+  width:24px; height:24px; background:#fff; border-radius:2px;
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Courier New',monospace; font-size:11px;
+  color:var(--marino); font-weight:bold;
+}
+.mini-kernel .c.pos{background:#d8eed8}
+.mini-kernel .c.neg{background:#f5d8d4}
+.kernel-opt .desc{font-size:11px; color:var(--gris); font-style:italic}
+
+/* PIPELINE */
+.pipeline{
+  display:grid; grid-template-columns:repeat(7,1fr);
+  gap:6px; margin-top:18px; align-items:center;
+}
+.etapa{
+  background:var(--crema-2); padding:14px 10px; border-radius:6px;
+  text-align:center; cursor:pointer; transition:all 0.2s;
+  border:2px solid transparent;
+}
+.etapa:hover{transform:translateY(-2px); border-color:var(--azul)}
+.etapa.activa{background:var(--marino); color:#fff; border-color:var(--marino)}
+.etapa .num{
+  font-family:'Helvetica Neue',Arial,sans-serif; font-size:10px;
+  letter-spacing:2px; color:var(--gris);
+}
+.etapa.activa .num{color:#a8c5e2}
+.etapa .nombre{
+  font-size:12px; font-weight:bold; margin-top:4px;
+}
+.etapa.flecha-pip{
+  background:transparent; font-size:22px; color:var(--marino);
+  cursor:default; padding:0;
+}
+.etapa.flecha-pip:hover{transform:none; border:none}
+.detalle-pipe{
+  background:var(--crema); padding:18px; border-radius:6px;
+  margin-top:14px; min-height:120px; line-height:1.7;
+}
+
+/* POOLING */
+.pool-lab{
+  display:grid; grid-template-columns:1fr 0.3fr 1fr;
+  gap:18px; align-items:center; margin-top:14px;
+}
+.matriz4{grid-template-columns:repeat(4,1fr); width:240px; height:240px}
+.matriz2{grid-template-columns:repeat(2,1fr); width:140px; height:140px}
+
+.pool-tabs{
+  display:flex; gap:4px; margin-bottom:14px;
+  background:var(--crema-2); padding:4px; border-radius:6px;
+}
+.pool-tab{
+  flex:1; padding:9px; cursor:pointer;
+  font-family:'Helvetica Neue',Arial,sans-serif; font-size:13px;
+  text-align:center; border-radius:4px; color:var(--gris);
+  transition:all 0.2s; font-weight:600;
+}
+.pool-tab.activa{background:var(--marino); color:#fff}
+
+.celda.pool-zone{background:#fdf2e8; border-color:var(--acento)}
+.celda.pool-max{background:#a8d4a8}
+.celda.pool-avg{background:#a8c5e2}
+
+/* QUIZ ARQUITECTURAS */
+.casos{margin-top:14px}
+.caso{
+  background:var(--crema-2); padding:18px; border-radius:6px;
+  margin-bottom:14px;
+}
+.caso .pregunta{
+  font-size:16px; color:var(--marino); margin-bottom:12px;
+  font-weight:bold;
+}
+.caso .respuestas{
+  display:grid; grid-template-columns:repeat(3,1fr); gap:8px;
+}
+.caso .resp{
+  padding:10px 6px; background:#fff; border:2px solid #ddd;
+  cursor:pointer; border-radius:4px; transition:all 0.2s;
+  text-align:center; font-family:'Helvetica Neue',Arial,sans-serif;
+  font-size:13px; font-weight:600; color:var(--marino);
+}
+.caso .resp:hover{border-color:var(--azul)}
+.caso .resp.correcta{background:#d8eed8; border-color:var(--verde)}
+.caso .resp.incorrecta{background:#f5d8d4; border-color:var(--rojo)}
+.caso .feedback{
+  margin-top:10px; padding:11px; border-radius:4px;
+  font-size:14px; display:none;
+}
+.caso .feedback.activo{display:block}
+.caso .feedback.bien{background:#d8eed8; color:#1f3a1f}
+.caso .feedback.mal{background:#f5d8d4; color:#3a1f1d}
+
+footer{
+  text-align:center; color:var(--gris); font-size:13px;
+  padding:24px 0; font-style:italic;
+}
+
+@media(max-width:780px){
+  .convo-lab,.pool-lab{grid-template-columns:1fr}
+  .pipeline{grid-template-columns:1fr 1fr}
+  .kernels-row{grid-template-columns:1fr 1fr}
+  .caso .respuestas{grid-template-columns:1fr}
+  .matriz5{width:90vw; height:90vw; max-width:280px; max-height:280px}
+}
+</style>
+</head>
+<body>
+<div class="contenedor">
+
+<header>
+  <div class="kicker">SESIÓN 03 · ARTEFACTO 03 · DEEP LEARNING</div>
+  <h1>CNN Visual Explorer</h1>
+  <p class="subtitulo">Cómo una red convolucional ve una imagen — paso a paso, con la lupa.</p>
+</header>
+
+<!-- INTRO -->
+<div class="seccion">
+  <h2>Una imagen es una matriz de números</h2>
+  <p>Para un ordenador <strong>no existen «bigotes de gato»</strong>. Existe una matriz de números entre 0 (negro) y 255 (blanco). Una CNN aprende a reconocer patrones en esa matriz aplicando filtros que se deslizan por toda la imagen.</p>
+  <p><strong>La analogía:</strong> tienes una lámina enorme y una lupita. La pasas por toda la página, mirando trozos pequeños. Cuando coincide con «camiseta de rayas rojas y blancas», anotas: «aquí hay algo». Eso es una <strong>convolución</strong>: una lupita (kernel) que recorre la imagen buscando un patrón.</p>
+  <p>Y lo mejor: <strong>no le dices qué buscar</strong>. La red aprende sola qué lupas son útiles. En las primeras capas inventa lupas para detectar bordes; en las últimas, para detectar caras enteras.</p>
+</div>
+
+<!-- LAB CONVOLUCIÓN -->
+<div class="seccion">
+  <h2>Laboratorio 1 · Pasa la lupa por la imagen</h2>
+  <p>Elige un kernel y pulsa <strong>«Siguiente paso»</strong>. La lupita se desliza una posición, multiplica elemento a elemento por la región que cubre, suma todo y escribe el resultado en el mapa de features.</p>
+
+  <h3>Elige tu kernel</h3>
+  <div class="kernels-row" id="kernelsRow"></div>
+
+  <div class="titulos-matriz">
+    <div>IMAGEN 5×5</div>
+    <div>OPERACIÓN</div>
+    <div>MAPA DE FEATURES 3×3</div>
+  </div>
+
+  <div class="convo-lab">
+    <div class="matriz matriz5" id="img5"></div>
+    <div class="flecha">
+      <div class="op">⊛</div>
+      <div style="font-size:14px; color:var(--gris); margin:8px 0">producto<br>escalar</div>
+      <div class="op">→</div>
+    </div>
+    <div class="matriz matriz3map" id="featureMap"></div>
+  </div>
+
+  <div class="calculo-conv" id="calcConv">Selecciona un kernel y pulsa «Siguiente paso» para empezar.</div>
+
+  <div class="controles-conv">
+    <button class="btn btn-primary" onclick="siguientePaso()">→ Siguiente paso</button>
+    <button class="btn btn-secondary" onclick="autoConv()">▶ Auto</button>
+    <button class="btn btn-outline" onclick="resetConv()">↺ Reset</button>
+  </div>
+</div>
+
+<!-- PIPELINE CNN -->
+<div class="seccion">
+  <h2>Anatomía de una CNN completa</h2>
+  <p>Una CNN encadena convoluciones (que detectan patrones) con poolings (que resumen y reducen tamaño). Al final, una capa fully-connected y un softmax dan el veredicto. Pulsa cada etapa:</p>
+
+  <div class="pipeline">
+    <div class="etapa activa" data-i="0">
+      <div class="num">01</div>
+      <div class="nombre">Imagen</div>
+      <div style="font-size:22px; margin-top:4px">🖼️</div>
+    </div>
+    <div class="etapa flecha-pip">→</div>
+    <div class="etapa" data-i="1">
+      <div class="num">02</div>
+      <div class="nombre">Conv + ReLU</div>
+      <div style="font-size:22px; margin-top:4px">🔍</div>
+    </div>
+    <div class="etapa flecha-pip">→</div>
+    <div class="etapa" data-i="2">
+      <div class="num">03</div>
+      <div class="nombre">Pooling</div>
+      <div style="font-size:22px; margin-top:4px">🔻</div>
+    </div>
+    <div class="etapa flecha-pip">→</div>
+    <div class="etapa" data-i="3">
+      <div class="num">04</div>
+      <div class="nombre">FC + Softmax</div>
+      <div style="font-size:22px; margin-top:4px">🎯</div>
+    </div>
+  </div>
+
+  <div class="detalle-pipe" id="detallePipe">
+    <h3 style="margin-top:0">01 · Imagen de entrada</h3>
+    <p>Una foto se descompone en una matriz de números (alto × ancho × canales). Una imagen RGB de 224×224 son 224 × 224 × 3 = <strong>150528 valores</strong>. La red verá esa matriz, no el «gato».</p>
+  </div>
+</div>
+
+<!-- POOLING -->
+<div class="seccion">
+  <h2>Laboratorio 2 · Pooling: zoom hacia atrás</h2>
+  <p>Después de una convolución, el mapa de features puede ser enorme. El <strong>pooling</strong> lo resume: divide en cuadrantes y se queda con un solo número de cada uno. Reduce dimensionalidad y aporta cierta invarianza a pequeñas traslaciones.</p>
+
+  <div class="pool-tabs">
+    <div class="pool-tab activa" data-pool="max">Max Pooling</div>
+    <div class="pool-tab" data-pool="avg">Average Pooling</div>
+  </div>
+
+  <div class="titulos-matriz" style="grid-template-columns:1fr 0.3fr 1fr">
+    <div>FEATURE MAP 4×4</div>
+    <div>POOL 2×2</div>
+    <div>RESULTADO 2×2</div>
+  </div>
+
+  <div class="pool-lab">
+    <div class="matriz matriz4" id="poolIn"></div>
+    <div class="flecha">
+      <div class="op" id="poolOp">max</div>
+      <div style="font-size:14px; color:var(--gris); margin:8px 0">por cuadrante</div>
+      <div class="op">→</div>
+    </div>
+    <div class="matriz matriz2" id="poolOut"></div>
+  </div>
+
+  <div style="margin-top:14px; padding:14px; background:var(--crema); border-radius:6px; border-left:3px solid var(--acento); font-size:14px;">
+    <p id="explicaPool"><strong>Max pooling:</strong> de cada cuadrante se queda con el <strong>valor máximo</strong>. Es el más usado: conserva las activaciones más fuertes («la lupa detectó algo aquí»).</p>
+  </div>
+</div>
+
+<!-- ABSTRACCIÓN JERÁRQUICA -->
+<div class="seccion">
+  <h2>Cómo crece la abstracción capa a capa</h2>
+  <p>Una de las cosas más mágicas de las CNN: las capas <em>tempranas</em> aprenden cosas simples; las <em>profundas</em> aprenden cosas complejas. Sin que nadie se lo diga.</p>
+
+  <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-top:14px;">
+    <div style="background:var(--crema-2); padding:18px; border-radius:6px; text-align:center;">
+      <div style="font-size:36px; margin-bottom:8px;">/</div>
+      <h4 style="font-family:'Helvetica Neue',Arial,sans-serif; color:var(--marino); font-size:13px; letter-spacing:1px;">CAPA 1</h4>
+      <p style="font-size:13px; margin-top:6px;"><strong>Bordes y líneas.</strong> Detecta orientaciones: vertical, horizontal, diagonal. Como los receptores del córtex visual.</p>
+    </div>
+    <div style="background:var(--crema-2); padding:18px; border-radius:6px; text-align:center;">
+      <div style="font-size:36px; margin-bottom:8px;">⏣</div>
+      <h4 style="font-family:'Helvetica Neue',Arial,sans-serif; color:var(--marino); font-size:13px; letter-spacing:1px;">CAPA 3</h4>
+      <p style="font-size:13px; margin-top:6px;"><strong>Texturas y patrones.</strong> Combina bordes en patrones: rejillas, círculos, zigzags. La lupa empieza a distinguir tela de pelo.</p>
+    </div>
+    <div style="background:var(--crema-2); padding:18px; border-radius:6px; text-align:center;">
+      <div style="font-size:36px; margin-bottom:8px;">👁️</div>
+      <h4 style="font-family:'Helvetica Neue',Arial,sans-serif; color:var(--marino); font-size:13px; letter-spacing:1px;">CAPA 5</h4>
+      <p style="font-size:13px; margin-top:6px;"><strong>Partes de objetos.</strong> Ojos, ruedas, hojas, narices. La red ya reconoce trozos de cosas reales.</p>
+    </div>
+    <div style="background:var(--crema-2); padding:18px; border-radius:6px; text-align:center;">
+      <div style="font-size:36px; margin-bottom:8px;">🐶</div>
+      <h4 style="font-family:'Helvetica Neue',Arial,sans-serif; color:var(--marino); font-size:13px; letter-spacing:1px;">CAPA 7</h4>
+      <p style="font-size:13px; margin-top:6px;"><strong>Objetos completos.</strong> Caras de golden retriever, coches, edificios. La capa final puede dar nombre.</p>
+    </div>
+  </div>
+</div>
+
+<!-- QUIZ -->
+<div class="seccion">
+  <h2>¿Qué arquitectura usarías?</h2>
+  <p>Para cada caso, decide entre CNN, RNN/LSTM o GAN. Pulsa la respuesta para ver el feedback.</p>
+
+  <div class="casos">
+    <div class="caso" data-correcta="0">
+      <div class="pregunta">A · Detectar tumores en radiografías de tórax.</div>
+      <div class="respuestas">
+        <div class="resp">CNN</div>
+        <div class="resp">RNN / LSTM</div>
+        <div class="resp">GAN</div>
+      </div>
+      <div class="feedback"></div>
+    </div>
+    <div class="caso" data-correcta="1">
+      <div class="pregunta">B · Traductor automático español → inglés.</div>
+      <div class="respuestas">
+        <div class="resp">CNN</div>
+        <div class="resp">RNN / LSTM</div>
+        <div class="resp">GAN</div>
+      </div>
+      <div class="feedback"></div>
+    </div>
+    <div class="caso" data-correcta="2">
+      <div class="pregunta">C · Generar fotos de modelos para un catálogo de moda.</div>
+      <div class="respuestas">
+        <div class="resp">CNN</div>
+        <div class="resp">RNN / LSTM</div>
+        <div class="resp">GAN</div>
+      </div>
+      <div class="feedback"></div>
+    </div>
+    <div class="caso" data-correcta="1">
+      <div class="pregunta">D · Predecir el precio del Bitcoin de mañana a partir del histórico.</div>
+      <div class="respuestas">
+        <div class="resp">CNN</div>
+        <div class="resp">RNN / LSTM</div>
+        <div class="resp">GAN</div>
+      </div>
+      <div class="feedback"></div>
+    </div>
+    <div class="caso" data-correcta="0">
+      <div class="pregunta">E · Que el coche autónomo distinga peatones, semáforos y bicis.</div>
+      <div class="respuestas">
+        <div class="resp">CNN</div>
+        <div class="resp">RNN / LSTM</div>
+        <div class="resp">GAN</div>
+      </div>
+      <div class="feedback"></div>
+    </div>
+    <div class="caso" data-correcta="2">
+      <div class="pregunta">F · Convertir bocetos a mano alzada en imágenes fotorrealistas.</div>
+      <div class="respuestas">
+        <div class="resp">CNN</div>
+        <div class="resp">RNN / LSTM</div>
+        <div class="resp">GAN</div>
+      </div>
+      <div class="feedback"></div>
+    </div>
+  </div>
+</div>
+
+<footer>Sesión 03 · Fundamentos de Deep Learning · Estrategia del Dato, ML &amp; DL · UNIR</footer>
+
+</div>
+
+<script>
+// ============= IMAGEN 5x5 =============
+// Una "X" minimalista
+const imagen = [
+  [0, 0, 1, 0, 0],
+  [0, 1, 1, 1, 0],
+  [1, 1, 1, 1, 1],
+  [0, 1, 1, 1, 0],
+  [0, 0, 1, 0, 0]
+];
+
+// Kernels disponibles
+const kernels = {
+  vertical: {
+    nombre: 'Vertical',
+    desc: 'Detecta bordes verticales',
+    k: [[-1,2,-1],[-1,2,-1],[-1,2,-1]]
+  },
+  horizontal: {
+    nombre: 'Horizontal',
+    desc: 'Detecta bordes horizontales',
+    k: [[-1,-1,-1],[2,2,2],[-1,-1,-1]]
+  },
+  blur: {
+    nombre: 'Blur',
+    desc: 'Suaviza la imagen (promedio)',
+    k: [[1,1,1],[1,1,1],[1,1,1]]
+  },
+  diag: {
+    nombre: 'Diagonal',
+    desc: 'Detecta diagonales /',
+    k: [[-1,-1,2],[-1,2,-1],[2,-1,-1]]
+  }
+};
+
+let kernelActivo = 'vertical';
+let pos = -1;
+let featureValues = Array(9).fill(null);
+
+function dibujarKernels(){
+  const cont = document.getElementById('kernelsRow');
+  cont.innerHTML = '';
+  for(const [id, k] of Object.entries(kernels)){
+    const div = document.createElement('div');
+    div.className = 'kernel-opt' + (id===kernelActivo?' activa':'');
+    let html = `<h4>${k.nombre}</h4><div class="mini-kernel">`;
+    k.k.forEach(row => row.forEach(v => {
+      const cls = v>0?'pos':(v<0?'neg':'');
+      html += `<div class="c ${cls}">${v}</div>`;
+    }));
+    html += `</div><div class="desc">${k.desc}</div>`;
+    div.innerHTML = html;
+    div.addEventListener('click', () => {
+      kernelActivo = id;
+      pos = -1;
+      featureValues = Array(9).fill(null);
+      dibujarKernels();
+      dibujarImagen();
+      dibujarFeatureMap();
+      document.getElementById('calcConv').textContent = `Kernel ${k.nombre} activo. Pulsa «Siguiente paso».`;
+    });
+    cont.appendChild(div);
+  }
+}
+
+function dibujarImagen(){
+  const cont = document.getElementById('img5');
+  cont.innerHTML = '';
+  // Calcular qué celdas están bajo el kernel ahora
+  let activeCells = new Set();
+  if(pos >= 0 && pos < 9){
+    const r = Math.floor(pos/3), c = pos%3;
+    for(let i=0;i<3;i++){
+      for(let j=0;j<3;j++){
+        activeCells.add(`${r+i},${c+j}`);
+      }
+    }
+  }
+  for(let r=0;r<5;r++){
+    for(let c=0;c<5;c++){
+      const div = document.createElement('div');
+      div.className = 'celda' + (activeCells.has(`${r},${c}`)?' activa':'');
+      div.textContent = imagen[r][c];
+      div.style.background = imagen[r][c]===1 ? '#1a2b4a' : '#fff';
+      div.style.color = imagen[r][c]===1 ? '#fff' : '#a8a8a8';
+      if(activeCells.has(`${r},${c}`)){
+        div.style.borderColor = '#d4915d';
+        div.style.boxShadow = '0 0 8px rgba(212,145,93,0.5)';
+      }
+      cont.appendChild(div);
+    }
+  }
+}
+
+function dibujarFeatureMap(){
+  const cont = document.getElementById('featureMap');
+  cont.innerHTML = '';
+  const max = Math.max(...featureValues.filter(v=>v!==null).map(Math.abs), 1);
+  for(let i=0;i<9;i++){
+    const div = document.createElement('div');
+    div.className = 'celda';
+    if(featureValues[i] !== null){
+      const v = featureValues[i];
+      div.textContent = v;
+      const intensity = Math.abs(v)/max;
+      if(v >= 0){
+        div.style.background = `rgba(91,143,185,${0.2 + intensity*0.7})`;
+        div.style.color = intensity > 0.5 ? '#fff' : '#1a2b4a';
+      }else{
+        div.style.background = `rgba(184,84,80,${0.2 + intensity*0.7})`;
+        div.style.color = intensity > 0.5 ? '#fff' : '#1a2b4a';
+      }
+      if(i === pos){
+        div.classList.add('activa');
+      }
+    }else{
+      div.textContent = '·';
+      div.style.color = '#aaa';
+    }
+    cont.appendChild(div);
+  }
+}
+
+function siguientePaso(){
+  if(pos >= 8){
+    document.getElementById('calcConv').textContent = '✓ Convolución completa. Pulsa Reset para ver otro kernel.';
+    return;
+  }
+  pos++;
+  const r = Math.floor(pos/3), c = pos%3;
+  const k = kernels[kernelActivo].k;
+  let s = 0;
+  let detalle = '';
+  for(let i=0;i<3;i++){
+    for(let j=0;j<3;j++){
+      const v = imagen[r+i][c+j];
+      const w = k[i][j];
+      s += v*w;
+      detalle += `${v}×${w}${i===2&&j===2?'':' + '}`;
+    }
+  }
+  featureValues[pos] = s;
+  document.getElementById('calcConv').textContent =
+    `Posición (${r},${c}):\n${detalle} = ${s}\n\nEl resultado se escribe en la celda (${Math.floor(pos/3)},${pos%3}) del mapa de features.`;
+  dibujarImagen();
+  dibujarFeatureMap();
+}
+
+function resetConv(){
+  pos = -1;
+  featureValues = Array(9).fill(null);
+  dibujarImagen();
+  dibujarFeatureMap();
+  document.getElementById('calcConv').textContent = `Kernel ${kernels[kernelActivo].nombre} activo. Pulsa «Siguiente paso».`;
+}
+
+let autoT = null;
+function autoConv(){
+  if(autoT){ clearInterval(autoT); autoT=null; return; }
+  resetConv();
+  autoT = setInterval(()=>{
+    siguientePaso();
+    if(pos >= 8){ clearInterval(autoT); autoT=null; }
+  }, 600);
+}
+
+dibujarKernels();
+dibujarImagen();
+dibujarFeatureMap();
+
+// ============= PIPELINE =============
+const pipelineInfo = [
+  {t:'01 · Imagen de entrada', d:'Una foto se descompone en una matriz de números (alto × ancho × canales). Una imagen RGB de 224×224 son 224 × 224 × 3 = <strong>150528 valores</strong>. La red verá esa matriz, no el «gato».'},
+  {t:'02 · Convolución + ReLU', d:'Decenas de kernels distintos (32, 64, 128…) escanean la imagen en paralelo. Cada uno produce su propio mapa de features. La función <strong>ReLU</strong> aplica no-linealidad: convierte los valores negativos en 0. Resultado: muchos mapas que destacan distintos patrones.'},
+  {t:'03 · Pooling', d:'Cada mapa se reduce: divide en cuadrantes 2×2 y se queda con el máximo (max pooling) o el promedio (avg pooling). Esto reduce el tamaño a la mitad y aporta cierta tolerancia a pequeños desplazamientos del objeto en la imagen. Suelen apilarse varios bloques Conv+Pool.'},
+  {t:'04 · Capas totalmente conectadas + Softmax', d:'Después de varios bloques Conv+Pool, los mapas finales se aplanan (flatten) en un vector y se conectan a una red densa clásica. La última capa tiene una neurona por clase y aplica <strong>softmax</strong> para producir probabilidades. «Esto es un perro con probabilidad 0.91, un gato con 0.07, un hámster con 0.02.»'}
+];
+document.querySelectorAll('.etapa[data-i]').forEach(e => {
+  e.addEventListener('click', () => {
+    document.querySelectorAll('.etapa').forEach(x=>x.classList.remove('activa'));
+    e.classList.add('activa');
+    const i = parseInt(e.dataset.i);
+    document.getElementById('detallePipe').innerHTML =
+      `<h3 style="margin-top:0">${pipelineInfo[i].t}</h3><p>${pipelineInfo[i].d}</p>`;
+  });
+});
+
+// ============= POOLING =============
+const featureMapPool = [
+  [1, 3, 2, 4],
+  [5, 6, 1, 2],
+  [3, 2, 5, 7],
+  [1, 0, 6, 8]
+];
+let poolMode = 'max';
+
+function dibujarPool(){
+  const inC = document.getElementById('poolIn');
+  inC.innerHTML = '';
+  for(let r=0;r<4;r++){
+    for(let c=0;c<4;c++){
+      const div = document.createElement('div');
+      div.className = 'celda';
+      const v = featureMapPool[r][c];
+      div.textContent = v;
+      // Marcar máximos por cuadrante en max pooling
+      const qr = Math.floor(r/2), qc = Math.floor(c/2);
+      const cuadrante = [
+        featureMapPool[qr*2][qc*2],
+        featureMapPool[qr*2][qc*2+1],
+        featureMapPool[qr*2+1][qc*2],
+        featureMapPool[qr*2+1][qc*2+1]
+      ];
+      const m = Math.max(...cuadrante);
+      const colors = ['#fdf2e8','#e8e0d0','#e0d6c0','#d4c8b0'];
+      div.style.background = `rgba(${qr===0?(qc===0?'253,242,232':'232,224,208'):(qc===0?'224,214,192':'212,200,176')},1)`;
+      if(poolMode==='max' && v===m){
+        div.style.background = '#a8d4a8';
+        div.style.color = '#1f3a1f';
+        div.style.fontWeight = 'bold';
+      }
+      inC.appendChild(div);
+    }
+  }
+  // Salida
+  const outC = document.getElementById('poolOut');
+  outC.innerHTML = '';
+  for(let qr=0;qr<2;qr++){
+    for(let qc=0;qc<2;qc++){
+      const cuadrante = [
+        featureMapPool[qr*2][qc*2],
+        featureMapPool[qr*2][qc*2+1],
+        featureMapPool[qr*2+1][qc*2],
+        featureMapPool[qr*2+1][qc*2+1]
+      ];
+      const v = poolMode==='max' ? Math.max(...cuadrante) : (cuadrante.reduce((a,b)=>a+b,0)/4).toFixed(1);
+      const div = document.createElement('div');
+      div.className = 'celda ' + (poolMode==='max'?'pool-max':'pool-avg');
+      div.textContent = v;
+      outC.appendChild(div);
+    }
+  }
+  document.getElementById('poolOp').textContent = poolMode==='max' ? 'max' : 'avg';
+  document.getElementById('explicaPool').innerHTML = poolMode==='max'
+    ? '<strong>Max pooling:</strong> de cada cuadrante se queda con el <strong>valor máximo</strong>. Es el más usado: conserva las activaciones más fuertes («la lupa detectó algo aquí»).'
+    : '<strong>Average pooling:</strong> calcula la <strong>media</strong> del cuadrante. Más suave, conserva información global, pero diluye las señales fuertes.';
+}
+document.querySelectorAll('.pool-tab').forEach(t => {
+  t.addEventListener('click', () => {
+    document.querySelectorAll('.pool-tab').forEach(x=>x.classList.remove('activa'));
+    t.classList.add('activa');
+    poolMode = t.dataset.pool;
+    dibujarPool();
+  });
+});
+dibujarPool();
+
+// ============= QUIZ =============
+const explicaciones = [
+  '✓ <strong>CNN</strong>. Las radiografías son imágenes — datos espaciales en rejilla. Las CNN detectan patrones visuales (lesiones, sombras) sin que nadie les diga qué buscar.',
+  '✓ <strong>RNN / LSTM</strong>. La traducción es secuencia → secuencia: el orden de las palabras importa, y necesitas memoria de lo que dijiste antes para entender lo siguiente. (Hoy en día Transformers, pero la familia natural es RNN.)',
+  '✓ <strong>GAN</strong>. «Generar fotos» = crear datos nuevos realistas. Generador vs discriminador. StyleGAN hace exactamente esto.',
+  '✓ <strong>RNN / LSTM</strong>. Series temporales: el precio de hoy depende del de ayer y anteayer. La RNN arrastra estado. (Atención: predecir cripto es complicadísimo, pero la familia es ésta.)',
+  '✓ <strong>CNN</strong>. Reconocimiento visual en tiempo real desde una cámara. Pelaje del coche autónomo: YOLO, EfficientDet, todas son CNN.',
+  '✓ <strong>GAN</strong>. Generar imágenes a partir de otra entrada (boceto → foto) es traducción de imagen, una de las aplicaciones clásicas de GANs como pix2pix o CycleGAN.'
+];
+document.querySelectorAll('.caso').forEach((caso, idx) => {
+  const correcta = parseInt(caso.dataset.correcta);
+  caso.querySelectorAll('.resp').forEach((r,i) => {
+    r.addEventListener('click', () => {
+      if(caso.dataset.respondido) return;
+      caso.dataset.respondido = '1';
+      const fb = caso.querySelector('.feedback');
+      if(i === correcta){
+        r.classList.add('correcta');
+        fb.className = 'feedback activo bien';
+        fb.innerHTML = explicaciones[idx];
+      }else{
+        r.classList.add('incorrecta');
+        caso.querySelectorAll('.resp')[correcta].classList.add('correcta');
+        fb.className = 'feedback activo mal';
+        fb.innerHTML = '✗ Correcta era la marcada en verde. ' + explicaciones[idx].replace('✓ ','');
+      }
+    });
+  });
+});
+</script>
+
+</body>
+</html>

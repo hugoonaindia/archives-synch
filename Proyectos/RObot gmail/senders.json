@@ -1,0 +1,8 @@
+{
+  "blocked": [
+    "newsletter@ads.com"
+  ],
+  "whitelist": [
+    "boss@company.com"
+  ]
+}

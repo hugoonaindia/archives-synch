@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Artefacto 2 · Constructor de Red Neuronal</title>
+<style>
+:root{
+  --crema:#f5f1e8; --crema-2:#ede6d3; --marino:#1a2b4a; --marino-2:#2d4368;
+  --azul:#5b8fb9; --azul-claro:#a8c5e2; --acento:#d4915d;
+  --verde:#6b8e6b; --rojo:#b85450; --texto:#2a2a2a; --gris:#6b6b6b;
+  color-scheme: light;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:Georgia,'Times New Roman',serif;
+  background:var(--crema); color:var(--texto);
+  line-height:1.6;
+}
+.contenedor{max-width:1100px; margin:0 auto; padding:40px 24px}
+header{
+  border-bottom:3px solid var(--marino);
+  padding-bottom:24px; margin-bottom:36px;
+}
+.kicker{
+  font-family:'Helvetica Neue',Arial,sans-serif;
+  font-size:11px; letter-spacing:3px; color:var(--azul);
+  text-transform:uppercase; margin-bottom:8px;
+}
+h1{font-size:42px; color:var(--marino); margin-bottom:8px; font-weight:normal}
+.subtitulo{color:var(--gris); font-size:17px; font-style:italic}
+
+.seccion{
+  background:#fff; border-radius:6px; padding:32px;
+  margin-bottom:28px;
+  box-shadow:0 2px 12px rgba(26,43,74,0.08);
+  border-left:4px solid var(--azul);
+}
+.seccion h2{
+  font-size:26px; color:var(--marino); margin-bottom:14px;
+  font-weight:normal;
+}
+.seccion h3{
+  font-size:17px; color:var(--marino-2); margin:20px 0 10px;
+  font-family:'Helvetica Neue',Arial,sans-serif;
+  letter-spacing:1px; text-transform:uppercase; font-weight:600;
+}
+.seccion p{margin-bottom:12px}
+
+.tipos-capa{
+  display:grid; grid-template-columns:repeat(3,1fr); gap:16px;
+  margin-top:16px;
+}
+.capa-card{
+  background:var(--crema-2); padding:20px; border-radius:6px;
+  border-top:4px solid var(--azul);
+}
+.capa-card h4{
+  color:var(--marino); margin-bottom:8px;
+  font-family:'Helvetica Neue',Arial,sans-serif;
+  font-size:14px; letter-spacing:1px;
+}
+.capa-card .ico{font-size:32px; margin-bottom:8px}
+.capa-card p{font-size:14px; margin-bottom:6px}
+
+/* Constructor */
+.constructor{margin-top:18px}
+.builder-controles{
+  display:grid; grid-template-columns:repeat(4,1fr); gap:14px;
+  margin-bottom:20px;
+}
+.builder-controles .control{margin:0}
+.boton-fila{
+  display:flex; gap:10px; flex-wrap:wrap; margin-bottom:18px;
+}
+.btn{
+  padding:11px 20px; border:none; cursor:pointer;
+  font-family:'Helvetica Neue',Arial,sans-serif; font-size:13px;
+  border-radius:4px; transition:all 0.2s; font-weight:600;
+  letter-spacing:0.5px;
+}
+.btn-primary{background:var(--acento); color:#fff}
+.btn-primary:hover{background:var(--marino)}
+.btn-secondary{background:var(--marino); color:#fff}
+.btn-secondary:hover{background:var(--marino-2)}
+.btn-outline{background:#fff; color:var(--marino); border:2px solid var(--marino)}
+.btn-outline:hover{background:var(--marino); color:#fff}
+
+.control{margin-bottom:14px}
+.control label{
+  display:flex; justify-content:space-between;
+  font-family:'Helvetica Neue',Arial,sans-serif; font-size:12px;
+  color:var(--marino); margin-bottom:6px; font-weight:600;
+}
+.control .valor{
+  color:var(--acento); font-weight:bold;
+  font-family:'Courier New',monospace;
+}
+.control input[type=range]{
+  width:100%; -webkit-appearance:none; height:6px;
+  background:#d4ccb8; border-radius:3px; outline:none;
+}
+.control input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none; width:16px; height:16px;
+  border-radius:50%; background:var(--azul); cursor:pointer;
+  border:2px solid #fff;
+}
+.control input[type=range]::-moz-range-thumb{
+  width:16px; height:16px; border-radius:50%;
+  background:var(--azul); cursor:pointer;
+  border:2px solid #fff;
+}
+.control select{
+  width:100%; padding:8px; font-family:Georgia,serif;
+  border:1px solid #d4ccb8; border-radius:4px; background:#fff;
+}
+
+.viz-red{
+  background:var(--crema-2); padding:20px; border-radius:6px;
+  margin-bottom:18px;
+}
+
+.metricas{
+  display:grid; grid-template-columns:repeat(3,1fr); gap:14px;
+  margin-bottom:14px;
+}
+.metric-card{
+  background:#fff; padding:14px; border-radius:6px;
+  text-align:center; border:2px solid var(--crema-2);
+}
+.metric-card .label{
+  font-family:'Helvetica Neue',Arial,sans-serif;
+  font-size:11px; color:var(--gris); letter-spacing:1px;
+  text-transform:uppercase;
+}
+.metric-card .valor{
+  font-size:28px; color:var(--marino); font-weight:bold;
+  margin-top:4px; font-family:Georgia,serif;
+}
+
+.dataset-card{
+  background:var(--crema); padding:14px; border-radius:6px;
+  margin-bottom:14px; border-left:3px solid var(--azul);
+  font-size:14px;
+}
+.dataset-row{
+  display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+}
+
+.curva-loss{
+  background:var(--crema-2); padding:18px; border-radius:6px;
+}
+
+/* Tarjetas de capas */
+.capa-tarjetas{
+  display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px;
+}
+.capa-tag{
+  padding:8px 14px; background:var(--crema-2); border-radius:4px;
+  font-family:'Helvetica Neue',Arial,sans-serif; font-size:12px;
+  font-weight:600; color:var(--marino);
+}
+.capa-tag.entrada{background:#cee0ed; color:var(--marino)}
+.capa-tag.oculta{background:#f5d8c4; color:#7a3a1c}
+.capa-tag.salida{background:#cfe6d0; color:#1f3a1f}
+
+/* Quiz dropzone */
+.matching{margin-top:16px}
+.matching-zona{
+  display:grid; grid-template-columns:1fr 1fr; gap:18px;
+  margin-bottom:14px;
+}
+.col{
+  background:var(--crema-2); padding:14px; border-radius:6px;
+}
+.col h4{
+  font-family:'Helvetica Neue',Arial,sans-serif; font-size:13px;
+  color:var(--marino); letter-spacing:1px; margin-bottom:10px;
+}
+.tarjeta-match{
+  padding:11px 14px; background:#fff; margin-bottom:8px;
+  border-radius:4px; border:2px solid #ddd; cursor:pointer;
+  font-size:14px; transition:all 0.2s;
+}
+.tarjeta-match.seleccionada{border-color:var(--acento); background:#fdf2e8}
+.tarjeta-match.bien{border-color:var(--verde); background:#e3eee3}
+.tarjeta-match.mal{border-color:var(--rojo); background:#f5d8d4}
+.tarjeta-match.usada{opacity:0.4; pointer-events:none}
+
+.btn-eval{margin-top:8px}
+.feedback-quiz{
+  margin-top:12px; padding:12px; border-radius:4px; font-size:14px;
+  display:none;
+}
+.feedback-quiz.activo{display:block}
+.feedback-quiz.bien{background:#d8eed8; color:#1f3a1f}
+.feedback-quiz.mal{background:#f5d8d4; color:#3a1f1d}
+
+footer{
+  text-align:center; color:var(--gris); font-size:13px;
+  padding:24px 0; font-style:italic;
+}
+
+@media(max-width:780px){
+  .tipos-capa,.builder-controles,.metricas,.matching-zona{grid-template-columns:1fr}
+  .builder-controles{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+<div class="contenedor">
+
+<header>
+  <div class="kicker">SESIÓN 03 · ARTEFACTO 02 · DEEP LEARNING</div>
+  <h1>Constructor de red neuronal</h1>
+  <p class="subtitulo">Diseña una red, entrénala en directo y mira cómo aprende epoch a epoch.</p>
+</header>
+
+<!-- INTRO TIPOS DE CAPA -->
+<div class="seccion">
+  <h2>Tres tipos de capa, una arquitectura</h2>
+  <p>Toda red neuronal feed-forward tiene la misma anatomía. Cambia el número de neuronas y el número de capas ocultas, pero el esqueleto es siempre éste:</p>
+
+  <div class="tipos-capa">
+    <div class="capa-card" style="border-color:var(--azul)">
+      <div class="ico">📥</div>
+      <h4>CAPA DE ENTRADA</h4>
+      <p><strong>Recibe el dato crudo.</strong></p>
+      <p>Una neurona por cada característica. Si tu dato es una imagen 28×28, son 784 neuronas. Si es una fila de Excel con 5 columnas, son 5.</p>
+    </div>
+    <div class="capa-card" style="border-color:var(--acento)">
+      <div class="ico">⚙️</div>
+      <h4>CAPAS OCULTAS</h4>
+      <p><strong>Donde ocurre la magia.</strong></p>
+      <p>Procesan, abstraen, combinan. Cada capa aprende algo más complejo: la primera ve bordes, la séptima ve «golden retriever». Cuanto más profunda, más abstracta.</p>
+    </div>
+    <div class="capa-card" style="border-color:var(--verde)">
+      <div class="ico">📤</div>
+      <h4>CAPA DE SALIDA</h4>
+      <p><strong>El veredicto final.</strong></p>
+      <p>Su tamaño depende del problema: 1 neurona para regresión, 1 con sigmoide para clasificación binaria, N con softmax para N clases.</p>
+    </div>
+  </div>
+</div>
+
+<!-- CONSTRUCTOR -->
+<div class="seccion">
+  <h2>Laboratorio · Construye y entrena tu red</h2>
+  <p>Configura la arquitectura, elige un dataset y un learning rate, y pulsa <strong>«Entrenar»</strong>. Verás la pérdida bajando epoch a epoch y los pesos de cada conexión coloreándose según se ajustan.</p>
+
+  <div class="constructor">
+    <div class="dataset-card">
+      <div class="dataset-row">
+        <strong>Dataset:</strong>
+        <select id="dataset">
+          <option value="xor">XOR · clasificación binaria (no lineal)</option>
+          <option value="circulo">Círculo dentro vs fuera</option>
+          <option value="lineal">Datos lineales (fáciles)</option>
+        </select>
+        <span style="color:var(--gris); font-size:13px; margin-left:auto;" id="datasetDesc">XOR: dos categorías que no se separan con una línea recta. Test clásico para redes neuronales.</span>
+      </div>
+    </div>
+
+    <div class="builder-controles">
+      <div class="control">
+        <label><span>Capas ocultas</span><span class="valor" id="vNCapas">2</span></label>
+        <input type="range" id="nCapas" min="1" max="4" step="1" value="2">
+      </div>
+      <div class="control">
+        <label><span>Neuronas por capa</span><span class="valor" id="vNeuronas">4</span></label>
+        <input type="range" id="nNeuronas" min="2" max="8" step="1" value="4">
+      </div>
+      <div class="control">
+        <label><span>Activación oculta</span></label>
+        <select id="actHidden">
+          <option value="relu">ReLU</option>
+          <option value="tanh">Tanh</option>
+          <option value="sigmoide">Sigmoide</option>
+        </select>
+      </div>
+      <div class="control">
+        <label><span>Learning rate (η)</span><span class="valor" id="vLR">0.10</span></label>
+        <input type="range" id="lr" min="0.01" max="1" step="0.01" value="0.1">
+      </div>
+    </div>
+
+    <div class="capa-tarjetas" id="capaTarjetas">
+      <span class="capa-tag entrada">📥 Entrada · 2 neuronas</span>
+      <span class="capa-tag oculta">⚙️ Oculta 1 · 4 neuronas (ReLU)</span>
+      <span class="capa-tag oculta">⚙️ Oculta 2 · 4 neuronas (ReLU)</span>
+      <span class="capa-tag salida">📤 Salida · 1 neurona (Sigmoide)</span>
+    </div>
+
+    <div class="boton-fila">
+      <button class="btn btn-primary" onclick="entrenar()">▶ Entrenar (200 epochs)</button>
+      <button class="btn btn-secondary" onclick="resetRed()">↺ Reset pesos</button>
+      <button class="btn btn-outline" onclick="paso()">→ 1 epoch</button>
+    </div>
+
+    <div class="viz-red">
+      <canvas id="canvasRed" width="1000" height="380"></canvas>
+    </div>
+
+    <div class="metricas">
+      <div class="metric-card">
+        <div class="label">Epoch</div>
+        <div class="valor" id="mEpoch">0</div>
+      </div>
+      <div class="metric-card">
+        <div class="label">Pérdida (loss)</div>
+        <div class="valor" id="mLoss">—</div>
+      </div>
+      <div class="metric-card">
+        <div class="label">Precisión</div>
+        <div class="valor" id="mAcc">—</div>
+      </div>
+    </div>
+
+    <div class="curva-loss">
+      <h3 style="margin-top:0">Curva de pérdida · cómo evoluciona el aprendizaje</h3>
+      <canvas id="canvasLoss" width="1000" height="220"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- INTUICIÓN -->
+<div class="seccion">
+  <h2>¿Qué pasa al añadir capas?</h2>
+  <p>Lee el diagnóstico que te da el laboratorio cuando termina de entrenar. Hay tres escenarios típicos que verás:</p>
+
+  <div class="tipos-capa">
+    <div class="capa-card" style="border-color:var(--rojo)">
+      <h4>🚫 RED DEMASIADO PEQUEÑA</h4>
+      <p>Una sola capa oculta con 2 neuronas no podrá aprender XOR. Verás la pérdida estancada en 0.69 (lo que dice una moneda al aire). Solución: añade neuronas o profundidad.</p>
+    </div>
+    <div class="capa-card" style="border-color:var(--verde)">
+      <h4>✓ ARQUITECTURA EQUILIBRADA</h4>
+      <p>2-3 capas con 4-6 neuronas suelen bastar. La pérdida baja suavemente y la precisión sube hacia el 90-100%.</p>
+    </div>
+    <div class="capa-card" style="border-color:var(--acento)">
+      <h4>⚠️ DEMASIADO LR</h4>
+      <p>Con η=1, las pérdidas oscilan o explotan. La red salta el valle. Bájalo a 0.1 y verás el cambio inmediato.</p>
+    </div>
+  </div>
+</div>
+
+<!-- MATCHING -->
+<div class="seccion">
+  <h2>Empareja conceptos</h2>
+  <p>Pulsa una etiqueta y luego su definición correcta. Te diré si has acertado.</p>
+
+  <div class="matching">
+    <div class="matching-zona">
+      <div class="col">
+        <h4>CONCEPTOS</h4>
+        <div class="tarjeta-match izq" data-id="forward">Forward pass</div>
+        <div class="tarjeta-match izq" data-id="backprop">Backpropagation</div>
+        <div class="tarjeta-match izq" data-id="epoch">Epoch</div>
+        <div class="tarjeta-match izq" data-id="lr">Learning rate</div>
+        <div class="tarjeta-match izq" data-id="loss">Función de pérdida</div>
+        <div class="tarjeta-match izq" data-id="grad">Gradiente desvaneciente</div>
+      </div>
+      <div class="col">
+        <h4>DEFINICIONES</h4>
+        <div class="tarjeta-match der" data-id="forward">Pasada del dato por la red de izquierda a derecha hasta producir una predicción.</div>
+        <div class="tarjeta-match der" data-id="backprop">Algoritmo que reparte la culpa del error entre los pesos viajando hacia atrás.</div>
+        <div class="tarjeta-match der" data-id="epoch">Una vuelta completa por todos los datos del dataset de entrenamiento.</div>
+        <div class="tarjeta-match der" data-id="lr">Tamaño del paso al ajustar pesos. Hulk vs abuelita.</div>
+        <div class="tarjeta-match der" data-id="loss">Número que cuantifica cuánto se equivoca el modelo en una predicción.</div>
+        <div class="tarjeta-match der" data-id="grad">Problema en redes profundas: los gradientes se hacen tan pequeños que las primeras capas no aprenden.</div>
+      </div>
+    </div>
+    <button class="btn btn-secondary btn-eval" onclick="resetMatch()">↺ Reiniciar emparejamiento</button>
+    <div class="feedback-quiz" id="fbMatch"></div>
+  </div>
+</div>
+
+<footer>Sesión 03 · Fundamentos de Deep Learning · Estrategia del Dato, ML &amp; DL · UNIR</footer>
+
+</div>
+
+<script>
+// ============= DATASETS =============
+const datasets = {
+  xor: () => {
+    const data = [];
+    for(let i=0;i<60;i++){
+      const x1 = Math.random()*2-1;
+      const x2 = Math.random()*2-1;
+      const y = (x1>0)!==(x2>0) ? 1 : 0;
+      data.push({x:[x1,x2], y});
+    }
+    return data;
+  },
+  circulo: () => {
+    const data = [];
+    for(let i=0;i<60;i++){
+      const x1 = Math.random()*2-1;
+      const x2 = Math.random()*2-1;
+      const y = (x1*x1+x2*x2 < 0.5) ? 1 : 0;
+      data.push({x:[x1,x2], y});
+    }
+    return data;
+  },
+  lineal: () => {
+    const data = [];
+    for(let i=0;i<60;i++){
+      const x1 = Math.random()*2-1;
+      const x2 = Math.random()*2-1;
+      const y = (x1+x2 > 0) ? 1 : 0;
+      data.push({x:[x1,x2], y});
+    }
+    return data;
+  }
+};
+const descripciones = {
+  xor: 'XOR: dos categorías que no se separan con una línea recta. Test clásico para redes neuronales.',
+  circulo: 'Clasificación dentro/fuera de un círculo. Necesita curvas — imposible para un modelo lineal.',
+  lineal: 'Datos linealmente separables. Hasta una sola neurona puede resolverlo.'
+};
+
+let dataset = datasets.xor();
+let datasetTipo = 'xor';
+document.getElementById('dataset').addEventListener('change', e=>{
+  datasetTipo = e.target.value;
+  dataset = datasets[datasetTipo]();
+  document.getElementById('datasetDesc').textContent = descripciones[datasetTipo];
+  resetRed();
+});
+
+// ============= ACTIVACIONES =============
+const activaciones = {
+  relu: {f: z => Math.max(0,z), d: z => z>0?1:0},
+  tanh: {f: z => Math.tanh(z), d: z => 1-Math.tanh(z)*Math.tanh(z)},
+  sigmoide: {f: z => 1/(1+Math.exp(-z)), d: z => {const s=1/(1+Math.exp(-z));return s*(1-s);}}
+};
+const sigmoide = z => 1/(1+Math.exp(-z));
+
+// ============= ARQUITECTURA =============
+let red = null;
+function crearRed(){
+  const nC = parseInt(document.getElementById('nCapas').value);
+  const nN = parseInt(document.getElementById('nNeuronas').value);
+  const layers = [2];
+  for(let i=0;i<nC;i++) layers.push(nN);
+  layers.push(1);
+
+  const W = [], B = [];
+  for(let i=0;i<layers.length-1;i++){
+    const w = [];
+    const b = [];
+    for(let j=0;j<layers[i+1];j++){
+      const row = [];
+      for(let k=0;k<layers[i];k++){
+        // Xavier init
+        const std = Math.sqrt(2/(layers[i]+layers[i+1]));
+        row.push((Math.random()*2-1)*std);
+      }
+      w.push(row);
+      b.push(0);
+    }
+    W.push(w); B.push(b);
+  }
+  red = {W, B, layers};
+
+  // Tarjetas de capas
+  const tags = document.getElementById('capaTarjetas');
+  tags.innerHTML = `<span class="capa-tag entrada">📥 Entrada · 2 neuronas</span>`;
+  const act = document.getElementById('actHidden').value;
+  for(let i=0;i<nC;i++){
+    tags.innerHTML += `<span class="capa-tag oculta">⚙️ Oculta ${i+1} · ${nN} neuronas (${act.toUpperCase()})</span>`;
+  }
+  tags.innerHTML += `<span class="capa-tag salida">📤 Salida · 1 neurona (Sigmoide)</span>`;
+}
+
+function forwardPass(x){
+  const act = activaciones[document.getElementById('actHidden').value];
+  let a = x.slice();
+  const cache = {a: [a.slice()], z: []};
+  for(let i=0;i<red.W.length;i++){
+    const z = [], aNext = [];
+    for(let j=0;j<red.W[i].length;j++){
+      let s = red.B[i][j];
+      for(let k=0;k<a.length;k++) s += red.W[i][j][k]*a[k];
+      z.push(s);
+      // última capa = sigmoide; resto = activación oculta
+      if(i === red.W.length-1) aNext.push(sigmoide(s));
+      else aNext.push(act.f(s));
+    }
+    cache.z.push(z);
+    cache.a.push(aNext.slice());
+    a = aNext;
+  }
+  return {salida:a[0], cache};
+}
+
+function backwardPass(x, y, cache){
+  const act = activaciones[document.getElementById('actHidden').value];
+  const lr = parseFloat(document.getElementById('lr').value);
+  const dW = red.W.map(layer => layer.map(row => row.map(()=>0)));
+  const dB = red.B.map(layer => layer.map(()=>0));
+
+  // Delta capa de salida (sigmoide + cross-entropy ⇒ a - y)
+  let delta = [cache.a[cache.a.length-1][0] - y];
+
+  for(let i=red.W.length-1; i>=0; i--){
+    const aPrev = cache.a[i];
+    for(let j=0;j<red.W[i].length;j++){
+      dB[i][j] = delta[j];
+      for(let k=0;k<aPrev.length;k++){
+        dW[i][j][k] = delta[j]*aPrev[k];
+      }
+    }
+    if(i>0){
+      const newDelta = new Array(red.W[i-1].length).fill(0);
+      for(let k=0;k<red.W[i-1].length;k++){
+        let s = 0;
+        for(let j=0;j<red.W[i].length;j++) s += red.W[i][j][k]*delta[j];
+        const z = cache.z[i-1][k];
+        newDelta[k] = s*act.d(z);
+      }
+      delta = newDelta;
+    }
+  }
+  // Update
+  for(let i=0;i<red.W.length;i++){
+    for(let j=0;j<red.W[i].length;j++){
+      red.B[i][j] -= lr*dB[i][j];
+      for(let k=0;k<red.W[i][j].length;k++){
+        red.W[i][j][k] -= lr*dW[i][j][k];
+      }
+    }
+  }
+}
+
+function calcularLoss(){
+  let loss = 0;
+  let aciertos = 0;
+  for(const d of dataset){
+    const p = forwardPass(d.x).salida;
+    loss += -(d.y*Math.log(p+1e-9) + (1-d.y)*Math.log(1-p+1e-9));
+    if((p>0.5?1:0)===d.y) aciertos++;
+  }
+  return {loss: loss/dataset.length, acc: aciertos/dataset.length};
+}
+
+let lossHistory = [];
+let epoch = 0;
+
+function paso(){
+  for(const d of dataset){
+    const f = forwardPass(d.x);
+    backwardPass(d.x, d.y, f.cache);
+  }
+  epoch++;
+  const m = calcularLoss();
+  lossHistory.push(m.loss);
+  document.getElementById('mEpoch').textContent = epoch;
+  document.getElementById('mLoss').textContent = m.loss.toFixed(4);
+  document.getElementById('mAcc').textContent = (m.acc*100).toFixed(0)+'%';
+  dibujarRed();
+  dibujarLoss();
+}
+
+let entrenando = false;
+function entrenar(){
+  if(entrenando){ entrenando=false; return; }
+  entrenando = true;
+  let n = 0;
+  const t = setInterval(()=>{
+    if(!entrenando || n>=200){
+      clearInterval(t);
+      entrenando = false;
+      return;
+    }
+    paso();
+    n++;
+  }, 16);
+}
+
+function resetRed(){
+  entrenando = false;
+  epoch = 0;
+  lossHistory = [];
+  crearRed();
+  document.getElementById('mEpoch').textContent = 0;
+  document.getElementById('mLoss').textContent = '—';
+  document.getElementById('mAcc').textContent = '—';
+  dibujarRed();
+  dibujarLoss();
+}
+
+// ============= VIZ RED =============
+const canvasRed = document.getElementById('canvasRed');
+const ctxRed = canvasRed.getContext('2d');
+
+function dibujarRed(){
+  const W = canvasRed.width, H = canvasRed.height;
+  ctxRed.clearRect(0,0,W,H);
+  if(!red) return;
+  const layers = red.layers;
+  const nL = layers.length;
+  const xs = layers.map((_,i) => 60 + i*((W-120)/(nL-1)));
+
+  // Aristas
+  for(let l=0;l<nL-1;l++){
+    const ys1 = posY(layers[l], H);
+    const ys2 = posY(layers[l+1], H);
+    for(let j=0;j<layers[l+1];j++){
+      for(let k=0;k<layers[l];k++){
+        const w = red.W[l][j][k];
+        ctxRed.strokeStyle = w>=0 ? `rgba(91,143,185,${Math.min(0.9,Math.abs(w)*0.7+0.15)})` : `rgba(184,84,80,${Math.min(0.9,Math.abs(w)*0.7+0.15)})`;
+        ctxRed.lineWidth = Math.min(4, Math.abs(w)*1.8+0.5);
+        ctxRed.beginPath();
+        ctxRed.moveTo(xs[l], ys1[k]);
+        ctxRed.lineTo(xs[l+1], ys2[j]);
+        ctxRed.stroke();
+      }
+    }
+  }
+  // Neuronas
+  for(let l=0;l<nL;l++){
+    const ys = posY(layers[l], H);
+    let color = '#a8c5e2';
+    if(l===0) color='#a8c5e2';
+    else if(l===nL-1) color='#a8d4a8';
+    else color='#f5d8c4';
+    for(let j=0;j<layers[l];j++){
+      ctxRed.fillStyle = color;
+      ctxRed.strokeStyle = '#1a2b4a';
+      ctxRed.lineWidth = 2;
+      ctxRed.beginPath();
+      ctxRed.arc(xs[l], ys[j], 16, 0, Math.PI*2);
+      ctxRed.fill(); ctxRed.stroke();
+    }
+    // Etiqueta
+    ctxRed.fillStyle = '#1a2b4a';
+    ctxRed.font = '12px Helvetica, Arial';
+    ctxRed.textAlign = 'center';
+    let label = '';
+    if(l===0) label = 'Entrada';
+    else if(l===nL-1) label = 'Salida';
+    else label = `Oculta ${l}`;
+    ctxRed.fillText(label, xs[l], 28);
+    ctxRed.fillText(`(${layers[l]} n.)`, xs[l], H-14);
+  }
+}
+function posY(n, H){
+  const margin = 60;
+  if(n===1) return [H/2];
+  const step = (H-margin*2)/(n-1);
+  return Array.from({length:n}, (_,i) => margin + i*step);
+}
+
+// ============= VIZ LOSS =============
+const canvasLoss = document.getElementById('canvasLoss');
+const ctxLoss = canvasLoss.getContext('2d');
+function dibujarLoss(){
+  const W = canvasLoss.width, H = canvasLoss.height;
+  ctxLoss.clearRect(0,0,W,H);
+  // grid
+  ctxLoss.strokeStyle = '#ede6d3';
+  ctxLoss.lineWidth = 1;
+  for(let i=0;i<=10;i++){
+    ctxLoss.beginPath();
+    ctxLoss.moveTo(0,H*i/10); ctxLoss.lineTo(W,H*i/10); ctxLoss.stroke();
+    ctxLoss.beginPath();
+    ctxLoss.moveTo(W*i/10,0); ctxLoss.lineTo(W*i/10,H); ctxLoss.stroke();
+  }
+  // ejes
+  ctxLoss.strokeStyle = '#6b6b6b';
+  ctxLoss.beginPath();
+  ctxLoss.moveTo(40,0); ctxLoss.lineTo(40,H-30); ctxLoss.stroke();
+  ctxLoss.beginPath();
+  ctxLoss.moveTo(40,H-30); ctxLoss.lineTo(W,H-30); ctxLoss.stroke();
+  // títulos
+  ctxLoss.fillStyle = '#6b6b6b';
+  ctxLoss.font = '11px Helvetica, Arial';
+  ctxLoss.textAlign='left';
+  ctxLoss.fillText('Loss', 6, 14);
+  ctxLoss.fillText('Epoch →', W-60, H-12);
+
+  if(lossHistory.length<2) return;
+  const maxLoss = Math.max(0.7, ...lossHistory);
+  const minLoss = 0;
+  const N = lossHistory.length;
+  ctxLoss.strokeStyle = '#d4915d';
+  ctxLoss.lineWidth = 2.5;
+  ctxLoss.beginPath();
+  lossHistory.forEach((l,i)=>{
+    const x = 40 + (i/(N-1))*(W-50);
+    const y = (H-30) - ((l-minLoss)/(maxLoss-minLoss))*(H-40);
+    if(i===0) ctxLoss.moveTo(x,y); else ctxLoss.lineTo(x,y);
+  });
+  ctxLoss.stroke();
+  // valor actual
+  const lastLoss = lossHistory[lossHistory.length-1];
+  ctxLoss.fillStyle = '#d4915d';
+  ctxLoss.font = 'bold 13px Helvetica, Arial';
+  ctxLoss.textAlign='right';
+  ctxLoss.fillText(`${lastLoss.toFixed(4)}`, W-10, 26);
+}
+
+// listeners
+['nCapas','nNeuronas','actHidden','lr'].forEach(id => {
+  document.getElementById(id).addEventListener('input', ()=>{
+    document.getElementById('vNCapas').textContent = document.getElementById('nCapas').value;
+    document.getElementById('vNeuronas').textContent = document.getElementById('nNeuronas').value;
+    document.getElementById('vLR').textContent = parseFloat(document.getElementById('lr').value).toFixed(2);
+    if(id !== 'lr') resetRed();
+  });
+});
+document.getElementById('actHidden').addEventListener('change', resetRed);
+resetRed();
+
+// ============= MATCHING =============
+let selIzq = null;
+const aciertos = new Set();
+function setupMatch(){
+  document.querySelectorAll('.tarjeta-match.izq').forEach(t => {
+    t.addEventListener('click', () => {
+      if(t.classList.contains('usada')) return;
+      document.querySelectorAll('.tarjeta-match.izq').forEach(x=>x.classList.remove('seleccionada'));
+      t.classList.add('seleccionada');
+      selIzq = t;
+    });
+  });
+  document.querySelectorAll('.tarjeta-match.der').forEach(t => {
+    t.addEventListener('click', () => {
+      if(t.classList.contains('usada')) return;
+      if(!selIzq) return;
+      const fb = document.getElementById('fbMatch');
+      if(t.dataset.id === selIzq.dataset.id){
+        selIzq.classList.add('bien','usada');
+        t.classList.add('bien','usada');
+        selIzq.classList.remove('seleccionada');
+        aciertos.add(t.dataset.id);
+        fb.className = 'feedback-quiz activo bien';
+        fb.textContent = `✓ ¡Correcto! Llevas ${aciertos.size} de 6.`;
+        if(aciertos.size === 6){
+          fb.textContent = '🎉 ¡Perfecto! Has emparejado los 6 conceptos. Dominas el vocabulario básico.';
+        }
+      }else{
+        t.classList.add('mal');
+        setTimeout(()=>t.classList.remove('mal'), 800);
+        selIzq.classList.add('mal');
+        setTimeout(()=>selIzq && selIzq.classList.remove('mal'), 800);
+        fb.className = 'feedback-quiz activo mal';
+        fb.textContent = '✗ No es ese. Vuelve a intentarlo.';
+      }
+      selIzq = null;
+    });
+  });
+}
+function resetMatch(){
+  document.querySelectorAll('.tarjeta-match').forEach(t => {
+    t.classList.remove('bien','mal','usada','seleccionada');
+  });
+  aciertos.clear();
+  selIzq = null;
+  document.getElementById('fbMatch').className = 'feedback-quiz';
+  document.getElementById('fbMatch').textContent = '';
+}
+setupMatch();
+</script>
+
+</body>
+</html>

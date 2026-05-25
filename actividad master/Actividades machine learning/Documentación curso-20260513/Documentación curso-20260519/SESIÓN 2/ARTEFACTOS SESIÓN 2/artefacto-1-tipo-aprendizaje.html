@@ -1,0 +1,2154 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Artefacto 1 · ¿Qué tipo de aprendizaje necesita tu problema?</title>
+<style>
+  /* ===== Paleta y tipografías de la presentación ===== */
+  :root {
+    --cream: #F5F1E8;
+    --cream-dark: #ECE6D6;
+    --navy: #0F1B4D;
+    --navy-soft: #1E2A5E;
+    --blue: #3FA9F5;
+    --blue-light: #B8DEF9;
+    --ink: #1A1A2E;
+    --muted: #6B6B7C;
+    --line: #C9C2B0;
+    --good: #2E8B57;
+    --bad: #C8453F;
+    --amber: #D9994E;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--cream);
+    color: var(--ink);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  .serif { font-family: 'Cormorant Garamond', 'Playfair Display', Georgia, serif; font-weight: 500; }
+  .mono { font-family: 'JetBrains Mono', 'Courier New', monospace; }
+
+  /* ===== Layout ===== */
+  .wrap {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 48px 32px 80px;
+  }
+  header.hero {
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 32px;
+    margin-bottom: 48px;
+  }
+  .tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    color: var(--navy);
+    text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+  .tag .dot { color: var(--blue); }
+  h1.title {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-weight: 500;
+    font-size: clamp(40px, 6vw, 76px);
+    line-height: 1.02;
+    margin: 0 0 20px;
+    color: var(--navy);
+    letter-spacing: -0.02em;
+  }
+  h1.title em { color: var(--blue); font-style: italic; }
+  .subtitle {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: clamp(18px, 2vw, 22px);
+    color: var(--navy-soft);
+    max-width: 720px;
+    margin: 0;
+  }
+
+  /* ===== Section ===== */
+  section { margin: 64px 0; }
+  .section-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.18em;
+    color: var(--navy);
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+  h2 {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-weight: 500;
+    font-size: clamp(32px, 4vw, 48px);
+    line-height: 1.05;
+    margin: 0 0 24px;
+    color: var(--navy);
+    letter-spacing: -0.015em;
+  }
+  h2 em { color: var(--blue); font-style: italic; }
+  h3 {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-weight: 600;
+    font-size: 24px;
+    color: var(--navy);
+    margin: 0 0 8px;
+  }
+  p { font-size: 16px; color: var(--ink); }
+  p.lead { font-size: 18px; color: var(--navy-soft); max-width: 760px; }
+
+  /* ===== Three-step pipeline ===== */
+  .pipeline {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr auto 1fr;
+    gap: 16px;
+    align-items: stretch;
+    margin: 32px 0;
+  }
+  .stage {
+    background: white;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 24px;
+    text-align: center;
+  }
+  .stage .icon {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-style: italic;
+    font-size: 42px;
+    color: var(--blue);
+    line-height: 1;
+    margin-bottom: 12px;
+  }
+  .stage .label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .stage .name {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 22px;
+    color: var(--navy);
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .stage .desc { font-size: 13px; color: var(--muted); }
+  .arrow {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 32px;
+    color: var(--navy);
+    align-self: center;
+    font-style: italic;
+  }
+  @media (max-width: 720px) {
+    .pipeline { grid-template-columns: 1fr; }
+    .arrow { transform: rotate(90deg); margin: 4px auto; }
+  }
+
+  /* ===== Four families cards ===== */
+  .families {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin: 24px 0;
+  }
+  .family {
+    background: white;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 24px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+  }
+  .family:hover { border-color: var(--navy); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(15,27,77,0.08); }
+  .family.selected { border-color: var(--blue); border-width: 2px; padding: 23px; background: linear-gradient(180deg, white 0%, var(--cream) 100%); }
+  .family .num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    color: var(--blue);
+  }
+  .family .h {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 26px;
+    font-weight: 600;
+    color: var(--navy);
+    margin: 4px 0 8px;
+  }
+  .family .d { font-size: 13px; color: var(--muted); line-height: 1.5; }
+  .family .panel {
+    display: none;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--line);
+    font-size: 13px;
+    color: var(--ink);
+  }
+  .family.selected .panel { display: block; }
+  .family .panel ul { margin: 8px 0; padding-left: 18px; }
+  .family .panel li { margin: 4px 0; color: var(--navy-soft); }
+
+  /* ===== Decision tree ===== */
+  .tree {
+    background: white;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 32px;
+    margin: 24px 0;
+  }
+  .tree-step {
+    display: none;
+    animation: fadeIn 0.4s ease;
+  }
+  .tree-step.active { display: block; }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .tree-q {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 28px;
+    color: var(--navy);
+    margin: 0 0 6px;
+  }
+  .tree-q em { color: var(--blue); font-style: italic; }
+  .tree-help { color: var(--muted); font-size: 14px; margin-bottom: 20px; }
+  .tree-options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 600px) { .tree-options { grid-template-columns: 1fr; } }
+  .tree-btn {
+    background: var(--cream);
+    border: 1px solid var(--line);
+    padding: 16px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.15s ease;
+    font-family: inherit;
+    color: var(--ink);
+  }
+  .tree-btn:hover { border-color: var(--navy); background: white; }
+  .tree-btn .lb {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.15em;
+    color: var(--blue);
+    display: block;
+    margin-bottom: 4px;
+  }
+  .tree-btn .tx { font-size: 15px; color: var(--navy); }
+  .tree-result {
+    background: var(--navy);
+    color: var(--cream);
+    padding: 28px;
+    border-radius: 6px;
+    margin-top: 8px;
+  }
+  .tree-result .badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: var(--blue-light);
+    margin-bottom: 8px;
+  }
+  .tree-result h4 {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 32px;
+    color: white;
+    margin: 0 0 12px;
+    font-weight: 500;
+  }
+  .tree-result h4 em { color: var(--blue); font-style: italic; }
+  .tree-result p { color: var(--blue-light); font-size: 14px; margin: 8px 0; }
+  .tree-result .examples { margin-top: 16px; }
+  .tree-result .ex-tag {
+    display: inline-block;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.25);
+    padding: 4px 10px;
+    border-radius: 3px;
+    font-size: 12px;
+    margin: 4px 4px 0 0;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .tree-back {
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--muted);
+    padding: 8px 16px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 13px;
+    margin-top: 16px;
+    font-family: inherit;
+  }
+  .tree-back:hover { color: var(--navy); border-color: var(--navy); }
+  .tree-progress {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 24px;
+  }
+  .tree-dot {
+    width: 24px; height: 4px;
+    background: var(--line);
+    border-radius: 2px;
+    transition: background 0.2s;
+  }
+  .tree-dot.active { background: var(--blue); }
+  .tree-dot.done { background: var(--navy); }
+
+  /* ===== Quiz ===== */
+  .quiz {
+    background: white;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 32px;
+  }
+  .quiz-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 16px;
+    margin-bottom: 24px;
+  }
+  .quiz-counter {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: var(--muted);
+  }
+  .quiz-score {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 22px;
+    color: var(--navy);
+  }
+  .quiz-score em { color: var(--blue); font-style: italic; }
+  .quiz-q {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 28px;
+    line-height: 1.2;
+    color: var(--navy);
+    margin: 0 0 8px;
+  }
+  .quiz-context { color: var(--muted); font-size: 14px; margin-bottom: 24px; }
+  .quiz-options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+  @media (max-width: 600px) { .quiz-options { grid-template-columns: 1fr; } }
+  .quiz-opt {
+    background: var(--cream);
+    border: 1px solid var(--line);
+    padding: 16px 18px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: inherit;
+    text-align: left;
+    transition: all 0.15s ease;
+    color: var(--navy);
+    font-size: 15px;
+  }
+  .quiz-opt:hover:not(:disabled) { border-color: var(--navy); background: white; }
+  .quiz-opt:disabled { cursor: default; opacity: 0.6; }
+  .quiz-opt.correct { background: rgba(46,139,87,0.1); border-color: var(--good); color: var(--good); opacity: 1; }
+  .quiz-opt.wrong { background: rgba(200,69,63,0.08); border-color: var(--bad); color: var(--bad); opacity: 1; }
+  .quiz-feedback {
+    margin-top: 16px;
+    padding: 16px 20px;
+    border-radius: 4px;
+    background: var(--cream);
+    border-left: 3px solid var(--blue);
+    font-size: 14px;
+    color: var(--ink);
+    line-height: 1.55;
+  }
+  .quiz-feedback.ok { border-left-color: var(--good); }
+  .quiz-feedback.ko { border-left-color: var(--bad); }
+  .quiz-feedback strong { color: var(--navy); }
+  .quiz-next {
+    background: var(--navy);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 14px;
+    margin-top: 16px;
+    letter-spacing: 0.05em;
+  }
+  .quiz-next:hover { background: var(--navy-soft); }
+
+  .quiz-final {
+    text-align: center;
+    padding: 24px;
+  }
+  .quiz-final h3 {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 42px;
+    color: var(--navy);
+    margin: 16px 0 8px;
+  }
+  .quiz-final h3 em { color: var(--blue); font-style: italic; }
+  .quiz-final .big-score {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 96px;
+    color: var(--blue);
+    line-height: 1;
+  }
+  .quiz-final .total { color: var(--muted); font-size: 18px; }
+  .quiz-final .msg { color: var(--navy-soft); margin: 16px 0 24px; }
+  .quiz-restart {
+    background: transparent;
+    border: 1px solid var(--navy);
+    color: var(--navy);
+    padding: 12px 28px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 13px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .quiz-restart:hover { background: var(--navy); color: white; }
+
+  /* ===== Visual scheme ===== */
+  .scheme {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-top: 24px;
+  }
+  @media (max-width: 800px) { .scheme { grid-template-columns: 1fr 1fr; } }
+  .scheme-card {
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 20px;
+    background: white;
+  }
+  .scheme-card .lab {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: var(--blue);
+    margin-bottom: 8px;
+  }
+  .scheme-card h4 {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 22px;
+    color: var(--navy);
+    margin: 0 0 10px;
+    font-weight: 600;
+  }
+  .scheme-card p { font-size: 13px; color: var(--muted); line-height: 1.5; margin: 4px 0; }
+  .scheme-card .ex {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--navy-soft);
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--line);
+    letter-spacing: 0.05em;
+  }
+
+  footer {
+    margin-top: 80px;
+    padding-top: 24px;
+    border-top: 1px solid var(--line);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  /* ===== Pull quote ===== */
+  .pullquote {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 28px;
+    font-style: italic;
+    color: var(--navy);
+    border-left: 3px solid var(--blue);
+    padding: 8px 24px;
+    margin: 32px 0;
+    line-height: 1.3;
+  }
+
+  /* ===== Output diagram ===== */
+  .out-diagram {
+    background: white;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 24px;
+    margin: 16px 0;
+  }
+  .out-row {
+    display: grid;
+    grid-template-columns: 220px 60px 1fr;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px dashed var(--line);
+  }
+  .out-row:last-child { border-bottom: none; }
+  .out-row .lhs {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--navy);
+    background: var(--cream);
+    padding: 8px 12px;
+    border-radius: 3px;
+  }
+  .out-row .arr { color: var(--blue); font-size: 20px; text-align: center; font-family: 'Cormorant Garamond', serif; font-style: italic; }
+  .out-row .rhs {
+    font-size: 14px;
+    color: var(--ink);
+  }
+  .out-row .rhs strong { color: var(--navy); font-family: 'Cormorant Garamond', serif; font-size: 17px; }
+
+  /* ===== Laboratorio de casos ===== */
+  .lab-intro {
+    background: var(--navy);
+    color: var(--cream);
+    padding: 32px 36px;
+    border-radius: 8px;
+    margin: 24px 0 32px;
+  }
+  .lab-intro .lab-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    color: var(--blue-light);
+    margin-bottom: 12px;
+  }
+  .lab-intro h3 {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 32px;
+    color: white;
+    margin: 0 0 10px;
+    font-weight: 500;
+  }
+  .lab-intro h3 em { color: var(--blue); font-style: italic; }
+  .lab-intro p { color: var(--blue-light); font-size: 15px; margin: 4px 0; max-width: 760px; }
+
+  .lab-modes {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 16px;
+  }
+  .lab-mode {
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--navy-soft);
+    padding: 10px 18px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 13px;
+    transition: all 0.15s ease;
+  }
+  .lab-mode:hover { border-color: var(--navy); color: var(--navy); }
+  .lab-mode.active {
+    background: var(--navy);
+    border-color: var(--navy);
+    color: white;
+  }
+  .lab-mode .mode-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--blue);
+    margin-right: 8px;
+  }
+  .lab-mode.active .mode-num { color: var(--blue-light); }
+
+  .lab-panel { display: none; }
+  .lab-panel.active { display: block; animation: fadeIn 0.3s ease; }
+
+  .case-card {
+    background: white;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 32px 36px;
+    margin-bottom: 20px;
+  }
+  .case-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 14px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .case-meta .case-id {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    color: var(--blue);
+  }
+  .case-meta .case-sector {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+  .case-card h3.case-title {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 32px;
+    color: var(--navy);
+    margin: 0 0 16px;
+    line-height: 1.15;
+    font-weight: 600;
+  }
+  .case-card h3.case-title em { color: var(--blue); font-style: italic; }
+  .case-narrative {
+    font-size: 15.5px;
+    line-height: 1.7;
+    color: var(--ink);
+    margin: 12px 0;
+  }
+  .case-narrative strong { color: var(--navy); }
+  .case-data {
+    background: var(--cream);
+    border-left: 3px solid var(--blue);
+    padding: 16px 20px;
+    margin: 20px 0;
+    border-radius: 0 4px 4px 0;
+  }
+  .case-data .data-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.18em;
+    color: var(--blue);
+    margin-bottom: 6px;
+  }
+  .case-data p { margin: 4px 0; font-size: 14px; color: var(--ink); }
+
+  .case-question {
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid var(--line);
+  }
+  .case-question h4 {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 22px;
+    color: var(--navy);
+    margin: 0 0 14px;
+    font-weight: 600;
+  }
+  .case-options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 700px) { .case-options { grid-template-columns: 1fr; } }
+  .case-opt {
+    background: var(--cream);
+    border: 1px solid var(--line);
+    padding: 16px 18px;
+    border-radius: 4px;
+    cursor: pointer;
+    text-align: left;
+    font-family: inherit;
+    transition: all 0.15s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .case-opt .opt-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.15em;
+    color: var(--blue);
+  }
+  .case-opt .opt-text { font-size: 14.5px; color: var(--navy); line-height: 1.45; }
+  .case-opt:hover:not(:disabled) { border-color: var(--navy); background: white; }
+  .case-opt:disabled { cursor: default; opacity: 0.55; }
+  .case-opt.correct { background: rgba(46,139,87,0.08); border-color: var(--good); opacity: 1; }
+  .case-opt.correct .opt-tag { color: var(--good); }
+  .case-opt.wrong { background: rgba(200,69,63,0.06); border-color: var(--bad); opacity: 1; }
+  .case-opt.wrong .opt-tag { color: var(--bad); }
+
+  .case-feedback {
+    margin-top: 20px;
+    padding: 20px 22px;
+    background: var(--cream);
+    border-left: 3px solid var(--blue);
+    border-radius: 0 4px 4px 0;
+    font-size: 14.5px;
+    line-height: 1.6;
+    color: var(--ink);
+  }
+  .case-feedback.ok { border-left-color: var(--good); }
+  .case-feedback.ko { border-left-color: var(--bad); }
+  .case-feedback .fb-title {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 20px;
+    color: var(--navy);
+    margin-bottom: 8px;
+    font-weight: 600;
+  }
+  .case-feedback .fb-title em { color: var(--blue); font-style: italic; }
+  .case-feedback ul { margin: 8px 0 0; padding-left: 20px; }
+  .case-feedback li { margin: 4px 0; }
+  .case-feedback strong { color: var(--navy); }
+
+  .case-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 16px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .case-nav .case-counter {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: var(--muted);
+  }
+  .case-next-btn {
+    background: var(--navy);
+    color: white;
+    border: none;
+    padding: 12px 22px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 13px;
+    letter-spacing: 0.05em;
+  }
+  .case-next-btn:hover { background: var(--navy-soft); }
+  .case-next-btn:disabled { background: var(--muted); cursor: not-allowed; opacity: 0.5; }
+
+  .err-card {
+    background: white;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 28px 32px;
+    margin-bottom: 16px;
+  }
+  .err-scenario {
+    background: rgba(200,69,63,0.05);
+    border-left: 3px solid var(--bad);
+    padding: 14px 18px;
+    border-radius: 0 4px 4px 0;
+    font-size: 14.5px;
+    color: var(--ink);
+    line-height: 1.6;
+    margin: 8px 0 18px;
+  }
+  .err-scenario strong { color: var(--navy); }
+  .err-card h4 {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 24px;
+    color: var(--navy);
+    margin: 0 0 6px;
+    font-weight: 600;
+  }
+  .err-card .err-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: var(--bad);
+    margin-bottom: 8px;
+  }
+  .err-question { font-size: 15px; color: var(--navy-soft); margin: 6px 0 14px; }
+
+  .match-board {
+    background: white;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 28px;
+  }
+  .match-instructions {
+    font-size: 14.5px;
+    color: var(--navy-soft);
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--line);
+  }
+  .match-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+  }
+  @media (max-width: 720px) { .match-grid { grid-template-columns: 1fr; } }
+  .match-col h5 {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    color: var(--blue);
+    text-transform: uppercase;
+    margin: 0 0 12px;
+  }
+  .match-item, .match-target {
+    background: var(--cream);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: var(--ink);
+    transition: all 0.15s ease;
+    cursor: pointer;
+  }
+  .match-item:hover { border-color: var(--navy); background: white; }
+  .match-item.selected {
+    border-color: var(--blue);
+    background: white;
+    box-shadow: 0 0 0 2px rgba(63,169,245,0.2);
+  }
+  .match-item.matched {
+    opacity: 0.45;
+    cursor: default;
+    border-style: dashed;
+  }
+  .match-target {
+    background: white;
+    border-style: dashed;
+    min-height: 56px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .match-target.active { border-color: var(--blue); border-style: solid; background: rgba(63,169,245,0.04); }
+  .match-target .target-name {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 18px;
+    color: var(--navy);
+    font-weight: 600;
+  }
+  .match-target .target-paired {
+    font-size: 12.5px;
+    color: var(--muted);
+    margin-top: 6px;
+    font-style: italic;
+  }
+  .match-target.correct {
+    background: rgba(46,139,87,0.08);
+    border-color: var(--good);
+    border-style: solid;
+  }
+  .match-target.wrong {
+    background: rgba(200,69,63,0.06);
+    border-color: var(--bad);
+    border-style: solid;
+  }
+  .match-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid var(--line);
+    flex-wrap: wrap;
+  }
+  .match-btn {
+    background: var(--navy);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 13px;
+  }
+  .match-btn.secondary {
+    background: transparent;
+    color: var(--navy);
+    border: 1px solid var(--navy);
+  }
+  .match-btn:hover { background: var(--navy-soft); }
+  .match-btn.secondary:hover { background: var(--navy); color: white; }
+  .match-result {
+    margin-top: 16px;
+    padding: 16px 20px;
+    border-radius: 4px;
+    font-size: 14px;
+    display: none;
+  }
+  .match-result.visible { display: block; }
+  .match-result.ok { background: rgba(46,139,87,0.08); border-left: 3px solid var(--good); }
+  .match-result.partial { background: rgba(217,153,78,0.08); border-left: 3px solid var(--amber); }
+
+  .multi-card {
+    background: white;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 32px 36px;
+  }
+  .multi-step {
+    display: none;
+    animation: fadeIn 0.4s ease;
+  }
+  .multi-step.active { display: block; }
+  .multi-progress {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 24px;
+  }
+  .multi-bar {
+    flex: 1;
+    height: 4px;
+    background: var(--line);
+    border-radius: 2px;
+    transition: background 0.3s ease;
+  }
+  .multi-bar.active { background: var(--blue); }
+  .multi-bar.done { background: var(--navy); }
+  .multi-decision-summary {
+    background: var(--cream);
+    border-radius: 4px;
+    padding: 14px 18px;
+    margin: 14px 0;
+    font-size: 13.5px;
+    color: var(--navy-soft);
+    border-left: 3px solid var(--navy);
+  }
+  .multi-decision-summary strong { color: var(--navy); }
+  .multi-final {
+    background: var(--navy);
+    color: white;
+    padding: 32px 36px;
+    border-radius: 6px;
+    margin-top: 8px;
+  }
+  .multi-final h4 {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 30px;
+    color: white;
+    margin: 0 0 14px;
+    font-weight: 500;
+  }
+  .multi-final h4 em { color: var(--blue); font-style: italic; }
+  .multi-final p { color: var(--blue-light); font-size: 14.5px; line-height: 1.6; }
+  .multi-final ul { color: var(--blue-light); padding-left: 20px; }
+  .multi-final li { margin: 6px 0; }
+  .multi-final .restart {
+    margin-top: 18px;
+    background: transparent;
+    color: white;
+    border: 1px solid rgba(255,255,255,0.4);
+    padding: 10px 22px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 13px;
+    letter-spacing: 0.05em;
+  }
+  .multi-final .restart:hover { background: white; color: var(--navy); }
+
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <div class="tag">MÁSTER IA · UNIR · TEMA 02 <span class="dot">·</span> ARTEFACTO 01</div>
+    <h1 class="title">¿Qué <em>tipo de aprendizaje</em><br>necesita tu problema?</h1>
+    <p class="subtitle">Antes de tocar una sola línea de código, hay una pregunta que decide todo lo demás: ¿qué tipo de aprendizaje encaja con lo que quiero resolver? Aquí lo aprendemos paso a paso.</p>
+  </header>
+
+  <!-- Sección 1: Tres pasos -->
+  <section>
+    <div class="section-tag">01 · LA IDEA DE FONDO</div>
+    <h2>Todo modelo de IA tiene <em>tres momentos</em>.</h2>
+    <p class="lead">No importa si es un chatbot, un detector de fraude o un sistema de recomendación: todos siguen la misma receta. Datos que entran, un proceso que aprende, una salida que decide.</p>
+
+    <div class="pipeline">
+      <div class="stage">
+        <div class="icon">∂</div>
+        <div class="label">01 · INPUT</div>
+        <div class="name">Datos</div>
+        <div class="desc">Recopilas, limpias y entiendes los datos. Sin este paso, el resto no sirve.</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="stage">
+        <div class="icon">Σ</div>
+        <div class="label">02 · PROCESO</div>
+        <div class="name">Entrenamiento</div>
+        <div class="desc">El modelo busca patrones, ajusta parámetros, minimiza el error. Aquí elegimos algoritmo.</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="stage">
+        <div class="icon">ŷ</div>
+        <div class="label">03 · OUTPUT</div>
+        <div class="name">Salida</div>
+        <div class="desc">El modelo predice, clasifica, agrupa o decide. La forma de la salida depende del problema.</div>
+      </div>
+    </div>
+
+    <div class="pullquote">El error más caro de un proyecto de IA no es elegir mal el algoritmo. Es elegir mal el <em>tipo de aprendizaje</em>.</div>
+  </section>
+
+  <!-- Sección 2: Las cuatro familias -->
+  <section>
+    <div class="section-tag">02 · CUATRO FAMILIAS</div>
+    <h2>Cuatro maneras de <em>aprender</em>.</h2>
+    <p class="lead">No hay diez tipos. Hay cuatro grandes formas en que un modelo puede aprender, y cada una sirve para problemas distintos. Pulsa una tarjeta para abrirla.</p>
+
+    <div class="families" id="families">
+      <div class="family" data-fam="sup">
+        <div class="num">01 / FAMILIA</div>
+        <div class="h">Supervisado</div>
+        <div class="d">Aprende con la respuesta correcta delante. Cada ejemplo del entrenamiento viene con su etiqueta.</div>
+        <div class="panel">
+          <strong style="color:var(--navy);">¿Cuándo usarlo?</strong> Cuando tienes datos históricos etiquetados y quieres que el modelo prediga ese mismo tipo de respuesta para datos nuevos.
+          <ul>
+            <li><strong>Regresión:</strong> predecir un número (precio, demanda, edad).</li>
+            <li><strong>Clasificación:</strong> predecir una categoría (spam/no, sano/enfermo, dígito).</li>
+          </ul>
+          <em style="color:var(--muted);font-size:12px;">Coste: etiquetar es lento y caro.</em>
+        </div>
+      </div>
+
+      <div class="family" data-fam="unsup">
+        <div class="num">02 / FAMILIA</div>
+        <div class="h">No supervisado</div>
+        <div class="d">No hay etiquetas. El modelo busca por su cuenta estructura, grupos o relaciones ocultas.</div>
+        <div class="panel">
+          <strong style="color:var(--navy);">¿Cuándo usarlo?</strong> Cuando tienes datos crudos sin respuesta correcta y quieres descubrir qué hay dentro.
+          <ul>
+            <li><strong>Clustering:</strong> agrupar clientes similares.</li>
+            <li><strong>Asociación:</strong> «si compra X, también compra Y».</li>
+            <li><strong>Reducción de dimensionalidad:</strong> comprimir cientos de variables en pocas.</li>
+          </ul>
+          <em style="color:var(--muted);font-size:12px;">Validación: cualitativa, no hay verdad absoluta.</em>
+        </div>
+      </div>
+
+      <div class="family" data-fam="semi">
+        <div class="num">03 / FAMILIA</div>
+        <div class="h">Semi-supervisado</div>
+        <div class="d">Pocos datos etiquetados + muchos sin etiquetar. Aprovecha la estructura del segundo grupo para mejorar.</div>
+        <div class="panel">
+          <strong style="color:var(--navy);">¿Cuándo usarlo?</strong> Cuando etiquetar es muy caro (medicina, voz, idiomas) pero tienes datos crudos abundantes.
+          <ul>
+            <li>Self-training, pseudo-etiquetado, modelos de consistencia.</li>
+            <li>Base de muchos modelos fundacionales actuales (LLMs, etc.).</li>
+          </ul>
+          <em style="color:var(--muted);font-size:12px;">Lo mejor de los dos mundos.</em>
+        </div>
+      </div>
+
+      <div class="family" data-fam="rl">
+        <div class="num">04 / FAMILIA</div>
+        <div class="h">Por refuerzo</div>
+        <div class="d">Un agente actúa en un entorno y recibe recompensas o castigos. Aprende por prueba y error.</div>
+        <div class="panel">
+          <strong style="color:var(--navy);">¿Cuándo usarlo?</strong> Cuando el problema es secuencial, hay un objetivo a largo plazo y el modelo puede experimentar.
+          <ul>
+            <li>Videojuegos, robótica, conducción autónoma.</li>
+            <li>Q-learning, policy gradients, actor-critic, RLHF.</li>
+          </ul>
+          <em style="color:var(--muted);font-size:12px;">No hay dataset en el sentido clásico: hay un entorno.</em>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sección 3: Diferencias en la salida -->
+  <section>
+    <div class="section-tag">03 · LA SALIDA DELATA EL TIPO</div>
+    <h2>Mira la <em>respuesta</em> que esperas: ya sabes qué tipo es.</h2>
+    <p class="lead">Una pista práctica: la forma de la salida dice mucho sobre qué aprendizaje encaja. Estos son los patrones más típicos.</p>
+
+    <div class="out-diagram">
+      <div class="out-row">
+        <div class="lhs">salida = NÚMERO</div>
+        <div class="arr">→</div>
+        <div class="rhs"><strong>Regresión</strong> · supervisado · ej. precio de vivienda, demanda de stock, edad estimada</div>
+      </div>
+      <div class="out-row">
+        <div class="lhs">salida = CATEGORÍA</div>
+        <div class="arr">→</div>
+        <div class="rhs"><strong>Clasificación</strong> · supervisado · ej. spam/no spam, dígito 0–9, diagnóstico</div>
+      </div>
+      <div class="out-row">
+        <div class="lhs">salida = GRUPO</div>
+        <div class="arr">→</div>
+        <div class="rhs"><strong>Clustering</strong> · no supervisado · ej. segmentación de clientes, perfiles de usuarios</div>
+      </div>
+      <div class="out-row">
+        <div class="lhs">salida = REGLA</div>
+        <div class="arr">→</div>
+        <div class="rhs"><strong>Asociación</strong> · no supervisado · ej. «pañales → cerveza», cesta de la compra</div>
+      </div>
+      <div class="out-row">
+        <div class="lhs">salida = EJES</div>
+        <div class="arr">→</div>
+        <div class="rhs"><strong>Reducción de dimensionalidad</strong> · no supervisado · ej. visualizar 200 variables en 2D, comprimir antes de entrenar</div>
+      </div>
+      <div class="out-row">
+        <div class="lhs">salida = ACCIÓN</div>
+        <div class="arr">→</div>
+        <div class="rhs"><strong>Por refuerzo</strong> · ej. movimiento de un robot, jugada de ajedrez, anuncio a mostrar</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sección 4: Decision tree interactivo -->
+  <section>
+    <div class="section-tag">04 · ÁRBOL DE DECISIÓN</div>
+    <h2>Tres preguntas para <em>elegir bien</em>.</h2>
+    <p class="lead">Responde tres preguntas sobre tu problema y te diremos qué tipo de aprendizaje deberías usar. Es exactamente el razonamiento que hace un científico de datos cuando empieza un proyecto.</p>
+
+    <div class="tree" id="tree">
+      <div class="tree-progress">
+        <div class="tree-dot active"></div>
+        <div class="tree-dot"></div>
+        <div class="tree-dot"></div>
+      </div>
+
+      <div class="tree-step active" data-step="1">
+        <h3 class="tree-q">¿Tu modelo va a <em>actuar</em> en un entorno?</h3>
+        <p class="tree-help">Es decir, ¿toma decisiones secuenciales y recibe consecuencias (recompensa o castigo)?</p>
+        <div class="tree-options">
+          <button class="tree-btn" data-next="result-rl">
+            <span class="lb">SÍ · ACTÚA</span>
+            <span class="tx">Mi sistema controla algo (un robot, un jugador, un agente). Cada acción modifica el estado.</span>
+          </button>
+          <button class="tree-btn" data-next="2">
+            <span class="lb">NO · SOLO PREDICE</span>
+            <span class="tx">Solo necesito que dé una respuesta a partir de unos datos. No hay «entorno» que cambie.</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="tree-step" data-step="2">
+        <h3 class="tree-q">¿Tienes <em>etiquetas</em> en tus datos?</h3>
+        <p class="tree-help">Una etiqueta es la respuesta correcta para cada ejemplo: el precio real, la clase real, el dígito real.</p>
+        <div class="tree-options">
+          <button class="tree-btn" data-next="3">
+            <span class="lb">SÍ · TODOS / CASI TODOS</span>
+            <span class="tx">Cada fila tiene su respuesta correcta. Tengo un dataset etiquetado completo.</span>
+          </button>
+          <button class="tree-btn" data-next="result-semi">
+            <span class="lb">SOLO ALGUNOS</span>
+            <span class="tx">Tengo pocos ejemplos etiquetados pero muchos datos crudos sin anotar.</span>
+          </button>
+          <button class="tree-btn" data-next="result-unsup">
+            <span class="lb">NINGUNO</span>
+            <span class="tx">Solo tengo los datos crudos. No hay respuesta correcta a la vista.</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="tree-step" data-step="3">
+        <h3 class="tree-q">¿Qué <em>forma</em> tiene tu respuesta?</h3>
+        <p class="tree-help">Mira el target del dataset: ¿es un número continuo o una categoría?</p>
+        <div class="tree-options">
+          <button class="tree-btn" data-next="result-reg">
+            <span class="lb">UN NÚMERO</span>
+            <span class="tx">Precio, temperatura, demanda, edad… cualquier valor en una escala continua.</span>
+          </button>
+          <button class="tree-btn" data-next="result-cls">
+            <span class="lb">UNA CATEGORÍA</span>
+            <span class="tx">Spam/no spam, dígito 0–9, diagnóstico, idioma… opciones discretas.</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Resultados -->
+      <div class="tree-step" data-step="result-reg">
+        <div class="tree-result">
+          <div class="badge">RESULTADO · APRENDIZAJE SUPERVISADO</div>
+          <h4>Regresión.</h4>
+          <p>Tienes datos etiquetados y tu salida es un valor continuo. El modelo aprende una función f(x) ≈ y que minimiza el error entre la predicción y el valor real.</p>
+          <p style="margin-top:12px;"><strong style="color:white;">Algoritmos típicos:</strong></p>
+          <div class="examples">
+            <span class="ex-tag">regresión lineal</span>
+            <span class="ex-tag">árbol de decisión</span>
+            <span class="ex-tag">random forest</span>
+            <span class="ex-tag">SVR</span>
+            <span class="ex-tag">red neuronal</span>
+          </div>
+          <p style="margin-top:12px;"><strong style="color:white;">Métricas:</strong> MAE, RMSE, R².</p>
+        </div>
+        <button class="tree-back" onclick="treeReset()">← Probar con otro problema</button>
+      </div>
+
+      <div class="tree-step" data-step="result-cls">
+        <div class="tree-result">
+          <div class="badge">RESULTADO · APRENDIZAJE SUPERVISADO</div>
+          <h4>Clasificación.</h4>
+          <p>Tienes datos etiquetados y tu salida es una categoría. El modelo aprende a asignar cada nuevo ejemplo a una de las clases que ha visto.</p>
+          <p style="margin-top:12px;"><strong style="color:white;">Algoritmos típicos:</strong></p>
+          <div class="examples">
+            <span class="ex-tag">regresión logística</span>
+            <span class="ex-tag">árbol de decisión</span>
+            <span class="ex-tag">random forest</span>
+            <span class="ex-tag">SVM</span>
+            <span class="ex-tag">k-NN</span>
+            <span class="ex-tag">red neuronal</span>
+          </div>
+          <p style="margin-top:12px;"><strong style="color:white;">Métricas:</strong> accuracy, precision, recall, F1, ROC-AUC.</p>
+        </div>
+        <button class="tree-back" onclick="treeReset()">← Probar con otro problema</button>
+      </div>
+
+      <div class="tree-step" data-step="result-unsup">
+        <div class="tree-result">
+          <div class="badge">RESULTADO · APRENDIZAJE NO SUPERVISADO</div>
+          <h4>Sin etiquetas.</h4>
+          <p>No hay respuesta correcta. El modelo busca estructura: grupos, asociaciones o ejes que resuman los datos.</p>
+          <p style="margin-top:12px;"><strong style="color:white;">Variantes según lo que busques:</strong></p>
+          <div class="examples">
+            <span class="ex-tag">clustering · k-means · DBSCAN</span>
+            <span class="ex-tag">asociación · apriori</span>
+            <span class="ex-tag">reducción · PCA · t-SNE · UMAP</span>
+          </div>
+          <p style="margin-top:12px;"><strong style="color:white;">Validación:</strong> cualitativa, con expertos del dominio.</p>
+        </div>
+        <button class="tree-back" onclick="treeReset()">← Probar con otro problema</button>
+      </div>
+
+      <div class="tree-step" data-step="result-semi">
+        <div class="tree-result">
+          <div class="badge">RESULTADO · APRENDIZAJE SEMI-SUPERVISADO</div>
+          <h4>Lo mejor de <em>los dos mundos</em>.</h4>
+          <p>Aprovechas las pocas etiquetas que tienes para guiar al modelo, y la estructura de los muchos datos no etiquetados para mejorar la generalización.</p>
+          <p style="margin-top:12px;"><strong style="color:white;">Técnicas:</strong></p>
+          <div class="examples">
+            <span class="ex-tag">self-training</span>
+            <span class="ex-tag">pseudo-etiquetado</span>
+            <span class="ex-tag">consistencia</span>
+            <span class="ex-tag">pre-entrenamiento</span>
+          </div>
+          <p style="margin-top:12px;"><strong style="color:white;">Casos típicos:</strong> medicina, reconocimiento de voz, imágenes médicas.</p>
+        </div>
+        <button class="tree-back" onclick="treeReset()">← Probar con otro problema</button>
+      </div>
+
+      <div class="tree-step" data-step="result-rl">
+        <div class="tree-result">
+          <div class="badge">RESULTADO · APRENDIZAJE POR REFUERZO</div>
+          <h4>Aprender <em>actuando</em>.</h4>
+          <p>Hay un agente que toma acciones, un entorno que cambia y recompensas que guían el aprendizaje. Se modela como un Proceso de Decisión de Markov (S, A, P, R, γ).</p>
+          <p style="margin-top:12px;"><strong style="color:white;">Algoritmos típicos:</strong></p>
+          <div class="examples">
+            <span class="ex-tag">Q-learning</span>
+            <span class="ex-tag">DQN</span>
+            <span class="ex-tag">policy gradients</span>
+            <span class="ex-tag">actor-critic</span>
+            <span class="ex-tag">PPO</span>
+            <span class="ex-tag">RLHF</span>
+          </div>
+          <p style="margin-top:12px;"><strong style="color:white;">Aplicaciones:</strong> videojuegos, robótica, conducción autónoma, ajuste fino de LLMs.</p>
+        </div>
+        <button class="tree-back" onclick="treeReset()">← Probar con otro problema</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sección 5: Quiz -->
+  <section>
+    <div class="section-tag">05 · PRÁCTICA · 8 PREGUNTAS</div>
+    <h2>Clasifica el <em>problema</em>.</h2>
+    <p class="lead">Llegamos a lo importante. Ocho casos reales, cada uno con cuatro opciones. Acertar es entender el tema.</p>
+
+    <div class="quiz" id="quiz"></div>
+  </section>
+
+  <!-- Sección 6: Esquema final -->
+  <section>
+    <div class="section-tag">06 · RESUMEN VISUAL</div>
+    <h2>Cómo elegir el tipo, en una <em>sola imagen</em>.</h2>
+    <p class="lead">Antes de cerrar, este es el esquema que conviene tener siempre presente: empieza por preguntarte qué datos tienes y la respuesta sale sola.</p>
+
+    <div style="text-align:center; margin: 24px 0; padding: 20px; background: white; border: 1px solid var(--line); border-radius: 6px;">
+      <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.15em; color: var(--muted);">PUNTO DE PARTIDA</div>
+      <div class="serif" style="font-size: 28px; color: var(--navy); margin: 8px 0; font-style: italic;">¿Qué datos tienes?</div>
+      <div style="color: var(--blue); font-size: 24px; font-family: 'Cormorant Garamond', serif;">↓</div>
+    </div>
+
+    <div class="scheme">
+      <div class="scheme-card">
+        <div class="lab">SUPERVISADO</div>
+        <h4>Datos etiquetados</h4>
+        <p>Target continuo → <strong style="color:var(--navy);">regresión</strong></p>
+        <p>Target categórico → <strong style="color:var(--navy);">clasificación</strong></p>
+        <div class="ex">precio · spam · tumor · MNIST</div>
+      </div>
+      <div class="scheme-card">
+        <div class="lab">SEMI-SUPERVISADO</div>
+        <h4>Pocos etiquetados</h4>
+        <p>Mezcla. Aprovecha estructura de los datos sin etiqueta.</p>
+        <div class="ex">medicina · voz · idiomas</div>
+      </div>
+      <div class="scheme-card">
+        <div class="lab">NO SUPERVISADO</div>
+        <h4>Sin etiquetas</h4>
+        <p>Clustering, asociación, reducción de dimensionalidad.</p>
+        <div class="ex">segmentos · anomalías · PCA</div>
+      </div>
+      <div class="scheme-card">
+        <div class="lab">POR REFUERZO</div>
+        <h4>Entorno + recompensas</h4>
+        <p>Agente que aprende actuando. Prueba y error.</p>
+        <div class="ex">ajedrez · robots · anuncios</div>
+      </div>
+    </div>
+
+    <div class="pullquote" style="margin-top: 32px;">El tipo de aprendizaje no es el modelo. Un mismo algoritmo puede entrenarse de varias maneras; lo que cambia es <em>qué le enseñamos y cómo</em>.</div>
+  </section>
+
+  <!-- Sección 7: Laboratorio de casos -->
+  <section>
+    <div class="section-tag">07 · LABORATORIO DE CASOS</div>
+    <h2>Pensamiento crítico en <em>casos reales</em>.</h2>
+    <p class="lead">El test rápido te ayuda a memorizar. Pero la realidad llega en forma de párrafos largos, datos a medias y restricciones de negocio. En este laboratorio practicamos lo que realmente harás en una empresa: leer un problema, separar lo que importa, y elegir el enfoque correcto.</p>
+
+    <div class="lab-intro">
+      <div class="lab-tag">CÓMO USAR EL LABORATORIO</div>
+      <h3>Cuatro <em>modos</em> de práctica.</h3>
+      <p><strong style="color:white;">1. Casos narrativos:</strong> escenarios empresariales completos. Lee con calma, identifica los datos disponibles, y decide qué tipo de aprendizaje encaja.</p>
+      <p><strong style="color:white;">2. Detecta el error:</strong> situaciones donde alguien aplicó el modelo equivocado. Tu trabajo es averiguar por qué falla.</p>
+      <p><strong style="color:white;">3. Empareja:</strong> casos breves contra familias de algoritmos. Sirve para fijar el vocabulario.</p>
+      <p><strong style="color:white;">4. Caso completo:</strong> un proyecto guiado paso a paso, donde una decisión condiciona la siguiente.</p>
+    </div>
+
+    <div class="lab-modes">
+      <button class="lab-mode active" data-mode="narrative"><span class="mode-num">01</span>Casos narrativos</button>
+      <button class="lab-mode" data-mode="errors"><span class="mode-num">02</span>Detecta el error</button>
+      <button class="lab-mode" data-mode="match"><span class="mode-num">03</span>Empareja</button>
+      <button class="lab-mode" data-mode="multi"><span class="mode-num">04</span>Caso completo</button>
+    </div>
+
+    <!-- Modo 1: Casos narrativos -->
+    <div class="lab-panel active" id="panel-narrative">
+      <div id="case-container"></div>
+    </div>
+
+    <!-- Modo 2: Detecta el error -->
+    <div class="lab-panel" id="panel-errors">
+      <div id="err-container"></div>
+    </div>
+
+    <!-- Modo 3: Empareja -->
+    <div class="lab-panel" id="panel-match">
+      <div class="match-board">
+        <div class="match-instructions">Pulsa primero un caso de la columna izquierda y después la familia de la columna derecha que crees que lo resuelve. Cuando emparejes los seis, pulsa <strong>«Comprobar»</strong>.</div>
+        <div class="match-grid">
+          <div class="match-col">
+            <h5>Casos a clasificar</h5>
+            <div id="match-items"></div>
+          </div>
+          <div class="match-col">
+            <h5>Familia de aprendizaje</h5>
+            <div id="match-targets"></div>
+          </div>
+        </div>
+        <div class="match-actions">
+          <button class="match-btn" id="match-check">Comprobar</button>
+          <button class="match-btn secondary" id="match-reset">Reiniciar</button>
+        </div>
+        <div class="match-result" id="match-result"></div>
+      </div>
+    </div>
+
+    <!-- Modo 4: Caso completo -->
+    <div class="lab-panel" id="panel-multi">
+      <div class="multi-card" id="multi-card"></div>
+    </div>
+  </section>
+
+  <footer>
+    <span>UNIR · ESTRATEGIA DEL DATO · TEMA 02</span>
+    <span>ARTEFACTO 01 / 03</span>
+  </footer>
+
+</div>
+
+<script>
+  // ===== Familias: clic abre/cierra =====
+  document.querySelectorAll('.family').forEach(f => {
+    f.addEventListener('click', () => {
+      f.classList.toggle('selected');
+    });
+  });
+
+  // ===== Decision tree =====
+  const tree = document.getElementById('tree');
+  const dots = tree.querySelectorAll('.tree-dot');
+
+  function showStep(step) {
+    tree.querySelectorAll('.tree-step').forEach(s => s.classList.remove('active'));
+    const target = tree.querySelector(`[data-step="${step}"]`);
+    if (target) target.classList.add('active');
+
+    // Update progress dots
+    dots.forEach(d => { d.classList.remove('active'); d.classList.remove('done'); });
+    if (step === '1') { dots[0].classList.add('active'); }
+    else if (step === '2') { dots[0].classList.add('done'); dots[1].classList.add('active'); }
+    else if (step === '3') { dots[0].classList.add('done'); dots[1].classList.add('done'); dots[2].classList.add('active'); }
+    else { dots.forEach(d => d.classList.add('done')); }
+  }
+
+  function treeReset() { showStep('1'); window.scrollTo({ top: tree.getBoundingClientRect().top + window.scrollY - 80, behavior: 'smooth' }); }
+
+  tree.querySelectorAll('.tree-btn').forEach(btn => {
+    btn.addEventListener('click', () => showStep(btn.dataset.next));
+  });
+
+  // ===== Quiz =====
+  const quizData = [
+    {
+      q: "Filtrar correos spam de la bandeja de entrada.",
+      ctx: "Tu empresa tiene 200.000 correos ya marcados como spam o no-spam por usuarios.",
+      options: [
+        { t: "Supervisado · clasificación", correct: true },
+        { t: "Supervisado · regresión", correct: false },
+        { t: "No supervisado · clustering", correct: false },
+        { t: "Por refuerzo", correct: false }
+      ],
+      why: "Tienes datos etiquetados (spam / no-spam) y la salida es una categoría. Es un caso de libro de clasificación supervisada."
+    },
+    {
+      q: "Predecir cuántas unidades vais a vender la semana que viene.",
+      ctx: "Tienes los registros históricos de ventas semanales de los últimos 5 años.",
+      options: [
+        { t: "Supervisado · clasificación", correct: false },
+        { t: "Supervisado · regresión", correct: true },
+        { t: "No supervisado · asociación", correct: false },
+        { t: "Por refuerzo", correct: false }
+      ],
+      why: "La salida es un número continuo (unidades vendidas) y tienes histórico etiquetado. Eso es regresión supervisada."
+    },
+    {
+      q: "Descubrir grupos naturales de clientes para campañas de marketing.",
+      ctx: "Tienes datos de comportamiento (compras, clicks, tiempo en web) pero ningún cliente está etiquetado por «tipo».",
+      options: [
+        { t: "Supervisado · clasificación", correct: false },
+        { t: "No supervisado · clustering", correct: true },
+        { t: "Semi-supervisado", correct: false },
+        { t: "Por refuerzo", correct: false }
+      ],
+      why: "No tienes etiquetas y quieres descubrir agrupaciones que existen en los datos. El clustering (k-means, DBSCAN…) es exactamente eso."
+    },
+    {
+      q: "Enseñar a un robot a caminar en un simulador físico.",
+      ctx: "El robot puede mover articulaciones y el simulador le da una recompensa cada vez que avanza sin caerse.",
+      options: [
+        { t: "Supervisado · regresión", correct: false },
+        { t: "No supervisado · clustering", correct: false },
+        { t: "Semi-supervisado", correct: false },
+        { t: "Por refuerzo", correct: true }
+      ],
+      why: "Hay un agente (el robot), un entorno (el simulador) y una señal de recompensa. Aprendizaje por refuerzo, sin discusión."
+    },
+    {
+      q: "Detectar tumores en radiografías con miles de imágenes anotadas por radiólogos.",
+      ctx: "Cada imagen tiene una etiqueta «tumor / no tumor» puesta por un médico.",
+      options: [
+        { t: "Supervisado · clasificación", correct: true },
+        { t: "Supervisado · regresión", correct: false },
+        { t: "No supervisado · reducción de dimensionalidad", correct: false },
+        { t: "Por refuerzo", correct: false }
+      ],
+      why: "Tienes datos etiquetados y la salida es categórica (tumor sí/no). Clasificación supervisada — típicamente con una red neuronal convolucional."
+    },
+    {
+      q: "Estimar la edad de una persona a partir de una foto.",
+      ctx: "Dataset con miles de fotos donde cada cara viene con la edad real anotada.",
+      options: [
+        { t: "Supervisado · clasificación", correct: false },
+        { t: "Supervisado · regresión", correct: true },
+        { t: "No supervisado · clustering", correct: false },
+        { t: "Por refuerzo", correct: false }
+      ],
+      why: "La edad es un número continuo. Aunque la entrada sea una imagen, la salida (edad estimada) es un valor numérico → regresión supervisada."
+    },
+    {
+      q: "Recomendar películas a millones de usuarios sin etiquetas explícitas.",
+      ctx: "Solo tienes el historial de qué ha visto cada usuario y cuánto tiempo ha pasado en cada película.",
+      options: [
+        { t: "Supervisado · clasificación", correct: false },
+        { t: "No supervisado (filtrado colaborativo / asociación)", correct: true },
+        { t: "Semi-supervisado", correct: false },
+        { t: "Por refuerzo", correct: false }
+      ],
+      why: "No hay etiquetas tipo «esta película le gustará». Se descubren patrones de comportamiento (asociación, factorización matricial) sin supervisión directa."
+    },
+    {
+      q: "Entrenar un agente para jugar al ajedrez compitiendo contra sí mismo.",
+      ctx: "El agente juega partidas, gana o pierde, y aprende qué jugadas le acercan a la victoria.",
+      options: [
+        { t: "Supervisado · clasificación", correct: false },
+        { t: "No supervisado · clustering", correct: false },
+        { t: "Semi-supervisado", correct: false },
+        { t: "Por refuerzo", correct: true }
+      ],
+      why: "Estados (posición del tablero), acciones (movimientos), recompensa (ganar). MDP clásico → aprendizaje por refuerzo. AlphaZero usa exactamente esto."
+    }
+  ];
+
+  let qIndex = 0;
+  let score = 0;
+  const quizEl = document.getElementById('quiz');
+
+  function renderQuestion() {
+    const q = quizData[qIndex];
+    quizEl.innerHTML = `
+      <div class="quiz-header">
+        <span class="quiz-counter">PREGUNTA ${qIndex + 1} / ${quizData.length}</span>
+        <span class="quiz-score">Aciertos · <em>${score}</em></span>
+      </div>
+      <h3 class="quiz-q">${q.q}</h3>
+      <p class="quiz-context">${q.ctx}</p>
+      <div class="quiz-options" id="quiz-opts">
+        ${q.options.map((o, i) => `<button class="quiz-opt" data-i="${i}">${o.t}</button>`).join('')}
+      </div>
+      <div id="quiz-fb"></div>
+    `;
+
+    quizEl.querySelectorAll('.quiz-opt').forEach(btn => {
+      btn.addEventListener('click', () => answer(parseInt(btn.dataset.i)));
+    });
+  }
+
+  function answer(i) {
+    const q = quizData[qIndex];
+    const buttons = quizEl.querySelectorAll('.quiz-opt');
+    const fb = document.getElementById('quiz-fb');
+    const correct = q.options[i].correct;
+    if (correct) score++;
+
+    buttons.forEach((b, j) => {
+      b.disabled = true;
+      if (q.options[j].correct) b.classList.add('correct');
+      else if (j === i) b.classList.add('wrong');
+    });
+
+    fb.innerHTML = `
+      <div class="quiz-feedback ${correct ? 'ok' : 'ko'}">
+        <strong>${correct ? '✓ Correcto.' : '✗ No exactamente.'}</strong> ${q.why}
+      </div>
+      <button class="quiz-next" id="quiz-next">${qIndex + 1 < quizData.length ? 'Siguiente pregunta →' : 'Ver resultado final →'}</button>
+    `;
+    document.getElementById('quiz-next').addEventListener('click', next);
+    quizEl.querySelector('.quiz-score').innerHTML = `Aciertos · <em>${score}</em>`;
+  }
+
+  function next() {
+    qIndex++;
+    if (qIndex < quizData.length) {
+      renderQuestion();
+    } else {
+      renderFinal();
+    }
+  }
+
+  function renderFinal() {
+    let msg = "Aún hay matices que vale la pena repasar. Vuelve a leer el árbol de decisión y lo verás.";
+    if (score === quizData.length) msg = "Perfecto. Has interiorizado el esquema completo. Ya puedes empezar a clasificar problemas reales.";
+    else if (score >= 6) msg = "Muy bien. Tienes el esquema claro y solo fallas en los matices más sutiles.";
+    else if (score >= 4) msg = "Buen punto de partida. Repasa los casos en los que dudaste — sobre todo la diferencia regresión/clasificación.";
+
+    quizEl.innerHTML = `
+      <div class="quiz-final">
+        <div class="big-score">${score}</div>
+        <div class="total">de ${quizData.length} aciertos</div>
+        <h3>Tu resultado <em>final</em>.</h3>
+        <p class="msg">${msg}</p>
+        <button class="quiz-restart" onclick="restartQuiz()">↺ Volver a intentarlo</button>
+      </div>
+    `;
+  }
+
+  function restartQuiz() {
+    qIndex = 0; score = 0;
+    renderQuestion();
+  }
+
+  renderQuestion();
+
+  /* ============================================================
+     LABORATORIO DE CASOS — 4 modos
+     ============================================================ */
+
+  // Tabs / modos
+  document.querySelectorAll('.lab-mode').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const mode = btn.dataset.mode;
+      document.querySelectorAll('.lab-mode').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.lab-panel').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('panel-' + mode).classList.add('active');
+    });
+  });
+
+  /* ===== Modo 1: Casos narrativos ===== */
+  const caseData = [
+    {
+      sector: "Banca · Detección de fraude",
+      title: "Una entidad bancaria quiere <em>frenar el fraude</em> con tarjeta antes de que ocurra.",
+      narrative: [
+        "El equipo de seguridad de un banco mediano gestiona unas <strong>3 millones de transacciones diarias</strong>. Cada vez que un cliente paga con tarjeta, el sistema tiene apenas unos cientos de milisegundos para decidir si la operación es legítima o sospechosa.",
+        "Durante los últimos siete años, el departamento de fraude ha mantenido un registro exhaustivo: cada transacción del histórico está marcada como <strong>«legítima»</strong> o <strong>«fraudulenta»</strong>, en función de las disputas que llegaron y de las investigaciones internas. Hablamos de unos 4.000 millones de operaciones etiquetadas, donde aproximadamente el 0,17% son casos de fraude confirmado.",
+        "El comité de dirección quiere un sistema que reciba los datos de cada nueva transacción (importe, comercio, hora, geolocalización, dispositivo, historial reciente del cliente) y devuelva una decisión binaria en tiempo real: <strong>aprobar</strong> o <strong>bloquear y avisar al cliente</strong>."
+      ],
+      data: [
+        "Histórico: 4.000M de transacciones etiquetadas (legítima / fraudulenta).",
+        "Salida deseada: decisión binaria (aprobar / bloquear).",
+        "Restricción: latencia inferior a 200ms por transacción."
+      ],
+      question: "¿Qué tipo de aprendizaje resuelve este problema?",
+      options: [
+        { tag: "OPCIÓN A", text: "Aprendizaje supervisado · clasificación binaria", correct: true },
+        { tag: "OPCIÓN B", text: "Aprendizaje no supervisado · clustering de comportamiento", correct: false },
+        { tag: "OPCIÓN C", text: "Aprendizaje por refuerzo · agente que decide aprobar o no", correct: false },
+        { tag: "OPCIÓN D", text: "Aprendizaje supervisado · regresión sobre el importe", correct: false }
+      ],
+      feedback: {
+        title: "Clasificación binaria <em>supervisada</em>.",
+        body: "Tienes el ingrediente clave: <strong>etiquetas</strong> (legítima / fraudulenta) en cantidades enormes. Y la salida que pides también es categórica: aprobar o bloquear. Eso es un caso de libro de clasificación supervisada — típicamente con modelos como gradient boosting (XGBoost, LightGBM) o redes neuronales con calibración de probabilidad.",
+        keys: [
+          "<strong>El clustering</strong> serviría si no tuvieras etiquetas y quisieras descubrir grupos. Aquí las tienes — sería desperdiciar información valiosa.",
+          "<strong>El refuerzo</strong> encajaría si la decisión cambiara el entorno (p. ej. un agente que negocia). Aquí cada transacción es independiente.",
+          "<strong>La regresión</strong> aplica cuando la salida es un número continuo. La salida aquí es una etiqueta."
+        ]
+      }
+    },
+    {
+      sector: "Salud · Investigación clínica",
+      title: "Un hospital quiere <em>agrupar pacientes</em> con síntomas similares para diseñar protocolos.",
+      narrative: [
+        "El servicio de medicina interna de un hospital universitario lleva años recogiendo datos de pacientes que llegan con cuadros complejos: combinaciones de fiebre, dolor articular, fatiga, alteraciones analíticas… Son cuadros que <strong>no encajan en ningún diagnóstico claro</strong> y que terminan etiquetados como «síndrome inespecífico».",
+        "La directora de investigación sospecha que dentro de ese cajón de sastre se esconden <strong>varios subtipos clínicamente distintos</strong> que hoy se tratan igual y que probablemente responderían mejor a protocolos diferenciados. Pero no tiene ninguna etiqueta previa: nadie ha clasificado estos pacientes en subgrupos antes.",
+        "Lo que sí tiene es un dataset rico con <strong>12.000 pacientes</strong> y <strong>ochenta variables por paciente</strong>: datos demográficos, analíticas, comorbilidades, evolución, respuesta a tratamientos previos. Y la pregunta clara: ¿hay grupos naturales en estos datos que podamos descubrir?"
+      ],
+      data: [
+        "12.000 pacientes con 80 variables clínicas cada uno.",
+        "Sin etiquetas previas — nadie ha clasificado los subtipos.",
+        "Objetivo: encontrar grupos coherentes para diseñar protocolos."
+      ],
+      question: "¿Qué tipo de aprendizaje encaja con esta investigación?",
+      options: [
+        { tag: "OPCIÓN A", text: "Aprendizaje supervisado · clasificación multiclase", correct: false },
+        { tag: "OPCIÓN B", text: "Aprendizaje no supervisado · clustering", correct: true },
+        { tag: "OPCIÓN C", text: "Aprendizaje por refuerzo", correct: false },
+        { tag: "OPCIÓN D", text: "Aprendizaje supervisado · regresión multivariable", correct: false }
+      ],
+      feedback: {
+        title: "Clustering <em>no supervisado</em>.",
+        body: "La pista que lo decide todo está en el segundo párrafo: <strong>«no tiene ninguna etiqueta previa»</strong>. Cuando no hay variable objetivo y el problema es descubrir estructura latente, hablamos de aprendizaje no supervisado. Aquí concretamente, clustering: k-means si los grupos son convexos, modelos de mezcla gaussiana si quieres probabilidad de pertenencia, o métodos jerárquicos para visualizar relaciones.",
+        keys: [
+          "<strong>Clasificación multiclase</strong> requeriría que ya supieras los subtipos y tuvieras pacientes etiquetados con cada uno. No es el caso.",
+          "<strong>Refuerzo</strong> aplicaría si fuera una decisión secuencial (p. ej. ajustar la dosis a lo largo del tiempo según respuesta).",
+          "<strong>Regresión</strong> requiere una salida numérica concreta. El objetivo aquí es estructural, no predictivo."
+        ]
+      }
+    },
+    {
+      sector: "Retail · Cadena de tiendas",
+      title: "Una cadena necesita <em>predecir las ventas</em> de cada producto en cada tienda para la próxima semana.",
+      narrative: [
+        "Una cadena de supermercados con <strong>340 tiendas</strong> y un catálogo de 18.000 referencias se enfrenta a un problema clásico: cada lunes hay que decidir cuántas unidades de cada producto enviar a cada tienda. Si envían poco, hay roturas de stock. Si envían demasiado, hay merma — sobre todo en frescos.",
+        "El equipo de demanda dispone de <strong>cinco años de histórico de ventas diarias</strong> a nivel producto-tienda. También tiene calendario de festivos, datos meteorológicos, promociones pasadas y los cambios de precio. La salida que necesitan es muy concreta: para cada combinación producto × tienda × día de la próxima semana, una <strong>estimación numérica</strong> de unidades vendidas.",
+        "El director de operaciones lo resume así: «No quiero saber si va a ser una semana buena o mala — quiero un número, lo más afinado posible, para cada combinación»."
+      ],
+      data: [
+        "5 años de ventas diarias por producto y tienda (etiquetadas).",
+        "340 tiendas × 18.000 referencias × 7 días.",
+        "Salida: número de unidades (continuo)."
+      ],
+      question: "¿Qué tipo de aprendizaje pide este caso?",
+      options: [
+        { tag: "OPCIÓN A", text: "Aprendizaje supervisado · regresión (series temporales)", correct: true },
+        { tag: "OPCIÓN B", text: "Aprendizaje supervisado · clasificación multiclase (alta/media/baja)", correct: false },
+        { tag: "OPCIÓN C", text: "Aprendizaje no supervisado · clustering de productos", correct: false },
+        { tag: "OPCIÓN D", text: "Aprendizaje por refuerzo · agente de inventario", correct: false }
+      ],
+      feedback: {
+        title: "Regresión <em>supervisada</em> (series temporales).",
+        body: "La cita del director es la pista decisiva: <strong>«quiero un número»</strong>. Cuando la salida es un valor continuo y tienes histórico etiquetado, es regresión supervisada. Como hay componente temporal, los enfoques típicos son modelos de series (ARIMA, Prophet) o gradient boosting con features temporales (lags, ventanas móviles, dummies de calendario).",
+        keys: [
+          "<strong>Clasificar en alta/media/baja</strong> es perder información: convertir un número continuo en categorías hace que pierdas precisión innecesariamente.",
+          "<strong>Clustering</strong> sería útil para una pregunta distinta (p. ej. agrupar productos con patrón de venta similar), pero no para predecir unidades.",
+          "<strong>El refuerzo</strong> podría tener sentido en una segunda fase (decidir cuánto pedir maximizando margen-merma), pero la pregunta directa es predictiva."
+        ]
+      }
+    },
+    {
+      sector: "Industria · Mantenimiento",
+      title: "Una fábrica quiere que un brazo robótico <em>aprenda solo</em> a optimizar su trayectoria.",
+      narrative: [
+        "Una fábrica de componentes de automoción tiene un brazo robótico que mueve piezas entre dos puntos de la línea de producción. El movimiento actual está programado a mano y funciona, pero el equipo de ingeniería sospecha que <strong>existen trayectorias mejores</strong>: más rápidas, con menos consumo eléctrico y menos desgaste de articulaciones.",
+        "El problema es que <strong>nadie sabe cuál es la trayectoria óptima</strong>. No hay un dataset de «trayectorias buenas» para enseñar al robot. Pero sí tienen un <strong>simulador físico fidedigno</strong> donde pueden dejar al robot probar miles de trayectorias por hora sin riesgo.",
+        "Han diseñado una función de recompensa que premia llegar al punto B rápido, sin colisiones, con consumo bajo. La idea es que el robot pruebe, reciba esta señal de recompensa, y vaya descubriendo por sí mismo qué trayectorias son mejores."
+      ],
+      data: [
+        "Sin dataset de trayectorias buenas — no hay etiquetas.",
+        "Simulador físico disponible (entorno de prueba).",
+        "Función de recompensa diseñada (rapidez · seguridad · eficiencia)."
+      ],
+      question: "¿Qué tipo de aprendizaje encaja con este planteamiento?",
+      options: [
+        { tag: "OPCIÓN A", text: "Aprendizaje supervisado · regresión sobre la trayectoria", correct: false },
+        { tag: "OPCIÓN B", text: "Aprendizaje no supervisado · clustering de trayectorias", correct: false },
+        { tag: "OPCIÓN C", text: "Aprendizaje por refuerzo (entorno + recompensa)", correct: true },
+        { tag: "OPCIÓN D", text: "Aprendizaje semi-supervisado", correct: false }
+      ],
+      feedback: {
+        title: "Aprendizaje <em>por refuerzo</em>.",
+        body: "Aparecen los tres ingredientes del refuerzo: <strong>agente</strong> (el robot), <strong>entorno</strong> (el simulador) y <strong>señal de recompensa</strong> (rapidez, seguridad, eficiencia). Y crucialmente, <strong>no hay etiquetas previas</strong>: nadie sabe cuál es la trayectoria óptima. Algoritmos típicos: PPO, SAC, DDPG — todos diseñados para control continuo.",
+        keys: [
+          "<strong>Supervisado</strong> exigiría tener un conjunto de trayectorias etiquetadas como «buenas». No existe.",
+          "<strong>Clustering</strong> serviría para descubrir tipologías de trayectorias, no para optimizarlas.",
+          "<strong>Semi-supervisado</strong> aplica cuando hay pocas etiquetas y muchos datos sin etiquetar. Aquí no hay ninguna etiqueta de partida."
+        ]
+      }
+    },
+    {
+      sector: "Tecnología · Plataforma de vídeo",
+      title: "Una plataforma de streaming quiere <em>recomendar contenido</em> sin que los usuarios califiquen explícitamente.",
+      narrative: [
+        "Una plataforma de vídeo con <strong>40 millones de usuarios activos</strong> recopila constantemente datos de uso: qué se ha visto, durante cuánto tiempo, qué se ha abandonado a los dos minutos, qué se ha vuelto a ver. Lo que <strong>no</strong> tiene es un sistema de calificaciones (no hay estrellas, no hay «me gusta») — el equipo de producto decidió hace años no pedirle nada extra al usuario.",
+        "El objetivo es claro: cuando un usuario abre la app, que vea en portada películas y series con altas probabilidades de gustarle. Pero el reto es que <strong>no hay etiquetas explícitas</strong> de «esta serie le gustó a este usuario». Solo hay señales de comportamiento.",
+        "El equipo de datos lleva tiempo dándole vueltas a cómo descubrir patrones de afinidad: qué usuarios se parecen entre sí en sus consumos, qué contenidos comparten audiencias similares, cómo aprovechar la matriz enorme y dispersa de quién-vio-qué."
+      ],
+      data: [
+        "40M de usuarios y catálogo amplio.",
+        "Sin calificaciones explícitas — solo señales implícitas.",
+        "Matriz dispersa usuario × contenido (qué viste y cuánto tiempo)."
+      ],
+      question: "¿Qué tipo de aprendizaje resuelve mejor este problema?",
+      options: [
+        { tag: "OPCIÓN A", text: "Aprendizaje supervisado · clasificación binaria (le gustará / no)", correct: false },
+        { tag: "OPCIÓN B", text: "No supervisado · filtrado colaborativo / asociación", correct: true },
+        { tag: "OPCIÓN C", text: "Aprendizaje por refuerzo puro", correct: false },
+        { tag: "OPCIÓN D", text: "Aprendizaje supervisado · regresión sobre la duración vista", correct: false }
+      ],
+      feedback: {
+        title: "No supervisado · <em>filtrado colaborativo</em>.",
+        body: "La frase clave es <strong>«no hay etiquetas explícitas»</strong>. Cuando lo único que tienes son señales de comportamiento (qué vio cada usuario y durante cuánto), el enfoque clásico es descubrir patrones de afinidad sin supervisión: factorización matricial, embeddings de usuario y contenido, reglas de asociación. Es la familia que está detrás de los recomendadores de Netflix, Spotify y compañía.",
+        keys: [
+          "<strong>Clasificación supervisada</strong> requeriría etiquetas explícitas «le gustó / no le gustó». No existen.",
+          "<strong>Refuerzo</strong> entra en juego si modelas la recomendación como decisiones secuenciales que afectan al estado del usuario — pero como punto de partida, demasiado complejo.",
+          "<strong>Regresión sobre la duración</strong> simplifica de más: ver mucho rato no siempre significa que algo te guste."
+        ]
+      }
+    }
+  ];
+
+  let caseIndex = 0;
+  const caseContainer = document.getElementById('case-container');
+
+  function renderCase() {
+    const c = caseData[caseIndex];
+    caseContainer.innerHTML = `
+      <div class="case-card">
+        <div class="case-meta">
+          <span class="case-id">CASO ${String(caseIndex + 1).padStart(2, '0')} / ${String(caseData.length).padStart(2, '0')}</span>
+          <span class="case-sector">${c.sector}</span>
+        </div>
+        <h3 class="case-title">${c.title}</h3>
+        ${c.narrative.map(p => `<p class="case-narrative">${p}</p>`).join('')}
+        <div class="case-data">
+          <div class="data-label">DATOS DISPONIBLES</div>
+          ${c.data.map(d => `<p>· ${d}</p>`).join('')}
+        </div>
+        <div class="case-question">
+          <h4>${c.question}</h4>
+          <div class="case-options" id="case-opts">
+            ${c.options.map((o, i) => `
+              <button class="case-opt" data-i="${i}">
+                <span class="opt-tag">${o.tag}</span>
+                <span class="opt-text">${o.text}</span>
+              </button>
+            `).join('')}
+          </div>
+          <div id="case-fb"></div>
+        </div>
+      </div>
+    `;
+    caseContainer.querySelectorAll('.case-opt').forEach(b => {
+      b.addEventListener('click', () => answerCase(parseInt(b.dataset.i)));
+    });
+  }
+
+  function answerCase(i) {
+    const c = caseData[caseIndex];
+    const opts = caseContainer.querySelectorAll('.case-opt');
+    const ok = c.options[i].correct;
+    opts.forEach((b, j) => {
+      b.disabled = true;
+      if (c.options[j].correct) b.classList.add('correct');
+      else if (j === i) b.classList.add('wrong');
+    });
+    const fbEl = document.getElementById('case-fb');
+    fbEl.innerHTML = `
+      <div class="case-feedback ${ok ? 'ok' : 'ko'}">
+        <div class="fb-title">${ok ? '✓ Correcto. ' : '✗ Vamos a verlo despacio. '}<em>${c.feedback.title.replace(/<\/?em>/g, '')}</em></div>
+        <p>${c.feedback.body}</p>
+        <ul>${c.feedback.keys.map(k => `<li>${k}</li>`).join('')}</ul>
+      </div>
+      <div class="case-nav">
+        <span class="case-counter">${caseIndex + 1} / ${caseData.length}</span>
+        <button class="case-next-btn" id="case-next">${caseIndex + 1 < caseData.length ? 'Siguiente caso →' : 'Volver al primero ↺'}</button>
+      </div>
+    `;
+    document.getElementById('case-next').addEventListener('click', () => {
+      caseIndex = (caseIndex + 1) % caseData.length;
+      renderCase();
+      caseContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  }
+
+  renderCase();
+
+  /* ===== Modo 2: Detecta el error ===== */
+  const errData = [
+    {
+      title: "El predictor de abandono que no funciona",
+      scenario: "Una plataforma SaaS quiere predecir si un cliente va a cancelar la suscripción el mes que viene. El equipo decide aplicar <strong>k-means</strong> sobre el historial de uso de los clientes y clasificar como «en riesgo» a todos los que caen en el clúster con menor actividad. Después de tres meses, el modelo apenas anticipa cancelaciones reales y los falsos positivos colapsan al equipo de retención.",
+      question: "¿Cuál es el error de planteamiento?",
+      options: [
+        { tag: "A", text: "Falta entrenarlo más tiempo: con más datos el clustering convergería.", correct: false },
+        { tag: "B", text: "Tienen un problema supervisado (sí/no cancela) y han elegido un método no supervisado.", correct: true },
+        { tag: "C", text: "Deberían haber usado aprendizaje por refuerzo con recompensa por retención.", correct: false },
+        { tag: "D", text: "Fallaba la limpieza de datos, no el tipo de modelo.", correct: false }
+      ],
+      explanation: "La empresa tiene <strong>etiquetas históricas</strong> (qué clientes cancelaron y cuáles no) y una pregunta categórica clara (¿cancelará?). Eso es clasificación supervisada. K-means descubre estructura en los datos, pero no aprende de las etiquetas: por eso tira a ciegas. La solución correcta es entrenar un clasificador supervisado (regresión logística, gradient boosting…) usando el histórico de cancelaciones como variable objetivo."
+    },
+    {
+      title: "El modelo de imágenes médicas que dejó de funcionar",
+      scenario: "Un equipo entrena una red neuronal supervisada para detectar fracturas en radiografías. Tienen 800 imágenes anotadas por radiólogos. El modelo sale al hospital y rinde fatal: detecta fracturas donde no las hay y pasa por alto las reales. Pero al revisarlo, descubren que en el almacén tienen <strong>50.000 radiografías más sin anotar</strong> que nunca usaron.",
+      question: "¿Qué enfoque podría rescatar el proyecto sin tener que anotar las 50.000?",
+      options: [
+        { tag: "A", text: "Eliminar las 50.000 imágenes y entrenar solo con las 800 anotadas — calidad sobre cantidad.", correct: false },
+        { tag: "B", text: "Aprendizaje semi-supervisado: aprovechar las 800 etiquetadas y los 50.000 sin etiqueta.", correct: true },
+        { tag: "C", text: "Clustering puro sobre las 50.800 imágenes ignorando las anotaciones.", correct: false },
+        { tag: "D", text: "Aprendizaje por refuerzo, premiando al modelo cuando acierta.", correct: false }
+      ],
+      explanation: "Esta es la situación canónica del <strong>semi-supervisado</strong>: pocas etiquetas (caras de obtener — un radiólogo cuesta), muchos datos sin etiquetar (baratos — están en el almacén). Técnicas como pseudo-labeling, self-training o consistency regularization permiten aprovechar el patrón estadístico de los 50.000 sin anotar para mejorar el modelo entrenado con los 800. Tirarlos sería desperdiciar información."
+    },
+    {
+      title: "El recomendador que aprende a maximizar clicks (y termina molestando)",
+      scenario: "Una red social entrena un modelo <strong>supervisado</strong> que predice la probabilidad de click de cada publicación. Funciona muy bien técnicamente: la métrica de click sube un 20%. Pero al cabo de seis meses, los usuarios pasan menos tiempo total en la app y la satisfacción cae. El modelo ha aprendido que el clickbait y la indignación maximizan clicks a corto plazo.",
+      question: "¿Cuál es el error de fondo?",
+      options: [
+        { tag: "A", text: "El modelo no se entrenó con suficientes datos.", correct: false },
+        { tag: "B", text: "Optimizar una métrica miope con un modelo supervisado, cuando el problema real es secuencial y de largo plazo.", correct: true },
+        { tag: "C", text: "Falta hacerlo no supervisado para que el modelo descubra la solución.", correct: false },
+        { tag: "D", text: "Los datos estaban mal etiquetados.", correct: false }
+      ],
+      explanation: "El problema no es técnico, es de <strong>encuadre</strong>. Cuando una decisión cambia el entorno (lo que muestras hoy condiciona lo que el usuario hace mañana, y por tanto lo que verás), un modelo supervisado solo optimiza el siguiente click. El refuerzo —con recompensa de largo plazo, como tiempo en app o retención semanal— captura mejor la dinámica. La lección: elegir el tipo de aprendizaje no es solo cuestión de datos, también de qué tipo de objetivo quieres optimizar."
+    }
+  ];
+
+  const errContainer = document.getElementById('err-container');
+  function renderErr() {
+    errContainer.innerHTML = errData.map((e, idx) => `
+      <div class="err-card">
+        <div class="err-tag">ERROR ${String(idx + 1).padStart(2, '0')} · DETECTA QUÉ FALLA</div>
+        <h4>${e.title}</h4>
+        <div class="err-scenario">${e.scenario}</div>
+        <p class="err-question"><strong>${e.question}</strong></p>
+        <div class="case-options" data-err="${idx}">
+          ${e.options.map((o, i) => `
+            <button class="case-opt" data-err-idx="${idx}" data-i="${i}">
+              <span class="opt-tag">OPCIÓN ${o.tag}</span>
+              <span class="opt-text">${o.text}</span>
+            </button>
+          `).join('')}
+        </div>
+        <div id="err-fb-${idx}"></div>
+      </div>
+    `).join('');
+
+    errContainer.querySelectorAll('.case-opt').forEach(b => {
+      b.addEventListener('click', () => {
+        const errIdx = parseInt(b.dataset.errIdx);
+        const i = parseInt(b.dataset.i);
+        const e = errData[errIdx];
+        const opts = errContainer.querySelectorAll(`.case-opt[data-err-idx="${errIdx}"]`);
+        const ok = e.options[i].correct;
+        opts.forEach((btn, j) => {
+          btn.disabled = true;
+          if (e.options[j].correct) btn.classList.add('correct');
+          else if (j === i) btn.classList.add('wrong');
+        });
+        document.getElementById(`err-fb-${errIdx}`).innerHTML = `
+          <div class="case-feedback ${ok ? 'ok' : 'ko'}">
+            <div class="fb-title">${ok ? '✓ Bien visto.' : '✗ No del todo.'}</div>
+            <p>${e.explanation}</p>
+          </div>
+        `;
+      });
+    });
+  }
+  renderErr();
+
+  /* ===== Modo 3: Empareja casos con familias ===== */
+  const matchData = {
+    items: [
+      { id: 'i1', text: "Etiquetar correos como spam o no spam con miles de ejemplos previos.", target: 't1' },
+      { id: 'i2', text: "Predecir el tiempo de espera de un paciente en urgencias en minutos.", target: 't2' },
+      { id: 'i3', text: "Descubrir comunidades de usuarios en una red social a partir de sus interacciones.", target: 't3' },
+      { id: 'i4', text: "Entrenar un dron para esquivar obstáculos en un simulador con recompensa por seguir vivo.", target: 't4' },
+      { id: 'i5', text: "Mejorar un detector de tumores con 500 imágenes anotadas y 30.000 sin etiquetar.", target: 't5' },
+      { id: 'i6', text: "Reducir 200 variables de un dataset a 10 componentes para visualizarlo.", target: 't3' }
+    ],
+    targets: [
+      { id: 't1', name: "Supervisado · clasificación", hint: "etiquetas categóricas" },
+      { id: 't2', name: "Supervisado · regresión", hint: "salida numérica continua" },
+      { id: 't3', name: "No supervisado", hint: "clustering, asociación, PCA" },
+      { id: 't4', name: "Por refuerzo", hint: "agente · entorno · recompensa" },
+      { id: 't5', name: "Semi-supervisado", hint: "pocas etiquetas, muchos sin etiqueta" }
+    ]
+  };
+
+  let matchSelectedItem = null;
+  let matchPairings = {}; // itemId -> targetId
+
+  function renderMatch() {
+    const itemsEl = document.getElementById('match-items');
+    const targetsEl = document.getElementById('match-targets');
+    // Mezclar items para que no estén en orden
+    const shuffled = [...matchData.items].sort(() => Math.random() - 0.5);
+    itemsEl.innerHTML = shuffled.map(it => `
+      <div class="match-item" data-id="${it.id}">${it.text}</div>
+    `).join('');
+    targetsEl.innerHTML = matchData.targets.map(t => `
+      <div class="match-target" data-id="${t.id}">
+        <div class="target-name">${t.name}</div>
+        <div class="target-paired" id="paired-${t.id}">${t.hint}</div>
+      </div>
+    `).join('');
+
+    itemsEl.querySelectorAll('.match-item').forEach(el => {
+      el.addEventListener('click', () => {
+        if (el.classList.contains('matched')) return;
+        itemsEl.querySelectorAll('.match-item').forEach(x => x.classList.remove('selected'));
+        el.classList.add('selected');
+        matchSelectedItem = el.dataset.id;
+        targetsEl.querySelectorAll('.match-target').forEach(x => x.classList.add('active'));
+      });
+    });
+    targetsEl.querySelectorAll('.match-target').forEach(el => {
+      el.addEventListener('click', () => {
+        if (!matchSelectedItem) return;
+        const targetId = el.dataset.id;
+        // Quitar pareja anterior si existía
+        Object.keys(matchPairings).forEach(k => {
+          if (matchPairings[k] === targetId || k === matchSelectedItem) delete matchPairings[k];
+        });
+        matchPairings[matchSelectedItem] = targetId;
+
+        // Marcar item como matched
+        itemsEl.querySelectorAll('.match-item').forEach(x => {
+          x.classList.remove('selected', 'matched');
+          if (matchPairings[x.dataset.id]) x.classList.add('matched');
+        });
+        targetsEl.querySelectorAll('.match-target').forEach(x => x.classList.remove('active'));
+
+        // Actualizar lista de items emparejados en el target
+        matchData.targets.forEach(t => {
+          const paired = Object.keys(matchPairings).filter(k => matchPairings[k] === t.id);
+          const labels = paired.map(pid => matchData.items.find(it => it.id === pid).text.slice(0, 50) + '…');
+          const pairedEl = document.getElementById('paired-' + t.id);
+          pairedEl.innerHTML = labels.length ? labels.join(' · ') : t.hint;
+        });
+
+        matchSelectedItem = null;
+      });
+    });
+  }
+
+  document.getElementById('match-check').addEventListener('click', () => {
+    const targetsEl = document.getElementById('match-targets');
+    let correct = 0;
+    matchData.items.forEach(it => {
+      const chosen = matchPairings[it.id];
+      if (chosen === it.target) correct++;
+    });
+    // Marcar visualmente
+    matchData.targets.forEach(t => {
+      const pairedItems = Object.keys(matchPairings).filter(k => matchPairings[k] === t.id);
+      const targetEl = targetsEl.querySelector(`.match-target[data-id="${t.id}"]`);
+      const allCorrect = pairedItems.every(pid => matchData.items.find(it => it.id === pid).target === t.id);
+      const someCorrect = pairedItems.some(pid => matchData.items.find(it => it.id === pid).target === t.id);
+      targetEl.classList.remove('correct', 'wrong');
+      if (pairedItems.length === 0) return;
+      if (allCorrect) targetEl.classList.add('correct');
+      else if (!someCorrect) targetEl.classList.add('wrong');
+    });
+    const total = matchData.items.length;
+    const resultEl = document.getElementById('match-result');
+    resultEl.classList.add('visible');
+    resultEl.classList.toggle('ok', correct === total);
+    resultEl.classList.toggle('partial', correct < total);
+    if (correct === total) {
+      resultEl.innerHTML = `<strong style="color:var(--good);">¡Perfecto!</strong> Has emparejado los ${total} casos correctamente. Ya tienes el vocabulario interiorizado.`;
+    } else {
+      resultEl.innerHTML = `<strong style="color:var(--amber);">${correct} / ${total} aciertos.</strong> Los marcados en verde están bien. Revisa los rojos: ¿qué les falta? — busca etiquetas, salida continua, recompensas, o ausencia de etiquetas.`;
+    }
+  });
+  document.getElementById('match-reset').addEventListener('click', () => {
+    matchPairings = {};
+    matchSelectedItem = null;
+    document.getElementById('match-result').classList.remove('visible');
+    renderMatch();
+  });
+
+  renderMatch();
+
+  /* ===== Modo 4: Caso completo guiado ===== */
+  const multiSteps = [
+    {
+      label: "Paso 1 · ¿Qué datos hay?",
+      narrative: "Una <strong>aseguradora de salud</strong> con 2,3 millones de pólizas activas quiere lanzar un sistema que ayude a sus comerciales a priorizar llamadas de renovación. Tienen acceso al histórico completo: para cada cliente del último decenio saben si renovó o no, junto con datos demográficos, uso del seguro, contactos previos con la compañía y satisfacción declarada en encuestas.",
+      question: "Vista la situación, ¿qué tipo de aprendizaje encaja con el problema?",
+      options: [
+        { tag: "A", text: "Supervisado (hay etiquetas históricas: renovó / no renovó).", correct: true, summary: "Has identificado correctamente: <strong>aprendizaje supervisado</strong> — porque hay etiquetas históricas." },
+        { tag: "B", text: "No supervisado (clustering de clientes).", correct: false, summary: "Aunque el clustering pueda complementar, no es lo principal: las etiquetas existen y debemos aprovecharlas." },
+        { tag: "C", text: "Por refuerzo (un agente que decide a quién llamar).", correct: false, summary: "El refuerzo encajaría si modelaras la conversación como decisiones secuenciales con recompensa, pero el dato disponible apunta primero a un problema supervisado." }
+      ]
+    },
+    {
+      label: "Paso 2 · ¿Qué tipo de salida?",
+      narrative: "El equipo comercial necesita una herramienta práctica. Cuando abren el CRM por la mañana, quieren ver un <strong>número entre 0 y 1</strong> por cada cliente: la probabilidad de que renueve si no se hace nada. Después ordenarán las llamadas de menor a mayor probabilidad, para concentrarse primero en los que están en riesgo.",
+      question: "¿Qué subtipo de aprendizaje supervisado es?",
+      options: [
+        { tag: "A", text: "Regresión continua sobre el importe de la prima.", correct: false, summary: "El importe de la prima no es la salida que pide el caso. La salida es la probabilidad de renovación." },
+        { tag: "B", text: "Clasificación binaria con probabilidad calibrada (renovará / no renovará).", correct: true, summary: "Has elegido bien: <strong>clasificación binaria</strong> con probabilidad calibrada. La salida es categórica, pero quieres la probabilidad asociada." },
+        { tag: "C", text: "Clasificación multiclase con cinco niveles de fidelidad.", correct: false, summary: "Discretizar en cinco niveles añade complejidad sin necesidad: la decisión final es binaria (renueva o no)." }
+      ]
+    },
+    {
+      label: "Paso 3 · ¿Qué algoritmo de partida?",
+      narrative: "Con el problema bien encuadrado, hay que escoger un algoritmo. El equipo de datos valora tres opciones: una <strong>regresión logística</strong> (interpretable y rápida), un <strong>gradient boosting tipo XGBoost</strong> (rendimiento alto en datos tabulares) y una <strong>red neuronal profunda</strong> (potente pero opaca y costosa). El equipo de cumplimiento normativo recuerda que el regulador exige poder <strong>explicar a un cliente por qué se le ha asignado tal probabilidad</strong>.",
+      question: "¿Qué algoritmo elegirías como primera versión?",
+      options: [
+        { tag: "A", text: "Regresión logística + gradient boosting con SHAP para explicabilidad.", correct: true, summary: "Combinas <strong>rendimiento sobre datos tabulares</strong> (gradient boosting) con <strong>explicabilidad</strong> (SHAP, regresión logística como baseline). Cumple el requisito regulatorio." },
+        { tag: "B", text: "Solo red neuronal profunda — siempre es mejor.", correct: false, summary: "Las redes profundas brillan en imagen/texto, no son automáticamente mejores en datos tabulares. Y la opacidad choca con el requisito de explicabilidad." },
+        { tag: "C", text: "K-means para hacer clusters de riesgo.", correct: false, summary: "K-means es no supervisado: no aprovechará las etiquetas históricas. Ya descartamos no supervisado en el paso 1." }
+      ]
+    },
+    {
+      label: "Paso 4 · ¿Cómo lo evaluamos?",
+      narrative: "Antes de poner el modelo en producción, hay que decidir cómo se evalúa. La distribución de las etiquetas es <strong>desbalanceada</strong>: solo el 11% de los clientes no renueva. El director comercial dice claro: «<em>prefiero que llame de más a clientes que iban a renovar igual, que dejar pasar a los que se van</em>».",
+      question: "¿Qué métrica priorizamos para evaluar el modelo?",
+      options: [
+        { tag: "A", text: "Accuracy (porcentaje total de aciertos).", correct: false, summary: "Con un 89% renovando, un modelo que diga «todos renuevan» ya tendría 89% de accuracy y sería inútil. Mala métrica para clases desbalanceadas." },
+        { tag: "B", text: "Recall sobre la clase «no renovará» y AUC-PR.", correct: true, summary: "Has captado el matiz: el coste de un falso negativo (perder a un cliente sin avisar) es mayor que el de un falso positivo. <strong>Recall sobre la clase minoritaria</strong> y AUC-PR son las métricas que mejor reflejan el negocio." },
+        { tag: "C", text: "Mean Squared Error.", correct: false, summary: "El MSE es para regresión, no para clasificación. La salida es categórica." }
+      ]
+    }
+  ];
+
+  const multiCard = document.getElementById('multi-card');
+  let multiState = { step: 0, answers: [] };
+
+  function renderMulti() {
+    if (multiState.step >= multiSteps.length) {
+      renderMultiFinal();
+      return;
+    }
+    const step = multiSteps[multiState.step];
+    const totalSteps = multiSteps.length;
+    multiCard.innerHTML = `
+      <div class="multi-progress">
+        ${multiSteps.map((_, i) => `
+          <div class="multi-bar ${i < multiState.step ? 'done' : (i === multiState.step ? 'active' : '')}"></div>
+        `).join('')}
+      </div>
+      <div class="case-meta">
+        <span class="case-id">${step.label}</span>
+        <span class="case-sector">PASO ${multiState.step + 1} / ${totalSteps}</span>
+      </div>
+      <p class="case-narrative">${step.narrative}</p>
+      ${multiState.answers.length ? `
+        <div class="multi-decision-summary">
+          <strong>Decisiones previas:</strong> ${multiState.answers.map((a, i) => `<em>(${i + 1})</em> ${a.summary.replace(/<\/?strong>/g, '').replace(/<\/?em>/g, '')}`).join(' &nbsp;·&nbsp; ')}
+        </div>
+      ` : ''}
+      <div class="case-question">
+        <h4>${step.question}</h4>
+        <div class="case-options" id="multi-opts">
+          ${step.options.map((o, i) => `
+            <button class="case-opt" data-i="${i}">
+              <span class="opt-tag">OPCIÓN ${o.tag}</span>
+              <span class="opt-text">${o.text}</span>
+            </button>
+          `).join('')}
+        </div>
+        <div id="multi-fb"></div>
+      </div>
+    `;
+    multiCard.querySelectorAll('.case-opt').forEach(b => {
+      b.addEventListener('click', () => answerMulti(parseInt(b.dataset.i)));
+    });
+  }
+
+  function answerMulti(i) {
+    const step = multiSteps[multiState.step];
+    const ok = step.options[i].correct;
+    const opts = multiCard.querySelectorAll('.case-opt');
+    opts.forEach((b, j) => {
+      b.disabled = true;
+      if (step.options[j].correct) b.classList.add('correct');
+      else if (j === i) b.classList.add('wrong');
+    });
+    multiState.answers.push({ step: multiState.step, choice: i, correct: ok, summary: step.options[i].summary });
+    document.getElementById('multi-fb').innerHTML = `
+      <div class="case-feedback ${ok ? 'ok' : 'ko'}">
+        <div class="fb-title">${ok ? '✓ Decisión sólida.' : '✗ Replanteamos.'}</div>
+        <p>${step.options[i].summary}</p>
+      </div>
+      <div class="case-nav">
+        <span class="case-counter">PASO ${multiState.step + 1} / ${multiSteps.length}</span>
+        <button class="case-next-btn" id="multi-next">${multiState.step + 1 < multiSteps.length ? 'Siguiente paso →' : 'Ver cierre del proyecto →'}</button>
+      </div>
+    `;
+    document.getElementById('multi-next').addEventListener('click', () => {
+      multiState.step++;
+      renderMulti();
+      multiCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  }
+
+  function renderMultiFinal() {
+    const aciertos = multiState.answers.filter(a => a.correct).length;
+    const total = multiSteps.length;
+    let mensaje;
+    if (aciertos === total) mensaje = "Has tomado todas las decisiones críticas correctamente. El proyecto va por buen camino — y, sobre todo, has razonado <em>por qué</em> cada paso.";
+    else if (aciertos >= total - 1) mensaje = "Casi perfecto. Repasa el paso donde dudaste — entender ese matiz es lo que separa un proyecto bien encuadrado de uno que se descarrila a los seis meses.";
+    else mensaje = "Hay decisiones que conviene revisar. Vuelve a leer el árbol de decisión y repite el ejercicio: no es memoria, es criterio.";
+
+    multiCard.innerHTML = `
+      <div class="multi-final">
+        <div class="lab-tag" style="color:var(--blue-light); font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.18em; margin-bottom: 10px;">CIERRE DEL PROYECTO · ${aciertos} / ${total}</div>
+        <h4>Hemos encuadrado un proyecto <em>real</em>.</h4>
+        <p>${mensaje}</p>
+        <p style="margin-top:14px;">El recorrido que has hecho es exactamente el que harías en una empresa: <strong style="color:white;">qué datos hay → qué salida quiero → qué algoritmo encaja → cómo se evalúa</strong>. Cada paso restringe los siguientes. Cambiar la respuesta del paso 1 obliga a rehacer todo lo demás.</p>
+        <ul>
+          <li>Si en el paso 1 hubieras dicho «no supervisado», nunca habrías llegado a la regresión logística del paso 3.</li>
+          <li>Si en el paso 4 eligieras accuracy, el modelo se desplegaría con métricas engañosas.</li>
+          <li>El pensamiento crítico no es elegir el algoritmo más sofisticado — es <em>elegir el adecuado</em>.</li>
+        </ul>
+        <button class="restart" id="multi-restart">↺ Volver a hacer el caso</button>
+      </div>
+    `;
+    document.getElementById('multi-restart').addEventListener('click', () => {
+      multiState = { step: 0, answers: [] };
+      renderMulti();
+      multiCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  }
+
+  renderMulti();
+</script>
+</body>
+</html>

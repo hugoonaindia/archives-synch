@@ -1,0 +1,1011 @@
+ID_Reserva,Edad,Genero,Pais,Hotel,Tipo_Habitacion,Regimen,Canal_Reserva,Lead_Time_Dias,Mes_Llegada,Noches,Adultos,Ninos,Precio_Noche_EUR,Reservas_Previas,Cancelaciones_Previas,Tiene_Parking,Peticiones_Especiales,Tipo_Deposito,Cancelado
+100001,36.0,Female,España,Palladium Mallorca,Standard,Desayuno,Agencia online,77.0,6,4,2,0,134.64,3,2,Sí,0.0,Reembolsable,0
+100002,24.0,Male,Francia,Palladium Mallorca,Junior Suite,Desayuno,Web directa,7.0,9,3,1,0,,1,0,NO,0.0,Sin depósito,0
+100003,46.0,Male,España,Palladium Riviera Maya,Standard,Todo incluido,Web directa,64.0,8,14,2,3,142.04,7,1,Sí,0.0,Sin depósito,1
+100004,42.0,Male,Países Bajos,Palladium Mallorca,Standard,Desayuno,Walk-in,3.0,4,3,2,0,160.59,1,1,Sí,2.0,Sin depósito,0
+100005,61.0,Female,EEUU,Palladium Costa Mujeres,Standard,Todo incluido,Web directa,34.0,8,2,2,0,150.49,1,0,Sí,0.0,No reembolsable,0
+100006,46.0,Female,España,Palladium Mallorca,Junior Suite,Todo incluido,Agencia tradicional,96.0,7,7,2,1,227.96,0,0,No,0.0,Sin depósito,0
+100007,31.0,Male,Portugal,Palladium Riviera Maya,Standard,Solo alojamiento,Walk-in,47.0,1,5,1,0,131.16,2,0,No,4.0,Sin depósito,0
+100008,21.0,Female,Alemania,Palladium Mallorca,Standard,Media pensión,Agencia online,34.0,7,1,1,0,118.04,0,0,No,0.0,Sin depósito,0
+100009,50.0,Female,España,Palladium Tenerife,Standard,Solo alojamiento,Walk-in,92.0,6,3,2,3,91.5,0,0,No,0.0,No reembolsable,0
+100010,38.0,Female,España,Palladium Ibiza,Standard,Solo alojamiento,Web directa,297.0,7,5,2,1,133.8,4,1,No,2.0,Sin depósito,0
+100011,41.0,Female,España,Palladium Mallorca,Standard,Desayuno,Web directa,0.0,3,4,2,0,56.55,2,0,No,2.0,No reembolsable,0
+100012,34.0,Male,España,Palladium Punta Cana,Villa,Todo incluido,Web directa,67.0,10,6,2,0,758.89,0,0,No,0.0,Reembolsable,0
+100013,18.0,Male,Francia,Palladium Mallorca,Suite,Media pensión,Agencia online,211.0,8,2,1,0,381.33,1,0,No,0.0,Sin depósito,0
+100014,54.0,Male,Francia,Palladium Costa Mujeres,Standard,Desayuno,Agencia online,26.0,9,4,2,0,118.34,2,0,No,0.0,Sin depósito,1
+100015,48.0,Male,Portugal,Palladium Tenerife,Standard,Media pensión,Teléfono,166.0,3,2,3,0,146.78,3,0,No,0.0,No reembolsable,0
+100016,45.0,Male,México,Palladium Ibiza,Junior Suite,Todo incluido,Web directa,13.0,8,4,2,2,220.87,3,0,No,0.0,Sin depósito,0
+100017,51.0,Female,México,Palladium Ibiza,Standard,Todo incluido,Web directa,89.0,5,1,1,1,98.72,2,0,Sí,0.0,Sin depósito,0
+100018,26.0,Female,México,Palladium Mallorca,Standard,Todo incluido,Web directa,63.0,4,4,2,1,115.06,1,0,No,4.0,Reembolsable,0
+100019,68.0,Female,España,Palladium Punta Cana,Standard,Solo alojamiento,Web directa,74.0,9,4,2,1,97.73,1,0,,2.0,No reembolsable,0
+100020,38.0,Male,EEUU,Palladium Punta Cana,Standard,Solo alojamiento,Agencia online,124.0,11,2,2,0,114.02,1,0,No,0.0,Sin depósito,1
+100021,47.0,Male,Portugal,Palladium Riviera Maya,Standard,Todo incluido,Web directa,22.0,1,7,1,2,98.99,1,0,Sí,1.0,Reembolsable,1
+100022,52.0,Female,Reino Unido,Palladium Punta Cana,Suite,Media pensión,Agencia online,60.0,9,5,1,0,366.61,0,0,No,0.0,No reembolsable,0
+100023,18.0,Female,Francia,Palladium Tenerife,Standard,Media pensión,Agencia online,85.0,11,6,2,0,128.21,1,0,No,,Reembolsable,0
+100024,64.0,Male,Francia,Palladium Costa Mujeres,Standard,Todo incluido,Agencia tradicional,2.0,7,6,1,0,,2,0,Sí,1.0,Sin depósito,0
+100025,43.0,Female,España,Palladium Tenerife,Standard,Todo incluido,Agencia tradicional,31.0,8,5,2,2,92.59,1,0,No,2.0,Reembolsable,0
+100026,20.0,Female,EEUU,Palladium Tenerife,Villa,Desayuno,Web directa,58.0,4,5,2,0,710.91,2,1,No,1.0,Sin depósito,1
+100027,,Female,Argentina,Palladium Tenerife,Junior Suite,Media pensión,Web directa,28.0,11,1,1,0,230.79,3,0,No,2.0,Sin depósito,0
+100028,77.0,Female,España,Palladium Ibiza,Standard,Todo incluido,Agencia online,32.0,8,2,1,1,72.19,3,0,No,0.0,Reembolsable,0
+100029,39.0,Male,España,Palladium Costa Mujeres,Standard,Desayuno,Web directa,78.0,9,3,2,2,,1,1,Sí,4.0,Reembolsable,0
+100030,23.0,male,España,Palladium Tenerife,Suite,Desayuno,Web directa,96.0,8,4,2,1,346.72,2,0,No,0.0,Sin depósito,0
+100031,40.0,Male,España,Palladium Ibiza,Standard,Desayuno,Teléfono,130.0,5,6,2,2,164.04,1,0,No,1.0,Reembolsable,0
+100032,47.0,Male,Alemania,Palladium Tenerife,Junior Suite,Todo incluido,Agencia online,14.0,5,1,2,1,233.5,3,2,No,0.0,Sin depósito,1
+100033,34.0,Male,Alemania,Palladium Tenerife,Standard,Desayuno,Web directa,44.0,8,4,2,0,135.17,0,0,No,0.0,Sin depósito,0
+100034,34.0,Male,Alemania,Palladium Riviera Maya,Junior Suite,Media pensión,Walk-in,26.0,10,1,2,0,223.04,0,0,No,5.0,Sin depósito,0
+100035,57.0,Male,Francia,Palladium Ibiza,Standard,Media pensión,Web directa,208.0,8,6,2,1,119.85,1,0,Sí,1.0,No reembolsable,0
+100036,53.0,Female,Alemania,Palladium Ibiza,Standard,Todo incluido,Agencia online,22.0,8,4,2,1,122.8,6,1,Sí,4.0,Sin depósito,1
+100037,42.0,Male,Reino Unido,Palladium Mallorca,Junior Suite,Desayuno,Agencia tradicional,6.0,9,10,2,0,174.5,2,0,Sí,1.0,Sin depósito,0
+100038,41.0,Female,EEUU,Palladium Mallorca,Suite,Desayuno,Web directa,13.0,5,10,1,0,376.18,1,1,No,1.0,Reembolsable,0
+100039,44.0,Male,Italia,Palladium Mallorca,Standard,Media pensión,Web directa,16.0,7,3,1,1,149.03,1,0,No,4.0,Sin depósito,0
+100040,36.0,Female,España,Palladium Punta Cana,Standard,Todo incluido,Agencia online,4.0,7,4,2,1,109.19,0,0,No,2.0,Sin depósito,0
+100041,42.0,Female,Argentina,Palladium Ibiza,Junior Suite,Desayuno,Agencia tradicional,0.0,4,10,2,0,172.83,3,0,No,1.0,Sin depósito,0
+100042,44.0,Male,Argentina,Palladium Ibiza,Standard,Desayuno,Agencia tradicional,8.0,5,6,2,0,138.66,2,0,No,2.0,Sin depósito,0
+100043,61.0,Female,España,Palladium Tenerife,Standard,Todo incluido,Agencia tradicional,31.0,8,2,2,0,137.04,2,0,No,0.0,Sin depósito,0
+100044,27.0,Male,Reino Unido,Palladium Punta Cana,Standard,Todo incluido,Web directa,102.0,4,3,3,1,126.34,0,0,No,0.0,No reembolsable,1
+100045,54.0,Female,España,Palladium Punta Cana,Junior Suite,Desayuno,Web directa,309.0,4,7,2,0,163.63,1,0,Sí,0.0,Reembolsable,0
+100046,64.0,FEMALE,Italia,Palladium Mallorca,Junior Suite,Desayuno,Agencia online,124.0,9,2,2,0,147.76,6,1,,,No reembolsable,0
+100047,,Female,Reino Unido,Palladium Mallorca,Standard,Desayuno,Agencia tradicional,60.0,9,6,1,1,130.71,1,0,Sí,0.0,Reembolsable,1
+100048,44.0,Male,España,Palladium Mallorca,Standard,Media pensión,Agencia tradicional,108.0,8,1,1,0,89.7,2,0,,4.0,Sin depósito,0
+100049,45.0,Female,España,Palladium Punta Cana,Standard,Solo alojamiento,Agencia online,49.0,8,7,2,2,,0,0,No,2.0,No reembolsable,0
+100050,,Male,EEUU,Palladium Punta Cana,Standard,Desayuno,Web directa,100.0,7,7,2,0,97.23,2,0,No,0.0,Reembolsable,0
+100051,36.0,Female,España,Palladium Mallorca,Standard,Todo incluido,Agencia online,7.0,6,4,1,0,148.85,0,0,Sí,2.0,Reembolsable,0
+100052,29.0,Male,EEUU,Palladium Mallorca,Junior Suite,Solo alojamiento,Agencia tradicional,160.0,4,3,1,0,221.42,0,0,,2.0,Reembolsable,0
+100053,18.0,Male,EEUU,Palladium Riviera Maya,Standard,Desayuno,Teléfono,68.0,7,1,1,0,94.34,0,0,No,2.0,,0
+100054,49.0,Female,Italia,Palladium Riviera Maya,Junior Suite,Todo incluido,Agencia tradicional,,5,6,2,0,212.79,2,0,No,,Reembolsable,0
+100055,18.0,Female,Reino Unido,Palladium Ibiza,Suite,Solo alojamiento,Web directa,34.0,5,3,2,1,417.21,1,0,No,0.0,Sin depósito,0
+100056,49.0,Male,Francia,Palladium Riviera Maya,Standard,Todo incluido,Agencia online,24.0,2,6,2,0,115.72,0,0,No,1.0,Sin depósito,0
+100057,54.0,Female,España,Palladium Costa Mujeres,Suite,Solo alojamiento,Agencia online,39.0,1,4,2,2,412.23,1,1,No,1.0,Sin depósito,0
+100058,29.0,Male,Reino Unido,Palladium Tenerife,Suite,Desayuno,Web directa,311.0,2,4,2,0,367.22,4,1,Sí,4.0,Sin depósito,0
+100059,49.0,Male,EEUU,Palladium Riviera Maya,Junior Suite,Todo incluido,Web directa,23.0,7,4,4,3,257.87,1,0,No,0.0,Reembolsable,0
+100060,51.0,Male,Francia,Palladium Mallorca,Suite,Todo incluido,Web directa,57.0,1,4,2,0,384.79,0,0,No,1.0,Reembolsable,1
+100061,,Female,Italia,Palladium Tenerife,Junior Suite,Todo incluido,Web directa,138.0,7,6,2,1,194.54,2,1,No,0.0,Sin depósito,1
+100062,,Female,España,Palladium Ibiza,Standard,Desayuno,Web directa,204.0,5,3,3,0,143.2,0,0,Sí,2.0,Sin depósito,0
+100063,47.0,Female,Portugal,Palladium Riviera Maya,Junior Suite,Media pensión,Web directa,68.0,8,3,2,1,199.52,1,0,Sí,1.0,Reembolsable,0
+100064,45.0,Male,EEUU,Palladium Tenerife,Villa,Todo incluido,Teléfono,27.0,7,5,2,2,724.75,1,0,No,0.0,No reembolsable,0
+100065,32.0,Male,Reino Unido,Palladium Mallorca,Standard,Media pensión,Teléfono,33.0,7,2,1,0,120.14,9,4,No,1.0,Reembolsable,0
+100066,35.0,Male,Reino Unido,Palladium Tenerife,Suite,Media pensión,Web directa,19.0,2,14,2,2,367.56,2,0,No,0.0,Sin depósito,0
+100067,50.0,Female,Alemania,Palladium Ibiza,Standard,Todo incluido,Web directa,86.0,8,4,2,0,121.32,3,0,No,0.0,Sin depósito,0
+100068,35.0,Female,España,Palladium Riviera Maya,Standard,Desayuno,Web directa,94.0,1,5,2,1,127.66,2,1,Sí,0.0,Reembolsable,0
+100069,48.0,Female,,Palladium Mallorca,Standard,Desayuno,Web directa,48.0,9,6,2,0,146.13,1,0,No,0.0,Reembolsable,0
+100070,,Male,Reino Unido,Palladium Costa Mujeres,Suite,Desayuno,Web directa,16.0,5,6,2,0,387.19,2,1,No,1.0,Sin depósito,0
+100071,39.0,Female,Italia,Palladium Riviera Maya,Junior Suite,Solo alojamiento,Web directa,9.0,8,2,2,0,256.01,1,0,No,1.0,Sin depósito,0
+100072,43.0,Male,España,Palladium Riviera Maya,Standard,Desayuno,Web directa,36.0,8,4,2,0,73.97,3,0,No,4.0,Sin depósito,0
+100073,46.0,Female,Alemania,Palladium Riviera Maya,Standard,Desayuno,Agencia online,74.0,8,5,2,0,117.93,2,0,No,0.0,,0
+100074,,Male,México,Palladium Ibiza,Suite,Todo incluido,Web directa,57.0,7,4,1,1,337.33,2,0,Sí,0.0,No reembolsable,0
+100075,44.0,Female,México,Palladium Ibiza,Suite,Todo incluido,Agencia tradicional,69.0,5,7,1,0,12000.0,1,0,No,3.0,Sin depósito,0
+100076,51.0,Male,España,Palladium Costa Mujeres,Standard,Solo alojamiento,Web directa,20.0,12,4,4,0,123.02,2,0,Sí,2.0,No reembolsable,0
+100077,40.0,Male,EEUU,Palladium Tenerife,Suite,Todo incluido,Agencia online,52.0,6,4,1,1,391.87,2,1,Sí,3.0,Sin depósito,0
+100078,45.0,Male,España,Palladium Ibiza,Standard,Media pensión,Web directa,4.0,8,4,2,0,126.02,2,1,No,0.0,Sin depósito,0
+100079,40.0,Male,Italia,Palladium Riviera Maya,Standard,Desayuno,Agencia tradicional,38.0,11,4,2,0,136.35,0,0,Sí,1.0,Reembolsable,1
+100080,47.0,Male,España,Palladium Punta Cana,Standard,Desayuno,Web directa,77.0,8,3,2,0,106.14,2,0,Sí,0.0,Sin depósito,1
+100081,41.0,Female,Italia,Palladium Punta Cana,Standard,Media pensión,Agencia tradicional,64.0,1,3,2,0,114.9,2,0,Sí,0.0,Sin depósito,0
+100082,51.0,Female,EEUU,Palladium Riviera Maya,Standard,Media pensión,Web directa,,8,2,2,0,150.3,3,1,No,4.0,No reembolsable,0
+100083,57.0,Male,,Palladium Ibiza,Junior Suite,Media pensión,Agencia online,65.0,6,3,1,0,265.03,1,0,Sí,2.0,Sin depósito,0
+100084,24.0,Female,Países Bajos,Palladium Ibiza,Standard,Todo incluido,Agencia online,25.0,5,3,2,0,114.08,2,1,No,0.0,Sin depósito,0
+100085,60.0,Male,España,Palladium Riviera Maya,Standard,Todo incluido,Agencia tradicional,111.0,4,6,2,2,131.48,3,1,No,0.0,Reembolsable,0
+100086,58.0,Female,México,Palladium Ibiza,Standard,Todo incluido,Agencia online,386.0,8,2,2,0,154.83,1,1,Sí,0.0,Reembolsable,1
+100087,32.0,Female,España,Palladium Tenerife,Junior Suite,Desayuno,Agencia online,7.0,8,5,2,2,,4,2,Sí,0.0,Sin depósito,1
+100088,73.0,Female,EEUU,Palladium Riviera Maya,Standard,Media pensión,Agencia online,5.0,8,5,2,2,80.76,0,0,No,1.0,Sin depósito,0
+100089,45.0,Female,Países Bajos,Palladium Mallorca,Standard,Todo incluido,Agencia tradicional,55.0,1,7,2,0,173.14,0,0,Sí,4.0,Sin depósito,0
+100090,49.0,Female,Alemania,Palladium Costa Mujeres,Standard,Todo incluido,Web directa,41.0,8,3,1,3,129.28,4,0,No,0.0,Sin depósito,1
+100091,64.0,Female,Reino Unido,Palladium Riviera Maya,Junior Suite,Todo incluido,Web directa,35.0,7,2,2,0,225.86,1,0,No,0.0,,0
+100092,34.0,Male,Países Bajos,Palladium Mallorca,Standard,Desayuno,Web directa,137.0,3,1,2,0,163.86,0,0,No,0.0,Sin depósito,0
+100093,28.0,Female,España,Palladium Punta Cana,Junior Suite,Desayuno,Web directa,21.0,6,10,2,1,206.51,3,1,,,No reembolsable,0
+100094,38.0,Male,EEUU,Palladium Mallorca,Standard,Media pensión,Web directa,92.0,9,5,2,0,105.26,1,0,Sí,1.0,,0
+100095,44.0,Female,Reino Unido,Palladium Riviera Maya,Standard,Todo incluido,Agencia tradicional,13.0,11,5,2,2,90.08,3,0,No,0.0,Sin depósito,0
+100096,47.0,Male,Reino Unido,Palladium Mallorca,Standard,Desayuno,Web directa,308.0,9,7,2,0,,3,0,Sí,0.0,Reembolsable,0
+100097,51.0,Male,España,Palladium Punta Cana,Suite,Todo incluido,Agencia tradicional,21.0,7,6,1,0,401.93,1,0,No,2.0,No reembolsable,1
+100098,64.0,Male,Países Bajos,Palladium Mallorca,Junior Suite,Todo incluido,Agencia tradicional,70.0,6,10,2,0,236.97,1,1,No,2.0,Reembolsable,0
+100099,32.0,Male,España,Palladium Mallorca,Standard,Todo incluido,Agencia online,44.0,3,3,2,0,179.34,3,0,No,0.0,Reembolsable,0
+100100,26.0,Female,España,Palladium Tenerife,Junior Suite,Desayuno,Agencia online,10.0,9,4,2,0,193.73,1,0,No,0.0,Reembolsable,0
+100101,46.0,Female,España,Palladium Costa Mujeres,Standard,Media pensión,Web directa,22.0,8,2,2,0,124.85,0,0,No,0.0,Sin depósito,0
+100102,42.0,Male,Francia,Palladium Punta Cana,Junior Suite,Media pensión,Web directa,135.0,4,5,1,0,,1,0,No,2.0,No reembolsable,0
+100103,41.0,Female,,Palladium Ibiza,Villa,Todo incluido,Web directa,27.0,1,5,2,0,729.2,1,0,Sí,0.0,,0
+100104,24.0,Female,México,Palladium Tenerife,Suite,Desayuno,Walk-in,,5,3,2,0,405.72,3,0,No,0.0,Sin depósito,1
+100105,51.0,male,Francia,Palladium Ibiza,Junior Suite,Todo incluido,Web directa,97.0,7,2,2,0,250.98,0,0,No,0.0,Sin depósito,0
+100106,51.0,male,Reino Unido,Palladium Punta Cana,Standard,Desayuno,Agencia online,172.0,8,7,2,1,102.09,1,1,Sí,1.0,Sin depósito,0
+100107,38.0,Female,Italia,Palladium Costa Mujeres,Standard,Desayuno,Web directa,15.0,6,7,2,2,100.26,1,0,No,0.0,Sin depósito,1
+100108,77.0,Male,España,Palladium Punta Cana,Standard,Desayuno,Agencia tradicional,119.0,5,5,2,0,115.52,0,0,No,0.0,Sin depósito,1
+100109,27.0,Female,Alemania,Palladium Riviera Maya,Standard,Media pensión,Web directa,24.0,3,6,2,1,,1,0,No,2.0,Reembolsable,0
+100110,55.0,Female,Alemania,Palladium Costa Mujeres,Standard,Todo incluido,Agencia online,37.0,8,4,2,0,87.62,3,2,No,5.0,Reembolsable,0
+100111,35.0,Female,,Palladium Riviera Maya,Standard,Solo alojamiento,Web directa,40.0,8,5,1,0,144.37,1,0,No,2.0,No reembolsable,0
+100112,31.0,Female,Reino Unido,Palladium Punta Cana,Standard,Desayuno,Teléfono,159.0,3,5,2,2,104.68,1,0,No,0.0,Reembolsable,0
+100113,27.0,Male,Países Bajos,Palladium Punta Cana,Standard,Media pensión,Web directa,72.0,11,7,4,2,124.45,4,1,Sí,2.0,Sin depósito,0
+100114,55.0,Male,España,Palladium Mallorca,Suite,Media pensión,Web directa,6.0,1,3,2,0,365.37,1,1,No,0.0,Sin depósito,1
+100115,34.0,Male,Reino Unido,Palladium Punta Cana,Villa,Media pensión,Web directa,,7,4,2,1,739.29,5,2,No,0.0,Sin depósito,1
+100116,36.0,Female,Italia,Palladium Ibiza,Suite,Media pensión,Agencia tradicional,25.0,6,6,2,2,379.67,0,0,No,3.0,Sin depósito,0
+100117,37.0,Male,EEUU,Palladium Punta Cana,Villa,Todo incluido,Agencia tradicional,12.0,6,2,3,0,773.34,1,0,No,0.0,Sin depósito,0
+100118,48.0,Female,España,Palladium Ibiza,Villa,Todo incluido,Agencia tradicional,219.0,10,3,4,2,792.29,1,0,Sí,0.0,Reembolsable,0
+100119,57.0,Male,Reino Unido,Palladium Costa Mujeres,Villa,Desayuno,Web directa,48.0,7,7,2,0,749.48,1,1,No,0.0,Reembolsable,0
+100120,47.0,Male,EEUU,Palladium Riviera Maya,Standard,Desayuno,Web directa,49.0,7,14,2,0,105.04,3,1,No,3.0,Reembolsable,0
+100121,59.0,Male,Reino Unido,Palladium Riviera Maya,Standard,Solo alojamiento,Web directa,46.0,7,5,4,2,118.84,4,0,No,1.0,Sin depósito,1
+100122,60.0,Male,Francia,Palladium Mallorca,Standard,Solo alojamiento,Walk-in,17.0,6,7,2,2,111.55,0,0,No,1.0,Sin depósito,0
+100123,37.0,Male,España,Palladium Riviera Maya,Standard,Desayuno,Agencia online,48.0,2,10,1,0,79.21,3,2,No,0.0,Sin depósito,0
+100124,47.0,Male,Países Bajos,Palladium Punta Cana,Junior Suite,Desayuno,Agencia tradicional,43.0,8,3,1,1,195.55,2,0,No,,No reembolsable,0
+100125,54.0,Male,EEUU,Palladium Ibiza,Standard,Todo incluido,Agencia online,17.0,7,4,2,0,163.39,2,0,No,1.0,Sin depósito,1
+100126,52.0,Female,España,Palladium Costa Mujeres,Standard,Solo alojamiento,Agencia tradicional,20.0,9,3,3,3,131.77,0,0,No,0.0,Sin depósito,0
+100127,44.0,Female,EEUU,Palladium Ibiza,Standard,Desayuno,Agencia online,34.0,12,2,2,1,121.8,2,1,Sí,0.0,No reembolsable,0
+100128,63.0,Male,España,Palladium Punta Cana,Suite,Media pensión,Web directa,0.0,7,4,2,0,412.15,4,1,,0.0,No reembolsable,0
+100129,40.0,Female,Países Bajos,Palladium Riviera Maya,Junior Suite,Media pensión,Web directa,170.0,7,5,2,0,223.26,2,1,No,0.0,No reembolsable,1
+100130,40.0,Female,EEUU,Palladium Punta Cana,Villa,Desayuno,Walk-in,3.0,6,4,2,2,,0,0,No,1.0,Sin depósito,1
+100131,48.0,Female,España,Palladium Ibiza,Junior Suite,Todo incluido,Agencia tradicional,10.0,9,3,1,1,298.3,2,0,No,0.0,Sin depósito,0
+100132,41.0,Male,México,Palladium Mallorca,Villa,Desayuno,Agencia online,103.0,4,1,2,1,705.55,1,0,No,1.0,Reembolsable,0
+100133,30.0,Female,Alemania,Palladium Riviera Maya,Standard,Todo incluido,Agencia tradicional,,3,10,2,0,138.86,1,0,Sí,2.0,Sin depósito,0
+100134,57.0,Female,Alemania,Palladium Tenerife,Standard,Media pensión,Teléfono,8.0,8,3,1,0,127.87,0,0,Sí,0.0,Sin depósito,0
+100135,44.0,Male,Reino Unido,Palladium Mallorca,Suite,Media pensión,Web directa,7.0,10,10,1,0,385.74,2,0,No,2.0,No reembolsable,0
+100136,,Female,Portugal,Palladium Mallorca,Suite,Todo incluido,Agencia online,52.0,5,4,4,2,338.54,0,0,Sí,0.0,No reembolsable,1
+100137,59.0,Female,Italia,Palladium Costa Mujeres,Standard,Desayuno,Web directa,110.0,8,4,1,0,120.38,0,0,No,2.0,Sin depósito,1
+100138,28.0,Male,España,Palladium Punta Cana,Standard,Desayuno,Teléfono,34.0,5,3,2,2,134.8,0,0,Sí,1.0,Reembolsable,0
+100139,51.0,Female,,Palladium Mallorca,Junior Suite,Solo alojamiento,Agencia online,4.0,7,5,2,0,244.51,2,1,Sí,4.0,Reembolsable,0
+100140,37.0,Female,España,Palladium Ibiza,Junior Suite,Desayuno,Web directa,5.0,8,3,2,0,236.03,0,0,No,1.0,Reembolsable,0
+100141,,Male,Francia,Palladium Punta Cana,Standard,Todo incluido,Web directa,95.0,5,3,4,0,140.9,2,0,No,3.0,Reembolsable,0
+100142,52.0,Female,EEUU,Palladium Punta Cana,Standard,Desayuno,Web directa,3.0,6,7,2,0,156.43,0,0,Sí,0.0,No reembolsable,0
+100143,34.0,Female,Italia,Palladium Riviera Maya,Standard,Desayuno,Agencia tradicional,74.0,8,2,1,0,160.16,2,0,,0.0,No reembolsable,0
+100144,31.0,Female,Reino Unido,Palladium Mallorca,Junior Suite,Desayuno,Web directa,105.0,12,4,2,2,197.6,2,1,No,0.0,Sin depósito,0
+100145,44.0,Male,España,Palladium Ibiza,Standard,Todo incluido,Web directa,28.0,5,6,2,0,154.12,0,0,Sí,1.0,Reembolsable,0
+100146,40.0,Male,Países Bajos,Palladium Riviera Maya,Standard,Desayuno,Agencia online,107.0,9,10,2,1,75.28,3,1,No,1.0,Reembolsable,0
+100147,37.0,Male,Francia,Palladium Mallorca,Junior Suite,Todo incluido,Agencia online,121.0,5,7,2,0,160.15,1,0,No,2.0,Reembolsable,0
+100148,48.0,Male,Alemania,Palladium Tenerife,Junior Suite,Todo incluido,Web directa,38.0,8,5,2,0,191.41,1,0,Sí,0.0,Sin depósito,0
+100149,42.0,Female,España,Palladium Punta Cana,Standard,Media pensión,Web directa,,9,4,2,0,37.96,0,0,Sí,0.0,No reembolsable,0
+100150,50.0,Female,España,Palladium Punta Cana,Standard,Desayuno,Agencia tradicional,22.0,4,4,1,0,126.65,3,0,No,0.0,No reembolsable,0
+100151,52.0,Male,México,Palladium Ibiza,Junior Suite,Todo incluido,Web directa,156.0,5,1,1,0,,2,0,Sí,,Sin depósito,0
+100152,35.0,Female,EEUU,Palladium Riviera Maya,Junior Suite,Media pensión,Web directa,,6,6,1,0,212.3,1,0,No,2.0,Sin depósito,0
+100153,37.0,Female,Francia,Palladium Tenerife,Standard,Media pensión,Agencia online,13.0,12,2,1,0,,0,0,No,2.0,Reembolsable,0
+100154,48.0,Male,Francia,Palladium Riviera Maya,Junior Suite,Todo incluido,Walk-in,4.0,8,1,4,1,261.71,1,0,,1.0,Reembolsable,0
+100155,47.0,Female,Reino Unido,Palladium Punta Cana,Junior Suite,Desayuno,Web directa,63.0,11,1,2,0,276.03,1,0,No,5.0,Sin depósito,0
+100156,46.0,Female,España,Palladium Ibiza,Suite,Desayuno,Web directa,88.0,5,2,2,0,360.87,0,0,No,2.0,No reembolsable,0
+100157,62.0,Male,Reino Unido,Palladium Costa Mujeres,Standard,Todo incluido,Web directa,20.0,2,4,2,1,143.99,1,1,No,2.0,Reembolsable,0
+100158,,Male,Reino Unido,Palladium Mallorca,Junior Suite,Media pensión,Web directa,40.0,6,3,2,0,266.38,1,0,Sí,3.0,Sin depósito,0
+100159,22.0,Female,,Palladium Punta Cana,Suite,Media pensión,Agencia tradicional,14.0,8,5,1,0,380.15,1,0,No,3.0,Sin depósito,0
+100160,44.0,Female,España,Palladium Tenerife,Standard,Todo incluido,Web directa,26.0,5,5,1,1,106.38,1,1,No,1.0,,0
+100161,41.0,Male,España,Palladium Mallorca,Standard,Media pensión,Agencia online,,6,7,2,0,135.45,1,1,No,0.0,Sin depósito,0
+100162,31.0,Female,Países Bajos,Palladium Tenerife,Standard,Todo incluido,Agencia tradicional,9.0,5,10,2,1,93.96,2,0,No,0.0,,0
+100163,23.0,Male,Alemania,Palladium Punta Cana,Standard,Solo alojamiento,Agencia online,85.0,12,4,2,1,153.86,1,0,Sí,0.0,,0
+100164,18.0,Female,España,Palladium Mallorca,Suite,Solo alojamiento,Agencia online,68.0,1,5,2,0,443.32,2,1,No,0.0,Sin depósito,0
+100165,39.0,Male,España,Palladium Costa Mujeres,Junior Suite,Todo incluido,Web directa,41.0,9,6,1,2,221.96,5,1,Sí,0.0,Sin depósito,0
+100166,37.0,Female,Francia,Palladium Ibiza,Standard,Todo incluido,Web directa,10.0,3,5,1,0,,2,0,,5.0,Sin depósito,0
+100167,46.0,Female,Italia,Palladium Costa Mujeres,Junior Suite,Solo alojamiento,Walk-in,15.0,8,5,2,0,240.42,3,1,No,4.0,Sin depósito,0
+100168,39.0,Male,España,Palladium Riviera Maya,Standard,Solo alojamiento,Agencia tradicional,9.0,7,2,2,3,118.66,3,2,,1.0,Reembolsable,0
+100169,53.0,Male,Italia,Palladium Riviera Maya,Suite,Media pensión,Web directa,203.0,12,2,2,0,394.82,2,2,Sí,0.0,No reembolsable,1
+100170,,Male,España,Palladium Mallorca,Standard,Desayuno,Web directa,161.0,3,6,2,3,130.46,2,1,No,2.0,No reembolsable,1
+100171,34.0,Female,Francia,Palladium Punta Cana,Standard,Desayuno,Walk-in,5.0,10,5,3,2,92.17,0,0,No,1.0,Reembolsable,0
+100172,36.0,Female,EEUU,Palladium Riviera Maya,Suite,Todo incluido,Web directa,73.0,7,4,2,0,382.38,1,0,No,,Sin depósito,0
+100173,60.0,Female,México,Palladium Tenerife,Standard,Solo alojamiento,Web directa,6.0,6,6,2,2,91.57,0,0,No,0.0,No reembolsable,0
+100174,32.0,Male,Francia,Palladium Ibiza,Standard,Media pensión,Web directa,42.0,12,4,2,0,99.77,2,0,Sí,1.0,No reembolsable,0
+100175,65.0,Female,Argentina,Palladium Mallorca,Standard,Desayuno,Agencia online,,9,7,2,0,122.34,1,0,Sí,0.0,Reembolsable,0
+100176,69.0,Male,Portugal,Palladium Riviera Maya,Standard,Media pensión,Teléfono,49.0,7,5,2,1,129.61,2,0,No,2.0,Sin depósito,0
+100177,38.0,Female,Reino Unido,Palladium Punta Cana,Standard,Todo incluido,Agencia online,43.0,5,4,2,0,120.99,0,0,No,2.0,Reembolsable,0
+100178,44.0,Female,España,Palladium Punta Cana,Standard,Solo alojamiento,Teléfono,128.0,10,2,2,1,92.15,3,0,Sí,2.0,Sin depósito,0
+100179,48.0,Male,España,Palladium Ibiza,Junior Suite,Todo incluido,Walk-in,77.0,9,4,1,1,247.55,1,0,No,0.0,Reembolsable,0
+100180,26.0,Female,Reino Unido,Palladium Riviera Maya,Standard,Todo incluido,Web directa,101.0,7,2,2,0,54.94,3,0,No,1.0,Sin depósito,0
+100181,69.0,Male,España,Palladium Ibiza,Junior Suite,Desayuno,Web directa,83.0,2,2,2,2,248.58,1,1,No,2.0,No reembolsable,0
+100182,18.0,Female,Francia,Palladium Riviera Maya,Suite,Todo incluido,Web directa,5.0,11,5,2,0,379.69,4,0,Sí,0.0,No reembolsable,0
+100183,42.0,Female,Países Bajos,Palladium Ibiza,Junior Suite,Desayuno,Web directa,22.0,9,5,2,0,125.4,1,0,No,0.0,Sin depósito,0
+100184,38.0,Female,España,Palladium Ibiza,Junior Suite,Solo alojamiento,Web directa,26.0,10,4,3,0,184.99,3,0,Sí,1.0,Reembolsable,0
+100185,68.0,Male,Portugal,Palladium Ibiza,Junior Suite,Solo alojamiento,Agencia online,,6,7,2,3,217.38,3,0,Sí,2.0,,0
+100186,44.0,Female,México,Palladium Mallorca,Standard,Todo incluido,Web directa,5.0,3,5,2,0,99.2,1,0,Sí,0.0,Sin depósito,1
+100187,24.0,Male,Italia,Palladium Costa Mujeres,Villa,Desayuno,Teléfono,26.0,7,5,2,0,730.07,1,0,Sí,0.0,No reembolsable,0
+100188,49.0,Female,Alemania,Palladium Ibiza,Standard,Todo incluido,Web directa,4.0,11,10,2,1,112.48,2,1,No,2.0,Sin depósito,0
+100189,46.0,Male,,Palladium Tenerife,Standard,Todo incluido,Agencia online,30.0,6,5,2,0,165.87,3,0,Sí,0.0,No reembolsable,0
+100190,59.0,Male,Francia,Palladium Mallorca,Standard,Todo incluido,Teléfono,35.0,6,10,3,0,126.78,2,0,No,0.0,Sin depósito,0
+100191,20.0,Male,España,Palladium Ibiza,Standard,Todo incluido,Walk-in,5.0,2,7,4,0,153.73,3,0,No,4.0,Sin depósito,0
+100192,55.0,Female,Italia,Palladium Ibiza,Standard,Media pensión,Web directa,83.0,6,3,2,0,79.94,1,0,Sí,0.0,Sin depósito,0
+100193,56.0,Male,México,Palladium Tenerife,Standard,Todo incluido,Agencia tradicional,143.0,10,7,1,1,,1,0,No,0.0,Sin depósito,0
+100194,34.0,Female,EEUU,Palladium Ibiza,Standard,Media pensión,Agencia tradicional,1.0,12,1,1,0,122.08,0,0,No,0.0,Reembolsable,0
+100195,30.0,Male,España,Palladium Ibiza,Standard,Todo incluido,Agencia online,62.0,7,3,1,0,102.65,1,0,Sí,1.0,Reembolsable,1
+100196,34.0,Male,EEUU,Palladium Riviera Maya,Standard,Desayuno,Agencia tradicional,143.0,6,5,2,0,128.1,1,0,Sí,2.0,Reembolsable,1
+100197,56.0,Male,Francia,Palladium Punta Cana,Villa,Media pensión,Agencia online,33.0,7,5,2,1,729.85,0,0,No,1.0,No reembolsable,0
+100198,53.0,Female,Italia,Palladium Mallorca,Standard,Todo incluido,Agencia tradicional,110.0,6,10,4,0,93.86,3,2,No,0.0,Reembolsable,0
+100199,,Male,España,Palladium Punta Cana,Standard,Todo incluido,Web directa,34.0,11,7,2,2,114.51,0,0,No,3.0,Sin depósito,1
+100200,54.0,Female,Países Bajos,Palladium Punta Cana,Standard,Todo incluido,Agencia tradicional,11.0,11,4,2,0,,1,1,No,3.0,Sin depósito,0
+100201,59.0,Female,Países Bajos,Palladium Punta Cana,Junior Suite,Todo incluido,Agencia tradicional,31.0,12,7,1,0,,2,0,No,0.0,Reembolsable,1
+100202,38.0,Female,Reino Unido,Palladium Mallorca,Junior Suite,Desayuno,Agencia online,,5,4,1,0,203.99,1,0,No,4.0,Reembolsable,0
+100203,58.0,Male,Portugal,Palladium Mallorca,Standard,Desayuno,Agencia online,88.0,5,5,2,1,148.64,0,0,Sí,1.0,Reembolsable,0
+100204,37.0,Female,Reino Unido,Palladium Mallorca,Standard,Todo incluido,Web directa,61.0,10,4,2,0,95.81,3,0,No,1.0,No reembolsable,0
+100205,38.0,Male,EEUU,Palladium Mallorca,Junior Suite,Desayuno,Agencia online,30.0,7,4,1,0,222.93,0,0,Sí,0.0,Sin depósito,0
+100206,40.0,male,España,Palladium Punta Cana,Standard,Desayuno,Walk-in,19.0,8,10,2,0,131.72,3,1,No,4.0,Sin depósito,0
+100207,46.0,Male,Argentina,Palladium Punta Cana,Standard,Desayuno,Walk-in,37.0,5,1,1,0,105.03,3,0,Sí,0.0,No reembolsable,0
+100208,18.0,Male,Italia,Palladium Ibiza,Villa,Desayuno,Web directa,23.0,10,3,1,0,759.06,1,1,No,1.0,No reembolsable,0
+100209,,Male,,Palladium Mallorca,Standard,Desayuno,Teléfono,22.0,3,5,2,1,129.62,1,0,No,1.0,Sin depósito,0
+100210,18.0,Female,Alemania,Palladium Ibiza,Junior Suite,Todo incluido,Web directa,26.0,8,5,2,0,161.22,0,0,Sí,2.0,Sin depósito,0
+100211,50.0,Male,Reino Unido,Palladium Mallorca,Standard,Desayuno,Web directa,53.0,8,3,2,0,144.84,2,1,sí,1.0,Sin depósito,0
+100212,58.0,Male,Francia,Palladium Mallorca,Standard,Todo incluido,Agencia online,0.0,12,7,2,0,126.96,2,0,Sí,0.0,Sin depósito,0
+100213,61.0,Female,,Palladium Costa Mujeres,Standard,Desayuno,Agencia online,,6,7,3,0,125.17,2,0,No,2.0,Sin depósito,0
+100214,18.0,Male,,Palladium Punta Cana,Standard,Desayuno,Agencia tradicional,107.0,8,14,2,1,141.92,1,0,No,4.0,Sin depósito,0
+100215,43.0,Female,España,Palladium Ibiza,Junior Suite,Media pensión,Web directa,99.0,11,6,1,0,225.67,2,1,No,0.0,Sin depósito,0
+100216,27.0,Female,España,Palladium Tenerife,Standard,Solo alojamiento,Agencia tradicional,5.0,2,4,2,0,148.48,3,0,No,0.0,No reembolsable,0
+100217,24.0,Male,Francia,Palladium Punta Cana,Suite,Desayuno,Web directa,4.0,4,10,3,0,374.01,1,0,Sí,2.0,Sin depósito,0
+100218,35.0,Male,España,Palladium Tenerife,Standard,Solo alojamiento,Web directa,32.0,6,5,3,1,139.11,2,0,Sí,0.0,Sin depósito,0
+100219,25.0,Female,Países Bajos,Palladium Costa Mujeres,Standard,Desayuno,Web directa,77.0,6,3,2,0,183.28,0,0,Sí,2.0,Reembolsable,0
+100220,69.0,Male,EEUU,Palladium Costa Mujeres,Standard,Desayuno,Agencia online,17.0,2,10,2,0,140.1,4,2,No,0.0,Reembolsable,1
+100221,23.0,Female,España,Palladium Riviera Maya,Villa,Media pensión,Web directa,46.0,8,7,2,0,,1,0,Sí,1.0,No reembolsable,0
+100222,29.0,Female,Reino Unido,Palladium Punta Cana,Standard,Todo incluido,Agencia tradicional,124.0,7,4,4,0,189.8,3,0,No,0.0,Sin depósito,0
+100223,40.0,Male,Francia,Palladium Ibiza,Junior Suite,Todo incluido,Teléfono,14.0,11,4,2,2,198.06,2,0,Sí,0.0,Reembolsable,0
+100224,43.0,Female,Países Bajos,Palladium Costa Mujeres,Standard,Solo alojamiento,Agencia online,3.0,11,4,2,0,113.18,0,0,No,1.0,Sin depósito,1
+100225,42.0,Female,Reino Unido,Palladium Costa Mujeres,Villa,Todo incluido,Web directa,13.0,8,2,2,0,787.68,1,0,No,0.0,Sin depósito,0
+100226,26.0,Female,EEUU,Palladium Punta Cana,Junior Suite,Todo incluido,Web directa,43.0,8,3,2,1,238.59,2,0,Sí,0.0,Reembolsable,1
+100227,45.0,Female,España,Palladium Riviera Maya,Standard,Desayuno,Web directa,66.0,12,6,2,0,118.93,4,1,,0.0,Reembolsable,0
+100228,45.0,Male,España,Palladium Punta Cana,Villa,Media pensión,Web directa,131.0,9,6,2,2,749.92,2,0,No,3.0,Sin depósito,1
+100229,51.0,Male,Reino Unido,Palladium Punta Cana,Suite,Todo incluido,Agencia online,17.0,3,6,1,1,397.41,1,0,,1.0,No reembolsable,0
+100230,40.0,Male,Alemania,Palladium Costa Mujeres,Junior Suite,Todo incluido,Teléfono,87.0,5,3,3,0,221.66,1,1,Sí,0.0,Sin depósito,1
+100231,54.0,Female,México,Palladium Ibiza,Junior Suite,Solo alojamiento,Agencia tradicional,11.0,10,3,1,0,,0,0,No,0.0,No reembolsable,0
+100232,23.0,Male,Reino Unido,Palladium Costa Mujeres,Standard,Desayuno,Agencia tradicional,121.0,8,1,2,0,86.22,2,0,Sí,0.0,Reembolsable,0
+100233,59.0,Male,España,Palladium Punta Cana,Standard,Todo incluido,Web directa,11.0,7,5,2,1,114.26,0,0,No,1.0,No reembolsable,0
+100234,53.0,Female,EEUU,Palladium Costa Mujeres,Standard,Desayuno,Agencia tradicional,38.0,6,4,2,0,124.88,3,0,No,0.0,Reembolsable,1
+100235,46.0,Female,Reino Unido,Palladium Mallorca,Junior Suite,Media pensión,Teléfono,199.0,7,6,4,0,197.59,3,1,Sí,0.0,Sin depósito,1
+100236,48.0,Female,Francia,Palladium Mallorca,Standard,Todo incluido,Web directa,93.0,12,6,2,0,85.57,2,1,Sí,3.0,Reembolsable,0
+100237,55.0,Female,Francia,Palladium Mallorca,Junior Suite,Desayuno,Agencia online,51.0,6,5,1,1,,1,0,Sí,0.0,Sin depósito,0
+100238,53.0,Male,Alemania,Palladium Mallorca,Standard,Todo incluido,Web directa,69.0,4,6,2,0,137.18,2,1,No,2.0,Sin depósito,0
+100239,28.0,Female,Países Bajos,Palladium Ibiza,Junior Suite,Media pensión,Teléfono,24.0,12,5,2,0,243.4,2,0,No,2.0,No reembolsable,0
+100240,56.0,Male,España,Palladium Ibiza,Junior Suite,Todo incluido,Web directa,43.0,9,4,2,0,206.29,1,1,Sí,0.0,Sin depósito,0
+100241,45.0,Female,España,Palladium Tenerife,Junior Suite,Media pensión,Agencia tradicional,26.0,7,7,3,0,240.03,2,0,Sí,2.0,Reembolsable,0
+100242,,Male,EEUU,Palladium Tenerife,Standard,Media pensión,Web directa,23.0,6,7,1,0,117.07,3,0,Sí,1.0,Reembolsable,0
+100243,47.0,Female,Italia,Palladium Punta Cana,Standard,Todo incluido,Web directa,30.0,7,5,2,0,165.87,0,0,No,2.0,Reembolsable,0
+100244,29.0,Female,Reino Unido,Palladium Tenerife,Junior Suite,Todo incluido,Agencia online,1.0,8,14,2,0,215.14,1,1,Sí,4.0,Sin depósito,0
+100245,28.0,Male,Reino Unido,Palladium Punta Cana,Standard,Media pensión,Web directa,12.0,6,1,2,0,138.02,1,0,Sí,1.0,Sin depósito,1
+100246,48.0,Male,México,Palladium Costa Mujeres,Junior Suite,Solo alojamiento,Agencia online,,4,5,2,0,242.24,0,0,Sí,2.0,Sin depósito,0
+100247,56.0,Male,España,Palladium Punta Cana,Standard,Desayuno,Web directa,53.0,8,3,2,0,138.23,0,0,,3.0,Sin depósito,0
+100248,23.0,Male,Francia,Palladium Costa Mujeres,Junior Suite,Todo incluido,Web directa,18.0,7,5,3,1,203.55,1,1,Sí,0.0,Reembolsable,0
+100249,37.0,Male,España,Palladium Costa Mujeres,Standard,Todo incluido,Agencia online,174.0,8,2,2,1,140.43,3,0,Sí,0.0,Reembolsable,0
+100250,56.0,Female,EEUU,Palladium Tenerife,Standard,Solo alojamiento,Walk-in,0.0,5,4,2,0,122.42,1,0,Sí,0.0,Reembolsable,0
+100251,37.0,Female,Francia,Palladium Punta Cana,Suite,Desayuno,Walk-in,107.0,7,5,1,0,326.16,4,0,Sí,3.0,Sin depósito,0
+100252,65.0,Female,Reino Unido,Palladium Mallorca,Junior Suite,Media pensión,Web directa,143.0,8,5,1,2,157.11,0,0,No,0.0,No reembolsable,0
+100253,200.0,Female,EEUU,Palladium Tenerife,Junior Suite,Media pensión,Web directa,65.0,4,5,1,0,215.58,1,0,No,1.0,No reembolsable,0
+100254,58.0,Male,Italia,Palladium Mallorca,Standard,Desayuno,Teléfono,75.0,10,6,1,0,170.68,1,0,Sí,1.0,Sin depósito,0
+100255,33.0,Male,Portugal,Palladium Riviera Maya,Suite,Media pensión,Web directa,61.0,8,5,3,0,348.9,0,0,No,0.0,Sin depósito,0
+100256,66.0,Male,Reino Unido,Palladium Ibiza,Standard,Desayuno,Walk-in,6.0,11,4,2,0,102.8,1,1,No,2.0,Sin depósito,0
+100257,52.0,Female,México,Palladium Riviera Maya,Standard,Todo incluido,Agencia tradicional,8.0,2,4,3,1,110.71,0,0,No,3.0,Sin depósito,0
+100258,47.0,Male,EEUU,Palladium Costa Mujeres,Standard,Media pensión,Web directa,50.0,7,3,2,1,162.15,1,0,No,0.0,Sin depósito,0
+100259,52.0,Female,Reino Unido,Palladium Costa Mujeres,Standard,Desayuno,Agencia online,9.0,5,4,1,0,157.76,3,0,No,1.0,No reembolsable,0
+100260,46.0,Female,Países Bajos,Palladium Tenerife,Suite,Todo incluido,Web directa,12.0,6,5,2,2,375.24,1,0,Sí,2.0,Sin depósito,0
+100261,60.0,FEMALE,Francia,Palladium Punta Cana,Junior Suite,Desayuno,Web directa,19.0,12,7,1,3,258.51,1,0,No,1.0,No reembolsable,0
+100262,41.0,Male,España,Palladium Mallorca,Standard,Todo incluido,Web directa,0.0,4,4,2,0,146.15,0,0,No,0.0,Sin depósito,0
+100263,39.0,Male,Alemania,Palladium Costa Mujeres,Junior Suite,Desayuno,Web directa,33.0,10,5,2,2,205.3,3,1,Sí,1.0,Sin depósito,0
+100264,40.0,Female,España,Palladium Riviera Maya,Junior Suite,Media pensión,Agencia online,39.0,9,4,2,0,164.15,1,0,No,1.0,Sin depósito,0
+100265,46.0,Female,Reino Unido,Palladium Tenerife,Standard,Desayuno,Web directa,44.0,10,10,2,3,138.25,0,0,No,4.0,Sin depósito,0
+100266,44.0,Female,España,Palladium Ibiza,Junior Suite,Media pensión,Web directa,0.0,5,4,1,0,248.49,3,0,No,1.0,Sin depósito,0
+100267,19.0,Female,Argentina,Palladium Tenerife,Standard,Todo incluido,Agencia tradicional,30.0,6,1,2,2,139.87,2,0,No,3.0,Sin depósito,1
+100268,57.0,Female,España,Palladium Tenerife,Standard,Desayuno,Web directa,89.0,7,5,2,0,134.42,1,0,No,0.0,Sin depósito,0
+100269,30.0,Female,Francia,Palladium Costa Mujeres,Junior Suite,Todo incluido,Agencia online,11.0,6,6,2,0,231.11,1,0,No,2.0,Reembolsable,0
+100270,36.0,Male,España,Palladium Riviera Maya,Standard,Media pensión,Web directa,208.0,9,6,2,1,137.03,2,1,No,0.0,Reembolsable,0
+100271,38.0,Male,Países Bajos,Palladium Costa Mujeres,Standard,Media pensión,Web directa,38.0,11,3,2,0,,1,0,Sí,0.0,Sin depósito,0
+100272,53.0,Male,México,Palladium Mallorca,Standard,Todo incluido,Agencia tradicional,83.0,7,5,2,0,60.74,1,1,No,1.0,Sin depósito,0
+100273,18.0,Male,Portugal,Palladium Costa Mujeres,Suite,Solo alojamiento,Agencia online,,9,6,2,2,401.35,0,0,Sí,0.0,No reembolsable,1
+100274,24.0,Female,EEUU,Palladium Ibiza,Junior Suite,Desayuno,Teléfono,129.0,7,7,2,0,247.47,0,0,Sí,0.0,Reembolsable,0
+100275,74.0,Male,Francia,Palladium Punta Cana,Standard,Todo incluido,Web directa,20.0,2,1,2,0,162.07,0,0,No,0.0,Reembolsable,0
+100276,60.0,Female,Italia,Palladium Riviera Maya,Junior Suite,Todo incluido,Agencia tradicional,87.0,6,5,2,1,229.29,0,0,No,0.0,Sin depósito,0
+100277,,Female,México,Palladium Punta Cana,Standard,Todo incluido,Agencia tradicional,13.0,6,4,2,1,139.74,1,0,No,1.0,Sin depósito,0
+100278,39.0,Male,Francia,Palladium Punta Cana,Standard,Solo alojamiento,Agencia online,73.0,7,7,4,0,129.43,0,0,No,4.0,Sin depósito,0
+100279,59.0,Female,Alemania,Palladium Ibiza,Suite,Todo incluido,Web directa,22.0,3,4,2,1,373.16,1,0,No,,Reembolsable,1
+100280,40.0,Male,EEUU,Palladium Punta Cana,Standard,Todo incluido,Teléfono,,7,4,2,0,138.75,2,0,Sí,1.0,Sin depósito,1
+100281,37.0,Female,España,Palladium Ibiza,Standard,Todo incluido,Agencia online,46.0,4,3,1,0,145.18,2,1,Sí,4.0,Sin depósito,0
+100282,19.0,Female,México,Palladium Costa Mujeres,Junior Suite,Media pensión,Agencia tradicional,55.0,8,4,2,2,259.97,3,1,No,0.0,Reembolsable,0
+100283,41.0,Male,Argentina,Palladium Mallorca,Standard,Desayuno,Teléfono,47.0,8,4,1,2,125.66,2,1,,0.0,Sin depósito,0
+100284,39.0,Female,Francia,Palladium Tenerife,Villa,Desayuno,Agencia online,91.0,11,2,2,1,749.51,1,0,No,0.0,No reembolsable,0
+100285,18.0,Male,Países Bajos,Palladium Ibiza,Standard,Todo incluido,Agencia online,43.0,2,5,3,0,111.47,0,0,Sí,1.0,No reembolsable,0
+100286,30.0,Male,EEUU,Palladium Riviera Maya,Junior Suite,Todo incluido,Agencia online,76.0,5,2,2,1,208.23,1,1,No,0.0,Sin depósito,0
+100287,39.0,Male,España,Palladium Punta Cana,Standard,Desayuno,Agencia online,3.0,4,4,2,1,,3,0,No,0.0,Sin depósito,0
+100288,,Male,Alemania,Palladium Mallorca,Standard,Solo alojamiento,Web directa,41.0,6,3,2,0,149.76,1,0,No,0.0,Reembolsable,1
+100289,52.0,Male,EEUU,Palladium Punta Cana,Standard,Solo alojamiento,Agencia online,42.0,4,6,4,0,70.19,2,1,Sí,0.0,Sin depósito,0
+100290,,Female,Reino Unido,Palladium Costa Mujeres,Junior Suite,Media pensión,Web directa,26.0,7,10,1,0,221.6,0,0,No,2.0,No reembolsable,0
+100291,46.0,Male,Alemania,Palladium Mallorca,Villa,Media pensión,Agencia online,34.0,7,5,1,0,793.54,2,0,No,,Sin depósito,0
+100292,58.0,Male,México,Palladium Mallorca,Standard,Solo alojamiento,Web directa,2.0,1,5,2,0,140.09,0,0,No,4.0,Reembolsable,1
+100293,47.0,Male,Francia,Palladium Riviera Maya,Standard,Media pensión,Web directa,,5,4,2,1,127.02,2,0,No,0.0,Reembolsable,0
+100294,25.0,Male,Francia,Palladium Ibiza,Junior Suite,Todo incluido,Web directa,7.0,9,10,2,0,216.0,1,0,No,3.0,Sin depósito,0
+100295,51.0,Male,España,Palladium Riviera Maya,Junior Suite,Desayuno,Web directa,,7,4,1,0,252.39,2,1,Sí,2.0,Sin depósito,0
+100296,35.0,Female,España,Palladium Riviera Maya,Standard,Todo incluido,Web directa,40.0,7,6,2,0,154.3,2,0,Sí,0.0,Sin depósito,0
+100297,21.0,Male,España,Palladium Costa Mujeres,Junior Suite,Media pensión,Agencia tradicional,42.0,1,4,3,0,265.92,4,2,,0.0,No reembolsable,1
+100298,40.0,Male,Portugal,Palladium Tenerife,Suite,Desayuno,Teléfono,26.0,2,3,2,0,365.08,1,0,Sí,2.0,Sin depósito,0
+100299,48.0,Male,España,Palladium Riviera Maya,Standard,Todo incluido,Web directa,67.0,3,7,2,1,127.26,2,0,No,3.0,Sin depósito,0
+100300,48.0,Female,Francia,Palladium Mallorca,Suite,Desayuno,Teléfono,22.0,7,4,2,0,371.48,3,0,No,3.0,No reembolsable,0
+100301,21.0,Male,México,Palladium Costa Mujeres,Standard,Desayuno,Agencia online,24.0,8,5,2,2,103.12,0,0,No,1.0,Reembolsable,0
+100302,43.0,Male,México,Palladium Riviera Maya,Suite,Todo incluido,Web directa,27.0,11,1,2,1,373.8,1,0,No,2.0,Sin depósito,0
+100303,56.0,Male,España,Palladium Riviera Maya,Junior Suite,Desayuno,Web directa,37.0,7,14,2,1,196.5,2,0,No,0.0,Reembolsable,0
+100304,34.0,Male,Países Bajos,Palladium Ibiza,Standard,Desayuno,Teléfono,7.0,4,2,2,2,127.98,4,1,No,0.0,Sin depósito,0
+100305,43.0,Female,Reino Unido,Palladium Riviera Maya,Junior Suite,Todo incluido,Walk-in,11.0,4,6,2,0,248.36,0,0,Sí,2.0,No reembolsable,0
+100306,43.0,Male,,Palladium Mallorca,Junior Suite,Todo incluido,Agencia tradicional,9.0,4,3,2,0,216.83,2,0,No,0.0,Sin depósito,1
+100307,45.0,Male,España,Palladium Ibiza,Villa,Todo incluido,Teléfono,125.0,5,4,2,0,742.16,0,0,No,0.0,Reembolsable,1
+100308,57.0,Female,Reino Unido,Palladium Tenerife,Junior Suite,Desayuno,Walk-in,36.0,8,5,2,1,240.81,1,0,Sí,0.0,Sin depósito,1
+100309,44.0,Female,España,Palladium Mallorca,Standard,Todo incluido,Agencia online,17.0,3,5,2,2,153.57,2,0,No,0.0,Reembolsable,0
+100310,26.0,Male,Países Bajos,Palladium Ibiza,Junior Suite,Todo incluido,Agencia online,39.0,6,3,2,1,235.41,0,0,No,0.0,Sin depósito,0
+100311,29.0,Female,,Palladium Riviera Maya,Villa,Solo alojamiento,Agencia online,112.0,10,5,3,1,786.74,0,0,No,3.0,Sin depósito,0
+100312,46.0,Male,España,Palladium Mallorca,Suite,Solo alojamiento,Web directa,41.0,7,5,2,0,342.21,1,0,Sí,2.0,Sin depósito,0
+100313,18.0,Female,Alemania,Palladium Costa Mujeres,Standard,Todo incluido,Teléfono,66.0,3,3,4,0,127.13,1,0,Sí,0.0,No reembolsable,1
+100314,43.0,Female,México,Palladium Tenerife,Standard,Todo incluido,Agencia tradicional,68.0,4,5,2,1,188.83,1,1,No,0.0,Sin depósito,0
+100315,44.0,Male,España,Palladium Riviera Maya,Suite,Desayuno,Web directa,63.0,9,5,2,1,448.05,2,1,No,1.0,Sin depósito,0
+100316,49.0,Female,España,Palladium Mallorca,Standard,Desayuno,Web directa,104.0,10,3,4,1,104.65,1,0,No,0.0,Reembolsable,0
+100317,,Female,Alemania,Palladium Riviera Maya,Junior Suite,Media pensión,Teléfono,62.0,5,4,2,0,243.15,2,1,Sí,0.0,Reembolsable,1
+100318,43.0,Female,EEUU,Palladium Mallorca,Junior Suite,Todo incluido,Agencia online,,6,3,2,2,242.28,0,0,Sí,0.0,No reembolsable,0
+100319,33.0,Female,España,Palladium Riviera Maya,Villa,Media pensión,Agencia online,100.0,12,2,2,0,746.26,2,1,No,2.0,Sin depósito,1
+100320,32.0,Male,Argentina,Palladium Ibiza,Junior Suite,Desayuno,Web directa,18.0,7,6,4,1,221.91,0,0,Sí,0.0,Sin depósito,0
+100321,55.0,Female,Alemania,Palladium Riviera Maya,Junior Suite,Todo incluido,Walk-in,61.0,10,14,2,2,233.45,2,1,No,1.0,Sin depósito,1
+100322,1.0,Female,Italia,Palladium Mallorca,Standard,Solo alojamiento,Web directa,98.0,2,6,1,0,,0,0,Sí,0.0,Sin depósito,1
+100323,47.0,Female,Alemania,Palladium Costa Mujeres,Standard,Media pensión,Teléfono,,5,4,2,0,167.04,0,0,Sí,2.0,Sin depósito,0
+100324,57.0,Female,Reino Unido,Palladium Tenerife,Junior Suite,Desayuno,Web directa,72.0,8,4,4,0,274.97,2,0,No,1.0,Reembolsable,0
+100325,64.0,Female,Francia,Palladium Tenerife,Junior Suite,Solo alojamiento,Web directa,,8,3,2,0,216.73,1,1,No,1.0,Reembolsable,0
+100326,62.0,Male,Reino Unido,Palladium Ibiza,Standard,Todo incluido,Agencia tradicional,6.0,10,6,2,0,124.0,2,1,Sí,3.0,Sin depósito,0
+100327,34.0,Male,Reino Unido,Palladium Costa Mujeres,Suite,Todo incluido,Web directa,2.0,11,6,2,0,391.88,2,0,Sí,0.0,Reembolsable,0
+100328,23.0,Male,EEUU,Palladium Ibiza,Standard,Media pensión,Web directa,34.0,4,7,2,0,64.86,1,0,Sí,0.0,Reembolsable,0
+100329,38.0,Female,Reino Unido,Palladium Costa Mujeres,Suite,Todo incluido,Web directa,26.0,10,3,2,1,,3,1,Sí,1.0,Reembolsable,0
+100330,36.0,Female,Italia,Palladium Tenerife,Junior Suite,Media pensión,Web directa,26.0,1,2,1,0,255.07,1,0,Sí,3.0,Sin depósito,0
+100331,41.0,Male,Países Bajos,Palladium Punta Cana,Junior Suite,Todo incluido,Agencia tradicional,,9,5,2,0,191.13,4,2,No,0.0,Sin depósito,0
+100332,39.0,Male,Países Bajos,Palladium Tenerife,Junior Suite,Solo alojamiento,Agencia online,45.0,5,10,2,2,,0,0,No,0.0,Sin depósito,1
+100333,41.0,Female,España,Palladium Tenerife,Standard,Media pensión,Agencia online,55.0,7,2,2,0,46.66,1,1,No,5.0,No reembolsable,0
+100334,18.0,Male,Reino Unido,Palladium Tenerife,Suite,Desayuno,Agencia tradicional,,10,6,1,0,367.94,1,0,No,0.0,No reembolsable,0
+100335,47.0,Male,España,Palladium Tenerife,Standard,Todo incluido,Web directa,15.0,6,4,2,0,94.06,1,0,No,0.0,Reembolsable,0
+100336,67.0,Male,EEUU,Palladium Riviera Maya,Suite,Todo incluido,Agencia online,105.0,2,3,1,2,414.14,3,0,No,0.0,Sin depósito,1
+100337,66.0,Male,EEUU,Palladium Mallorca,Standard,Media pensión,Web directa,52.0,9,14,2,0,113.14,2,0,No,0.0,Sin depósito,1
+100338,50.0,Female,Portugal,Palladium Tenerife,Suite,Media pensión,Web directa,228.0,9,3,2,2,376.66,2,0,No,0.0,Reembolsable,0
+100339,52.0,Female,México,Palladium Riviera Maya,Junior Suite,Media pensión,Agencia online,101.0,12,2,3,0,193.04,1,0,No,0.0,Sin depósito,0
+100340,32.0,Female,Alemania,Palladium Ibiza,Suite,Solo alojamiento,Web directa,,9,3,2,0,430.89,4,0,No,0.0,Sin depósito,0
+100341,36.0,Female,Países Bajos,Palladium Ibiza,Standard,Todo incluido,Agencia online,62.0,10,14,2,2,128.3,1,0,Sí,1.0,No reembolsable,0
+100342,72.0,Male,México,Palladium Ibiza,Standard,Todo incluido,Web directa,11.0,5,4,2,0,174.79,0,0,Sí,0.0,Sin depósito,0
+100343,47.0,Male,Alemania,Palladium Riviera Maya,Suite,Todo incluido,Web directa,35.0,8,4,2,0,400.5,0,0,No,0.0,Sin depósito,0
+100344,59.0,Male,España,Palladium Punta Cana,Standard,Media pensión,Web directa,2.0,9,3,2,0,159.4,3,1,No,0.0,Sin depósito,0
+100345,44.0,Female,Francia,Palladium Tenerife,Standard,Todo incluido,Web directa,75.0,10,2,2,0,167.02,0,0,No,0.0,Reembolsable,0
+100346,,Female,,Palladium Punta Cana,Suite,Desayuno,Agencia online,14.0,8,6,3,0,373.53,1,0,Sí,1.0,Reembolsable,0
+100347,53.0,Male,Francia,Palladium Ibiza,Standard,Todo incluido,Agencia online,107.0,5,4,2,0,94.46,1,0,No,0.0,Sin depósito,0
+100348,51.0,Female,España,Palladium Punta Cana,Suite,Media pensión,Agencia online,118.0,6,4,3,0,371.59,2,1,No,1.0,Sin depósito,0
+100349,29.0,Female,Alemania,Palladium Mallorca,Standard,Solo alojamiento,Web directa,108.0,3,4,4,0,103.52,1,0,Sí,0.0,Reembolsable,1
+100350,39.0,Male,Países Bajos,Palladium Costa Mujeres,Junior Suite,Todo incluido,Web directa,218.0,4,5,2,0,221.64,0,0,No,2.0,Reembolsable,0
+100351,71.0,Male,Alemania,Palladium Punta Cana,Standard,Desayuno,Walk-in,25.0,6,14,3,1,104.66,0,0,No,,Sin depósito,0
+100352,42.0,Female,Portugal,Palladium Tenerife,Standard,Desayuno,Web directa,8.0,11,10,2,0,57.75,0,0,Sí,1.0,Sin depósito,0
+100353,59.0,Female,Reino Unido,Palladium Tenerife,Standard,Solo alojamiento,Teléfono,57.0,8,4,2,0,106.42,2,0,No,3.0,Sin depósito,0
+100354,41.0,Male,,Palladium Costa Mujeres,Standard,Desayuno,Agencia online,125.0,8,7,1,0,124.36,0,0,Sí,2.0,Sin depósito,1
+100355,27.0,Female,Italia,Palladium Tenerife,Standard,Media pensión,Web directa,109.0,6,6,2,0,88.81,1,0,No,0.0,Sin depósito,0
+100356,32.0,Female,España,Palladium Costa Mujeres,Suite,Desayuno,Web directa,69.0,9,2,2,0,381.97,1,0,No,0.0,Reembolsable,0
+100357,23.0,Female,México,Palladium Costa Mujeres,Junior Suite,Todo incluido,Teléfono,51.0,9,5,2,0,214.04,1,0,No,1.0,No reembolsable,0
+100358,18.0,Male,Países Bajos,Palladium Riviera Maya,Standard,Media pensión,Agencia tradicional,80.0,2,7,2,0,173.88,2,0,Sí,0.0,Reembolsable,0
+100359,38.0,Male,EEUU,Palladium Punta Cana,Villa,Desayuno,Web directa,48.0,5,5,1,0,736.63,2,0,No,0.0,No reembolsable,0
+100360,33.0,Female,España,Palladium Ibiza,Junior Suite,Todo incluido,Agencia tradicional,11.0,9,2,2,3,211.71,2,1,Sí,0.0,Reembolsable,0
+100361,24.0,Female,Países Bajos,Palladium Ibiza,Standard,Desayuno,Agencia tradicional,233.0,3,6,2,0,98.44,2,0,No,1.0,Sin depósito,1
+100362,32.0,Male,España,Palladium Costa Mujeres,Junior Suite,Solo alojamiento,Web directa,74.0,12,7,2,1,196.8,1,0,No,2.0,No reembolsable,0
+100363,34.0,Female,España,Palladium Riviera Maya,Suite,Desayuno,Teléfono,74.0,5,2,1,3,395.55,1,0,No,3.0,Sin depósito,0
+100364,49.0,Male,Italia,Palladium Mallorca,Standard,Desayuno,Agencia online,165.0,5,2,2,0,56.61,2,0,Sí,4.0,Reembolsable,0
+100365,49.0,Male,España,Palladium Mallorca,Villa,Desayuno,Teléfono,,4,7,1,0,708.47,0,0,No,2.0,No reembolsable,0
+100366,44.0,Female,Alemania,Palladium Riviera Maya,Standard,Desayuno,Agencia tradicional,127.0,4,4,4,3,127.8,4,2,No,0.0,Reembolsable,0
+100367,55.0,Female,Portugal,Palladium Costa Mujeres,Standard,Media pensión,Web directa,48.0,4,5,2,0,121.24,0,0,No,0.0,Reembolsable,0
+100368,43.0,Male,EEUU,Palladium Mallorca,Standard,Todo incluido,Web directa,63.0,5,5,2,2,142.58,1,0,No,0.0,Reembolsable,0
+100369,45.0,Male,Alemania,Palladium Punta Cana,Junior Suite,Todo incluido,Web directa,91.0,9,3,2,0,204.64,0,0,Sí,0.0,Sin depósito,1
+100370,29.0,Female,Italia,Palladium Costa Mujeres,Villa,Desayuno,Agencia tradicional,,7,10,1,0,773.18,1,0,No,,Sin depósito,0
+100371,33.0,Female,EEUU,Palladium Mallorca,Standard,Desayuno,Teléfono,97.0,7,2,2,2,108.62,2,0,No,2.0,Sin depósito,0
+100372,41.0,Male,México,Palladium Riviera Maya,Junior Suite,Todo incluido,Agencia online,63.0,11,5,3,2,231.8,1,0,No,1.0,Reembolsable,0
+100373,,Male,Francia,Palladium Ibiza,Junior Suite,Todo incluido,Agencia online,56.0,5,7,2,2,199.16,2,0,Sí,1.0,No reembolsable,0
+100374,65.0,Female,España,Palladium Ibiza,Standard,Todo incluido,Web directa,65.0,7,10,1,2,78.22,5,0,No,0.0,Reembolsable,0
+100375,50.0,Female,Alemania,Palladium Ibiza,Suite,Solo alojamiento,Agencia online,34.0,10,5,3,1,387.92,1,1,Sí,1.0,No reembolsable,0
+100376,51.0,Female,Países Bajos,Palladium Costa Mujeres,Suite,Desayuno,Teléfono,138.0,7,7,1,0,352.38,2,0,No,0.0,Sin depósito,1
+100377,40.0,Female,España,Palladium Mallorca,Standard,Todo incluido,Web directa,14.0,7,2,2,0,115.94,0,0,No,0.0,Reembolsable,0
+100378,47.0,Female,Países Bajos,Palladium Riviera Maya,Standard,Media pensión,Web directa,39.0,8,10,2,0,151.48,1,1,Sí,2.0,Reembolsable,0
+100379,62.0,male,Reino Unido,Palladium Mallorca,Junior Suite,Desayuno,Web directa,49.0,6,2,2,0,,0,0,Sí,2.0,Sin depósito,0
+100380,33.0,Female,Reino Unido,Palladium Riviera Maya,Suite,Todo incluido,Web directa,34.0,3,3,2,0,357.63,4,1,No,2.0,Reembolsable,0
+100381,58.0,Female,España,Palladium Tenerife,Standard,Desayuno,Web directa,120.0,5,3,2,1,97.01,0,0,No,4.0,Sin depósito,0
+100382,23.0,Male,España,Palladium Riviera Maya,Suite,Todo incluido,Agencia online,15.0,7,7,2,0,385.73,2,0,No,1.0,Sin depósito,0
+100383,50.0,Female,Reino Unido,Palladium Riviera Maya,Standard,Todo incluido,Web directa,66.0,6,4,3,2,108.6,2,0,Sí,0.0,Sin depósito,0
+100384,,Male,Reino Unido,Palladium Mallorca,Standard,Media pensión,Agencia online,12.0,1,10,2,2,160.41,4,1,Sí,0.0,Sin depósito,0
+100385,55.0,Female,Países Bajos,Palladium Tenerife,Suite,Desayuno,Agencia tradicional,12.0,11,3,2,0,413.78,1,0,No,2.0,Reembolsable,0
+100386,55.0,Female,Italia,Palladium Punta Cana,Junior Suite,Todo incluido,Teléfono,53.0,9,10,2,1,256.45,5,1,No,0.0,Sin depósito,0
+100387,23.0,Female,Reino Unido,Palladium Punta Cana,Junior Suite,Todo incluido,Agencia online,43.0,8,5,3,0,197.07,4,0,No,,Sin depósito,1
+100388,38.0,Female,Países Bajos,Palladium Riviera Maya,Junior Suite,Desayuno,Web directa,75.0,7,7,2,2,208.31,0,0,,0.0,Sin depósito,0
+100389,63.0,Female,Países Bajos,Palladium Ibiza,Standard,Media pensión,Web directa,12.0,2,2,2,1,133.68,0,0,No,0.0,Sin depósito,0
+100390,56.0,Female,Alemania,Palladium Riviera Maya,Standard,Todo incluido,Agencia online,1.0,12,3,1,2,112.21,1,0,No,2.0,Sin depósito,0
+100391,34.0,Female,Países Bajos,Palladium Ibiza,Standard,Desayuno,Web directa,64.0,4,4,1,0,96.11,2,0,Sí,0.0,Sin depósito,0
+100392,33.0,Male,España,Palladium Tenerife,Suite,Desayuno,Agencia tradicional,10.0,6,5,1,0,410.04,5,1,Sí,1.0,Reembolsable,0
+100393,48.0,Female,Alemania,Palladium Mallorca,Standard,Todo incluido,Agencia online,113.0,6,6,2,0,149.05,0,0,Sí,1.0,Sin depósito,0
+100394,41.0,Male,Alemania,Palladium Ibiza,Standard,Desayuno,Web directa,40.0,8,4,1,1,135.37,2,0,Sí,3.0,Sin depósito,0
+100395,40.0,Male,Francia,Palladium Mallorca,Standard,Todo incluido,Agencia tradicional,115.0,8,2,2,0,168.56,1,1,No,0.0,Sin depósito,1
+100396,33.0,Male,Italia,Palladium Punta Cana,Villa,Media pensión,Web directa,46.0,5,4,2,3,750.13,1,0,No,,Reembolsable,0
+100397,46.0,Female,Francia,Palladium Ibiza,Junior Suite,Todo incluido,Web directa,2.0,9,3,2,1,248.3,1,1,Sí,0.0,Sin depósito,0
+100398,53.0,Male,Reino Unido,Palladium Riviera Maya,Suite,Solo alojamiento,Web directa,59.0,6,7,2,0,333.85,0,0,No,0.0,Sin depósito,0
+100399,42.0,Female,Reino Unido,Palladium Punta Cana,Standard,Desayuno,Agencia tradicional,20.0,8,2,1,3,112.23,3,0,Sí,0.0,Sin depósito,0
+100400,51.0,Female,Argentina,Palladium Ibiza,Suite,Todo incluido,Agencia online,70.0,8,3,2,0,419.65,2,0,No,1.0,Sin depósito,0
+100401,42.0,Male,Francia,Palladium Ibiza,Standard,Todo incluido,Agencia online,54.0,5,4,2,0,,1,1,Sí,0.0,Reembolsable,0
+100402,,Male,México,Palladium Ibiza,Standard,Todo incluido,Agencia online,38.0,7,3,1,0,92.3,1,0,No,1.0,Sin depósito,0
+100403,51.0,Male,España,Palladium Costa Mujeres,Junior Suite,Solo alojamiento,Agencia online,177.0,12,4,2,0,,1,0,Sí,0.0,Reembolsable,1
+100404,60.0,Male,Francia,Palladium Ibiza,Suite,Todo incluido,Web directa,22.0,7,5,2,0,369.07,2,0,No,1.0,Sin depósito,0
+100405,21.0,Female,Alemania,Palladium Costa Mujeres,Suite,Solo alojamiento,Agencia online,125.0,6,7,4,0,365.51,1,0,Sí,0.0,Reembolsable,1
+100406,34.0,Female,España,Palladium Mallorca,Standard,Todo incluido,Web directa,180.0,6,4,3,2,69.81,1,0,Sí,1.0,Sin depósito,0
+100407,,Female,EEUU,Palladium Ibiza,Suite,Desayuno,Web directa,161.0,8,14,2,1,428.08,4,1,No,2.0,No reembolsable,0
+100408,32.0,Female,EEUU,Palladium Punta Cana,Standard,Solo alojamiento,Web directa,61.0,3,3,2,0,67.22,0,0,No,3.0,Reembolsable,0
+100409,18.0,Male,Países Bajos,Palladium Ibiza,Junior Suite,Todo incluido,Agencia online,29.0,8,4,1,2,204.49,1,0,No,0.0,Reembolsable,1
+100410,37.0,Male,Reino Unido,Palladium Mallorca,Junior Suite,Desayuno,Agencia online,72.0,9,6,2,0,232.66,3,1,Sí,0.0,No reembolsable,0
+100411,63.0,Male,Reino Unido,Palladium Riviera Maya,Standard,Todo incluido,Agencia online,146.0,7,4,3,0,139.07,3,0,No,3.0,Sin depósito,1
+100412,48.0,FEMALE,Portugal,Palladium Punta Cana,Villa,Desayuno,Web directa,56.0,8,7,1,0,731.93,3,0,No,2.0,Sin depósito,0
+100413,49.0,Male,España,Palladium Punta Cana,Junior Suite,Media pensión,Agencia online,124.0,6,10,3,1,173.29,0,0,,0.0,Sin depósito,0
+100414,55.0,Male,México,Palladium Riviera Maya,Standard,Media pensión,Agencia online,23.0,10,5,1,0,90.23,3,0,Sí,0.0,Sin depósito,0
+100415,40.0,Male,Francia,Palladium Punta Cana,Junior Suite,Desayuno,Web directa,30.0,9,6,1,1,221.03,1,0,No,0.0,No reembolsable,0
+100416,57.0,Female,Reino Unido,Palladium Ibiza,Standard,Solo alojamiento,Web directa,73.0,7,3,2,1,107.51,3,1,No,1.0,No reembolsable,0
+100417,44.0,Female,Reino Unido,Palladium Mallorca,Junior Suite,Media pensión,Web directa,191.0,6,6,4,0,190.35,1,0,No,1.0,Sin depósito,0
+100418,51.0,Male,,Palladium Costa Mujeres,Standard,Solo alojamiento,Agencia online,4.0,3,4,1,1,109.56,0,0,No,1.0,Sin depósito,0
+100419,29.0,Female,Reino Unido,Palladium Ibiza,Standard,Media pensión,Web directa,91.0,3,5,2,0,100.31,5,1,Sí,0.0,Reembolsable,0
+100420,43.0,Female,Francia,Palladium Mallorca,Suite,Desayuno,Web directa,80.0,7,5,2,0,396.2,2,0,No,0.0,No reembolsable,0
+100421,47.0,Male,EEUU,Palladium Tenerife,Standard,Desayuno,Web directa,26.0,4,5,3,0,151.41,1,0,No,0.0,Sin depósito,0
+100422,33.0,Female,Francia,Palladium Riviera Maya,Standard,Solo alojamiento,Agencia tradicional,29.0,9,14,1,0,150.72,2,0,Sí,1.0,Reembolsable,0
+100423,28.0,Male,EEUU,Palladium Tenerife,Junior Suite,Solo alojamiento,Agencia tradicional,1.0,4,2,2,1,235.74,1,0,Sí,1.0,Sin depósito,1
+100424,21.0,Male,España,Palladium Riviera Maya,Suite,Desayuno,Web directa,5.0,6,7,2,0,420.43,2,0,No,5.0,Sin depósito,0
+100425,48.0,Male,Países Bajos,Palladium Riviera Maya,Junior Suite,Todo incluido,Agencia online,57.0,5,5,2,0,211.33,2,2,No,0.0,Sin depósito,1
+100426,45.0,Male,Reino Unido,Palladium Tenerife,Standard,Todo incluido,Web directa,51.0,5,14,1,1,125.76,0,0,Sí,2.0,Sin depósito,0
+100427,54.0,Male,Alemania,Palladium Ibiza,Standard,Media pensión,Agencia online,1.0,9,4,2,1,188.92,1,0,No,0.0,Sin depósito,1
+100428,49.0,Female,España,Palladium Riviera Maya,Junior Suite,Todo incluido,Agencia online,178.0,3,10,2,0,234.24,0,0,Sí,0.0,Sin depósito,1
+100429,67.0,Male,España,Palladium Tenerife,Suite,Solo alojamiento,Agencia tradicional,38.0,8,4,3,0,412.68,0,0,No,0.0,No reembolsable,0
+100430,46.0,Female,Alemania,Palladium Tenerife,Standard,Desayuno,Web directa,20.0,9,3,2,1,,1,0,Sí,1.0,Reembolsable,1
+100431,53.0,Male,Reino Unido,Palladium Riviera Maya,Junior Suite,Todo incluido,Agencia tradicional,,8,4,3,2,181.5,0,0,No,3.0,Sin depósito,0
+100432,47.0,Female,Portugal,Palladium Mallorca,Standard,Media pensión,Web directa,106.0,2,6,1,0,143.07,0,0,No,0.0,Sin depósito,0
+100433,44.0,Female,España,Palladium Tenerife,Standard,Todo incluido,Web directa,15.0,2,3,2,0,113.05,1,0,No,0.0,Sin depósito,0
+100434,36.0,Male,España,Palladium Riviera Maya,Suite,Todo incluido,Agencia online,9.0,8,4,2,0,364.77,2,1,Sí,0.0,Sin depósito,0
+100435,50.0,Male,Portugal,Palladium Mallorca,Standard,Desayuno,Agencia online,26.0,11,4,2,0,120.9,6,4,Sí,3.0,Sin depósito,0
+100436,43.0,Male,España,Palladium Punta Cana,Standard,Solo alojamiento,Agencia tradicional,63.0,2,3,2,0,135.25,1,0,No,0.0,Reembolsable,0
+100437,29.0,Female,EEUU,Palladium Tenerife,Standard,Desayuno,Agencia online,89.0,1,3,1,0,100.64,1,0,No,1.0,Reembolsable,0
+100438,44.0,Female,EEUU,Palladium Punta Cana,Junior Suite,Solo alojamiento,Agencia online,223.0,10,1,2,0,217.88,0,0,No,1.0,Sin depósito,0
+100439,28.0,Female,España,Palladium Riviera Maya,Junior Suite,Solo alojamiento,Agencia online,18.0,8,6,1,0,251.11,1,1,No,0.0,No reembolsable,0
+100440,45.0,Male,Alemania,Palladium Ibiza,Junior Suite,Todo incluido,Web directa,129.0,7,14,1,0,230.98,1,0,Sí,0.0,Reembolsable,1
+100441,56.0,Male,México,Palladium Mallorca,Junior Suite,Solo alojamiento,Web directa,,10,5,2,0,196.25,3,1,No,1.0,Reembolsable,0
+100442,52.0,Male,Reino Unido,Palladium Punta Cana,Junior Suite,Desayuno,Web directa,27.0,8,5,2,0,189.65,0,0,No,2.0,Reembolsable,0
+100443,25.0,Male,Reino Unido,Palladium Mallorca,Suite,Desayuno,Web directa,17.0,1,4,2,1,353.96,0,0,No,1.0,Sin depósito,0
+100444,23.0,Female,España,Palladium Punta Cana,Standard,Solo alojamiento,Agencia online,22.0,8,3,2,2,138.57,0,0,No,1.0,Sin depósito,0
+100445,18.0,Male,EEUU,Palladium Riviera Maya,Standard,Todo incluido,Teléfono,,5,7,2,1,113.53,1,0,No,2.0,No reembolsable,0
+100446,37.0,Female,,Palladium Ibiza,Standard,Todo incluido,Agencia online,176.0,4,5,1,0,98.05,1,0,No,0.0,Sin depósito,1
+100447,42.0,Male,Francia,Palladium Costa Mujeres,Standard,Solo alojamiento,Web directa,182.0,1,3,2,1,120.74,1,1,Sí,1.0,Sin depósito,0
+100448,18.0,Male,Francia,Palladium Ibiza,Villa,Desayuno,Walk-in,8.0,8,2,1,3,776.17,4,0,No,0.0,Reembolsable,0
+100449,34.0,Male,Italia,Palladium Ibiza,Standard,Media pensión,Web directa,17.0,7,4,2,0,77.86,0,0,No,1.0,Sin depósito,0
+100450,19.0,Female,España,Palladium Riviera Maya,Suite,Solo alojamiento,Web directa,25.0,7,7,2,0,405.8,0,0,No,0.0,Sin depósito,0
+100451,34.0,Female,México,Palladium Riviera Maya,Suite,Todo incluido,Web directa,12.0,5,4,1,0,461.44,3,0,NO,1.0,,0
+100452,,Male,EEUU,Palladium Punta Cana,Junior Suite,Media pensión,Web directa,9.0,8,10,2,0,271.14,1,0,No,1.0,Sin depósito,0
+100453,44.0,Male,EEUU,Palladium Tenerife,Standard,Desayuno,Agencia online,49.0,4,14,2,0,155.68,0,0,No,1.0,No reembolsable,0
+100454,63.0,Male,Italia,Palladium Ibiza,Standard,Desayuno,Agencia online,27.0,8,10,2,0,158.46,1,0,Sí,2.0,Sin depósito,0
+100455,51.0,Male,Países Bajos,Palladium Mallorca,Suite,Desayuno,Agencia online,0.0,6,14,1,0,413.63,3,1,Sí,0.0,Sin depósito,1
+100456,36.0,Female,España,Palladium Tenerife,Standard,Media pensión,Agencia online,27.0,7,3,2,1,151.33,2,1,No,2.0,Sin depósito,0
+100457,62.0,Female,España,Palladium Costa Mujeres,Standard,Solo alojamiento,Agencia online,66.0,6,5,3,1,67.44,1,0,No,1.0,Sin depósito,0
+100458,53.0,Male,Italia,Palladium Punta Cana,Standard,Solo alojamiento,Web directa,25.0,6,7,1,0,48.5,1,0,Sí,2.0,Sin depósito,1
+100459,,Female,España,Palladium Mallorca,Standard,Media pensión,Web directa,65.0,4,1,1,2,93.9,2,1,No,0.0,No reembolsable,1
+100460,37.0,Female,Francia,Palladium Ibiza,Suite,Solo alojamiento,Agencia tradicional,11.0,5,5,2,2,352.48,3,0,No,1.0,Sin depósito,0
+100461,32.0,Female,Portugal,Palladium Punta Cana,Suite,Todo incluido,Web directa,15.0,9,14,2,0,,2,0,No,0.0,Sin depósito,0
+100462,39.0,Male,Reino Unido,Palladium Costa Mujeres,Standard,Desayuno,Agencia online,,7,3,2,2,137.46,2,0,No,1.0,Reembolsable,0
+100463,46.0,Female,EEUU,Palladium Riviera Maya,Junior Suite,Todo incluido,Walk-in,,4,2,2,0,227.71,1,0,,0.0,Sin depósito,0
+100464,57.0,Male,EEUU,Palladium Mallorca,Standard,Media pensión,Web directa,77.0,9,4,4,0,114.26,2,1,Sí,2.0,Sin depósito,1
+100465,45.0,Male,Alemania,Palladium Riviera Maya,Standard,Desayuno,Teléfono,8.0,9,3,2,1,118.79,0,0,No,0.0,Reembolsable,0
+100466,38.0,Female,Países Bajos,Palladium Punta Cana,Junior Suite,Desayuno,Web directa,33.0,8,3,2,1,234.02,4,0,Sí,0.0,Reembolsable,0
+100467,54.0,Male,Reino Unido,Palladium Ibiza,Standard,Todo incluido,Walk-in,27.0,6,5,2,0,136.37,0,0,No,4.0,Sin depósito,0
+100468,38.0,Male,Reino Unido,Palladium Mallorca,Standard,Todo incluido,Web directa,26.0,7,4,4,0,79.25,3,1,No,1.0,Sin depósito,1
+100469,,Female,España,Palladium Ibiza,Standard,Media pensión,Agencia tradicional,14.0,9,6,1,0,123.93,0,0,No,2.0,Sin depósito,0
+100470,39.0,Male,Francia,Palladium Riviera Maya,Standard,Desayuno,Teléfono,36.0,10,7,1,0,91.95,3,1,No,0.0,Sin depósito,0
+100471,58.0,Female,España,Palladium Riviera Maya,Standard,Solo alojamiento,Agencia online,100.0,4,4,2,0,84.18,1,0,No,2.0,Reembolsable,0
+100472,43.0,Male,Alemania,Palladium Riviera Maya,Standard,Todo incluido,Web directa,1.0,2,10,4,0,114.23,1,0,Sí,3.0,No reembolsable,0
+100473,35.0,Male,,Palladium Ibiza,Junior Suite,Desayuno,Agencia online,58.0,12,5,2,0,226.9,0,0,Sí,0.0,Reembolsable,0
+100474,26.0,Female,Argentina,Palladium Punta Cana,Standard,Desayuno,Web directa,85.0,7,5,2,0,80.09,4,0,No,0.0,Sin depósito,0
+100475,44.0,Male,Francia,Palladium Riviera Maya,Junior Suite,Solo alojamiento,Agencia tradicional,86.0,10,6,1,1,168.71,1,0,Sí,3.0,Sin depósito,0
+100476,36.0,Female,Alemania,Palladium Punta Cana,Junior Suite,Media pensión,Agencia online,141.0,7,4,2,0,295.33,1,0,No,1.0,Sin depósito,1
+100477,60.0,Male,España,Palladium Riviera Maya,Standard,Desayuno,Web directa,109.0,6,3,1,0,117.63,3,0,No,0.0,Sin depósito,0
+100478,50.0,Female,España,Palladium Ibiza,Standard,Todo incluido,Web directa,86.0,8,5,2,1,153.9,1,0,No,5.0,No reembolsable,0
+100479,45.0,Female,Francia,Palladium Riviera Maya,Standard,Desayuno,Web directa,11.0,8,2,2,0,120.4,2,0,No,3.0,Reembolsable,0
+100480,38.0,Male,Alemania,Palladium Riviera Maya,Suite,Solo alojamiento,Teléfono,10.0,7,4,1,1,396.93,1,1,No,4.0,Reembolsable,0
+100481,50.0,Male,Alemania,Palladium Riviera Maya,Standard,Desayuno,Teléfono,,9,2,1,0,158.57,1,1,,2.0,No reembolsable,0
+100482,29.0,Female,España,Palladium Punta Cana,Villa,Media pensión,Agencia tradicional,12.0,6,6,2,0,752.8,1,1,No,1.0,Reembolsable,1
+100483,18.0,Female,Alemania,Palladium Punta Cana,Junior Suite,Media pensión,Agencia online,199.0,9,4,2,0,246.57,1,0,No,0.0,No reembolsable,1
+100484,26.0,Male,Francia,Palladium Ibiza,Suite,Todo incluido,Teléfono,202.0,9,1,2,0,362.26,3,0,No,0.0,Sin depósito,1
+100485,43.0,Male,Reino Unido,Palladium Ibiza,Junior Suite,Todo incluido,Agencia online,45.0,10,4,2,0,200.31,1,0,Sí,,No reembolsable,0
+100486,70.0,Male,Francia,Palladium Mallorca,Standard,Desayuno,Teléfono,1.0,9,2,1,0,153.04,0,0,Sí,2.0,Sin depósito,0
+100487,56.0,Male,España,Palladium Punta Cana,Standard,Todo incluido,Agencia tradicional,56.0,7,4,2,0,161.8,2,0,Sí,0.0,Sin depósito,0
+100488,44.0,Male,España,Palladium Tenerife,Standard,Desayuno,Agencia online,6.0,9,1,1,0,151.63,0,0,Sí,0.0,Sin depósito,0
+100489,38.0,Male,Reino Unido,Palladium Ibiza,Junior Suite,Solo alojamiento,Web directa,164.0,4,6,1,1,240.1,1,0,No,0.0,Reembolsable,1
+100490,38.0,Male,EEUU,Palladium Punta Cana,Suite,Desayuno,Agencia tradicional,2.0,7,6,3,1,392.17,2,1,No,1.0,Reembolsable,0
+100491,41.0,Female,España,Palladium Mallorca,Villa,Desayuno,Teléfono,45.0,7,4,1,1,707.71,1,0,No,0.0,Reembolsable,0
+100492,39.0,Female,Reino Unido,Palladium Costa Mujeres,Standard,Desayuno,Agencia online,114.0,8,3,2,3,154.88,1,0,NO,0.0,No reembolsable,0
+100493,60.0,Male,España,Palladium Punta Cana,Junior Suite,Media pensión,Agencia tradicional,3.0,8,5,1,0,241.32,1,0,Sí,2.0,Sin depósito,0
+100494,20.0,Female,Italia,Palladium Mallorca,Standard,Media pensión,Teléfono,91.0,8,3,2,0,137.02,1,0,No,0.0,Reembolsable,0
+100495,56.0,Male,,Palladium Mallorca,Standard,Solo alojamiento,Web directa,44.0,4,4,3,1,134.1,3,1,No,0.0,Reembolsable,1
+100496,37.0,Female,Reino Unido,Palladium Costa Mujeres,Standard,Media pensión,Agencia online,10.0,7,5,2,0,139.77,1,0,No,1.0,Reembolsable,0
+100497,26.0,Female,Francia,Palladium Costa Mujeres,Standard,Todo incluido,Agencia online,74.0,9,7,2,3,97.81,1,0,No,2.0,Sin depósito,0
+100498,,Male,Reino Unido,Palladium Riviera Maya,Standard,Todo incluido,Agencia online,19.0,5,10,2,1,149.79,6,1,sí,0.0,Sin depósito,0
+100499,40.0,Male,España,Palladium Costa Mujeres,Junior Suite,Todo incluido,Agencia online,97.0,7,5,2,0,243.17,2,0,Sí,,Reembolsable,0
+100500,59.0,Male,Argentina,Palladium Riviera Maya,Villa,Todo incluido,Web directa,14.0,8,3,2,0,799.97,1,0,,0.0,Reembolsable,0
+100501,33.0,Female,México,Palladium Mallorca,Villa,Todo incluido,Agencia tradicional,24.0,7,7,3,0,756.81,1,0,Sí,0.0,No reembolsable,0
+100502,62.0,Male,España,Palladium Ibiza,Standard,Desayuno,Web directa,14.0,3,3,2,1,97.35,0,0,Sí,1.0,No reembolsable,0
+100503,34.0,Female,España,Palladium Punta Cana,Standard,Media pensión,Web directa,69.0,6,3,2,0,115.5,2,1,No,0.0,Reembolsable,0
+100504,61.0,Female,Italia,Palladium Riviera Maya,Junior Suite,Solo alojamiento,Teléfono,86.0,8,5,1,1,150.15,0,0,No,0.0,Sin depósito,0
+100505,38.0,Male,Argentina,Palladium Costa Mujeres,Standard,Desayuno,Agencia tradicional,106.0,8,3,4,0,124.83,1,1,Sí,0.0,Reembolsable,0
+100506,72.0,Female,EEUU,Palladium Tenerife,Standard,Todo incluido,Web directa,17.0,7,7,2,1,135.46,1,0,No,0.0,Sin depósito,0
+100507,53.0,Female,México,Palladium Mallorca,Villa,Todo incluido,Web directa,36.0,9,3,3,0,762.14,1,0,No,1.0,Reembolsable,0
+100508,39.0,Female,Países Bajos,Palladium Tenerife,Standard,Desayuno,Web directa,65.0,8,4,2,0,12000.0,1,0,No,3.0,Reembolsable,1
+100509,,Male,España,Palladium Costa Mujeres,Villa,Desayuno,Agencia online,17.0,12,1,2,0,764.44,1,0,No,,Sin depósito,0
+100510,44.0,Female,España,Palladium Ibiza,Junior Suite,Desayuno,Teléfono,192.0,8,3,2,0,204.53,2,0,Sí,2.0,,0
+100511,27.0,male,Italia,Palladium Tenerife,Standard,Desayuno,Web directa,53.0,11,6,2,1,142.4,4,2,Sí,2.0,Sin depósito,1
+100512,38.0,Male,México,Palladium Punta Cana,Standard,Todo incluido,Agencia tradicional,231.0,2,14,3,1,115.77,0,0,No,1.0,Reembolsable,0
+100513,24.0,Male,Países Bajos,Palladium Punta Cana,Villa,Solo alojamiento,Agencia online,92.0,4,6,2,0,717.15,2,0,No,0.0,Sin depósito,0
+100514,26.0,Female,Reino Unido,Palladium Ibiza,Suite,Todo incluido,Web directa,57.0,8,6,2,0,358.66,0,0,No,0.0,No reembolsable,0
+100515,55.0,Female,EEUU,Palladium Ibiza,Junior Suite,Desayuno,Web directa,44.0,6,4,2,0,231.86,0,0,No,0.0,Sin depósito,0
+100516,45.0,Female,Reino Unido,Palladium Tenerife,Villa,Desayuno,Agencia online,157.0,7,14,2,0,763.41,1,0,No,1.0,Reembolsable,0
+100517,32.0,Male,Argentina,Palladium Riviera Maya,Standard,Desayuno,Web directa,44.0,3,2,2,0,105.82,2,0,No,0.0,Sin depósito,0
+100518,48.0,Male,España,Palladium Ibiza,Standard,Solo alojamiento,Agencia online,82.0,2,4,3,1,107.57,1,0,No,1.0,No reembolsable,0
+100519,32.0,Male,España,Palladium Riviera Maya,Standard,Solo alojamiento,Web directa,153.0,2,10,2,0,107.74,4,1,Sí,1.0,Reembolsable,1
+100520,46.0,Male,Países Bajos,Palladium Mallorca,Junior Suite,Solo alojamiento,Agencia online,21.0,8,6,2,0,235.96,0,0,Sí,2.0,Sin depósito,0
+100521,46.0,Female,EEUU,Palladium Costa Mujeres,Standard,Todo incluido,Web directa,,1,4,2,0,184.06,3,1,sí,0.0,Reembolsable,1
+100522,54.0,Male,Francia,Palladium Riviera Maya,Villa,Desayuno,Agencia online,,2,7,3,0,797.22,0,0,No,0.0,No reembolsable,0
+100523,18.0,Male,,Palladium Ibiza,Standard,Todo incluido,Teléfono,73.0,2,7,2,0,86.36,3,1,No,3.0,No reembolsable,0
+100524,48.0,Female,,Palladium Ibiza,Suite,Todo incluido,Agencia online,16.0,8,6,2,1,377.11,1,0,No,0.0,Reembolsable,1
+100525,61.0,Female,España,Palladium Riviera Maya,Junior Suite,Media pensión,Agencia online,42.0,11,1,2,0,226.03,4,2,No,5.0,Sin depósito,1
+100526,60.0,Female,Países Bajos,Palladium Ibiza,Standard,Solo alojamiento,Web directa,158.0,4,10,1,0,91.59,4,0,No,1.0,Reembolsable,1
+100527,53.0,Male,Reino Unido,Palladium Mallorca,Standard,Desayuno,Web directa,14.0,6,3,2,0,154.28,1,0,No,1.0,Sin depósito,0
+100528,42.0,Male,Italia,Palladium Costa Mujeres,Junior Suite,Desayuno,Teléfono,55.0,9,4,2,1,244.3,2,1,No,,Sin depósito,1
+100529,41.0,Female,España,Palladium Riviera Maya,Junior Suite,Media pensión,Agencia online,80.0,1,5,2,0,194.09,5,0,Sí,2.0,Sin depósito,0
+100530,18.0,Male,España,Palladium Punta Cana,Standard,Desayuno,Web directa,45.0,4,10,4,0,108.91,1,0,No,0.0,Sin depósito,0
+100531,32.0,Female,Francia,Palladium Riviera Maya,Standard,Todo incluido,Agencia online,90.0,12,1,2,0,113.24,1,0,Sí,2.0,Reembolsable,0
+100532,38.0,Male,España,Palladium Tenerife,Suite,Desayuno,Web directa,20.0,3,4,2,1,416.11,5,0,No,3.0,No reembolsable,0
+100533,23.0,Male,España,Palladium Ibiza,Standard,Media pensión,Web directa,8.0,6,4,2,0,108.77,0,0,No,0.0,No reembolsable,0
+100534,19.0,Male,Italia,Palladium Ibiza,Suite,Media pensión,Web directa,12.0,9,2,1,0,396.01,0,0,Sí,0.0,Reembolsable,0
+100535,32.0,Female,EEUU,Palladium Riviera Maya,Standard,Todo incluido,Agencia tradicional,20.0,9,3,2,1,113.71,3,1,No,3.0,Reembolsable,0
+100536,21.0,Male,Reino Unido,Palladium Punta Cana,Junior Suite,Todo incluido,Agencia online,21.0,4,5,2,0,199.72,0,0,Sí,3.0,No reembolsable,0
+100537,40.0,Female,Portugal,Palladium Tenerife,Junior Suite,Desayuno,Teléfono,,9,3,2,0,214.82,1,0,Sí,0.0,Sin depósito,0
+100538,21.0,Male,Argentina,Palladium Ibiza,Standard,Todo incluido,Web directa,75.0,9,5,2,0,144.05,0,0,No,0.0,Sin depósito,0
+100539,45.0,Male,España,Palladium Mallorca,Standard,Todo incluido,Teléfono,40.0,8,3,2,0,146.5,2,0,No,5.0,Reembolsable,0
+100540,33.0,Female,Reino Unido,Palladium Mallorca,Standard,Desayuno,Agencia online,5.0,4,2,2,3,169.35,0,0,Sí,2.0,No reembolsable,0
+100541,30.0,Male,México,Palladium Mallorca,Junior Suite,Desayuno,Teléfono,76.0,7,4,3,0,253.44,0,0,No,1.0,Reembolsable,0
+100542,39.0,Female,Argentina,Palladium Riviera Maya,Junior Suite,Todo incluido,Agencia online,112.0,4,2,3,1,202.82,1,0,No,0.0,Reembolsable,0
+100543,36.0,Male,Portugal,Palladium Punta Cana,Standard,Solo alojamiento,Agencia online,67.0,5,4,2,0,71.51,0,0,Sí,3.0,Reembolsable,0
+100544,45.0,Male,España,Palladium Ibiza,Standard,Media pensión,Teléfono,122.0,7,4,4,2,133.53,1,0,No,1.0,Reembolsable,0
+100545,39.0,Male,Italia,Palladium Tenerife,Junior Suite,Solo alojamiento,Agencia online,40.0,5,4,2,0,251.14,3,0,,0.0,Reembolsable,0
+100546,39.0,Female,Alemania,Palladium Riviera Maya,Junior Suite,Solo alojamiento,Walk-in,84.0,4,4,3,1,249.85,1,1,Sí,0.0,Sin depósito,0
+100547,35.0,Male,México,Palladium Punta Cana,Suite,Desayuno,Walk-in,36.0,9,4,2,0,439.96,1,1,Sí,0.0,No reembolsable,0
+100548,32.0,Female,Alemania,Palladium Mallorca,Villa,Todo incluido,Agencia tradicional,61.0,7,6,1,0,765.24,0,0,No,3.0,Sin depósito,0
+100549,46.0,Female,Alemania,Palladium Tenerife,Standard,Solo alojamiento,Agencia tradicional,3.0,8,5,1,0,152.09,2,0,No,0.0,No reembolsable,0
+100550,36.0,Male,Países Bajos,Palladium Costa Mujeres,Standard,Solo alojamiento,Walk-in,22.0,10,2,2,1,88.11,3,0,No,1.0,Sin depósito,0
+100551,18.0,male,Francia,Palladium Riviera Maya,Standard,Desayuno,Teléfono,99.0,9,4,2,0,113.75,2,1,,1.0,Reembolsable,0
+100552,38.0,Male,México,Palladium Punta Cana,Suite,Todo incluido,Agencia tradicional,3.0,5,4,2,2,381.0,1,0,No,0.0,Sin depósito,0
+100553,37.0,Male,España,Palladium Riviera Maya,Standard,Desayuno,Agencia tradicional,,8,3,2,2,78.18,2,1,No,0.0,No reembolsable,0
+100554,53.0,Female,Reino Unido,Palladium Riviera Maya,Suite,Media pensión,Agencia tradicional,20.0,5,2,2,3,352.3,0,0,No,1.0,Reembolsable,0
+100555,62.0,Male,Alemania,Palladium Punta Cana,Standard,Todo incluido,Agencia online,8.0,5,4,4,0,115.71,0,0,,2.0,Reembolsable,0
+100556,74.0,Female,Francia,Palladium Tenerife,Suite,Solo alojamiento,Web directa,38.0,11,6,2,0,404.03,0,0,Sí,1.0,Sin depósito,0
+100557,34.0,Female,España,Palladium Ibiza,Junior Suite,Todo incluido,Web directa,54.0,6,3,2,0,210.05,1,0,NO,1.0,Sin depósito,0
+100558,52.0,Female,España,Palladium Punta Cana,Suite,Todo incluido,Agencia tradicional,18.0,7,3,2,2,412.53,3,0,No,1.0,Reembolsable,0
+100559,52.0,Female,Alemania,Palladium Ibiza,Suite,Desayuno,Web directa,7.0,8,7,2,0,400.86,2,0,No,2.0,Reembolsable,0
+100560,18.0,Female,España,Palladium Ibiza,Standard,Desayuno,Web directa,3.0,12,5,2,2,119.38,4,0,No,2.0,No reembolsable,0
+100561,18.0,Male,Reino Unido,Palladium Mallorca,Standard,Media pensión,Agencia online,23.0,10,6,2,0,106.44,1,1,Sí,0.0,Sin depósito,1
+100562,18.0,Female,Alemania,Palladium Riviera Maya,Suite,Media pensión,Teléfono,7.0,9,1,1,1,346.88,1,0,No,,No reembolsable,0
+100563,43.0,Male,España,Palladium Costa Mujeres,Suite,Media pensión,Web directa,11.0,4,4,2,0,391.84,3,0,No,0.0,Sin depósito,0
+100564,33.0,Male,Alemania,Palladium Riviera Maya,Standard,Todo incluido,Web directa,68.0,12,5,4,0,92.24,2,0,Sí,0.0,Reembolsable,0
+100565,59.0,Female,España,Palladium Riviera Maya,Villa,Desayuno,Web directa,27.0,7,2,3,1,772.34,1,0,NO,0.0,Sin depósito,0
+100566,36.0,Female,España,Palladium Riviera Maya,Suite,Todo incluido,Web directa,39.0,4,2,1,0,382.49,3,1,No,2.0,Sin depósito,1
+100567,60.0,Male,EEUU,Palladium Riviera Maya,Suite,Todo incluido,Walk-in,70.0,5,3,1,2,453.83,2,1,Sí,1.0,Reembolsable,0
+100568,50.0,Female,Francia,Palladium Ibiza,Standard,Solo alojamiento,Agencia tradicional,6.0,11,6,2,0,,2,0,No,1.0,Sin depósito,1
+100569,70.0,Male,España,Palladium Ibiza,Suite,Desayuno,Web directa,21.0,10,5,2,0,362.59,4,1,No,2.0,Sin depósito,0
+100570,18.0,Male,España,Palladium Costa Mujeres,Standard,Todo incluido,Teléfono,36.0,8,5,1,0,70.76,1,0,No,0.0,Sin depósito,1
+100571,,Female,España,Palladium Mallorca,Junior Suite,Media pensión,Agencia online,95.0,7,2,2,0,250.56,2,0,Sí,3.0,Sin depósito,0
+100572,37.0,Male,España,Palladium Riviera Maya,Suite,Desayuno,Agencia online,7.0,8,4,2,1,415.06,2,1,Sí,2.0,Sin depósito,1
+100573,47.0,Female,Países Bajos,Palladium Riviera Maya,Standard,Media pensión,Web directa,68.0,7,2,2,1,107.87,2,2,Sí,1.0,,0
+100574,50.0,Male,Reino Unido,Palladium Riviera Maya,Junior Suite,Media pensión,Agencia online,36.0,6,6,3,0,225.57,1,0,No,1.0,Sin depósito,1
+100575,33.0,Female,Portugal,Palladium Punta Cana,Standard,Solo alojamiento,Agencia online,298.0,7,3,2,1,111.62,2,0,Sí,2.0,Sin depósito,1
+100576,28.0,Male,Reino Unido,Palladium Ibiza,Junior Suite,Media pensión,Agencia online,1.0,10,3,2,0,198.69,1,0,No,3.0,Sin depósito,0
+100577,,Male,España,Palladium Ibiza,Standard,Desayuno,Walk-in,124.0,8,7,2,0,55.26,2,0,No,3.0,No reembolsable,0
+100578,48.0,Female,España,Palladium Tenerife,Junior Suite,Todo incluido,Agencia tradicional,65.0,9,7,2,0,193.46,0,0,No,1.0,No reembolsable,0
+100579,57.0,Male,Francia,Palladium Punta Cana,Standard,Media pensión,Web directa,8.0,8,4,2,0,80.44,0,0,No,2.0,Sin depósito,0
+100580,61.0,Female,España,Palladium Riviera Maya,Junior Suite,Desayuno,Teléfono,114.0,2,1,2,0,141.16,0,0,Sí,0.0,Reembolsable,0
+100581,78.0,Male,México,Palladium Punta Cana,Junior Suite,Solo alojamiento,Agencia online,31.0,5,1,2,0,235.14,2,0,Sí,2.0,Reembolsable,0
+100582,47.0,Female,,Palladium Tenerife,Standard,Todo incluido,Web directa,52.0,9,3,1,0,143.05,0,0,Sí,2.0,No reembolsable,0
+100583,32.0,Male,Reino Unido,Palladium Ibiza,Suite,Desayuno,Web directa,36.0,7,3,2,0,332.53,2,1,No,2.0,Sin depósito,0
+100584,45.0,Female,EEUU,Palladium Punta Cana,Standard,Solo alojamiento,Agencia online,62.0,1,4,2,1,161.87,1,1,No,3.0,Sin depósito,0
+100585,58.0,Male,México,Palladium Costa Mujeres,Standard,Desayuno,Teléfono,62.0,7,1,2,0,,0,0,No,3.0,Sin depósito,1
+100586,36.0,Male,España,Palladium Punta Cana,Standard,Todo incluido,Web directa,101.0,3,6,3,0,127.37,4,0,Sí,2.0,Reembolsable,0
+100587,33.0,Female,Portugal,Palladium Punta Cana,Standard,Solo alojamiento,Agencia online,20.0,6,2,2,2,130.47,2,0,No,3.0,Reembolsable,0
+100588,18.0,Female,España,Palladium Ibiza,Suite,Todo incluido,Web directa,152.0,7,3,2,1,314.8,0,0,No,2.0,Sin depósito,0
+100589,45.0,Male,México,Palladium Tenerife,Junior Suite,Media pensión,Web directa,166.0,7,3,1,0,213.15,4,1,No,3.0,Reembolsable,0
+100590,41.0,Female,España,Palladium Ibiza,Standard,Todo incluido,Agencia tradicional,135.0,6,5,4,1,76.16,3,1,No,1.0,No reembolsable,0
+100591,37.0,Female,México,Palladium Ibiza,Junior Suite,Desayuno,Agencia online,40.0,12,5,3,3,209.28,1,0,No,0.0,Reembolsable,0
+100592,51.0,Male,México,Palladium Riviera Maya,Junior Suite,Todo incluido,Web directa,32.0,7,6,1,0,190.79,1,0,No,1.0,No reembolsable,0
+100593,43.0,Female,España,Palladium Ibiza,Standard,Media pensión,Agencia online,11.0,8,5,4,0,92.93,1,0,No,2.0,Sin depósito,0
+100594,220.0,Male,España,Palladium Punta Cana,Junior Suite,Media pensión,Web directa,24.0,7,1,2,0,233.91,2,0,No,2.0,Sin depósito,0
+100595,81.0,Male,Alemania,Palladium Punta Cana,Standard,Desayuno,Teléfono,2.0,3,4,2,1,112.89,0,0,No,0.0,Sin depósito,0
+100596,57.0,Male,Italia,Palladium Mallorca,Junior Suite,Desayuno,Web directa,124.0,4,5,2,0,244.89,0,0,No,0.0,Reembolsable,0
+100597,44.0,Male,México,Palladium Riviera Maya,Standard,Solo alojamiento,Web directa,16.0,7,5,2,0,153.91,4,1,Sí,1.0,Sin depósito,0
+100598,44.0,Female,Italia,Palladium Mallorca,Villa,Solo alojamiento,Agencia online,2.0,12,4,2,1,784.01,2,1,No,1.0,Reembolsable,0
+100599,36.0,Male,Argentina,Palladium Costa Mujeres,Junior Suite,Todo incluido,Web directa,88.0,9,7,2,0,271.66,1,0,No,0.0,Sin depósito,0
+100600,44.0,Female,España,Palladium Ibiza,Standard,Todo incluido,Teléfono,48.0,8,5,2,3,115.82,0,0,No,3.0,Reembolsable,0
+100601,30.0,Female,España,Palladium Tenerife,Junior Suite,Todo incluido,Web directa,53.0,5,7,3,0,230.03,1,0,No,0.0,No reembolsable,0
+100602,43.0,Male,España,Palladium Punta Cana,Junior Suite,Todo incluido,Agencia tradicional,8.0,9,5,2,3,204.44,0,0,Sí,1.0,Sin depósito,0
+100603,19.0,Male,Reino Unido,Palladium Ibiza,Junior Suite,Desayuno,Agencia tradicional,35.0,7,7,2,0,219.62,2,1,Sí,2.0,Reembolsable,0
+100604,56.0,Male,México,Palladium Costa Mujeres,Junior Suite,Todo incluido,Teléfono,5.0,8,4,1,0,222.68,3,1,Sí,3.0,No reembolsable,0
+100605,66.0,Female,Reino Unido,Palladium Riviera Maya,Standard,Todo incluido,Agencia tradicional,4.0,4,7,2,1,105.42,2,0,No,,Sin depósito,0
+100606,34.0,Male,México,Palladium Punta Cana,Junior Suite,Todo incluido,Web directa,22.0,5,2,3,0,197.14,2,0,,1.0,Sin depósito,0
+100607,28.0,Female,México,Palladium Ibiza,Standard,Media pensión,Agencia online,33.0,11,7,2,1,122.58,1,0,Sí,2.0,Sin depósito,0
+100608,27.0,Female,Reino Unido,Palladium Riviera Maya,Junior Suite,Desayuno,Agencia online,120.0,2,6,2,1,238.01,0,0,Sí,0.0,Sin depósito,0
+100609,50.0,Female,EEUU,Palladium Tenerife,Standard,Media pensión,Agencia online,15.0,7,10,2,0,154.06,1,0,No,0.0,Sin depósito,0
+100610,50.0,Male,Países Bajos,Palladium Ibiza,Standard,Todo incluido,Web directa,271.0,5,5,2,2,68.26,2,2,No,2.0,Reembolsable,1
+100611,55.0,Female,,Palladium Punta Cana,Standard,Media pensión,Teléfono,111.0,8,4,2,2,112.46,0,0,No,0.0,Sin depósito,0
+100612,18.0,Female,España,Palladium Ibiza,Junior Suite,Desayuno,Web directa,16.0,10,7,2,0,172.5,2,0,Sí,3.0,No reembolsable,0
+100613,61.0,Male,Argentina,Palladium Punta Cana,Standard,Media pensión,Agencia tradicional,18.0,4,5,2,2,112.7,0,0,No,3.0,Sin depósito,1
+100614,39.0,male,Reino Unido,Palladium Mallorca,Standard,Desayuno,Agencia online,26.0,8,6,1,0,75.52,0,0,Sí,0.0,No reembolsable,1
+100615,56.0,Female,Reino Unido,Palladium Mallorca,Standard,Desayuno,Web directa,123.0,7,10,2,1,109.89,5,1,Sí,1.0,Reembolsable,1
+100616,67.0,Female,Alemania,Palladium Costa Mujeres,Junior Suite,Media pensión,Web directa,149.0,6,3,2,1,209.38,3,0,No,0.0,No reembolsable,0
+100617,37.0,Female,Alemania,Palladium Mallorca,Junior Suite,Todo incluido,Agencia online,106.0,4,4,2,0,216.3,2,1,No,,Sin depósito,0
+100618,49.0,Female,Francia,Palladium Mallorca,Standard,Solo alojamiento,Agencia online,39.0,9,7,2,0,183.87,1,0,No,1.0,Reembolsable,1
+100619,37.0,Female,EEUU,Palladium Punta Cana,Standard,Desayuno,Teléfono,,11,6,2,0,27.45,4,0,No,1.0,Reembolsable,0
+100620,38.0,FEMALE,EEUU,Palladium Riviera Maya,Villa,Media pensión,Agencia tradicional,142.0,8,4,2,0,793.3,1,0,No,0.0,Sin depósito,1
+100621,63.0,Female,Francia,Palladium Riviera Maya,Villa,Desayuno,Agencia online,64.0,1,6,2,3,733.74,1,0,No,0.0,Reembolsable,1
+100622,39.0,Male,España,Palladium Mallorca,Standard,Solo alojamiento,Agencia online,29.0,7,7,1,0,121.05,3,0,No,0.0,Reembolsable,0
+100623,,Female,EEUU,Palladium Ibiza,Junior Suite,Todo incluido,Web directa,1.0,4,5,2,0,283.12,4,0,No,0.0,Reembolsable,0
+100624,51.0,Male,EEUU,Palladium Riviera Maya,Standard,Todo incluido,Teléfono,228.0,6,4,2,0,130.55,1,0,Sí,4.0,Sin depósito,0
+100625,60.0,Female,Italia,Palladium Mallorca,Standard,Desayuno,Web directa,70.0,9,14,3,1,139.81,1,0,No,0.0,No reembolsable,0
+100626,69.0,Female,España,Palladium Tenerife,Junior Suite,Solo alojamiento,Teléfono,40.0,3,4,4,0,198.51,1,0,No,0.0,No reembolsable,0
+100627,51.0,Male,EEUU,Palladium Tenerife,Junior Suite,Solo alojamiento,Agencia online,92.0,10,5,2,2,271.22,2,1,No,2.0,No reembolsable,0
+100628,56.0,Female,Alemania,Palladium Mallorca,Suite,Todo incluido,Teléfono,25.0,9,7,2,1,375.17,3,0,No,1.0,Sin depósito,0
+100629,65.0,Female,Francia,Palladium Punta Cana,Junior Suite,Solo alojamiento,Agencia online,1.0,6,3,2,1,244.05,1,0,Sí,0.0,Sin depósito,0
+100630,50.0,Female,Argentina,Palladium Punta Cana,Standard,Desayuno,Agencia online,4.0,9,10,2,0,159.33,0,0,No,1.0,Sin depósito,0
+100631,29.0,Male,Francia,Palladium Tenerife,Standard,Todo incluido,Web directa,26.0,6,4,2,0,88.77,3,1,No,0.0,Sin depósito,0
+100632,63.0,Female,España,Palladium Mallorca,Standard,Solo alojamiento,Agencia online,185.0,5,7,1,0,136.35,1,0,Sí,0.0,No reembolsable,1
+100633,46.0,Female,Alemania,Palladium Ibiza,Junior Suite,Desayuno,Agencia online,13.0,3,5,2,0,193.78,0,0,No,0.0,Sin depósito,1
+100634,64.0,Male,Países Bajos,Palladium Riviera Maya,Standard,Media pensión,Teléfono,19.0,3,5,1,0,77.57,2,1,No,1.0,No reembolsable,0
+100635,18.0,Male,Alemania,Palladium Ibiza,Junior Suite,Media pensión,Web directa,80.0,9,7,3,0,231.2,4,1,Sí,3.0,Sin depósito,0
+100636,63.0,Female,Reino Unido,Palladium Punta Cana,Standard,Todo incluido,Web directa,8.0,7,7,2,0,99.19,2,0,No,1.0,No reembolsable,0
+100637,51.0,Female,México,Palladium Ibiza,Junior Suite,Todo incluido,Walk-in,8.0,7,3,2,0,261.59,1,0,No,0.0,Sin depósito,0
+100638,43.0,Male,Italia,Palladium Mallorca,Junior Suite,Todo incluido,Agencia online,39.0,9,4,2,0,206.29,0,0,Sí,1.0,Sin depósito,0
+100639,56.0,FEMALE,Reino Unido,Palladium Riviera Maya,Standard,Todo incluido,Web directa,54.0,6,1,3,0,129.77,4,0,No,0.0,Sin depósito,0
+100640,58.0,Male,España,Palladium Riviera Maya,Junior Suite,Solo alojamiento,Agencia online,49.0,4,5,2,0,204.24,2,1,No,0.0,No reembolsable,1
+100641,54.0,Male,Francia,Palladium Ibiza,Junior Suite,Solo alojamiento,Agencia online,20.0,4,5,2,0,211.06,4,1,Sí,2.0,No reembolsable,0
+100642,54.0,Female,México,Palladium Riviera Maya,Junior Suite,Desayuno,Teléfono,36.0,7,7,4,0,274.95,1,0,Sí,2.0,Reembolsable,0
+100643,31.0,Female,Francia,Palladium Mallorca,Standard,Solo alojamiento,Web directa,162.0,9,6,2,0,101.16,1,0,Sí,,Sin depósito,0
+100644,27.0,Male,España,Palladium Riviera Maya,Standard,Solo alojamiento,Web directa,36.0,5,1,2,2,135.27,0,0,Sí,0.0,Reembolsable,0
+100645,20.0,Male,Italia,Palladium Mallorca,Standard,Media pensión,Web directa,4.0,4,3,2,0,74.79,4,1,No,1.0,Reembolsable,0
+100646,60.0,Male,Francia,Palladium Riviera Maya,Standard,Media pensión,Agencia tradicional,38.0,1,3,3,2,191.81,2,0,Sí,0.0,Reembolsable,0
+100647,38.0,Male,España,Palladium Punta Cana,Junior Suite,Desayuno,Walk-in,137.0,7,1,1,0,199.14,0,0,No,,Sin depósito,0
+100648,36.0,Female,Francia,Palladium Tenerife,Junior Suite,Desayuno,Web directa,25.0,10,3,2,1,266.25,2,0,No,0.0,Sin depósito,0
+100649,43.0,Female,Países Bajos,Palladium Mallorca,Standard,Media pensión,Web directa,10.0,11,10,2,0,132.57,2,0,No,1.0,Sin depósito,0
+100650,53.0,Male,Reino Unido,Palladium Ibiza,Standard,Media pensión,Web directa,62.0,6,5,2,0,80.69,0,0,No,1.0,Sin depósito,0
+100651,27.0,Female,México,Palladium Punta Cana,Junior Suite,Todo incluido,Agencia tradicional,27.0,10,3,2,2,182.72,0,0,No,0.0,Sin depósito,0
+100652,43.0,Female,España,Palladium Mallorca,Standard,Media pensión,Web directa,101.0,4,6,2,0,115.4,2,0,No,2.0,Sin depósito,0
+100653,62.0,Female,Reino Unido,Palladium Tenerife,Standard,Desayuno,Agencia online,68.0,7,7,2,0,81.87,2,0,Sí,1.0,Sin depósito,0
+100654,34.0,Female,Argentina,Palladium Costa Mujeres,Standard,Solo alojamiento,Agencia tradicional,5.0,12,4,2,3,100.55,4,1,No,0.0,Reembolsable,1
+100655,72.0,Male,Reino Unido,Palladium Ibiza,Junior Suite,Todo incluido,Agencia online,240.0,6,5,1,0,193.84,1,0,Sí,0.0,Sin depósito,1
+100656,55.0,Male,Italia,Palladium Mallorca,Junior Suite,Todo incluido,Agencia tradicional,8.0,7,4,2,2,191.15,2,0,Sí,0.0,No reembolsable,0
+100657,37.0,FEMALE,Reino Unido,Palladium Ibiza,Suite,Todo incluido,Agencia online,109.0,2,6,2,0,401.88,3,2,Sí,2.0,Reembolsable,1
+100658,50.0,Male,EEUU,Palladium Punta Cana,Standard,Desayuno,Agencia online,3.0,3,4,2,0,75.44,3,0,Sí,0.0,Reembolsable,0
+100659,42.0,Female,Alemania,Palladium Tenerife,Suite,Media pensión,Web directa,25.0,5,1,3,0,,1,0,Sí,,Sin depósito,0
+100660,44.0,Male,Francia,Palladium Riviera Maya,Junior Suite,Todo incluido,Agencia tradicional,6.0,9,10,1,0,207.96,1,0,No,0.0,Sin depósito,0
+100661,39.0,Female,Alemania,Palladium Ibiza,Standard,Desayuno,Agencia online,4.0,7,7,2,1,,2,0,No,0.0,Reembolsable,0
+100662,41.0,Female,España,Palladium Mallorca,Standard,Todo incluido,Web directa,14.0,5,7,3,3,96.67,1,1,No,1.0,,0
+100663,45.0,Female,Reino Unido,Palladium Ibiza,Standard,Desayuno,Teléfono,39.0,2,5,2,1,160.01,1,1,Sí,2.0,Sin depósito,0
+100664,33.0,Male,Reino Unido,Palladium Mallorca,Standard,Desayuno,Web directa,31.0,3,7,2,0,,1,0,No,1.0,Sin depósito,0
+100665,38.0,Female,Portugal,Palladium Riviera Maya,Suite,Media pensión,Web directa,10.0,6,5,1,0,407.79,0,0,No,0.0,Sin depósito,0
+100666,57.0,Male,México,Palladium Riviera Maya,Villa,Desayuno,Agencia online,84.0,3,5,2,2,726.71,1,0,,0.0,Reembolsable,0
+100667,40.0,Female,Portugal,Palladium Tenerife,Junior Suite,Desayuno,Agencia online,26.0,8,1,2,0,265.3,1,0,No,0.0,Reembolsable,0
+100668,71.0,Male,Países Bajos,Palladium Mallorca,Standard,Todo incluido,Agencia tradicional,36.0,5,4,3,2,123.69,2,0,Sí,2.0,Sin depósito,0
+100669,53.0,Male,Francia,Palladium Ibiza,Suite,Todo incluido,Agencia online,12.0,9,4,2,0,389.76,0,0,No,0.0,Sin depósito,1
+100670,38.0,Male,España,Palladium Ibiza,Junior Suite,Desayuno,Web directa,50.0,12,3,2,0,222.7,0,0,Sí,0.0,Sin depósito,1
+100671,41.0,Male,Alemania,Palladium Punta Cana,Standard,Media pensión,Agencia online,20.0,8,10,2,0,203.61,0,0,No,2.0,Reembolsable,1
+100672,34.0,Male,Países Bajos,Palladium Mallorca,Junior Suite,Todo incluido,Teléfono,22.0,1,14,2,2,260.64,0,0,No,3.0,Sin depósito,0
+100673,48.0,Male,España,Palladium Mallorca,Standard,Todo incluido,Agencia tradicional,44.0,7,4,4,0,110.98,4,0,Sí,1.0,Sin depósito,0
+100674,42.0,Female,México,Palladium Costa Mujeres,Standard,Media pensión,Agencia online,140.0,7,4,2,1,121.8,1,0,Sí,1.0,Sin depósito,0
+100675,41.0,Male,Francia,Palladium Costa Mujeres,Junior Suite,Desayuno,Web directa,69.0,9,6,2,1,202.24,0,0,,0.0,Reembolsable,0
+100676,55.0,Female,Francia,Palladium Mallorca,Standard,Desayuno,Agencia online,75.0,10,3,2,2,,1,1,Sí,0.0,Reembolsable,0
+100677,34.0,Female,España,Palladium Punta Cana,Junior Suite,Desayuno,Web directa,4.0,9,5,4,2,,3,1,No,1.0,Reembolsable,0
+100678,38.0,Female,Italia,Palladium Riviera Maya,Standard,Media pensión,Teléfono,,8,4,2,0,75.0,1,1,No,2.0,No reembolsable,0
+100679,34.0,Male,EEUU,Palladium Mallorca,Standard,Solo alojamiento,Teléfono,,6,2,3,1,127.43,4,1,Sí,1.0,No reembolsable,0
+100680,41.0,Male,Países Bajos,Palladium Ibiza,Standard,Media pensión,Web directa,18.0,7,10,2,3,161.03,4,0,Sí,1.0,Sin depósito,0
+100681,41.0,Male,España,Palladium Riviera Maya,Junior Suite,Desayuno,Agencia tradicional,78.0,8,4,2,0,250.12,2,0,No,4.0,Sin depósito,1
+100682,43.0,Female,México,Palladium Mallorca,Junior Suite,Solo alojamiento,Web directa,33.0,4,5,1,1,216.41,2,0,Sí,0.0,Sin depósito,0
+100683,53.0,Female,,Palladium Costa Mujeres,Standard,Media pensión,Web directa,161.0,6,4,3,1,123.53,0,0,Sí,0.0,No reembolsable,1
+100684,57.0,Female,España,Palladium Tenerife,Suite,Todo incluido,Web directa,15.0,8,1,1,0,443.9,0,0,No,3.0,Reembolsable,0
+100685,58.0,Female,España,Palladium Riviera Maya,Standard,Solo alojamiento,Agencia online,4.0,7,6,1,0,77.19,1,0,No,0.0,Sin depósito,0
+100686,28.0,FEMALE,Reino Unido,Palladium Costa Mujeres,Standard,Todo incluido,Agencia tradicional,43.0,10,5,1,0,106.45,3,2,Sí,4.0,Sin depósito,0
+100687,49.0,Female,,Palladium Costa Mujeres,Standard,Todo incluido,Agencia online,71.0,5,6,2,3,88.59,2,0,No,0.0,,1
+100688,42.0,Male,Reino Unido,Palladium Punta Cana,Standard,Todo incluido,Web directa,82.0,9,3,1,0,109.19,1,0,sí,1.0,Reembolsable,1
+100689,42.0,Male,Argentina,Palladium Ibiza,Standard,Desayuno,Agencia tradicional,130.0,6,10,3,1,119.98,4,1,No,0.0,Sin depósito,0
+100690,26.0,Male,Reino Unido,Palladium Ibiza,Standard,Todo incluido,Agencia tradicional,,4,4,3,0,95.38,0,0,No,,No reembolsable,0
+100691,67.0,Female,Alemania,Palladium Riviera Maya,Standard,Desayuno,Web directa,22.0,11,7,1,1,130.13,2,0,No,0.0,Reembolsable,0
+100692,25.0,Male,Alemania,Palladium Ibiza,Junior Suite,Desayuno,Web directa,83.0,8,14,2,0,225.91,1,0,Sí,0.0,Sin depósito,1
+100693,38.0,Female,Italia,Palladium Mallorca,Villa,Todo incluido,Agencia online,17.0,4,2,2,1,718.88,2,0,Sí,1.0,No reembolsable,0
+100694,48.0,Male,España,Palladium Ibiza,Suite,Desayuno,Agencia tradicional,10.0,8,4,2,0,372.47,3,1,No,1.0,Reembolsable,0
+100695,43.0,Female,Países Bajos,Palladium Mallorca,Standard,Todo incluido,Web directa,10.0,3,14,2,0,115.97,2,1,Sí,1.0,Sin depósito,0
+100696,33.0,Male,,Palladium Riviera Maya,Standard,Todo incluido,Walk-in,61.0,10,10,2,2,46.32,1,0,No,1.0,Sin depósito,0
+100697,53.0,Male,Argentina,Palladium Mallorca,Suite,Desayuno,Web directa,100.0,3,5,2,0,395.09,2,0,Sí,0.0,No reembolsable,0
+100698,63.0,FEMALE,Francia,Palladium Riviera Maya,Standard,Media pensión,Agencia online,2.0,7,2,1,0,132.0,5,1,Sí,2.0,Sin depósito,0
+100699,36.0,Female,EEUU,Palladium Tenerife,Junior Suite,Desayuno,Agencia online,16.0,2,5,2,0,,0,0,Sí,0.0,No reembolsable,0
+100700,44.0,Female,Argentina,Palladium Costa Mujeres,Villa,Todo incluido,Web directa,25.0,12,3,2,0,729.88,1,0,No,,Sin depósito,0
+100701,20.0,Male,España,Palladium Ibiza,Suite,Media pensión,Web directa,99.0,11,7,1,0,361.91,1,1,No,5.0,Reembolsable,0
+100702,40.0,Male,España,Palladium Mallorca,Standard,Todo incluido,Agencia online,18.0,8,4,1,0,156.01,1,0,No,2.0,Sin depósito,1
+100703,48.0,Male,España,Palladium Tenerife,Standard,Desayuno,Agencia online,6.0,8,6,2,2,53.04,2,0,Sí,0.0,Sin depósito,0
+100704,44.0,Male,México,Palladium Costa Mujeres,Standard,Todo incluido,Web directa,59.0,5,4,2,0,158.33,1,1,No,4.0,Sin depósito,0
+100705,26.0,Male,Alemania,Palladium Mallorca,Suite,Solo alojamiento,Web directa,32.0,6,4,4,0,345.8,2,0,No,1.0,Sin depósito,1
+100706,31.0,Male,Italia,Palladium Riviera Maya,Standard,Media pensión,Web directa,192.0,2,3,1,0,131.41,1,0,No,0.0,Sin depósito,0
+100707,41.0,Female,Reino Unido,Palladium Ibiza,Junior Suite,Todo incluido,Web directa,2.0,11,3,1,1,,1,0,No,3.0,Sin depósito,0
+100708,40.0,Female,Reino Unido,Palladium Punta Cana,Junior Suite,Todo incluido,Agencia tradicional,162.0,7,3,2,0,167.06,1,0,No,0.0,Sin depósito,1
+100709,46.0,Female,Francia,Palladium Punta Cana,Junior Suite,Media pensión,Agencia tradicional,67.0,4,6,2,0,239.06,1,0,No,0.0,Sin depósito,0
+100710,47.0,Female,Países Bajos,Palladium Tenerife,Standard,Todo incluido,Web directa,36.0,4,5,2,0,58.55,1,0,Sí,3.0,Reembolsable,0
+100711,,Female,EEUU,Palladium Riviera Maya,Standard,Todo incluido,Web directa,38.0,7,3,2,0,131.97,1,0,Sí,0.0,No reembolsable,0
+100712,29.0,Female,España,Palladium Tenerife,Suite,Media pensión,Teléfono,19.0,8,7,2,2,318.42,0,0,No,1.0,Sin depósito,0
+100713,54.0,Female,Italia,Palladium Riviera Maya,Standard,Todo incluido,Agencia tradicional,4.0,8,1,2,0,71.33,2,1,No,1.0,Sin depósito,0
+100714,53.0,FEMALE,España,Palladium Tenerife,Villa,Desayuno,Agencia online,11.0,7,4,1,2,744.73,1,0,No,2.0,Reembolsable,0
+100715,43.0,Male,Reino Unido,Palladium Mallorca,Suite,Desayuno,Agencia tradicional,0.0,7,3,1,0,,1,0,Sí,1.0,Reembolsable,0
+100716,47.0,Female,Francia,Palladium Costa Mujeres,Standard,Todo incluido,Teléfono,44.0,5,2,2,2,115.39,2,0,Sí,1.0,Reembolsable,0
+100717,,Female,Italia,Palladium Riviera Maya,Standard,Desayuno,Web directa,28.0,8,5,2,0,176.14,2,0,Sí,0.0,Reembolsable,0
+100718,79.0,Male,España,Palladium Mallorca,Suite,Todo incluido,Agencia online,88.0,7,1,1,3,430.61,2,0,Sí,0.0,Sin depósito,0
+100719,55.0,Male,España,Palladium Riviera Maya,Villa,Todo incluido,Agencia online,25.0,5,5,2,0,781.61,1,0,Sí,1.0,Sin depósito,0
+100720,42.0,Female,Francia,Palladium Ibiza,Suite,Todo incluido,Web directa,80.0,8,6,1,1,350.0,3,1,No,0.0,Reembolsable,0
+100721,25.0,Male,España,Palladium Riviera Maya,Standard,Desayuno,Web directa,20.0,5,4,2,0,114.8,3,1,No,1.0,Sin depósito,0
+100722,31.0,Female,España,Palladium Tenerife,Junior Suite,Media pensión,Web directa,66.0,1,3,2,0,227.14,0,0,No,3.0,No reembolsable,0
+100723,40.0,Female,Italia,Palladium Riviera Maya,Junior Suite,Todo incluido,Walk-in,18.0,7,5,1,2,,0,0,No,5.0,No reembolsable,0
+100724,38.0,Male,México,Palladium Punta Cana,Standard,Desayuno,Web directa,4.0,9,6,2,1,157.45,2,0,No,1.0,Sin depósito,0
+100725,38.0,Male,Alemania,Palladium Ibiza,Standard,Media pensión,Web directa,9.0,5,2,3,0,59.55,0,0,No,,Sin depósito,0
+100726,45.0,Male,Portugal,Palladium Punta Cana,Junior Suite,Desayuno,Walk-in,23.0,6,5,2,3,208.76,1,1,,2.0,Reembolsable,1
+100727,38.0,Female,Reino Unido,Palladium Costa Mujeres,Suite,Desayuno,Web directa,85.0,4,5,2,0,355.65,2,0,No,1.0,No reembolsable,0
+100728,55.0,Male,Francia,Palladium Costa Mujeres,Suite,Desayuno,Web directa,10.0,9,10,1,0,359.2,3,1,No,3.0,Sin depósito,0
+100729,33.0,Female,,Palladium Mallorca,Standard,Media pensión,Web directa,61.0,8,4,1,0,,3,0,Sí,1.0,Reembolsable,0
+100730,65.0,Male,Francia,Palladium Tenerife,Standard,Todo incluido,Web directa,11.0,3,4,1,2,101.13,0,0,Sí,3.0,Sin depósito,0
+100731,78.0,Female,Reino Unido,Palladium Tenerife,Standard,Desayuno,Agencia online,61.0,7,6,2,0,169.24,1,0,No,0.0,Sin depósito,1
+100732,36.0,Male,España,Palladium Mallorca,Suite,Todo incluido,Agencia online,15.0,2,3,2,1,410.1,2,1,No,1.0,Sin depósito,0
+100733,34.0,Female,Italia,Palladium Tenerife,Junior Suite,Todo incluido,Agencia online,76.0,10,6,3,0,,0,0,Sí,0.0,Reembolsable,0
+100734,53.0,Male,España,Palladium Riviera Maya,Standard,Desayuno,Agencia online,142.0,3,10,2,0,171.92,1,0,No,0.0,No reembolsable,0
+100735,54.0,Female,Francia,Palladium Mallorca,Standard,Todo incluido,Teléfono,22.0,10,6,2,0,131.88,3,1,Sí,2.0,Sin depósito,0
+100736,49.0,Male,Francia,Palladium Punta Cana,Standard,Todo incluido,Agencia tradicional,69.0,12,1,2,0,99.21,3,0,No,2.0,No reembolsable,0
+100737,54.0,Male,México,Palladium Punta Cana,Standard,Solo alojamiento,Teléfono,,11,5,3,0,143.07,1,0,Sí,4.0,Sin depósito,0
+100738,26.0,Female,México,Palladium Ibiza,Standard,Desayuno,Web directa,,6,5,1,0,159.31,0,0,No,1.0,Sin depósito,0
+100739,33.0,Female,España,Palladium Ibiza,Standard,Todo incluido,Web directa,48.0,8,2,2,0,65.81,2,0,No,4.0,No reembolsable,1
+100740,50.0,Female,Reino Unido,Palladium Ibiza,Standard,Solo alojamiento,Web directa,30.0,6,6,2,0,147.09,1,0,No,0.0,Sin depósito,1
+100741,46.0,Male,Francia,Palladium Ibiza,Suite,Desayuno,Agencia online,67.0,4,10,2,1,422.11,1,1,No,0.0,No reembolsable,1
+100742,46.0,Male,Países Bajos,Palladium Ibiza,Standard,Desayuno,Agencia online,175.0,8,5,2,0,154.29,2,1,No,0.0,No reembolsable,0
+100743,41.0,Male,España,Palladium Punta Cana,Standard,Desayuno,Agencia tradicional,62.0,5,4,2,3,,0,0,Sí,4.0,No reembolsable,0
+100744,23.0,Female,España,Palladium Ibiza,Junior Suite,Solo alojamiento,Web directa,68.0,5,2,2,0,,0,0,No,0.0,Reembolsable,0
+100745,38.0,Male,España,Palladium Mallorca,Standard,Desayuno,Walk-in,57.0,5,4,1,1,130.25,0,0,No,1.0,Reembolsable,0
+100746,62.0,Male,España,Palladium Mallorca,Standard,Media pensión,Agencia online,60.0,8,10,3,1,145.72,0,0,Sí,4.0,Sin depósito,0
+100747,35.0,Male,España,Palladium Mallorca,Standard,Desayuno,Web directa,49.0,9,6,2,0,,2,0,Sí,5.0,Reembolsable,0
+100748,55.0,Female,España,Palladium Costa Mujeres,Standard,Todo incluido,Agencia online,56.0,6,5,2,0,174.75,0,0,No,0.0,Reembolsable,0
+100749,36.0,Male,España,Palladium Mallorca,Suite,Desayuno,Agencia online,2.0,8,3,2,1,422.46,2,1,No,0.0,No reembolsable,0
+100750,55.0,Female,Francia,Palladium Punta Cana,Standard,Desayuno,Agencia tradicional,104.0,10,10,2,0,158.72,1,0,No,1.0,Sin depósito,0
+100751,62.0,Female,México,Palladium Ibiza,Standard,Media pensión,Agencia tradicional,69.0,12,4,2,0,74.67,1,0,Sí,1.0,Reembolsable,0
+100752,31.0,Female,España,Palladium Punta Cana,Junior Suite,Desayuno,Web directa,17.0,3,10,1,0,169.24,0,0,,0.0,Reembolsable,0
+100753,50.0,Male,España,Palladium Punta Cana,Standard,Todo incluido,Walk-in,1.0,2,4,2,0,68.5,0,0,Sí,3.0,Sin depósito,0
+100754,18.0,Male,España,Palladium Mallorca,Suite,Todo incluido,Agencia tradicional,67.0,7,7,2,1,433.07,2,0,No,3.0,Reembolsable,0
+100755,28.0,Female,España,Palladium Tenerife,Junior Suite,Todo incluido,Walk-in,4.0,6,4,2,0,214.51,1,0,Sí,4.0,Sin depósito,1
+100756,42.0,Female,Italia,Palladium Mallorca,Standard,Desayuno,Agencia online,67.0,9,4,2,3,63.41,1,0,Sí,4.0,Reembolsable,0
+100757,50.0,Female,Reino Unido,Palladium Punta Cana,Suite,Media pensión,Agencia online,25.0,9,5,2,0,345.23,3,0,No,1.0,Reembolsable,0
+100758,42.0,Female,EEUU,Palladium Punta Cana,Standard,Todo incluido,Web directa,16.0,8,2,2,0,147.06,5,1,No,0.0,Sin depósito,0
+100759,46.0,Female,Reino Unido,Palladium Riviera Maya,Standard,Todo incluido,Web directa,167.0,8,7,1,2,116.94,1,0,No,2.0,No reembolsable,0
+100760,50.0,Male,España,Palladium Ibiza,Standard,Todo incluido,Agencia online,,10,10,2,1,139.94,1,0,No,0.0,Reembolsable,0
+100761,,Female,España,Palladium Ibiza,Standard,Todo incluido,Web directa,128.0,11,5,2,0,102.61,2,0,No,2.0,Sin depósito,1
+100762,50.0,Female,Alemania,Palladium Costa Mujeres,Junior Suite,Media pensión,Agencia tradicional,5.0,8,2,2,2,289.81,3,0,Sí,1.0,Reembolsable,0
+100763,56.0,Male,España,Palladium Costa Mujeres,Suite,Media pensión,Agencia tradicional,73.0,8,1,2,1,403.63,0,0,Sí,0.0,Sin depósito,0
+100764,39.0,Male,España,Palladium Punta Cana,Standard,Media pensión,Agencia tradicional,71.0,9,3,2,1,156.23,4,0,No,1.0,Sin depósito,1
+100765,25.0,Male,Reino Unido,Palladium Ibiza,Standard,Desayuno,Web directa,31.0,11,3,3,0,,3,1,No,4.0,Reembolsable,0
+100766,27.0,Female,España,Palladium Ibiza,Standard,Todo incluido,Agencia tradicional,5.0,11,14,2,0,103.27,3,0,No,0.0,Sin depósito,0
+100767,35.0,Female,Italia,Palladium Costa Mujeres,Standard,Desayuno,Web directa,69.0,5,10,1,2,115.46,3,0,No,1.0,Sin depósito,0
+100768,18.0,Male,Alemania,Palladium Riviera Maya,Standard,Todo incluido,Web directa,28.0,8,5,2,0,147.88,1,0,Sí,0.0,No reembolsable,0
+100769,50.0,Male,Reino Unido,Palladium Riviera Maya,Villa,Todo incluido,Web directa,92.0,8,1,2,3,739.02,0,0,No,0.0,Reembolsable,0
+100770,60.0,Male,Italia,Palladium Mallorca,Standard,Desayuno,Teléfono,57.0,7,1,2,0,86.9,1,0,Sí,0.0,Sin depósito,1
+100771,34.0,Female,Reino Unido,Palladium Tenerife,Junior Suite,Media pensión,Agencia online,7.0,3,5,1,0,183.61,2,0,No,2.0,Sin depósito,0
+100772,27.0,Female,Reino Unido,Palladium Costa Mujeres,Junior Suite,Media pensión,Web directa,7.0,8,6,2,0,200.2,2,1,Sí,0.0,Sin depósito,0
+100773,65.0,Male,España,Palladium Costa Mujeres,Suite,Solo alojamiento,Agencia online,48.0,7,2,2,1,,1,0,No,0.0,Sin depósito,0
+100774,41.0,Male,Reino Unido,Palladium Riviera Maya,Standard,Todo incluido,Agencia online,25.0,4,7,2,2,103.47,3,2,No,2.0,Reembolsable,0
+100775,44.0,Male,Argentina,Palladium Tenerife,Standard,Todo incluido,Agencia online,25.0,4,2,2,1,118.95,1,0,No,0.0,Sin depósito,0
+100776,52.0,Male,México,Palladium Ibiza,Junior Suite,Desayuno,Agencia online,35.0,6,6,2,0,237.1,4,2,No,1.0,Sin depósito,0
+100777,43.0,Female,México,Palladium Mallorca,Standard,Solo alojamiento,Web directa,36.0,5,4,4,0,96.72,3,0,Sí,2.0,Sin depósito,0
+100778,42.0,Female,España,Palladium Ibiza,Standard,Media pensión,Teléfono,,10,5,3,0,75.14,3,1,No,1.0,Sin depósito,0
+100779,49.0,Female,Alemania,Palladium Mallorca,Junior Suite,Todo incluido,Agencia tradicional,49.0,7,5,1,1,205.62,2,0,Sí,2.0,No reembolsable,0
+100780,40.0,Female,España,Palladium Tenerife,Standard,Desayuno,Teléfono,40.0,4,2,1,0,113.09,0,0,Sí,3.0,Sin depósito,0
+100781,37.0,Male,Portugal,Palladium Mallorca,Junior Suite,Desayuno,Agencia online,93.0,12,7,2,1,266.41,1,0,Sí,2.0,Sin depósito,0
+100782,27.0,Male,Reino Unido,Palladium Riviera Maya,Standard,Media pensión,Web directa,16.0,6,5,2,0,63.71,0,0,No,3.0,Sin depósito,0
+100783,45.0,Female,Francia,Palladium Mallorca,Junior Suite,Media pensión,Web directa,8.0,7,14,2,0,167.38,1,0,No,0.0,Sin depósito,0
+100784,,Male,España,Palladium Riviera Maya,Standard,Desayuno,Teléfono,88.0,10,5,3,0,86.69,2,0,No,2.0,No reembolsable,0
+100785,35.0,Female,España,Palladium Ibiza,Villa,Desayuno,Agencia online,29.0,4,7,2,0,769.03,2,1,Sí,0.0,Reembolsable,0
+100786,68.0,Male,Reino Unido,Palladium Riviera Maya,Standard,Desayuno,Walk-in,110.0,5,4,3,2,115.12,1,0,Sí,0.0,Sin depósito,0
+100787,34.0,Female,Alemania,Palladium Ibiza,Standard,Todo incluido,Teléfono,8.0,1,4,2,0,105.87,1,0,No,2.0,Sin depósito,0
+100788,70.0,Male,España,Palladium Mallorca,Suite,Todo incluido,Agencia online,41.0,5,4,2,2,406.43,1,0,No,0.0,Reembolsable,0
+100789,52.0,Male,Reino Unido,Palladium Riviera Maya,Standard,Desayuno,Web directa,1.0,10,5,1,1,119.8,1,0,No,1.0,Reembolsable,0
+100790,59.0,Male,Italia,Palladium Ibiza,Standard,Todo incluido,Teléfono,82.0,3,4,3,2,75.34,0,0,No,2.0,Reembolsable,0
+100791,49.0,Female,Reino Unido,Palladium Punta Cana,Junior Suite,Desayuno,Agencia online,5.0,6,4,1,1,168.65,1,0,Sí,0.0,Reembolsable,0
+100792,20.0,Male,Reino Unido,Palladium Costa Mujeres,Villa,Media pensión,Agencia online,63.0,8,10,2,0,712.22,2,0,No,4.0,Reembolsable,0
+100793,40.0,Male,Reino Unido,Palladium Riviera Maya,Villa,Todo incluido,Web directa,,8,1,4,0,794.55,4,0,No,1.0,Sin depósito,0
+100794,24.0,Male,Reino Unido,Palladium Tenerife,Junior Suite,Solo alojamiento,Web directa,4.0,4,5,3,0,196.15,1,0,No,0.0,Sin depósito,0
+100795,34.0,Female,España,Palladium Mallorca,Standard,Solo alojamiento,Agencia online,42.0,8,4,1,0,154.44,0,0,Sí,1.0,Sin depósito,0
+100796,63.0,Male,EEUU,Palladium Punta Cana,Suite,Todo incluido,Agencia online,51.0,9,5,2,0,304.06,1,0,,1.0,Sin depósito,1
+100797,41.0,Male,EEUU,Palladium Tenerife,Standard,Desayuno,Walk-in,88.0,9,4,2,1,93.28,2,0,No,0.0,Sin depósito,1
+100798,30.0,Female,EEUU,Palladium Mallorca,Standard,Desayuno,Web directa,156.0,6,1,2,0,113.98,0,0,Sí,1.0,Sin depósito,0
+100799,42.0,Male,Italia,Palladium Punta Cana,Standard,Solo alojamiento,Web directa,20.0,4,7,2,1,148.08,0,0,No,2.0,No reembolsable,0
+100800,42.0,FEMALE,Países Bajos,Palladium Costa Mujeres,Standard,Solo alojamiento,Agencia tradicional,17.0,6,7,2,1,100.95,2,0,No,2.0,Sin depósito,0
+100801,51.0,Female,Alemania,Palladium Ibiza,Villa,Media pensión,Web directa,52.0,10,4,3,2,,2,0,Sí,1.0,No reembolsable,0
+100802,58.0,Female,España,Palladium Tenerife,Standard,Desayuno,Web directa,8.0,11,7,1,0,83.1,3,0,No,0.0,Sin depósito,0
+100803,28.0,Female,Reino Unido,Palladium Mallorca,Standard,Media pensión,Web directa,,1,4,2,2,129.81,1,0,No,5.0,Sin depósito,0
+100804,31.0,Male,Alemania,Palladium Ibiza,Standard,Todo incluido,Agencia online,88.0,8,3,2,0,,2,1,No,3.0,No reembolsable,0
+100805,22.0,Male,España,Palladium Riviera Maya,Standard,Desayuno,Agencia online,8.0,8,10,4,1,112.89,2,0,Sí,1.0,Sin depósito,0
+100806,60.0,Female,España,Palladium Ibiza,Suite,Solo alojamiento,Web directa,65.0,8,4,4,2,395.76,0,0,No,1.0,No reembolsable,0
+100807,73.0,Male,Francia,Palladium Mallorca,Suite,Desayuno,Web directa,106.0,9,1,1,2,399.25,1,0,Sí,1.0,Sin depósito,0
+100808,37.0,Female,México,Palladium Costa Mujeres,Standard,Solo alojamiento,Agencia online,177.0,8,3,4,0,100.49,1,0,No,1.0,No reembolsable,0
+100809,40.0,Female,España,Palladium Costa Mujeres,Standard,Todo incluido,Agencia tradicional,1.0,10,3,2,0,104.18,4,1,No,0.0,No reembolsable,0
+100810,38.0,Male,España,Palladium Mallorca,Standard,Solo alojamiento,Agencia online,13.0,7,4,2,0,,2,0,Sí,2.0,Reembolsable,0
+100811,39.0,Female,España,Palladium Ibiza,Standard,Solo alojamiento,Web directa,81.0,6,2,2,0,85.55,2,0,Sí,1.0,Sin depósito,0
+100812,38.0,Female,España,Palladium Mallorca,Standard,Todo incluido,Web directa,65.0,1,1,4,2,108.05,0,0,,3.0,Sin depósito,0
+100813,45.0,Male,España,Palladium Tenerife,Junior Suite,Desayuno,Agencia online,30.0,7,4,1,2,290.66,0,0,Sí,4.0,No reembolsable,0
+100814,49.0,Male,Reino Unido,Palladium Punta Cana,Villa,Desayuno,Agencia tradicional,49.0,7,5,2,0,709.26,0,0,No,1.0,Sin depósito,0
+100815,54.0,Male,,Palladium Costa Mujeres,Suite,Desayuno,Web directa,13.0,11,10,2,0,383.07,2,0,Sí,1.0,Sin depósito,0
+100816,38.0,Female,EEUU,Palladium Riviera Maya,Standard,Media pensión,Agencia tradicional,58.0,8,4,1,1,105.65,0,0,No,3.0,Sin depósito,0
+100817,50.0,Female,España,Palladium Ibiza,Junior Suite,Desayuno,Teléfono,34.0,2,3,2,0,261.18,4,2,No,2.0,Sin depósito,0
+100818,28.0,Female,España,Palladium Riviera Maya,Standard,Todo incluido,Agencia online,36.0,1,1,3,0,74.19,1,0,No,1.0,No reembolsable,0
+100819,34.0,FEMALE,España,Palladium Costa Mujeres,Standard,Desayuno,Teléfono,44.0,1,5,2,0,169.53,4,1,Sí,1.0,Sin depósito,0
+100820,59.0,Female,Alemania,Palladium Mallorca,Standard,Desayuno,Teléfono,35.0,8,5,2,0,191.46,0,0,No,0.0,Sin depósito,0
+100821,26.0,Male,España,Palladium Punta Cana,Junior Suite,Todo incluido,Agencia online,129.0,3,2,2,3,225.71,4,0,Sí,1.0,Sin depósito,0
+100822,,Female,Italia,Palladium Ibiza,Villa,Media pensión,Agencia online,183.0,7,6,2,2,746.41,0,0,No,2.0,Sin depósito,1
+100823,29.0,Male,Argentina,Palladium Punta Cana,Standard,Desayuno,Agencia online,5.0,7,7,2,2,110.87,2,0,No,2.0,Sin depósito,0
+100824,38.0,Male,España,Palladium Punta Cana,Villa,Solo alojamiento,Walk-in,18.0,8,4,2,1,715.01,3,0,No,0.0,Sin depósito,0
+100825,51.0,Male,España,Palladium Punta Cana,Suite,Media pensión,Teléfono,23.0,6,7,2,0,377.95,2,0,No,2.0,No reembolsable,0
+100826,41.0,Male,Portugal,Palladium Costa Mujeres,Standard,Todo incluido,Web directa,29.0,6,4,2,1,132.69,2,0,Sí,4.0,No reembolsable,0
+100827,62.0,Male,Francia,Palladium Tenerife,Standard,Desayuno,Walk-in,64.0,5,5,2,0,82.17,2,0,Sí,0.0,No reembolsable,0
+100828,54.0,Male,Países Bajos,Palladium Mallorca,Standard,Todo incluido,Web directa,19.0,6,2,2,1,170.45,1,0,Sí,0.0,No reembolsable,0
+100829,46.0,Male,EEUU,Palladium Mallorca,Suite,Desayuno,Teléfono,85.0,7,5,2,3,,2,2,No,0.0,Reembolsable,0
+100830,61.0,Female,Países Bajos,Palladium Mallorca,Standard,Desayuno,Agencia online,184.0,9,4,1,1,,4,1,Sí,0.0,Sin depósito,1
+100831,37.0,Female,,Palladium Ibiza,Villa,Solo alojamiento,Web directa,100.0,1,3,2,1,746.56,2,1,Sí,4.0,No reembolsable,0
+100832,18.0,Male,España,Palladium Punta Cana,Junior Suite,Media pensión,Agencia online,20.0,8,4,2,1,181.14,0,0,Sí,0.0,Sin depósito,0
+100833,50.0,Female,España,Palladium Riviera Maya,Standard,Solo alojamiento,Web directa,11.0,7,7,1,0,167.28,3,1,sí,2.0,Reembolsable,0
+100834,42.0,male,España,Palladium Ibiza,Suite,Todo incluido,Walk-in,36.0,8,6,4,1,357.16,1,0,Sí,,Sin depósito,0
+100835,67.0,male,EEUU,Palladium Mallorca,Suite,Solo alojamiento,Web directa,108.0,6,3,2,0,394.88,1,0,No,0.0,Sin depósito,0
+100836,61.0,Female,España,Palladium Tenerife,Standard,Media pensión,Web directa,33.0,8,4,2,0,182.14,3,1,No,1.0,Sin depósito,0
+100837,45.0,Male,EEUU,Palladium Ibiza,Suite,Media pensión,Walk-in,5.0,2,6,3,0,402.11,2,0,Sí,0.0,Sin depósito,0
+100838,33.0,Female,México,Palladium Costa Mujeres,Villa,Media pensión,Agencia online,119.0,2,10,1,1,782.56,0,0,No,1.0,Sin depósito,0
+100839,67.0,male,España,Palladium Riviera Maya,Standard,Todo incluido,Walk-in,49.0,5,2,2,0,7500.0,1,0,,5.0,No reembolsable,0
+100840,46.0,Male,España,Palladium Ibiza,Standard,Desayuno,Agencia online,24.0,5,5,2,2,101.12,1,0,Sí,1.0,No reembolsable,0
+100841,70.0,Male,España,Palladium Riviera Maya,Junior Suite,Desayuno,Agencia online,112.0,11,5,2,0,215.02,1,0,No,0.0,No reembolsable,0
+100842,39.0,Female,España,Palladium Ibiza,Junior Suite,Todo incluido,Agencia tradicional,33.0,3,1,2,1,229.16,2,1,No,0.0,Reembolsable,0
+100843,32.0,Female,Italia,Palladium Riviera Maya,Suite,Media pensión,Agencia online,9.0,12,14,2,0,348.27,2,0,No,0.0,No reembolsable,0
+100844,57.0,Female,Reino Unido,Palladium Mallorca,Standard,Todo incluido,Agencia online,78.0,7,5,2,3,80.28,2,0,Sí,0.0,Sin depósito,1
+100845,41.0,Female,Alemania,Palladium Ibiza,Suite,Desayuno,Web directa,32.0,9,2,2,0,471.0,0,0,Sí,1.0,No reembolsable,0
+100846,43.0,Female,México,Palladium Tenerife,Suite,Desayuno,Web directa,141.0,7,5,3,1,390.27,3,0,Sí,1.0,Reembolsable,1
+100847,65.0,Male,España,Palladium Ibiza,Suite,Desayuno,Agencia online,3.0,3,5,2,1,359.38,1,0,Sí,5.0,Sin depósito,0
+100848,42.0,Male,España,Palladium Tenerife,Standard,Solo alojamiento,Web directa,137.0,9,14,4,0,160.04,2,0,Sí,0.0,Sin depósito,0
+100849,40.0,Male,Alemania,Palladium Tenerife,Standard,Todo incluido,Web directa,29.0,9,5,3,1,110.53,0,0,Sí,4.0,Sin depósito,0
+100850,43.0,Male,Reino Unido,Palladium Riviera Maya,Standard,Todo incluido,Web directa,8.0,6,6,2,2,117.78,2,1,,0.0,Sin depósito,0
+100851,,FEMALE,Reino Unido,Palladium Riviera Maya,Suite,Solo alojamiento,Web directa,10.0,7,5,2,0,357.34,0,0,No,0.0,Reembolsable,0
+100852,39.0,Female,Reino Unido,Palladium Riviera Maya,Junior Suite,Todo incluido,Web directa,2.0,3,2,3,0,236.41,4,0,No,1.0,Sin depósito,0
+100853,44.0,Male,Reino Unido,Palladium Riviera Maya,Standard,Todo incluido,Web directa,63.0,8,4,2,0,193.49,0,0,No,0.0,Reembolsable,0
+100854,45.0,Male,España,Palladium Costa Mujeres,Standard,Solo alojamiento,Agencia tradicional,,7,14,3,1,100.51,1,0,No,0.0,No reembolsable,0
+100855,41.0,Female,,Palladium Riviera Maya,Suite,Todo incluido,Agencia tradicional,94.0,8,5,2,1,393.28,0,0,Sí,1.0,No reembolsable,0
+100856,18.0,Male,Alemania,Palladium Riviera Maya,Standard,Desayuno,Agencia online,42.0,10,1,2,2,175.6,3,0,No,3.0,Sin depósito,0
+100857,44.0,Female,España,Palladium Ibiza,Standard,Todo incluido,Agencia online,124.0,2,7,1,0,71.64,0,0,Sí,0.0,Sin depósito,1
+100858,85.0,Female,México,Palladium Mallorca,Suite,Solo alojamiento,Web directa,29.0,8,3,2,0,402.25,0,0,Sí,0.0,Sin depósito,0
+100859,42.0,Female,EEUU,Palladium Riviera Maya,Standard,Media pensión,Agencia tradicional,49.0,7,3,1,1,121.57,0,0,No,0.0,No reembolsable,0
+100860,43.0,Male,,Palladium Costa Mujeres,Standard,Todo incluido,Web directa,26.0,8,4,2,0,122.61,2,0,,0.0,No reembolsable,0
+100861,45.0,Male,Italia,Palladium Riviera Maya,Standard,Desayuno,Web directa,71.0,2,10,2,0,148.38,0,0,NO,5.0,Sin depósito,0
+100862,56.0,Female,Francia,Palladium Costa Mujeres,Junior Suite,Media pensión,Agencia online,38.0,6,3,2,2,220.25,0,0,No,0.0,Sin depósito,0
+100863,64.0,Male,Italia,Palladium Punta Cana,Standard,Solo alojamiento,Web directa,16.0,1,4,3,1,130.36,3,0,No,1.0,Sin depósito,0
+100864,41.0,Male,México,Palladium Ibiza,Junior Suite,Desayuno,Web directa,104.0,4,3,2,0,222.38,2,1,No,0.0,,1
+100865,56.0,Male,Países Bajos,Palladium Punta Cana,Standard,Desayuno,Agencia online,27.0,7,10,3,0,55.18,1,0,No,1.0,No reembolsable,0
+100866,40.0,Male,Francia,Palladium Punta Cana,Suite,Solo alojamiento,Teléfono,17.0,1,1,2,0,406.7,0,0,No,1.0,Sin depósito,0
+100867,32.0,Female,Argentina,Palladium Riviera Maya,Standard,Todo incluido,Web directa,74.0,6,6,2,0,149.82,2,2,Sí,3.0,No reembolsable,0
+100868,56.0,Female,España,Palladium Ibiza,Villa,Desayuno,Web directa,13.0,10,3,1,0,746.34,0,0,Sí,1.0,Reembolsable,0
+100869,43.0,Female,Reino Unido,Palladium Costa Mujeres,Junior Suite,Desayuno,Web directa,28.0,8,2,2,0,,0,0,Sí,,Reembolsable,0
+100870,47.0,Female,Alemania,Palladium Costa Mujeres,Junior Suite,Desayuno,Web directa,183.0,5,5,1,0,226.08,1,0,No,0.0,Sin depósito,0
+100871,69.0,Male,Reino Unido,Palladium Punta Cana,Standard,Todo incluido,Web directa,10.0,1,3,2,0,97.91,3,0,No,1.0,Sin depósito,0
+100872,48.0,Female,Italia,Palladium Ibiza,Standard,Todo incluido,Agencia online,255.0,6,4,2,0,114.2,3,1,No,0.0,Sin depósito,1
+100873,21.0,Male,Alemania,Palladium Punta Cana,Standard,Todo incluido,Agencia online,31.0,9,3,2,0,50.39,1,0,Sí,0.0,Sin depósito,1
+100874,56.0,Male,Argentina,Palladium Punta Cana,Junior Suite,Desayuno,Web directa,22.0,6,4,2,0,205.95,2,1,No,1.0,Sin depósito,0
+100875,26.0,Male,Países Bajos,Palladium Ibiza,Junior Suite,Desayuno,Agencia online,131.0,7,2,1,1,230.36,0,0,No,2.0,No reembolsable,0
+100876,33.0,Male,México,Palladium Mallorca,Standard,Desayuno,Web directa,82.0,9,4,2,0,103.2,2,0,No,4.0,Sin depósito,0
+100877,55.0,Male,Reino Unido,Palladium Tenerife,Villa,Todo incluido,Web directa,2.0,3,4,4,1,791.34,1,0,No,0.0,Reembolsable,0
+100878,34.0,Male,EEUU,Palladium Riviera Maya,Standard,Media pensión,Web directa,14.0,6,6,3,0,85.58,1,1,Sí,0.0,Reembolsable,0
+100879,43.0,Female,Reino Unido,Palladium Riviera Maya,Junior Suite,Desayuno,Web directa,2.0,7,1,2,1,226.92,1,0,No,0.0,Reembolsable,0
+100880,36.0,Male,Reino Unido,Palladium Mallorca,Standard,Solo alojamiento,Web directa,8.0,8,5,1,0,155.1,1,0,No,1.0,No reembolsable,0
+100881,62.0,Female,España,Palladium Costa Mujeres,Junior Suite,Media pensión,Web directa,109.0,8,6,2,0,208.44,4,0,No,1.0,Sin depósito,0
+100882,38.0,male,EEUU,Palladium Costa Mujeres,Junior Suite,Desayuno,Agencia online,191.0,5,7,2,0,166.13,1,1,Sí,1.0,Sin depósito,1
+100883,52.0,Male,EEUU,Palladium Mallorca,Standard,Desayuno,Teléfono,206.0,10,4,1,3,134.26,4,0,No,4.0,Sin depósito,1
+100884,29.0,Female,España,Palladium Costa Mujeres,Junior Suite,Solo alojamiento,Web directa,108.0,1,2,2,0,212.24,1,0,,1.0,Sin depósito,0
+100885,61.0,Male,España,Palladium Costa Mujeres,Suite,Media pensión,Web directa,81.0,10,7,2,3,,0,0,Sí,3.0,Sin depósito,0
+100886,55.0,Female,Reino Unido,Palladium Tenerife,Standard,Media pensión,Agencia online,0.0,9,2,2,0,91.24,2,1,No,0.0,Sin depósito,0
+100887,52.0,Female,Francia,Palladium Riviera Maya,Junior Suite,Desayuno,Web directa,96.0,9,4,2,0,202.36,0,0,,3.0,Reembolsable,1
+100888,42.0,Female,EEUU,Palladium Costa Mujeres,Junior Suite,Todo incluido,Teléfono,147.0,10,5,1,0,296.34,0,0,No,0.0,,0
+100889,,Female,Italia,Palladium Riviera Maya,Villa,Todo incluido,Web directa,32.0,1,6,2,0,749.32,1,0,Sí,2.0,No reembolsable,0
+100890,61.0,Male,Países Bajos,Palladium Costa Mujeres,Junior Suite,Media pensión,Web directa,93.0,12,4,2,0,221.14,3,0,No,2.0,No reembolsable,0
+100891,44.0,Female,Francia,Palladium Tenerife,Junior Suite,Media pensión,Agencia online,3.0,3,3,2,0,184.05,2,2,No,4.0,Sin depósito,0
+100892,29.0,Male,España,Palladium Ibiza,Suite,Solo alojamiento,Agencia tradicional,21.0,7,5,2,0,386.15,0,0,Sí,2.0,Sin depósito,1
+100893,43.0,Female,España,Palladium Tenerife,Standard,Todo incluido,Agencia tradicional,46.0,9,4,2,1,110.42,0,0,No,4.0,Sin depósito,1
+100894,30.0,Female,Alemania,Palladium Punta Cana,Standard,Todo incluido,Web directa,26.0,8,5,2,0,142.82,0,0,,4.0,Sin depósito,0
+100895,46.0,Female,Alemania,Palladium Mallorca,Junior Suite,Desayuno,Web directa,,5,4,2,0,274.78,0,0,No,0.0,No reembolsable,0
+100896,22.0,Male,España,Palladium Tenerife,Standard,Desayuno,Agencia tradicional,69.0,9,10,2,1,112.4,1,0,Sí,1.0,,0
+100897,46.0,Female,Alemania,Palladium Riviera Maya,Standard,Media pensión,Teléfono,83.0,2,6,2,0,95.1,3,0,Sí,0.0,No reembolsable,0
+100898,54.0,Female,Reino Unido,Palladium Riviera Maya,Junior Suite,Todo incluido,Web directa,160.0,9,4,2,0,209.1,0,0,No,1.0,No reembolsable,1
+100899,56.0,Female,España,Palladium Mallorca,Suite,Desayuno,Teléfono,53.0,11,4,1,0,391.07,0,0,Sí,2.0,No reembolsable,0
+100900,53.0,Female,España,Palladium Costa Mujeres,Villa,Solo alojamiento,Walk-in,52.0,12,14,2,0,752.25,0,0,Sí,2.0,No reembolsable,0
+100901,44.0,Male,EEUU,Palladium Tenerife,Standard,Media pensión,Walk-in,18.0,8,5,2,0,117.31,0,0,Sí,1.0,No reembolsable,0
+100902,56.0,Female,México,Palladium Ibiza,Standard,Desayuno,Web directa,22.0,5,14,2,2,74.9,4,0,No,2.0,Sin depósito,0
+100903,49.0,Female,Países Bajos,Palladium Tenerife,Standard,Media pensión,Web directa,73.0,7,10,1,0,111.43,2,0,Sí,1.0,,0
+100904,,Female,España,Palladium Ibiza,Standard,Media pensión,Agencia tradicional,22.0,8,5,1,2,114.91,0,0,Sí,0.0,Sin depósito,0
+100905,31.0,Female,España,Palladium Ibiza,Suite,Desayuno,Agencia tradicional,29.0,4,3,1,2,363.09,0,0,Sí,0.0,No reembolsable,0
+100906,34.0,Male,España,Palladium Costa Mujeres,Suite,Desayuno,Web directa,67.0,6,2,2,1,351.92,2,1,Sí,1.0,Sin depósito,0
+100907,24.0,Female,México,Palladium Costa Mujeres,Suite,Desayuno,Web directa,168.0,5,4,1,0,386.17,2,0,No,2.0,Sin depósito,0
+100908,49.0,Female,España,Palladium Tenerife,Junior Suite,Todo incluido,Agencia online,69.0,3,5,3,0,,2,0,No,2.0,No reembolsable,0
+100909,56.0,Male,Reino Unido,Palladium Ibiza,Standard,Todo incluido,Walk-in,49.0,4,14,2,0,116.32,2,0,Sí,0.0,No reembolsable,0
+100910,63.0,Male,Italia,Palladium Mallorca,Standard,Desayuno,Agencia tradicional,41.0,6,3,1,0,80.65,3,0,No,4.0,Reembolsable,0
+100911,25.0,Female,México,Palladium Tenerife,Standard,Media pensión,Agencia online,94.0,12,10,2,1,169.61,0,0,Sí,2.0,Reembolsable,0
+100912,67.0,Male,Argentina,Palladium Riviera Maya,Suite,Solo alojamiento,Web directa,34.0,1,4,2,0,394.39,0,0,Sí,0.0,No reembolsable,1
+100913,33.0,Male,España,Palladium Punta Cana,Suite,Desayuno,Web directa,98.0,8,4,2,1,384.13,1,0,Sí,0.0,Reembolsable,0
+100914,20.0,Female,España,Palladium Ibiza,Standard,Media pensión,Agencia tradicional,14.0,6,5,1,0,144.38,1,0,Sí,1.0,Sin depósito,0
+100915,54.0,Female,Argentina,Palladium Tenerife,Suite,Todo incluido,Web directa,3.0,9,4,1,2,306.81,0,0,No,0.0,Reembolsable,0
+100916,45.0,Female,Reino Unido,Palladium Ibiza,Standard,Todo incluido,Web directa,18.0,8,5,3,0,157.77,2,0,No,1.0,Reembolsable,0
+100917,20.0,Female,Francia,Palladium Ibiza,Junior Suite,Media pensión,Web directa,13.0,1,4,2,0,220.89,1,1,No,0.0,No reembolsable,0
+100918,22.0,Female,Reino Unido,Palladium Costa Mujeres,Standard,Solo alojamiento,Teléfono,13.0,10,10,3,1,105.38,0,0,No,1.0,Reembolsable,1
+100919,33.0,Male,Argentina,Palladium Costa Mujeres,Standard,Solo alojamiento,Walk-in,2.0,6,6,2,0,101.11,1,0,Sí,1.0,Sin depósito,0
+100920,22.0,Male,Italia,Palladium Punta Cana,Junior Suite,Media pensión,Agencia online,59.0,9,6,2,0,195.04,1,0,No,1.0,Sin depósito,1
+100921,41.0,Male,Reino Unido,Palladium Riviera Maya,Junior Suite,Todo incluido,Agencia tradicional,66.0,7,5,1,2,195.8,4,1,No,3.0,No reembolsable,0
+100922,73.0,Female,Reino Unido,Palladium Mallorca,Standard,Desayuno,Web directa,,7,7,2,2,80.58,3,0,Sí,0.0,No reembolsable,0
+100923,72.0,Male,España,Palladium Punta Cana,Junior Suite,Todo incluido,Web directa,129.0,7,3,2,0,158.17,0,0,No,5.0,No reembolsable,0
+100924,24.0,Male,Francia,Palladium Tenerife,Suite,Todo incluido,Web directa,1.0,7,2,2,0,363.6,3,1,No,4.0,,0
+100925,45.0,Female,Portugal,Palladium Punta Cana,Junior Suite,Media pensión,Agencia tradicional,,6,7,2,0,300.2,2,0,Sí,2.0,No reembolsable,0
+100926,41.0,Female,México,Palladium Costa Mujeres,Suite,Media pensión,Teléfono,249.0,6,5,2,0,437.27,1,0,No,2.0,Sin depósito,1
+100927,18.0,Male,Italia,Palladium Mallorca,Standard,Todo incluido,Agencia tradicional,18.0,2,14,2,0,100.01,0,0,No,2.0,Reembolsable,0
+100928,25.0,Female,Portugal,Palladium Tenerife,Standard,Desayuno,Agencia tradicional,0.0,7,10,3,1,166.21,0,0,,0.0,Sin depósito,1
+100929,29.0,Male,Italia,Palladium Punta Cana,Junior Suite,Todo incluido,Agencia tradicional,3.0,6,1,2,0,204.92,2,0,No,1.0,Sin depósito,0
+100930,24.0,Male,España,Palladium Mallorca,Standard,Solo alojamiento,Agencia online,35.0,11,4,3,0,57.36,1,0,No,1.0,Sin depósito,0
+100931,54.0,Male,España,Palladium Ibiza,Suite,Solo alojamiento,Walk-in,47.0,8,6,1,0,390.49,3,1,No,3.0,Reembolsable,0
+100932,26.0,Female,Argentina,Palladium Mallorca,Villa,Todo incluido,Agencia online,10.0,3,4,2,2,,0,0,No,4.0,Sin depósito,1
+100933,35.0,Male,España,Palladium Costa Mujeres,Junior Suite,Media pensión,Web directa,22.0,1,7,1,0,237.68,3,0,Sí,0.0,Sin depósito,0
+100934,,Female,México,Palladium Ibiza,Standard,Media pensión,Agencia online,75.0,3,4,3,0,97.18,1,0,No,,Sin depósito,0
+100935,35.0,Male,Reino Unido,Palladium Mallorca,Standard,Desayuno,Teléfono,82.0,5,14,3,1,56.59,2,0,No,0.0,Reembolsable,0
+100936,43.0,Male,Francia,Palladium Ibiza,Standard,Desayuno,Agencia online,67.0,6,6,3,0,156.14,0,0,Sí,0.0,Sin depósito,0
+100937,42.0,Male,Reino Unido,Palladium Tenerife,Junior Suite,Desayuno,Agencia online,168.0,7,5,2,0,221.08,1,0,Sí,1.0,No reembolsable,1
+100938,41.0,Female,España,Palladium Punta Cana,Standard,Solo alojamiento,Web directa,17.0,4,2,2,0,93.11,4,2,,0.0,Sin depósito,0
+100939,47.0,Male,Italia,Palladium Ibiza,Standard,Media pensión,Agencia tradicional,16.0,3,14,2,0,152.57,6,1,Sí,4.0,Sin depósito,0
+100940,27.0,Female,Italia,Palladium Mallorca,Standard,Todo incluido,Agencia online,2.0,12,14,2,1,135.12,2,0,No,0.0,Sin depósito,0
+100941,67.0,Female,Portugal,Palladium Punta Cana,Suite,Desayuno,Web directa,23.0,4,3,2,0,363.45,0,0,No,1.0,Reembolsable,0
+100942,22.0,Male,Francia,Palladium Riviera Maya,Standard,Media pensión,Web directa,38.0,7,3,1,0,164.2,0,0,Sí,1.0,Sin depósito,1
+100943,46.0,Female,Reino Unido,Palladium Ibiza,Junior Suite,Desayuno,Web directa,28.0,8,14,1,0,217.53,1,1,No,0.0,Sin depósito,0
+100944,36.0,Female,Reino Unido,Palladium Punta Cana,Suite,Todo incluido,Web directa,12.0,7,4,2,0,382.11,4,0,Sí,1.0,Sin depósito,1
+100945,50.0,Female,España,Palladium Riviera Maya,Standard,Solo alojamiento,Agencia online,31.0,7,3,2,0,114.4,1,0,Sí,0.0,Sin depósito,1
+100946,48.0,Female,España,Palladium Tenerife,Villa,Solo alojamiento,Web directa,81.0,12,1,2,0,,2,0,No,1.0,Sin depósito,1
+100947,35.0,Female,EEUU,Palladium Ibiza,Standard,Desayuno,Agencia online,41.0,6,4,2,1,120.7,0,0,No,0.0,Sin depósito,0
+100948,22.0,Female,EEUU,Palladium Mallorca,Standard,Todo incluido,Web directa,21.0,11,3,4,0,90.63,1,0,No,3.0,Reembolsable,0
+100949,55.0,Male,España,Palladium Riviera Maya,Standard,Media pensión,Teléfono,54.0,7,3,2,0,172.21,4,0,No,0.0,,0
+100950,30.0,Male,Países Bajos,Palladium Costa Mujeres,Suite,Todo incluido,Agencia online,28.0,8,6,3,0,373.95,0,0,No,0.0,Sin depósito,0
+100951,22.0,Female,Francia,Palladium Ibiza,Suite,Desayuno,Web directa,93.0,12,5,2,0,385.0,1,0,Sí,3.0,No reembolsable,1
+100952,29.0,Male,EEUU,Palladium Punta Cana,Standard,Media pensión,Web directa,8.0,8,5,1,2,166.43,3,1,No,3.0,Sin depósito,0
+100953,47.0,Female,España,Palladium Riviera Maya,Standard,Media pensión,Agencia online,11.0,8,5,3,2,51.17,1,0,No,3.0,No reembolsable,0
+100954,31.0,Male,Francia,Palladium Mallorca,Villa,Desayuno,Web directa,18.0,2,1,1,2,753.53,2,0,No,1.0,Sin depósito,0
+100955,62.0,Male,Reino Unido,Palladium Costa Mujeres,Junior Suite,Media pensión,Web directa,184.0,8,10,2,1,205.26,1,0,No,0.0,Sin depósito,1
+100956,42.0,Male,EEUU,Palladium Ibiza,Standard,Media pensión,Agencia online,20.0,3,1,1,0,,2,1,Sí,0.0,Sin depósito,0
+100957,33.0,Male,Reino Unido,Palladium Costa Mujeres,Standard,Solo alojamiento,Teléfono,10.0,5,4,2,3,,1,0,No,1.0,Sin depósito,1
+100958,46.0,Female,Alemania,Palladium Mallorca,Suite,Media pensión,Web directa,1.0,8,3,2,2,390.65,4,1,No,1.0,Sin depósito,0
+100959,44.0,Male,Reino Unido,Palladium Punta Cana,Standard,Desayuno,Agencia online,27.0,1,7,1,2,133.92,2,0,No,1.0,Sin depósito,0
+100960,46.0,Female,España,Palladium Mallorca,Standard,Todo incluido,Agencia tradicional,307.0,6,4,2,2,100.18,1,0,No,2.0,Sin depósito,1
+100961,65.0,Female,España,Palladium Riviera Maya,Suite,Todo incluido,Agencia tradicional,3.0,7,1,2,0,346.15,1,0,No,1.0,Sin depósito,0
+100962,33.0,Male,Reino Unido,Palladium Ibiza,Standard,Todo incluido,Agencia online,31.0,7,3,2,2,96.44,1,1,No,1.0,Sin depósito,1
+100963,42.0,Male,España,Palladium Riviera Maya,Junior Suite,Solo alojamiento,Agencia online,57.0,6,5,2,2,225.12,1,1,No,1.0,No reembolsable,0
+100964,42.0,Male,Argentina,Palladium Mallorca,Standard,Todo incluido,Walk-in,138.0,10,5,2,0,,4,0,No,4.0,Sin depósito,0
+100965,50.0,Female,Argentina,Palladium Riviera Maya,Suite,Media pensión,Agencia tradicional,8.0,3,2,2,0,329.37,1,0,No,0.0,No reembolsable,0
+100966,29.0,Male,México,Palladium Ibiza,Suite,Todo incluido,Web directa,0.0,6,7,1,1,358.63,3,3,No,0.0,Sin depósito,0
+100967,24.0,Male,Alemania,Palladium Punta Cana,Suite,Todo incluido,Teléfono,37.0,1,7,2,0,351.62,1,0,,0.0,Reembolsable,0
+100968,18.0,Male,Italia,Palladium Ibiza,Villa,Todo incluido,Agencia online,33.0,5,14,2,0,723.98,2,1,No,0.0,Sin depósito,0
+100969,58.0,Male,Portugal,Palladium Ibiza,Standard,Todo incluido,Web directa,12.0,7,5,2,0,130.46,2,0,Sí,,No reembolsable,0
+100970,18.0,Male,México,Palladium Riviera Maya,Villa,Todo incluido,Walk-in,5.0,3,14,2,0,686.82,0,0,No,2.0,Sin depósito,0
+100971,46.0,Male,Reino Unido,Palladium Punta Cana,Standard,Media pensión,Teléfono,5.0,2,4,2,0,101.34,2,0,No,0.0,Reembolsable,0
+100972,47.0,Male,Reino Unido,Palladium Costa Mujeres,Standard,Media pensión,Agencia online,3.0,6,3,3,2,61.28,3,0,No,5.0,Reembolsable,1
+100973,1.0,Male,España,Palladium Ibiza,Villa,Todo incluido,Agencia tradicional,163.0,7,1,2,0,742.15,1,0,Sí,1.0,Reembolsable,0
+100974,33.0,Female,Alemania,Palladium Tenerife,Suite,Desayuno,Agencia online,41.0,3,14,2,0,395.31,3,0,No,1.0,Sin depósito,0
+100975,65.0,Female,España,Palladium Riviera Maya,Standard,Media pensión,Agencia tradicional,34.0,9,14,2,1,115.01,2,0,Sí,0.0,No reembolsable,0
+100976,39.0,Male,España,Palladium Punta Cana,Junior Suite,Todo incluido,Web directa,19.0,3,7,2,1,238.45,0,0,No,1.0,No reembolsable,0
+100977,18.0,Female,España,Palladium Tenerife,Standard,Media pensión,Agencia online,24.0,8,4,2,0,86.74,0,0,Sí,3.0,Sin depósito,0
+100978,42.0,Female,Reino Unido,Palladium Ibiza,Suite,Desayuno,Agencia tradicional,,12,5,1,0,407.09,1,0,No,1.0,Sin depósito,1
+100979,48.0,Male,Reino Unido,Palladium Ibiza,Standard,Desayuno,Agencia tradicional,32.0,4,5,1,0,110.28,0,0,Sí,0.0,Reembolsable,0
+100980,37.0,Female,España,Palladium Riviera Maya,Standard,Media pensión,Web directa,119.0,8,14,2,0,106.02,1,0,Sí,0.0,Sin depósito,0
+100981,58.0,Female,Países Bajos,Palladium Mallorca,Standard,Solo alojamiento,Web directa,59.0,5,5,1,0,100.16,0,0,No,0.0,No reembolsable,0
+100982,52.0,Male,Italia,Palladium Costa Mujeres,Junior Suite,Media pensión,Web directa,94.0,2,4,2,1,232.32,3,1,No,1.0,Reembolsable,0
+100983,47.0,Male,España,Palladium Ibiza,Standard,Todo incluido,Walk-in,62.0,9,4,1,0,150.86,3,1,Sí,0.0,Sin depósito,0
+100984,20.0,Female,España,Palladium Mallorca,Standard,Todo incluido,Teléfono,14.0,9,5,1,0,106.41,3,1,No,1.0,Sin depósito,0
+100985,60.0,Female,Reino Unido,Palladium Costa Mujeres,Suite,Todo incluido,Agencia online,45.0,4,6,2,0,404.53,1,0,Sí,0.0,Sin depósito,0
+100986,53.0,Male,Francia,Palladium Punta Cana,Standard,Desayuno,Agencia tradicional,64.0,1,3,2,1,132.87,2,0,No,2.0,No reembolsable,0
+100987,59.0,Female,Reino Unido,Palladium Ibiza,Standard,Desayuno,Agencia online,11.0,5,1,2,0,128.77,1,0,No,1.0,Sin depósito,0
+100988,47.0,Male,Portugal,Palladium Tenerife,Junior Suite,Todo incluido,Agencia online,2.0,8,3,4,0,231.26,4,0,sí,2.0,Sin depósito,1
+100989,40.0,Male,Reino Unido,Palladium Punta Cana,Standard,Solo alojamiento,Agencia online,22.0,11,5,1,0,157.9,2,0,Sí,0.0,Sin depósito,0
+100990,52.0,Female,Alemania,Palladium Costa Mujeres,Suite,Desayuno,Agencia online,24.0,9,14,3,0,400.3,2,0,No,1.0,Sin depósito,0
+100991,54.0,Female,España,Palladium Punta Cana,Junior Suite,Todo incluido,Web directa,7.0,4,2,2,1,180.88,1,0,No,0.0,Sin depósito,0
+100992,45.0,Female,Portugal,Palladium Tenerife,Standard,Media pensión,Agencia tradicional,27.0,7,2,2,0,114.13,0,0,Sí,0.0,Reembolsable,0
+100993,43.0,Female,Países Bajos,Palladium Riviera Maya,Junior Suite,Media pensión,Web directa,59.0,9,4,2,0,205.3,1,0,No,0.0,No reembolsable,0
+100994,30.0,Male,Países Bajos,Palladium Ibiza,Suite,Desayuno,Walk-in,19.0,8,4,2,0,356.18,1,0,No,1.0,Sin depósito,0
+100995,26.0,Female,España,Palladium Riviera Maya,Standard,Solo alojamiento,Agencia online,35.0,8,10,2,0,155.89,0,0,Sí,3.0,Sin depósito,0
+100996,54.0,Male,Italia,Palladium Riviera Maya,Standard,Todo incluido,Agencia online,108.0,7,2,2,2,107.19,3,1,Sí,0.0,No reembolsable,0
+100997,49.0,FEMALE,España,Palladium Riviera Maya,Standard,Todo incluido,Web directa,34.0,6,10,1,0,,1,0,Sí,3.0,Reembolsable,1
+100998,33.0,Male,Alemania,Palladium Costa Mujeres,Junior Suite,Desayuno,Walk-in,66.0,9,7,1,2,246.48,0,0,Sí,1.0,No reembolsable,0
+100999,38.0,Male,México,Palladium Riviera Maya,Villa,Todo incluido,Agencia tradicional,64.0,11,10,2,1,770.0,1,0,No,0.0,Sin depósito,0
+101000,22.0,Female,España,Palladium Costa Mujeres,Junior Suite,Desayuno,Agencia online,66.0,7,4,1,3,219.42,1,0,,3.0,Sin depósito,0
+100779,49.0,Female,Alemania,Palladium Mallorca,Junior Suite,Todo incluido,Agencia tradicional,49.0,7,5,1,1,205.62,2,0,Sí,2.0,No reembolsable,0
+100335,47.0,Male,España,Palladium Tenerife,Standard,Todo incluido,Web directa,15.0,6,4,2,0,94.06,1,0,No,0.0,Reembolsable,0
+100272,53.0,Male,México,Palladium Mallorca,Standard,Todo incluido,Agencia tradicional,83.0,7,5,2,0,60.74,1,1,No,1.0,Sin depósito,0
+100803,28.0,Female,Reino Unido,Palladium Mallorca,Standard,Media pensión,Web directa,,1,4,2,2,129.81,1,0,No,5.0,Sin depósito,0
+100217,24.0,Male,Francia,Palladium Punta Cana,Suite,Desayuno,Web directa,4.0,4,10,3,0,374.01,1,0,Sí,2.0,Sin depósito,0
+100409,18.0,Male,Países Bajos,Palladium Ibiza,Junior Suite,Todo incluido,Agencia online,29.0,8,4,1,2,204.49,1,0,No,0.0,Reembolsable,1
+100813,45.0,Male,España,Palladium Tenerife,Junior Suite,Desayuno,Agencia online,30.0,7,4,1,2,290.66,0,0,Sí,4.0,No reembolsable,0
+100095,44.0,Female,Reino Unido,Palladium Riviera Maya,Standard,Todo incluido,Agencia tradicional,13.0,11,5,2,2,90.08,3,0,No,0.0,Sin depósito,0
+100488,44.0,Male,España,Palladium Tenerife,Standard,Desayuno,Agencia online,6.0,9,1,1,0,151.63,0,0,Sí,0.0,Sin depósito,0
+100171,34.0,Female,Francia,Palladium Punta Cana,Standard,Desayuno,Walk-in,5.0,10,5,3,2,92.17,0,0,No,1.0,Reembolsable,0

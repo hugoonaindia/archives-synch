@@ -1,0 +1,540 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Sesión 6 · Cloud, herramientas y quiz final</title>
+<style>
+  :root{
+    --crema:#F2EFE6;
+    --tinta:#0E1B4D;
+    --tinta-2:#1B2A6B;
+    --azul:#3FA9F5;
+    --azul-2:#1F8AD9;
+    --rojo:#D85C3E;
+    --verde:#2E9E6E;
+    --amber:#E0A23A;
+    --gris:#7A7A7A;
+    --gris-2:#C9C5B8;
+    --aws:#FF9900;
+    --azure:#0078D4;
+    --gcp:#4285F4;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--crema);color:var(--tinta);font-family:Georgia,'Times New Roman',serif;line-height:1.55}
+  .mono{font-family:'SF Mono',Menlo,Monaco,Consolas,monospace}
+  .upper{text-transform:uppercase;letter-spacing:.18em;font-weight:600}
+
+  .wrap{max-width:1240px;margin:0 auto;padding:48px 32px 96px}
+  header.hero{padding:64px 0 48px;border-bottom:1px solid var(--gris-2)}
+  header .tag{font-size:11px;color:var(--azul-2)}
+  header h1{font-size:60px;line-height:1.05;margin:24px 0 16px;font-weight:700;letter-spacing:-.02em}
+  header h1 em{font-style:italic;color:var(--azul-2);font-weight:400}
+  header p.lead{font-size:19px;color:var(--tinta-2);max-width:780px;margin:0}
+
+  section{padding:56px 0;border-bottom:1px solid var(--gris-2)}
+  section .step-tag{font-size:11px;color:var(--azul-2)}
+  section h2{font-size:42px;margin:12px 0 16px;font-weight:700;letter-spacing:-.01em;line-height:1.1}
+  section h2 em{font-style:italic;color:var(--azul-2);font-weight:400}
+  section p.intro{font-size:17px;color:var(--tinta-2);max-width:880px;margin:0 0 24px}
+
+  .card{background:#fff;border:1px solid var(--gris-2);border-radius:10px;padding:22px}
+
+  /* Entornos dev/test/prod */
+  .envs{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px}
+  .env{background:#fff;border:1px solid var(--gris-2);border-radius:10px;padding:22px;position:relative;border-top:5px solid var(--gris-2)}
+  .env.dev{border-top-color:var(--verde)}
+  .env.test{border-top-color:var(--azul)}
+  .env.prod{border-top-color:var(--rojo)}
+  .env .k{font-family:'SF Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--gris)}
+  .env.dev .k{color:var(--verde)}
+  .env.test .k{color:var(--azul-2)}
+  .env.prod .k{color:var(--rojo)}
+  .env h4{margin:8px 0 8px;font-size:22px}
+  .env .what{font-size:14px;color:var(--tinta-2);margin:0 0 14px}
+  .env .ana{font-size:12px;color:var(--azul-2);font-style:italic;margin-top:auto}
+
+  /* Cloud selector AWS/Azure/GCP */
+  .cloud-tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:18px}
+  .cloud-tab{padding:18px;background:#fff;border:2px solid var(--gris-2);border-radius:10px;cursor:pointer;text-align:left;font-family:inherit;color:var(--tinta);transition:.15s;border-top-width:5px}
+  .cloud-tab:hover{transform:translateY(-2px)}
+  .cloud-tab.aws{border-top-color:var(--aws)}
+  .cloud-tab.azure{border-top-color:var(--azure)}
+  .cloud-tab.gcp{border-top-color:var(--gcp)}
+  .cloud-tab.active{box-shadow:0 6px 24px rgba(14,27,77,.15)}
+  .cloud-tab.aws.active{background:#FFF7EA;border-color:var(--aws)}
+  .cloud-tab.azure.active{background:#E7F1FB;border-color:var(--azure)}
+  .cloud-tab.gcp.active{background:#EEF3FE;border-color:var(--gcp)}
+  .cloud-tab .logo{font-family:'SF Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase}
+  .cloud-tab.aws .logo{color:var(--aws)}
+  .cloud-tab.azure .logo{color:var(--azure)}
+  .cloud-tab.gcp .logo{color:var(--gcp)}
+  .cloud-tab h4{margin:6px 0 4px;font-size:22px}
+  .cloud-tab .what{font-size:13px;color:var(--tinta-2);margin:0}
+
+  /* Cloud detail panel */
+  .cloud-detail{margin-top:18px;background:#fff;border:1px solid var(--gris-2);border-radius:10px;padding:24px;border-left:5px solid var(--azul)}
+  .cloud-detail.aws{border-left-color:var(--aws)}
+  .cloud-detail.azure{border-left-color:var(--azure)}
+  .cloud-detail.gcp{border-left-color:var(--gcp)}
+  .cloud-detail .head{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+  .cloud-detail .head .lg{padding:8px 14px;border-radius:8px;font-family:'SF Mono',monospace;font-weight:700;font-size:14px;letter-spacing:.12em;text-transform:uppercase}
+  .cloud-detail.aws .head .lg{background:rgba(255,153,0,.15);color:var(--aws)}
+  .cloud-detail.azure .head .lg{background:rgba(0,120,212,.15);color:var(--azure)}
+  .cloud-detail.gcp .head .lg{background:rgba(66,133,244,.15);color:var(--gcp)}
+  .cloud-detail .head h3{margin:0;font-size:24px}
+  .services-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:14px}
+  .svc{background:#FAF8F1;border-left:3px solid var(--gris-2);padding:14px;border-radius:6px}
+  .svc .k{font-family:'SF Mono',monospace;font-size:10px;text-transform:uppercase;color:var(--gris);letter-spacing:.12em}
+  .svc h5{margin:4px 0 4px;font-size:16px}
+  .svc p{font-size:12px;color:var(--tinta-2);margin:0}
+
+  .cloud-detail .strength{margin-top:18px;padding:14px;background:#FAF8F1;border-radius:6px;font-style:italic;color:var(--tinta-2);font-size:14px}
+  .cloud-detail .strength b{font-style:normal;color:var(--tinta)}
+
+  /* Roles */
+  .roles{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:18px}
+  .role{background:#fff;border:1px solid var(--gris-2);border-radius:10px;padding:20px;border-top:4px solid var(--azul)}
+  .role.scientist{border-top-color:var(--azul)}
+  .role.engineer{border-top-color:var(--tinta-2)}
+  .role.ml{border-top-color:var(--verde)}
+  .role.devops{border-top-color:var(--rojo)}
+  .role .k{font-family:'SF Mono',monospace;font-size:10px;color:var(--gris);text-transform:uppercase;letter-spacing:.12em}
+  .role h4{margin:6px 0 6px;font-size:18px}
+  .role p{font-size:13px;color:var(--tinta-2);margin:0}
+
+  /* MLOps tools */
+  .tools{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:18px}
+  .tool{background:#fff;border:1px solid var(--gris-2);border-radius:10px;padding:18px;border-top:4px solid var(--azul)}
+  .tool.mlflow{border-top-color:var(--verde)}
+  .tool.kubeflow{border-top-color:var(--azul)}
+  .tool.sagemaker{border-top-color:var(--aws)}
+  .tool.vertex{border-top-color:var(--gcp)}
+  .tool .k{font-family:'SF Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:var(--gris)}
+  .tool h4{margin:6px 0 6px;font-size:18px}
+  .tool .desc{font-size:12px;color:var(--tinta-2);margin:0 0 10px}
+  .tool .when{font-size:11px;color:var(--azul-2);font-style:italic;padding-top:8px;border-top:1px dashed var(--gris-2);margin-top:8px}
+
+  /* Quiz */
+  .quiz{background:#fff;border:1px solid var(--gris-2);border-radius:12px;padding:30px;margin-top:18px}
+  .question{margin-bottom:28px;padding-bottom:28px;border-bottom:1px dashed var(--gris-2)}
+  .question:last-of-type{border-bottom:none;margin-bottom:0}
+  .question .qnum{font-family:'SF Mono',monospace;font-size:11px;color:var(--azul-2);text-transform:uppercase;letter-spacing:.12em}
+  .question h4{margin:6px 0 14px;font-size:18px;font-weight:700;line-height:1.4}
+  .question h4 em{color:var(--azul-2);font-style:italic}
+  .options{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+  .opt{padding:14px 16px;background:#fff;border:1.5px solid var(--gris-2);border-radius:6px;cursor:pointer;font-family:inherit;color:var(--tinta);font-size:14px;text-align:center;transition:.15s;font-weight:600}
+  .opt:hover{border-color:var(--azul-2);background:#F5FAFE}
+  .opt.correct{background:#D8F1E5;border-color:var(--verde);color:var(--verde)}
+  .opt.wrong{background:#FBE0DA;border-color:var(--rojo);color:var(--rojo)}
+  .opt.disabled{cursor:default;pointer-events:none;opacity:.5}
+  .opt.disabled.correct{opacity:1}
+  .opt.disabled.wrong{opacity:.7}
+  .feedback{margin-top:14px;padding:14px 16px;border-radius:6px;font-size:13px;display:none;line-height:1.6}
+  .feedback.show{display:block}
+  .feedback.good{background:#E0F4E8;color:var(--verde);border-left:3px solid var(--verde)}
+  .feedback.bad{background:#FBE5DD;color:var(--rojo);border-left:3px solid var(--rojo)}
+  .feedback b{color:var(--tinta)}
+
+  .score-card{background:var(--tinta);color:#fff;border-radius:12px;padding:36px;text-align:center;margin-top:24px;display:none}
+  .score-card.show{display:block}
+  .score-card .lbl{font-family:'SF Mono',monospace;font-size:11px;color:#9DD2F8;text-transform:uppercase;letter-spacing:.12em}
+  .score-card .val{font-size:80px;font-weight:700;font-family:Georgia,serif;line-height:1;margin:6px 0;color:var(--azul)}
+  .score-card .msg{font-size:18px;margin-top:14px}
+  .score-card.high .val{color:var(--verde)}
+  .score-card.mid .val{color:var(--amber)}
+  .score-card.low .val{color:var(--rojo)}
+
+  .note{background:#E5F1FB;border-left:4px solid var(--azul);padding:14px 18px;border-radius:4px;margin-top:18px;font-size:14px;color:var(--tinta-2)}
+  .note b{color:var(--tinta)}
+  .tip{background:#E0F4E8;border-left-color:var(--verde)}
+  .warning{background:#FBE5DD;border-left-color:var(--rojo)}
+
+  /* Recap final */
+  .recap{padding:48px 32px;background:var(--tinta);color:#fff;border-radius:12px;margin-top:32px}
+  .recap h2{color:#fff;margin:0 0 18px;font-size:38px}
+  .recap h2 em{color:#9DD2F8}
+  .recap .ideas{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+  .recap .idea{background:rgba(255,255,255,.06);padding:18px;border-radius:6px;border-top:3px solid var(--azul)}
+  .recap .idea .n{font-family:'SF Mono',monospace;font-size:10px;color:#9DD2F8;margin-bottom:6px}
+  .recap .idea b{display:block;font-size:15px;margin-bottom:6px;color:#fff}
+  .recap .idea span{font-size:12px;color:#cfeaff;opacity:.9}
+
+  @media (max-width:880px){
+    header h1{font-size:42px}
+    section h2{font-size:32px}
+    .envs,.cloud-tabs,.roles,.tools,.options,.services-grid,.recap .ideas{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <div class="upper tag">Tema 6 · Sesión 06 · Artefacto 4</div>
+  <h1>Cloud, herramientas y <em>quiz final</em>.</h1>
+  <p class="lead">El último artefacto del tema reúne lo que falta: los tres entornos donde vive cualquier software (dev/test/prod), las tres grandes nubes (AWS/Azure/GCP) y sus servicios equivalentes, los cuatro roles que mantienen un modelo en producción, el ecosistema MLOps en pocos nombres, y un quiz final de seis preguntas con feedback inmediato para que compruebes que te has llevado lo esencial del tema.</p>
+</header>
+
+<!-- Entornos -->
+<section style="border-bottom:none">
+  <div class="upper step-tag">Antes de hablar de despliegue</div>
+  <h2>Tres <em>entornos</em>. Tres propósitos.</h2>
+  <p class="intro">Todo software vive en al menos tres entornos distintos. Cada uno tiene reglas, datos y usuarios propios. No respetar esta separación es la <b>fuente número uno</b> de problemas en producción.</p>
+
+  <div class="envs">
+    <div class="env dev">
+      <div class="k">Desarrollo · dev</div>
+      <h4>Donde se construye</h4>
+      <p class="what">Jupyter Notebook, VSCode, datos de prueba, todo es modificable. Si rompes algo, no pasa nada.</p>
+      <p class="ana">Cocina del chef: el plato se inventa, se rompe, se rehace mil veces.</p>
+    </div>
+    <div class="env test">
+      <div class="k">Pruebas · test · staging</div>
+      <h4>Donde se valida</h4>
+      <p class="what">Réplica de producción con datos sintéticos. QA, tests de integración, depuración. El modelo se prueba como si fuera real, pero sin usuarios reales.</p>
+      <p class="ana">Servicio de prueba antes de la inauguración del restaurante.</p>
+    </div>
+    <div class="env prod">
+      <div class="k">Producción · prod</div>
+      <h4>Donde se sirve</h4>
+      <p class="what">Usuarios reales, datos reales, dinero real. Cero margen para fallos. Cada error tiene coste — reputacional, económico o legal.</p>
+      <p class="ana">Restaurante abierto: si algo falla, los clientes se enteran.</p>
+    </div>
+  </div>
+  <div class="note warning"><b>Regla de oro:</b> nunca pruebes en producción. Nunca despliegues sin haber pasado por test. <em>«Funciona en mi máquina»</em> es la frase más cara del software.</div>
+</section>
+
+<!-- Los tres reinos del cloud -->
+<section style="border-bottom:none">
+  <div class="upper step-tag">Los tres grandes · AWS · Azure · GCP</div>
+  <h2>Los tres <em>reinos</em> del cloud ML.</h2>
+  <p class="intro">Las tres plataformas hacen <b>lo mismo con nombres distintos</b>. Más del 65% de la cuota global está entre ellas. La elección depende del ecosistema en el que ya esté tu empresa, no de capacidades técnicas.</p>
+
+  <div class="cloud-tabs" id="cloud-tabs">
+    <button class="cloud-tab aws active" data-cloud="aws">
+      <div class="logo">AWS · Amazon</div>
+      <h4>SageMaker</h4>
+      <p class="what">El más maduro y con mayor cuota de mercado. Ecosistema enorme.</p>
+    </button>
+    <button class="cloud-tab azure" data-cloud="azure">
+      <div class="logo">Azure · Microsoft</div>
+      <h4>Azure ML</h4>
+      <p class="what">Pipelines, MLOps integrado, IA responsable. Fuerte en empresa.</p>
+    </button>
+    <button class="cloud-tab gcp" data-cloud="gcp">
+      <div class="logo">GCP · Google</div>
+      <h4>Vertex AI</h4>
+      <p class="what">AutoML, Model Garden, IA generativa Gemini. Fuerte en data-first.</p>
+    </button>
+  </div>
+
+  <div class="cloud-detail aws" id="cloud-detail">
+    <div class="head">
+      <div class="lg" id="cd-logo">AWS · Amazon</div>
+      <h3 id="cd-title">SageMaker · la plataforma ML</h3>
+    </div>
+    <div class="services-grid" id="cd-services"></div>
+    <div class="strength" id="cd-strength"></div>
+  </div>
+
+  <div class="note tip"><b>En la práctica:</b> casi todas las empresas grandes usan ya una de las tres por su ofimática o su cloud general. Es más fácil quedarse donde ya estás que migrar. La pregunta no es «¿cuál es mejor?», es «¿en cuál ya pago la factura del mes?».</div>
+</section>
+
+<!-- Roles -->
+<section style="border-bottom:none">
+  <div class="upper step-tag">El equipo detrás del modelo en producción</div>
+  <h2>Cuatro <em>roles</em>, una cocina.</h2>
+  <p class="intro">En equipos pequeños, una persona hace varios roles. En empresas grandes, son departamentos enteros que tienen que <b>hablar entre sí</b>. MLOps es, sobre todo, una forma de organizar esa conversación.</p>
+
+  <div class="roles">
+    <div class="role scientist">
+      <div class="k">Diseña el plato</div>
+      <h4>Data Scientist</h4>
+      <p>Explora datos, prueba algoritmos, entrena modelos en notebooks. El que «hace el modelo».</p>
+    </div>
+    <div class="role engineer">
+      <div class="k">Trae los ingredientes</div>
+      <h4>Data Engineer</h4>
+      <p>Construye pipelines de datos, ETL, garantiza calidad y disponibilidad. Sin él, el modelo no come.</p>
+    </div>
+    <div class="role ml">
+      <div class="k">Monta la cocina industrial</div>
+      <h4>ML Engineer</h4>
+      <p>Empaqueta el modelo, lo despliega, automatiza pipelines, MLOps. Convierte el prototipo en servicio.</p>
+    </div>
+    <div class="role devops">
+      <div class="k">Mantiene el restaurante abierto</div>
+      <h4>DevOps / SRE</h4>
+      <p>Infraestructura, escalado, alertas, fiabilidad operativa 24/7. Si algo se rompe a las 3 AM, su teléfono suena.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Ecosistema MLOps -->
+<section style="border-bottom:none">
+  <div class="upper step-tag">El ecosistema MLOps en pocos nombres</div>
+  <h2>Las <em>herramientas</em> que se usan.</h2>
+  <p class="intro">Hay decenas, pero estas son las que aparecen en cualquier proyecto serio. Las primeras dos son open-source y agnósticas. Las otras, ligadas a cada cloud.</p>
+
+  <div class="tools">
+    <div class="tool mlflow">
+      <div class="k">MLflow</div>
+      <h4>El estándar open-source</h4>
+      <p class="desc">Track experimentos, gestiona modelos, registra versiones. Funciona en cualquier infraestructura.</p>
+      <div class="when">Gratis, fácil de empezar, integrado con casi todo.</div>
+    </div>
+    <div class="tool kubeflow">
+      <div class="k">Kubeflow</div>
+      <h4>MLOps nativo en K8s</h4>
+      <p class="desc">Pipelines de ML que corren en clústeres Kubernetes. Lo más usado en empresas que ya viven en K8s.</p>
+      <div class="when">Mayor curva de aprendizaje, mucho más potente a escala.</div>
+    </div>
+    <div class="tool sagemaker">
+      <div class="k">SageMaker Model Monitor</div>
+      <h4>AWS · Drift y data quality</h4>
+      <p class="desc">Detección automática de cambios en datos y predicciones. Alertas integradas con AWS CloudWatch.</p>
+      <div class="when">Más caro pero «funciona de fábrica» en AWS.</div>
+    </div>
+    <div class="tool vertex">
+      <div class="k">Vertex AI Model Monitoring</div>
+      <h4>GCP · Drift y feature attribution</h4>
+      <p class="desc">Monitoring continuo + explicabilidad. Alertas configurables. Equivalente al de AWS pero en GCP.</p>
+      <div class="when">Bueno si ya tienes tu modelo en Vertex.</div>
+    </div>
+  </div>
+</section>
+
+<!-- Quiz Final -->
+<section style="border-bottom:none">
+  <div class="upper step-tag">¿Listos para desplegar?</div>
+  <h2>¿Qué <em>harías</em> en cada caso?</h2>
+  <p class="intro">Seis escenarios reales. Pulsa tu respuesta. Sin trampas — verás feedback inmediato. Al final, tu puntuación y diagnóstico.</p>
+
+  <div class="quiz" id="quiz"></div>
+
+  <div class="score-card" id="score-card">
+    <div class="lbl">Tu puntuación</div>
+    <div class="val" id="score-val">0 / 6</div>
+    <div class="msg" id="score-msg">Responde las 6 preguntas para ver tu resultado.</div>
+  </div>
+</section>
+
+<!-- Recap final -->
+<section style="border-bottom:none">
+  <div class="recap">
+    <div class="upper step-tag" style="color:#9DD2F8">Recap · sesión 06</div>
+    <h2>Cinco <em>ideas</em> que no olvidar.</h2>
+    <div class="ideas">
+      <div class="idea"><div class="n">01</div><b>Entrenar ≠ desplegar</b><span>El 87% de los modelos no llega a producción. La diferencia está en el proceso, no en el algoritmo.</span></div>
+      <div class="idea"><div class="n">02</div><b>MLOps = ML + DevOps</b><span>Automatizar todo: integración, despliegue, monitorización y reentrenamiento.</span></div>
+      <div class="idea"><div class="n">03</div><b>Docker empaqueta, K8s orquesta</b><span>Paella precocinada (Docker) servida desde la cocina industrial (Kubernetes).</span></div>
+      <div class="idea"><div class="n">04</div><b>Los modelos caducan</b><span>Data drift es la regla, no la excepción. Sin monitoreo y reentreno, mueren.</span></div>
+      <div class="idea"><div class="n">05</div><b>Hamilton tenía razón</b><span>Diseña pensando en cómo fallará el sistema. Antes de desplegarlo, no después.</span></div>
+    </div>
+  </div>
+</section>
+
+</div>
+
+<script>
+/* =====================================================================
+   CLOUD selector — AWS / Azure / GCP
+   ===================================================================== */
+const CLOUDS = {
+  aws:{
+    logo:'AWS · Amazon',
+    title:'SageMaker · la plataforma ML de AWS',
+    services:[
+      {k:'IDE integrado', name:'SageMaker Studio', desc:'Jupyter Notebook, JupyterLab, RStudio integrados.'},
+      {k:'AutoML', name:'SageMaker Canvas', desc:'Modelos ML sin escribir código. Drag & drop.'},
+      {k:'Deploy', name:'SageMaker Endpoints', desc:'Endpoints HTTPS para predicción en tiempo real.'},
+      {k:'Monitoring', name:'SageMaker Model Monitor', desc:'Drift, data quality, model quality. Integrado con CloudWatch.'},
+      {k:'Pipelines', name:'SageMaker Pipelines', desc:'CI/CD para ML. Triggers, validación, rollback.'},
+      {k:'Compute', name:'EC2 + EKS', desc:'Servidores virtuales y Kubernetes gestionado.'}
+    ],
+    strength:'<b>Fortaleza típica:</b> mayor cuota de mercado, ecosistema enorme. Si tu empresa ya usa AWS para infraestructura general (la mayoría de empresas tech), SageMaker es la opción natural.'
+  },
+  azure:{
+    logo:'Azure · Microsoft',
+    title:'Azure ML · la plataforma ML de Microsoft',
+    services:[
+      {k:'IDE integrado', name:'Azure ML Studio', desc:'Notebooks, designer drag&drop, AutoML.'},
+      {k:'AutoML', name:'Azure ML Designer', desc:'Pipelines visuales sin código.'},
+      {k:'Deploy', name:'Azure ML Endpoints', desc:'Online y batch endpoints. Integrado con Azure DevOps.'},
+      {k:'Monitoring', name:'Azure ML + Event Grid', desc:'Drift, alerts, integrado con Application Insights.'},
+      {k:'Pipelines', name:'Azure ML Pipelines', desc:'MLOps con Azure DevOps. CI/CD nativo.'},
+      {k:'Compute', name:'AKS + Azure VMs', desc:'Kubernetes gestionado + máquinas virtuales.'}
+    ],
+    strength:'<b>Fortaleza típica:</b> empresas que ya viven con Microsoft 365, Active Directory, .NET. Integración nativa con todo el stack Microsoft. La elección obvia para banca tradicional, administraciones públicas, grandes corporaciones.'
+  },
+  gcp:{
+    logo:'GCP · Google',
+    title:'Vertex AI · la plataforma ML de Google',
+    services:[
+      {k:'IDE integrado', name:'Vertex AI Workbench', desc:'Notebooks con Jupyter gestionados.'},
+      {k:'AutoML', name:'Vertex AI AutoML', desc:'AutoML para imagen, texto, tabular, vídeo.'},
+      {k:'Deploy', name:'Vertex AI Endpoints', desc:'Endpoints online y batch. Multi-modelo.'},
+      {k:'Monitoring', name:'Vertex AI Model Monitoring', desc:'Drift, feature attribution, alertas configurables.'},
+      {k:'Pipelines', name:'Vertex AI Pipelines', desc:'Basado en Kubeflow. Pipelines reproducibles.'},
+      {k:'Generative AI', name:'Model Garden + Gemini', desc:'Catálogo de modelos pre-entrenados + IA generativa.'}
+    ],
+    strength:'<b>Fortaleza típica:</b> equipos data-first, startups, empresas con foco en IA generativa (Gemini). Integración fuerte con BigQuery (data warehouse). Mejor para perfiles técnicos avanzados.'
+  }
+};
+
+let currentCloud = 'aws';
+function renderCloud(){
+  const c = CLOUDS[currentCloud];
+  document.querySelectorAll('.cloud-tab').forEach(function(b){
+    b.classList.toggle('active', b.dataset.cloud === currentCloud);
+  });
+  const detail = document.getElementById('cloud-detail');
+  detail.className = 'cloud-detail ' + currentCloud;
+  document.getElementById('cd-logo').textContent = c.logo;
+  document.getElementById('cd-title').textContent = c.title;
+  document.getElementById('cd-services').innerHTML = c.services.map(function(s){
+    return '<div class="svc"><div class="k">'+s.k+'</div><h5>'+s.name+'</h5><p>'+s.desc+'</p></div>';
+  }).join('');
+  document.getElementById('cd-strength').innerHTML = c.strength;
+}
+document.querySelectorAll('.cloud-tab').forEach(function(b){
+  b.addEventListener('click', function(){
+    currentCloud = b.dataset.cloud;
+    renderCloud();
+  });
+});
+renderCloud();
+
+/* =====================================================================
+   QUIZ
+   ===================================================================== */
+const QUESTIONS = [
+  {
+    q:'Tu modelo de Python funciona en tu portátil pero <em>falla en el servidor del cliente</em>. ¿Primer paso?',
+    opts:['Migrar a Kubernetes', 'Empaquetar con Docker', 'Cambiar a AWS'],
+    correct:1,
+    fb:[
+      'Kubernetes orquesta contenedores, pero si todavía no tienes uno, primero hay que empaquetar. Empezar por K8s sin Docker es saltarse el paso fundamental.',
+      'Correcto. <b>Docker</b> empaqueta tu modelo + Python + librerías + configuración en un contenedor que se ejecuta igual en cualquier servidor. Soluciona el «funciona en mi máquina» de raíz. Una vez tienes la imagen Docker, puedes desplegar a K8s o donde sea.',
+      'AWS no es la solución a un problema de portabilidad. El problema no es el proveedor, es que tu entorno no es reproducible. Necesitas Docker primero.'
+    ]
+  },
+  {
+    q:'Tu modelo de recomendaciones lleva <em>6 meses funcionando</em>. De repente la precisión cae un 12%. ¿Causa más probable?',
+    opts:['Bug en el código', 'Data drift', 'Servidor lento'],
+    correct:1,
+    fb:[
+      'Improbable si el código no cambió. Cuando un modelo en producción se degrada gradualmente sin cambios de código, la causa típica es otra.',
+      'Correcto. Llevamos 6 meses sin cambiar código → no es un bug. La precisión es <b>una métrica del modelo</b>, no del servidor. El sospechoso obvio: <b>data drift</b>. Los datos de hoy ya no se parecen a los de hace 6 meses (cambios estacionales, nuevos productos, nuevos clientes…). Hay que reentrenar.',
+      'La latencia y la precisión son métricas distintas. Un servidor lento afecta a la velocidad, no a la calidad de las predicciones.'
+    ]
+  },
+  {
+    q:'Modelo de fraude bancario. Los patrones cambian <em>semana a semana</em>. ¿Estrategia de reentrenamiento?',
+    opts:['No hace falta reentrenar', 'Fijo cada trimestre', 'Dinámico con triggers'],
+    correct:2,
+    fb:[
+      'En detección de fraude, los patrones cambian constantemente (los defraudadores aprenden las reglas). Un modelo sin reentrenar dura semanas, no meses.',
+      'Trimestral es demasiado lento para fraude. Un trimestre es una eternidad — los patrones de fraude se reinventan cada semana. Llegas tarde a todo.',
+      'Correcto. En entornos volátiles como fraude, el <b>reentrenamiento dinámico</b> es la única opción seria. El sistema detecta el drift y dispara el pipeline de reentreno automáticamente. Reaccionas en horas, no en meses. Equipos maduros combinan trigger automático + revisión humana periódica.'
+    ]
+  },
+  {
+    q:'¿Cuál es la diferencia <em>fundamental</em> entre Docker y Kubernetes?',
+    opts:['Docker es viejo, K8s es moderno', 'Docker empaqueta, K8s orquesta', 'Son lo mismo con otro nombre'],
+    correct:1,
+    fb:[
+      'No es una cuestión de antigüedad — los dos siguen muy vigentes. La diferencia es funcional.',
+      'Correcto. <b>Docker</b> resuelve «cómo hago que mi app funcione igual en cualquier servidor» → empaqueta. <b>Kubernetes</b> resuelve «cómo manejo 10.000 contenedores a la vez sin que se queme ninguno» → orquesta. Son <em>complementarios</em>, no alternativas. Empaquetas con Docker, despliegas a escala con K8s.',
+      'Son herramientas distintas con propósitos distintos. Confundirlas es uno de los errores más comunes en proyectos MLOps.'
+    ]
+  },
+  {
+    q:'Tu empresa <em>ya usa Microsoft 365</em> en toda la organización. ¿Qué cloud para tu proyecto ML?',
+    opts:['AWS (cuota de mercado)', 'Azure (mismo ecosistema)', 'GCP (mejor IA)'],
+    correct:1,
+    fb:[
+      'AWS es la opción dominante en general, pero romper con el ecosistema Microsoft existente significa integraciones nuevas, autenticación dual, formaciones, etc. Es una decisión cara que no aporta ventaja técnica.',
+      'Correcto. <b>Azure</b> se integra de forma nativa con Active Directory, Microsoft 365 y .NET. La autenticación, la facturación, las políticas de seguridad — todo ya está. Las tres nubes hacen <em>lo mismo</em> técnicamente; la elección es <b>ecosistémica</b>, no técnica.',
+      'Vertex AI es excelente, pero migrar todo a GCP por una mejor IA generativa cuando ya tienes Microsoft significa un coste enorme de integración. Solo tiene sentido para equipos data-first o startups que aún no han elegido cloud.'
+    ]
+  },
+  {
+    q:'Tu modelo está <em>listo para producción</em>. ¿Cuál de estos <b>te hace parar</b>?',
+    opts:['Tienes Docker, monitor, rollback', 'Tienes Docker, sin monitor', 'Tienes Docker, monitor, rollback, pipeline de reentreno'],
+    correct:1,
+    fb:[
+      'Tres de los cuatro requisitos no es ideal pero podrías arrancar. Te falta el reentrenamiento — pero al menos sabrás cuándo el modelo se rompe.',
+      'Correcto. <b>Sin monitor vas ciego.</b> Si el modelo se degrada en producción, no te enterarás hasta que algún cliente se queje — y para entonces ya habrás perdido dinero. La monitorización no es opcional. Es la <em>primera</em> de las cuatro señales rojas.',
+      '¡Estás listo! Los cuatro pilares: contenedor reproducible, monitorización activa, plan de rollback y pipeline de reentreno. Esto es MLOps maduro.'
+    ]
+  }
+];
+
+const quizEl = document.getElementById('quiz');
+let answeredCount = 0;
+let correctCount = 0;
+
+QUESTIONS.forEach(function(item, qi){
+  const div = document.createElement('div');
+  div.className = 'question';
+  div.innerHTML = '<div class="qnum">pregunta '+(qi+1)+'/'+QUESTIONS.length+'</div>'
+                + '<h4>'+item.q+'</h4>'
+                + '<div class="options" data-q="'+qi+'">'
+                + item.opts.map(function(o, oi){
+                    return '<button class="opt" data-q="'+qi+'" data-o="'+oi+'">'+o+'</button>';
+                  }).join('')
+                + '</div>'
+                + '<div class="feedback" data-q="'+qi+'"></div>';
+  quizEl.appendChild(div);
+});
+
+const answered = new Set();
+quizEl.querySelectorAll('.opt').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    const qi = +btn.dataset.q;
+    const oi = +btn.dataset.o;
+    if(answered.has(qi)) return;
+    answered.add(qi);
+    answeredCount++;
+
+    const correctIdx = QUESTIONS[qi].correct;
+    const isCorrect = oi === correctIdx;
+    if(isCorrect) correctCount++;
+
+    // Marcar todas las opciones
+    const opts = quizEl.querySelectorAll('.opt[data-q="'+qi+'"]');
+    opts.forEach(function(o, idx){
+      o.classList.add('disabled');
+      if(idx === correctIdx) o.classList.add('correct');
+      if(idx === oi && !isCorrect) o.classList.add('wrong');
+    });
+
+    // Feedback
+    const fb = quizEl.querySelector('.feedback[data-q="'+qi+'"]');
+    fb.className = 'feedback show '+(isCorrect ? 'good' : 'bad');
+    fb.innerHTML = '<b>'+(isCorrect?'✓ Correcto. ':'✗ Casi. ')+'</b>'+QUESTIONS[qi].fb[oi];
+
+    // Update score card
+    if(answeredCount === QUESTIONS.length){
+      const sc = document.getElementById('score-card');
+      sc.classList.add('show');
+      const pct = correctCount/QUESTIONS.length;
+      if(pct >= 0.83) sc.classList.add('high');
+      else if(pct >= 0.5) sc.classList.add('mid');
+      else sc.classList.add('low');
+      document.getElementById('score-val').textContent = correctCount+' / '+QUESTIONS.length;
+      let msg = '';
+      if(correctCount === QUESTIONS.length) msg = '🎉 Perfecto. Listo para llevar un modelo a producción.';
+      else if(correctCount >= 5) msg = 'Casi pleno. Repasa la pregunta que fallaste y estás listo.';
+      else if(correctCount >= 3) msg = 'Vas bien. Recomendable releer las preguntas que fallaste y el feedback.';
+      else msg = 'Toca repasar el material del tema. Vuelve a las analogías de la paella — son la clave de todo.';
+      document.getElementById('score-msg').textContent = msg;
+      sc.scrollIntoView({behavior:'smooth', block:'center'});
+    }
+  });
+});
+</script>
+</body>
+</html>

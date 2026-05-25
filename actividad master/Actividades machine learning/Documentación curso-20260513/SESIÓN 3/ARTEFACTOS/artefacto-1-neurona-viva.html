@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Artefacto 1 · La Neurona Viva</title>
+<style>
+:root{
+  --crema:#f5f1e8; --crema-2:#ede6d3; --marino:#1a2b4a; --marino-2:#2d4368;
+  --azul:#5b8fb9; --azul-claro:#a8c5e2; --acento:#d4915d; --acento-2:#e8a878;
+  --verde:#6b8e6b; --rojo:#b85450; --texto:#2a2a2a; --gris:#6b6b6b;
+  color-scheme: light;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:Georgia,'Times New Roman',serif;
+  background:var(--crema); color:var(--texto);
+  line-height:1.6; min-height:100vh;
+}
+.contenedor{max-width:1100px; margin:0 auto; padding:40px 24px}
+header{
+  border-bottom:3px solid var(--marino);
+  padding-bottom:24px; margin-bottom:36px;
+}
+.kicker{
+  font-family:'Helvetica Neue',Arial,sans-serif;
+  font-size:11px; letter-spacing:3px; color:var(--azul);
+  text-transform:uppercase; margin-bottom:8px;
+}
+h1{font-size:42px; color:var(--marino); margin-bottom:8px; font-weight:normal}
+.subtitulo{color:var(--gris); font-size:17px; font-style:italic}
+
+.seccion{
+  background:#fff; border-radius:6px; padding:32px;
+  margin-bottom:28px;
+  box-shadow:0 2px 12px rgba(26,43,74,0.08);
+  border-left:4px solid var(--azul);
+}
+.seccion h2{
+  font-size:26px; color:var(--marino); margin-bottom:14px;
+  font-weight:normal;
+}
+.seccion h3{
+  font-size:19px; color:var(--marino-2); margin:20px 0 10px;
+  font-family:'Helvetica Neue',Arial,sans-serif;
+  letter-spacing:1px; text-transform:uppercase; font-weight:600;
+}
+.seccion p{margin-bottom:12px}
+
+.neurona-lab{
+  display:grid; grid-template-columns:1fr 1.2fr; gap:32px;
+  margin-top:18px;
+}
+.controles{
+  background:var(--crema-2); padding:22px; border-radius:6px;
+}
+.control{margin-bottom:18px}
+.control label{
+  display:flex; justify-content:space-between;
+  font-family:'Helvetica Neue',Arial,sans-serif; font-size:13px;
+  color:var(--marino); margin-bottom:6px; font-weight:600;
+}
+.control .nombre{color:var(--marino)}
+.control .valor{
+  color:var(--acento); font-weight:bold;
+  font-family:'Courier New',monospace;
+}
+.control input[type=range]{
+  width:100%; -webkit-appearance:none; height:6px;
+  background:#d4ccb8; border-radius:3px; outline:none;
+}
+.control input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none; width:18px; height:18px;
+  border-radius:50%; background:var(--azul); cursor:pointer;
+  border:3px solid #fff; box-shadow:0 1px 4px rgba(0,0,0,0.2);
+}
+.control input[type=range]::-moz-range-thumb{
+  width:18px; height:18px; border-radius:50%;
+  background:var(--azul); cursor:pointer;
+  border:3px solid #fff; box-shadow:0 1px 4px rgba(0,0,0,0.2);
+}
+.control .desc{
+  font-size:12px; color:var(--gris);
+  font-style:italic; margin-top:4px;
+}
+
+.visualizacion{
+  background:var(--crema-2); border-radius:6px; padding:22px;
+  display:flex; flex-direction:column; align-items:center;
+  justify-content:center;
+}
+.calculo{
+  background:#fff; padding:18px; border-radius:6px;
+  width:100%; margin-bottom:18px;
+  font-family:'Courier New',monospace; font-size:14px;
+}
+.calculo .formula{color:var(--marino); margin-bottom:6px}
+.calculo .resultado{
+  color:var(--acento); font-size:22px; font-weight:bold;
+  margin-top:10px;
+}
+.veredicto{
+  padding:18px; border-radius:6px; text-align:center;
+  font-size:20px; width:100%;
+  transition:all 0.3s;
+}
+.veredicto.si{
+  background:linear-gradient(135deg,#a8d4a8,#8eb88e); color:#1f3a1f;
+}
+.veredicto.no{
+  background:linear-gradient(135deg,#e8a8a4,#d48580); color:#3a1f1d;
+}
+
+.neurona-svg{width:100%; max-width:380px; margin-bottom:20px}
+
+.tabs{
+  display:flex; gap:4px; margin-bottom:16px;
+  background:var(--crema-2); padding:4px; border-radius:6px;
+}
+.tab{
+  flex:1; padding:10px; cursor:pointer;
+  font-family:'Helvetica Neue',Arial,sans-serif; font-size:13px;
+  text-align:center; border-radius:4px;
+  transition:all 0.2s; color:var(--gris); font-weight:600;
+}
+.tab.activa{background:var(--marino); color:#fff}
+.tab:hover:not(.activa){background:#fff}
+
+.act-grafico{background:var(--crema-2); border-radius:6px; padding:18px}
+.info-act{
+  background:var(--crema); padding:14px;
+  border-left:3px solid var(--acento);
+  margin-top:12px; border-radius:0 4px 4px 0;
+  font-size:14px; line-height:1.5;
+}
+
+.pasos{
+  display:grid; grid-template-columns:repeat(5,1fr);
+  gap:12px; margin:20px 0;
+}
+.paso{
+  background:var(--crema-2); padding:14px; border-radius:6px;
+  text-align:center; cursor:pointer;
+  transition:all 0.2s; border:2px solid transparent;
+}
+.paso:hover{transform:translateY(-2px); border-color:var(--azul)}
+.paso.activo{background:var(--marino); color:#fff; border-color:var(--marino)}
+.paso .num{
+  font-family:'Helvetica Neue',Arial,sans-serif;
+  font-size:11px; letter-spacing:2px;
+}
+.paso .nombre{font-size:14px; font-weight:bold; margin:4px 0}
+.detalle-paso{
+  background:var(--crema); padding:18px; border-radius:6px;
+  margin-top:14px; min-height:120px;
+}
+
+.gradiente-lab{margin-top:16px}
+.gradiente-controles{
+  display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px;
+}
+.preset-btns{display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap}
+.preset-btn{
+  padding:10px 14px; border:2px solid var(--marino);
+  background:#fff; color:var(--marino); cursor:pointer;
+  font-family:'Helvetica Neue',Arial,sans-serif; font-size:13px;
+  border-radius:4px; transition:all 0.2s; font-weight:600;
+}
+.preset-btn:hover{background:var(--marino); color:#fff}
+.preset-btn.lanzar{
+  background:var(--acento); color:#fff; border-color:var(--acento);
+}
+.preset-btn.lanzar:hover{background:var(--marino); border-color:var(--marino)}
+canvas{
+  width:100%; max-width:100%; background:#fff;
+  border-radius:6px; display:block;
+}
+.mensaje-grad{
+  margin-top:12px; padding:14px; border-radius:6px;
+  background:var(--crema); border-left:3px solid var(--azul);
+  font-size:14px;
+}
+
+.quiz{margin-top:16px}
+.pregunta{
+  background:var(--crema-2); padding:18px; border-radius:6px;
+  margin-bottom:14px;
+}
+.pregunta .enunciado{
+  font-size:16px; color:var(--marino); margin-bottom:12px;
+  font-weight:bold;
+}
+.opciones{display:flex; flex-direction:column; gap:8px}
+.opcion{
+  padding:11px 14px; background:#fff; border:2px solid #ddd;
+  cursor:pointer; border-radius:4px; transition:all 0.2s;
+  font-family:Georgia,serif; font-size:14px;
+}
+.opcion:hover{border-color:var(--azul)}
+.opcion.correcta{background:#d8eed8; border-color:var(--verde); color:#1f3a1f}
+.opcion.incorrecta{background:#f5d8d4; border-color:var(--rojo); color:#3a1f1d}
+.feedback{
+  margin-top:10px; padding:11px; border-radius:4px;
+  font-size:14px; display:none;
+}
+.feedback.activo{display:block}
+.feedback.bien{background:#d8eed8; color:#1f3a1f}
+.feedback.mal{background:#f5d8d4; color:#3a1f1d}
+
+footer{
+  text-align:center; color:var(--gris); font-size:13px;
+  padding:24px 0; font-style:italic;
+}
+
+@media(max-width:780px){
+  .neurona-lab{grid-template-columns:1fr}
+  .pasos{grid-template-columns:1fr 1fr}
+  .gradiente-controles{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="contenedor">
+
+<header>
+  <div class="kicker">SESIÓN 03 · ARTEFACTO 01 · DEEP LEARNING</div>
+  <h1>La neurona viva</h1>
+  <p class="subtitulo">El ingrediente atómico del deep learning. Tócala, muévela, y mira cómo aprende.</p>
+</header>
+
+<div class="seccion">
+  <h2>¿Qué es una neurona artificial?</h2>
+  <p>Imagina un <strong>cocinero</strong> que recibe ingredientes (entradas), decide cuánto importa cada uno (pesos), añade su toque personal (sesgo) y al final dictamina: <em>¿saco el plato o no?</em> (función de activación). Eso es una neurona.</p>
+  <p>Cuatro piezas y una operación matemática muy sencilla:</p>
+  <p style="font-family:'Courier New',monospace; background:var(--crema-2); padding:16px; border-radius:6px; text-align:center; margin:14px 0; font-size:17px; color:var(--marino);">
+    z = (x₁·w₁) + (x₂·w₂) + (x₃·w₃) + b<br>
+    salida = activación(z)
+  </p>
+  <p>Pequeñita por sí sola, casi inútil. Pero <strong>conecta miles en capas</strong> y obtienes algo que reconoce caras, traduce idiomas o escribe poesía.</p>
+</div>
+
+<div class="seccion">
+  <h2>Laboratorio 1 · Una neurona, cuatro mandos</h2>
+  <p>Estás cocinando paella. Tres ingredientes, tres pesos. Mueve los sliders y observa la salida en directo. Si supera <strong>0.5</strong>, la neurona aprueba la paella.</p>
+
+  <div class="neurona-lab">
+    <div class="controles">
+      <h3>Pesos del cocinero</h3>
+
+      <div class="control">
+        <label><span class="nombre">Azafrán (x₁ = 0.8)</span><span class="valor" id="vw1">1.50</span></label>
+        <input type="range" id="w1" min="-2" max="3" step="0.1" value="1.5">
+        <div class="desc">Cuánto importa el azafrán para que sea «paella».</div>
+      </div>
+      <div class="control">
+        <label><span class="nombre">Arroz (x₂ = 1.0)</span><span class="valor" id="vw2">0.80</span></label>
+        <input type="range" id="w2" min="-2" max="3" step="0.1" value="0.8">
+        <div class="desc">Sin arroz no hay paella, pero su peso es moderado.</div>
+      </div>
+      <div class="control">
+        <label><span class="nombre">Pulpo (x₃ = 0.6)</span><span class="valor" id="vw3">-1.20</span></label>
+        <input type="range" id="w3" min="-2" max="3" step="0.1" value="-1.2">
+        <div class="desc">El pulpo penaliza: en la paella tradicional no va.</div>
+      </div>
+      <div class="control">
+        <label><span class="nombre">Sesgo (b)</span><span class="valor" id="vb">-0.50</span></label>
+        <input type="range" id="b" min="-3" max="3" step="0.1" value="-0.5">
+        <div class="desc">El toque personal. Empuja la decisión hacia arriba o abajo.</div>
+      </div>
+    </div>
+
+    <div class="visualizacion">
+      <svg class="neurona-svg" viewBox="0 0 380 220">
+        <circle cx="40" cy="50" r="22" fill="#a8c5e2" stroke="#1a2b4a" stroke-width="2"/>
+        <text x="40" y="55" text-anchor="middle" font-family="Georgia" font-size="13" fill="#1a2b4a">x₁=0.8</text>
+        <circle cx="40" cy="110" r="22" fill="#a8c5e2" stroke="#1a2b4a" stroke-width="2"/>
+        <text x="40" y="115" text-anchor="middle" font-family="Georgia" font-size="13" fill="#1a2b4a">x₂=1.0</text>
+        <circle cx="40" cy="170" r="22" fill="#a8c5e2" stroke="#1a2b4a" stroke-width="2"/>
+        <text x="40" y="175" text-anchor="middle" font-family="Georgia" font-size="13" fill="#1a2b4a">x₃=0.6</text>
+
+        <line id="ln1" x1="62" y1="50" x2="200" y2="110" stroke="#1a2b4a" stroke-width="2"/>
+        <line id="ln2" x1="62" y1="110" x2="200" y2="110" stroke="#1a2b4a" stroke-width="2"/>
+        <line id="ln3" x1="62" y1="170" x2="200" y2="110" stroke="#1a2b4a" stroke-width="2"/>
+
+        <text id="tw1" x="120" y="70" font-family="monospace" font-size="11" fill="#d4915d" font-weight="bold">w₁</text>
+        <text id="tw2" x="120" y="105" font-family="monospace" font-size="11" fill="#d4915d" font-weight="bold">w₂</text>
+        <text id="tw3" x="120" y="155" font-family="monospace" font-size="11" fill="#d4915d" font-weight="bold">w₃</text>
+
+        <circle id="neu" cx="220" cy="110" r="36" fill="#1a2b4a" stroke="#d4915d" stroke-width="3"/>
+        <text x="220" y="108" text-anchor="middle" font-family="Georgia" font-size="11" fill="#fff">Σ + b</text>
+        <text x="220" y="124" text-anchor="middle" font-family="Georgia" font-size="11" fill="#fff">→ σ</text>
+
+        <line x1="256" y1="110" x2="320" y2="110" stroke="#1a2b4a" stroke-width="2"/>
+        <circle id="sal" cx="345" cy="110" r="22" fill="#a8d4a8" stroke="#1a2b4a" stroke-width="2"/>
+        <text id="tsal" x="345" y="115" text-anchor="middle" font-family="Georgia" font-size="13" fill="#1a2b4a" font-weight="bold">0.69</text>
+      </svg>
+
+      <div class="calculo">
+        <div class="formula">z = (0.8·<span id="cw1">1.5</span>) + (1.0·<span id="cw2">0.8</span>) + (0.6·<span id="cw3">-1.2</span>) + <span id="cb">-0.5</span></div>
+        <div class="formula">z = <span id="cz">0.78</span></div>
+        <div class="formula">σ(z) = 1 / (1 + e<sup>-z</sup>)</div>
+        <div class="resultado">σ(z) = <span id="csigma">0.69</span></div>
+      </div>
+
+      <div id="veredicto" class="veredicto si">🥘 ¡Paella aprobada!</div>
+    </div>
+  </div>
+</div>
+
+<div class="seccion">
+  <h2>Laboratorio 2 · Las cuatro funciones de activación</h2>
+  <p>La activación es <strong>el grifo de la neurona</strong>: decide cómo sale el agua a partir del valor z. Mueve z y compara las cuatro funciones más habituales.</p>
+
+  <div class="tabs">
+    <div class="tab activa" data-fn="sigmoide">Sigmoide</div>
+    <div class="tab" data-fn="relu">ReLU</div>
+    <div class="tab" data-fn="tanh">Tanh</div>
+    <div class="tab" data-fn="lrelu">Leaky ReLU</div>
+  </div>
+
+  <div class="control">
+    <label><span class="nombre">Entrada z</span><span class="valor" id="vz">1.0</span></label>
+    <input type="range" id="zRange" min="-5" max="5" step="0.1" value="1">
+  </div>
+
+  <div class="act-grafico">
+    <canvas id="canvasAct" width="900" height="300"></canvas>
+  </div>
+
+  <div class="info-act" id="infoAct">
+    <strong>Sigmoide:</strong> aplasta cualquier número entre 0 y 1. Perfecta para probabilidad binaria en la salida. <em>Problema:</em> en capas ocultas mata el gradiente.
+  </div>
+</div>
+
+<div class="seccion">
+  <h2>Cómo aprende la red · Los 5 pasos</h2>
+  <p>Una red neuronal aprende como un niño que se cae mil veces de la bici: prueba, mide el error, ajusta y vuelve a probar. Pulsa cada paso para verlo en detalle.</p>
+
+  <div class="pasos">
+    <div class="paso activo" data-paso="0">
+      <div class="num">PASO 01</div>
+      <div class="nombre">Forward</div>
+      <div style="font-size:24px">→</div>
+    </div>
+    <div class="paso" data-paso="1">
+      <div class="num">PASO 02</div>
+      <div class="nombre">Loss</div>
+      <div style="font-size:24px">📐</div>
+    </div>
+    <div class="paso" data-paso="2">
+      <div class="num">PASO 03</div>
+      <div class="nombre">Backprop</div>
+      <div style="font-size:24px">←</div>
+    </div>
+    <div class="paso" data-paso="3">
+      <div class="num">PASO 04</div>
+      <div class="nombre">Gradiente</div>
+      <div style="font-size:24px">↓</div>
+    </div>
+    <div class="paso" data-paso="4">
+      <div class="num">PASO 05</div>
+      <div class="nombre">Repite</div>
+      <div style="font-size:24px">🔁</div>
+    </div>
+  </div>
+
+  <div class="detalle-paso" id="detallePaso">
+    <h3 style="margin-top:0">Forward · «Hago mi predicción»</h3>
+    <p>El dato cruza la red de izquierda a derecha. Cada neurona calcula su z y aplica su activación. Sale un número final: la <strong>predicción</strong> del modelo.</p>
+    <p style="font-family:'Courier New',monospace; background:var(--crema-2); padding:10px; border-radius:4px; margin-top:8px;">Ejemplo: la red ve una foto y dice «yo digo que esto es un gato con probabilidad 0.83».</p>
+  </div>
+</div>
+
+<div class="seccion">
+  <h2>Laboratorio 3 · Descenso del gradiente</h2>
+  <p>Imagina que estás en una colina con los ojos vendados y quieres llegar al valle. El <strong>learning rate (η)</strong> es el tamaño de tu paso. Demasiado pequeño: tardas eternidades. Demasiado grande: saltas el valle. Justo: aterrizas suave.</p>
+
+  <div class="gradiente-lab">
+    <div class="gradiente-controles">
+      <div class="control">
+        <label><span class="nombre">Learning rate (η)</span><span class="valor" id="vlr">0.10</span></label>
+        <input type="range" id="lrRange" min="0.01" max="1.5" step="0.01" value="0.1">
+      </div>
+      <div class="control">
+        <label><span class="nombre">Pasos</span><span class="valor" id="vpasos">30</span></label>
+        <input type="range" id="pasosRange" min="5" max="60" step="1" value="30">
+      </div>
+    </div>
+
+    <div class="preset-btns">
+      <button class="preset-btn" onclick="presetGrad('abuelita')">🧓 Abuelita (η=0.02)</button>
+      <button class="preset-btn" onclick="presetGrad('bien')">😊 Bien (η=0.15)</button>
+      <button class="preset-btn" onclick="presetGrad('hulk')">💚 Hulk (η=1.2)</button>
+      <button class="preset-btn lanzar" onclick="lanzarGrad()">▶ Lanzar la pelota</button>
+    </div>
+
+    <canvas id="canvasGrad" width="900" height="320"></canvas>
+
+    <div class="mensaje-grad" id="mensajeGrad">
+      Pulsa «Lanzar la pelota». Verás cómo desciende paso a paso buscando el mínimo de la función de pérdida.
+    </div>
+  </div>
+</div>
+
+<div class="seccion">
+  <h2>Pon a prueba tu intuición</h2>
+  <p>Cinco preguntas. Una sola intentona por pregunta. Pulsa una opción para ver el feedback.</p>
+
+  <div class="quiz">
+    <div class="pregunta" data-correcta="0">
+      <div class="enunciado">1. En la neurona de la paella, si subes mucho el peso del azafrán (w₁), ¿qué pasa?</div>
+      <div class="opciones">
+        <div class="opcion">El azafrán pesa más en la decisión final, así que cualquier cantidad pequeña ya activa fuerte la neurona.</div>
+        <div class="opcion">Nada, los pesos no cambian la salida.</div>
+        <div class="opcion">El sesgo desaparece automáticamente.</div>
+      </div>
+      <div class="feedback"></div>
+    </div>
+
+    <div class="pregunta" data-correcta="1">
+      <div class="enunciado">2. ¿Por qué necesitamos funciones de activación NO LINEALES?</div>
+      <div class="opciones">
+        <div class="opcion">Porque las matemáticas son más bonitas con curvas.</div>
+        <div class="opcion">Sin no-linealidad, una red de 100 capas se reduce a una sola — pierde capacidad de aprender patrones complejos.</div>
+        <div class="opcion">Porque las funciones lineales son lentas de calcular.</div>
+      </div>
+      <div class="feedback"></div>
+    </div>
+
+    <div class="pregunta" data-correcta="2">
+      <div class="enunciado">3. Estás clasificando «¿es un perro, un gato o un hámster?». ¿Qué activación pones en la capa de salida?</div>
+      <div class="opciones">
+        <div class="opcion">ReLU, que es la más rápida.</div>
+        <div class="opcion">Sigmoide, una por neurona.</div>
+        <div class="opcion">Softmax, porque convierte las puntuaciones en probabilidades que suman 1.</div>
+      </div>
+      <div class="feedback"></div>
+    </div>
+
+    <div class="pregunta" data-correcta="0">
+      <div class="enunciado">4. Tu modelo no aprende: la pérdida no baja. Pruebas con η=2.5 y la pérdida explota. ¿Qué está pasando?</div>
+      <div class="opciones">
+        <div class="opcion">El learning rate es demasiado alto — Hulk smashea el valle. Bájalo a 0.01–0.1.</div>
+        <div class="opcion">Necesitas más capas siempre que la pérdida no baje.</div>
+        <div class="opcion">El dataset es demasiado pequeño.</div>
+      </div>
+      <div class="feedback"></div>
+    </div>
+
+    <div class="pregunta" data-correcta="1">
+      <div class="enunciado">5. ¿Qué hace la backpropagation, en una frase?</div>
+      <div class="opciones">
+        <div class="opcion">Guarda los datos de entrenamiento en orden inverso para mejorar la memoria.</div>
+        <div class="opcion">Reparte la culpa del error entre cada peso de la red, viajando hacia atrás desde la salida hasta la entrada.</div>
+        <div class="opcion">Re-ordena las capas de la red para que aprendan más rápido.</div>
+      </div>
+      <div class="feedback"></div>
+    </div>
+  </div>
+</div>
+
+<footer>Sesión 03 · Fundamentos de Deep Learning · Estrategia del Dato, ML &amp; DL · UNIR</footer>
+
+</div>
+
+<script>
+const sliders = ['w1','w2','w3','b'];
+const x = [0.8, 1.0, 0.6];
+function actualizarNeurona(){
+  const w1 = parseFloat(document.getElementById('w1').value);
+  const w2 = parseFloat(document.getElementById('w2').value);
+  const w3 = parseFloat(document.getElementById('w3').value);
+  const b  = parseFloat(document.getElementById('b').value);
+  document.getElementById('vw1').textContent = w1.toFixed(2);
+  document.getElementById('vw2').textContent = w2.toFixed(2);
+  document.getElementById('vw3').textContent = w3.toFixed(2);
+  document.getElementById('vb').textContent  = b.toFixed(2);
+
+  const z = x[0]*w1 + x[1]*w2 + x[2]*w3 + b;
+  const sigma = 1 / (1 + Math.exp(-z));
+
+  document.getElementById('cw1').textContent = w1.toFixed(2);
+  document.getElementById('cw2').textContent = w2.toFixed(2);
+  document.getElementById('cw3').textContent = w3.toFixed(2);
+  document.getElementById('cb').textContent  = b.toFixed(2);
+  document.getElementById('cz').textContent  = z.toFixed(3);
+  document.getElementById('csigma').textContent = sigma.toFixed(3);
+  document.getElementById('tsal').textContent = sigma.toFixed(2);
+
+  document.getElementById('ln1').setAttribute('stroke-width', Math.max(1, Math.abs(w1)*1.5));
+  document.getElementById('ln2').setAttribute('stroke-width', Math.max(1, Math.abs(w2)*1.5));
+  document.getElementById('ln3').setAttribute('stroke-width', Math.max(1, Math.abs(w3)*1.5));
+  document.getElementById('ln1').setAttribute('stroke', w1>=0?'#1a2b4a':'#b85450');
+  document.getElementById('ln2').setAttribute('stroke', w2>=0?'#1a2b4a':'#b85450');
+  document.getElementById('ln3').setAttribute('stroke', w3>=0?'#1a2b4a':'#b85450');
+
+  const c = sigma > 0.5 ? '#a8d4a8' : '#e8a8a4';
+  document.getElementById('sal').setAttribute('fill', c);
+
+  const v = document.getElementById('veredicto');
+  if(sigma > 0.5){
+    v.className = 'veredicto si';
+    v.textContent = '🥘 ¡Paella aprobada! (σ > 0.5)';
+  }else{
+    v.className = 'veredicto no';
+    v.textContent = '🚫 Eso no es paella (σ ≤ 0.5)';
+  }
+}
+sliders.forEach(id => document.getElementById(id).addEventListener('input', actualizarNeurona));
+actualizarNeurona();
+
+const canvasAct = document.getElementById('canvasAct');
+const ctxAct = canvasAct.getContext('2d');
+const fnInfo = {
+  sigmoide: {fn: z => 1/(1+Math.exp(-z)), info: '<strong>Sigmoide:</strong> aplasta z entre 0 y 1. Perfecta para probabilidad binaria en la salida. <em>Problema:</em> en capas ocultas mata el gradiente — para entradas grandes su derivada se acerca a cero.', rng:[0,1]},
+  relu:     {fn: z => Math.max(0,z), info: '<strong>ReLU:</strong> si es positivo lo pasa, si es negativo lo aplasta a 0. La favorita por defecto en capas ocultas: rápida y resuelve el problema del gradiente desvaneciente. <em>Problema:</em> «neuronas muertas» que se quedan en 0.', rng:[0,5]},
+  tanh:     {fn: z => Math.tanh(z), info: '<strong>Tanh:</strong> como sigmoide pero entre −1 y 1. Centrada en cero, mejor que sigmoide en capas ocultas. Aún sufre algo de gradiente desvaneciente para valores extremos.', rng:[-1,1]},
+  lrelu:    {fn: z => z>0 ? z : 0.1*z, info: '<strong>Leaky ReLU:</strong> como ReLU pero deja pasar un poquito en la zona negativa (0.1·z). Soluciona el problema de las neuronas muertas de ReLU sin perder velocidad.', rng:[-0.5,5]}
+};
+let fnActiva = 'sigmoide';
+
+function dibujarActivacion(){
+  const W = canvasAct.width, H = canvasAct.height;
+  const f = fnInfo[fnActiva];
+  const yMin = f.rng[0], yMax = f.rng[1];
+  ctxAct.clearRect(0,0,W,H);
+  ctxAct.strokeStyle = '#d4ccb8';
+  ctxAct.lineWidth = 1;
+  for(let i=0;i<=10;i++){
+    ctxAct.beginPath();
+    ctxAct.moveTo(0, H*i/10); ctxAct.lineTo(W, H*i/10); ctxAct.stroke();
+  }
+  for(let i=0;i<=10;i++){
+    ctxAct.beginPath();
+    ctxAct.moveTo(W*i/10,0); ctxAct.lineTo(W*i/10,H); ctxAct.stroke();
+  }
+  ctxAct.strokeStyle = '#6b6b6b';
+  ctxAct.lineWidth = 1.5;
+  const yZero = H - ((-yMin)/(yMax-yMin))*H;
+  ctxAct.beginPath();
+  ctxAct.moveTo(0, yZero); ctxAct.lineTo(W, yZero); ctxAct.stroke();
+  ctxAct.beginPath();
+  ctxAct.moveTo(W/2, 0); ctxAct.lineTo(W/2, H); ctxAct.stroke();
+  ctxAct.strokeStyle = '#1a2b4a';
+  ctxAct.lineWidth = 3;
+  ctxAct.beginPath();
+  for(let px=0; px<=W; px++){
+    const z = (px/W)*10 - 5;
+    const y = f.fn(z);
+    const py = H - ((y-yMin)/(yMax-yMin))*H;
+    if(px===0) ctxAct.moveTo(px,py); else ctxAct.lineTo(px,py);
+  }
+  ctxAct.stroke();
+  const z = parseFloat(document.getElementById('zRange').value);
+  const y = f.fn(z);
+  const px = ((z+5)/10)*W;
+  const py = H - ((y-yMin)/(yMax-yMin))*H;
+  ctxAct.fillStyle = '#d4915d';
+  ctxAct.beginPath();
+  ctxAct.arc(px,py,8,0,Math.PI*2); ctxAct.fill();
+  ctxAct.strokeStyle = '#fff'; ctxAct.lineWidth=2; ctxAct.stroke();
+  ctxAct.fillStyle = '#2a2a2a';
+  ctxAct.font = '14px Georgia';
+  ctxAct.fillText(`z = ${z.toFixed(2)}`, px+12, py-6);
+  ctxAct.fillText(`f(z) = ${y.toFixed(3)}`, px+12, py+18);
+  ctxAct.fillStyle = '#6b6b6b';
+  ctxAct.font = '12px Helvetica, Arial';
+  ctxAct.fillText('z (entrada)', W-90, yZero-6);
+  ctxAct.fillText('f(z)', W/2+6, 14);
+
+  document.getElementById('infoAct').innerHTML = f.info;
+}
+document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', e => {
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('activa'));
+  t.classList.add('activa');
+  fnActiva = t.dataset.fn;
+  dibujarActivacion();
+}));
+document.getElementById('zRange').addEventListener('input', e => {
+  document.getElementById('vz').textContent = parseFloat(e.target.value).toFixed(2);
+  dibujarActivacion();
+});
+dibujarActivacion();
+
+const pasosInfo = [
+  {t:'Forward · «Hago mi predicción»', d:'El dato cruza la red de izquierda a derecha. Cada neurona calcula su z y aplica su activación. Sale un número final: la <strong>predicción</strong>.', e:'Ejemplo: la red ve una foto y dice «yo digo que esto es un gato con probabilidad 0.83».'},
+  {t:'Loss · «¿Cuánto la he cagado?»', d:'Comparas la predicción con la respuesta correcta. La <strong>función de pérdida</strong> pone un número al fallo: cuanto mayor el número, peor.', e:'Era un perro y predije gato → loss = 1.74. Cuanto más equivocado, mayor el dolor.'},
+  {t:'Backprop · «Reparto culpas»', d:'El error viaja hacia atrás por la red. Cada peso recibe su parte de la culpa: «oye w₃, tú me has llevado por mal camino». Esto se hace con la regla de la cadena (derivadas).', e:'Si la última capa se equivocó mucho y w₃ contribuyó mucho a esa neurona, w₃ recibe gran parte de la culpa.'},
+  {t:'Gradiente · «Ajusto un poquito»', d:'Cada peso se mueve un paso pequeño en la dirección que <em>reduciría</em> el error. Ese paso es <strong>learning rate × gradiente</strong>.', e:'w_nuevo = w_antiguo − η · ∂L/∂w. Pequeñito siempre: nada de saltos imprudentes.'},
+  {t:'Repite · «Otra vuelta»', d:'Una pasada por todos los datos = una <strong>epoch</strong>. Hacen falta muchas (decenas, cientos) para que la red converja a una buena solución.', e:'Una red sencilla quizá converja en 50 epochs. GPT-4 está entrenado durante meses con miles de GPUs.'}
+];
+document.querySelectorAll('.paso').forEach(p => p.addEventListener('click', e => {
+  document.querySelectorAll('.paso').forEach(x=>x.classList.remove('activo'));
+  p.classList.add('activo');
+  const i = parseInt(p.dataset.paso);
+  document.getElementById('detallePaso').innerHTML =
+    `<h3 style="margin-top:0">${pasosInfo[i].t}</h3><p>${pasosInfo[i].d}</p>` +
+    `<p style="font-family:'Courier New',monospace; background:#ede6d3; padding:10px; border-radius:4px; margin-top:8px;">${pasosInfo[i].e}</p>`;
+}));
+
+const canvasGrad = document.getElementById('canvasGrad');
+const ctxGrad = canvasGrad.getContext('2d');
+
+function loss(w){
+  return 0.4 * Math.pow(w - 1.5, 2) + 0.5;
+}
+function lossDeriv(w){
+  return 0.8 * (w - 1.5);
+}
+
+function dibujarParabola(){
+  const W = canvasGrad.width, H = canvasGrad.height;
+  ctxGrad.clearRect(0,0,W,H);
+  ctxGrad.strokeStyle = '#ede6d3';
+  for(let i=0;i<=10;i++){
+    ctxGrad.beginPath();
+    ctxGrad.moveTo(0,H*i/10); ctxGrad.lineTo(W,H*i/10); ctxGrad.stroke();
+    ctxGrad.beginPath();
+    ctxGrad.moveTo(W*i/10,0); ctxGrad.lineTo(W*i/10,H); ctxGrad.stroke();
+  }
+  ctxGrad.strokeStyle = '#1a2b4a';
+  ctxGrad.lineWidth = 3;
+  ctxGrad.beginPath();
+  for(let px=0; px<=W; px++){
+    const w = (px/W)*8 - 2.5;
+    const l = loss(w);
+    const py = H - (l/4)*H;
+    if(px===0) ctxGrad.moveTo(px,py); else ctxGrad.lineTo(px,py);
+  }
+  ctxGrad.stroke();
+  const wOpt = 1.5;
+  const pxOpt = ((wOpt+2.5)/8)*W;
+  const pyOpt = H - (loss(wOpt)/4)*H;
+  ctxGrad.fillStyle = '#6b8e6b';
+  ctxGrad.beginPath();
+  ctxGrad.arc(pxOpt,pyOpt,8,0,Math.PI*2); ctxGrad.fill();
+  ctxGrad.fillStyle = '#1a2b4a';
+  ctxGrad.font = 'italic 14px Georgia';
+  ctxGrad.fillText('óptimo', pxOpt-25, pyOpt+24);
+}
+
+function presetGrad(p){
+  const lr = document.getElementById('lrRange');
+  if(p==='abuelita') lr.value = 0.02;
+  if(p==='bien')     lr.value = 0.15;
+  if(p==='hulk')     lr.value = 1.2;
+  document.getElementById('vlr').textContent = parseFloat(lr.value).toFixed(2);
+  lanzarGrad();
+}
+document.getElementById('lrRange').addEventListener('input', e=>{
+  document.getElementById('vlr').textContent = parseFloat(e.target.value).toFixed(2);
+});
+document.getElementById('pasosRange').addEventListener('input', e=>{
+  document.getElementById('vpasos').textContent = e.target.value;
+});
+
+let animGrad = null;
+function lanzarGrad(){
+  if(animGrad) clearInterval(animGrad);
+  dibujarParabola();
+  const lr = parseFloat(document.getElementById('lrRange').value);
+  const N  = parseInt(document.getElementById('pasosRange').value);
+  let w = -1.5;
+  let i = 0;
+  let trayectoria = [];
+  const W = canvasGrad.width, H = canvasGrad.height;
+
+  animGrad = setInterval(()=>{
+    const px = ((w+2.5)/8)*W;
+    const py = H - (Math.min(loss(w),4)/4)*H;
+    trayectoria.push({px,py,w,l:loss(w)});
+
+    dibujarParabola();
+    ctxGrad.strokeStyle = '#d4915d';
+    ctxGrad.lineWidth = 2;
+    ctxGrad.beginPath();
+    trayectoria.forEach((p,j)=>{
+      if(j===0) ctxGrad.moveTo(p.px,p.py); else ctxGrad.lineTo(p.px,p.py);
+    });
+    ctxGrad.stroke();
+    trayectoria.forEach(p=>{
+      ctxGrad.fillStyle = '#d4915d';
+      ctxGrad.beginPath();
+      ctxGrad.arc(p.px,p.py,4,0,Math.PI*2); ctxGrad.fill();
+    });
+    ctxGrad.fillStyle = '#b85450';
+    ctxGrad.beginPath();
+    ctxGrad.arc(px,py,10,0,Math.PI*2); ctxGrad.fill();
+    ctxGrad.strokeStyle = '#fff'; ctxGrad.lineWidth=3; ctxGrad.stroke();
+
+    i++;
+    const grad = lossDeriv(w);
+    w = w - lr*grad;
+    if(Math.abs(w)>10) w = Math.sign(w)*10;
+
+    if(i>=N){
+      clearInterval(animGrad);
+      const dist = Math.abs(w-1.5);
+      const lossFinal = loss(w);
+      let msg;
+      if(lr < 0.05){
+        msg = `🧓 <strong>Abuelita.</strong> Has dado ${N} pasitos diminutos. Estás en w=${w.toFixed(2)}, óptimo en 1.5. Pérdida final ${lossFinal.toFixed(2)}. Apenas te has movido — necesitarías muchos más pasos para llegar.`;
+      }else if(lr > 0.8){
+        msg = `💚 <strong>Hulk.</strong> Pasos demasiado grandes (η=${lr.toFixed(2)}). La pelota oscila o diverge — saltas de un lado al otro del valle sin pararte nunca.`;
+      }else if(dist < 0.15){
+        msg = `😊 <strong>¡Convergencia perfecta!</strong> Con η=${lr.toFixed(2)} y ${N} pasos has aterrizado en w=${w.toFixed(2)}. Pérdida ≈ ${lossFinal.toFixed(3)}. Eso es lo que queremos.`;
+      }else{
+        msg = `🤔 Estás en w=${w.toFixed(2)} (óptimo 1.5). Pérdida ${lossFinal.toFixed(2)}. Subiendo el learning rate o el nº de pasos llegarías más cerca.`;
+      }
+      document.getElementById('mensajeGrad').innerHTML = msg;
+    }
+  }, 80);
+}
+dibujarParabola();
+
+document.querySelectorAll('.pregunta').forEach(p => {
+  const correcta = parseInt(p.dataset.correcta);
+  p.querySelectorAll('.opcion').forEach((op,i) => {
+    op.addEventListener('click', () => {
+      if(p.dataset.respondida) return;
+      p.dataset.respondida = '1';
+      const fb = p.querySelector('.feedback');
+      if(i === correcta){
+        op.classList.add('correcta');
+        fb.className = 'feedback activo bien';
+        fb.textContent = '✓ Correcto.';
+      }else{
+        op.classList.add('incorrecta');
+        p.querySelectorAll('.opcion')[correcta].classList.add('correcta');
+        fb.className = 'feedback activo mal';
+        fb.textContent = '✗ La correcta era la marcada en verde.';
+      }
+    });
+  });
+});
+</script>
+
+</body>
+</html>

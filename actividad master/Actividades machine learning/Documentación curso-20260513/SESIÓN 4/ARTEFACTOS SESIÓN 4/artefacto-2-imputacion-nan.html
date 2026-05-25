@@ -1,0 +1,457 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Sesión 4 · Laboratorio de datos faltantes</title>
+<style>
+  :root{
+    --crema:#F2EFE6;
+    --tinta:#0E1B4D;
+    --tinta-2:#1B2A6B;
+    --azul:#3FA9F5;
+    --azul-2:#1F8AD9;
+    --rojo:#D85C3E;
+    --verde:#2E9E6E;
+    --gris:#7A7A7A;
+    --gris-2:#C9C5B8;
+    --amber:#E0A23A;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--crema);color:var(--tinta);font-family:Georgia,'Times New Roman',serif;line-height:1.55}
+  .mono{font-family:'SF Mono',Menlo,Monaco,Consolas,monospace}
+  .sans{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}
+  .upper{text-transform:uppercase;letter-spacing:.18em;font-weight:600}
+
+  .wrap{max-width:1240px;margin:0 auto;padding:48px 32px 96px}
+  header.hero{padding:64px 0 48px;border-bottom:1px solid var(--gris-2)}
+  header .tag{font-size:11px;color:var(--azul-2)}
+  header h1{font-size:60px;line-height:1.05;margin:24px 0 16px;font-weight:700;letter-spacing:-.02em}
+  header h1 em{font-style:italic;color:var(--azul-2);font-weight:400}
+  header p.lead{font-size:19px;color:var(--tinta-2);max-width:780px;margin:0}
+
+  section{padding:56px 0;border-bottom:1px solid var(--gris-2)}
+  section .step-tag{font-size:11px;color:var(--azul-2)}
+  section h2{font-size:42px;margin:12px 0 16px;font-weight:700;letter-spacing:-.01em;line-height:1.1}
+  section h2 em{font-style:italic;color:var(--azul-2);font-weight:400}
+  section p.intro{font-size:17px;color:var(--tinta-2);max-width:880px;margin:0 0 24px}
+
+  /* MCAR/MAR/MNAR */
+  .tipos{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:24px}
+  .tipo{background:#fff;border:1px solid var(--gris-2);border-top:4px solid var(--azul);border-radius:8px;padding:22px;cursor:pointer;transition:.2s}
+  .tipo:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(14,27,77,.08)}
+  .tipo.mcar{border-top-color:var(--verde)}
+  .tipo.mar{border-top-color:var(--azul)}
+  .tipo.mnar{border-top-color:var(--rojo)}
+  .tipo .k{font-size:11px;color:var(--gris)}
+  .tipo h3{margin:8px 0 4px;font-size:24px}
+  .tipo .sub{font-size:14px;color:var(--tinta-2);margin-bottom:12px;font-style:italic}
+  .tipo p{font-size:14px;color:var(--tinta-2);margin:0 0 12px}
+  .tipo .ej{background:#FAF8F1;border-left:3px solid var(--gris-2);padding:10px 12px;font-size:13px;border-radius:0 4px 4px 0}
+  .tipo.mcar .ej{border-left-color:var(--verde)}
+  .tipo.mar .ej{border-left-color:var(--azul)}
+  .tipo.mnar .ej{border-left-color:var(--rojo)}
+
+  /* Lab */
+  .lab{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-top:24px}
+  .strategies{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px}
+  .strat{padding:14px;border:1px solid var(--gris-2);background:#fff;border-radius:6px;cursor:pointer;font-size:13px;text-align:left;transition:.15s;font-family:inherit;color:var(--tinta)}
+  .strat:hover{border-color:var(--azul)}
+  .strat.active{background:var(--azul-2);color:#fff;border-color:var(--azul-2)}
+  .strat .n{font-size:11px;color:var(--azul-2)}
+  .strat.active .n{color:#cfeaff}
+  .strat .t{font-weight:700;margin-top:4px;font-family:'SF Mono',monospace;font-size:13px}
+  .strat .d{font-size:11px;margin-top:2px;opacity:.85}
+
+  table.df{width:100%;border-collapse:collapse;font-family:'SF Mono',Menlo,monospace;font-size:13px;background:#fff;border-radius:8px;overflow:hidden}
+  table.df th{background:#E5E7F5;color:var(--tinta);text-transform:uppercase;font-size:10px;letter-spacing:.12em;padding:10px;text-align:left;font-weight:600}
+  table.df td{padding:10px;border-bottom:1px solid #f0eee4;color:var(--tinta);transition:background .3s}
+  table.df tr:last-child td{border-bottom:none}
+  td.nan{background:#FBE0DA;color:var(--rojo);font-style:italic}
+  td.fixed{background:#D8F1E5;color:var(--verde);font-weight:600}
+  td.dropped{background:#fafafa;color:var(--gris);text-decoration:line-through;opacity:.4}
+
+  .panel{background:#fff;border:1px solid var(--gris-2);border-radius:8px;padding:22px;margin-top:16px}
+  .panel h4{margin:0 0 14px;font-size:18px}
+
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+  .stat{background:#FAF8F1;border-radius:6px;padding:12px;text-align:center}
+  .stat .v{font-size:24px;font-weight:700}
+  .stat .l{font-size:10px;color:var(--gris);text-transform:uppercase;letter-spacing:.12em;margin-top:2px}
+
+  /* Histogram */
+  .hist{height:160px;display:flex;align-items:flex-end;gap:3px;padding:8px;background:#FAF8F1;border-radius:6px;border:1px solid var(--gris-2)}
+  .hist .bar{flex:1;background:var(--azul);border-radius:2px 2px 0 0;min-height:2px;transition:height .4s ease}
+  .hist .bar.imputed{background:var(--verde)}
+  .hist-axis{display:flex;justify-content:space-between;font-family:'SF Mono',monospace;font-size:11px;color:var(--gris);margin-top:4px}
+
+  pre.code{background:#0a0e2c;color:#e8e8e8;padding:16px 18px;border-radius:8px;font-size:12px;line-height:1.6;overflow-x:auto;margin:14px 0 0;font-family:'SF Mono',monospace}
+  pre.code .kw{color:#c084fc}
+  pre.code .fn{color:#fbbf24}
+  pre.code .st{color:#86efac}
+  pre.code .nm{color:#f59e0b}
+  pre.code .cm{color:#7a8aa8;font-style:italic}
+
+  .note{background:#E5F1FB;border-left:4px solid var(--azul);padding:14px 18px;border-radius:4px;margin-top:18px;font-size:14px;color:var(--tinta-2)}
+  .note b{color:var(--tinta)}
+  .warning{background:#FBE5DD;border-left-color:var(--rojo)}
+  .tip{background:#E0F4E8;border-left-color:var(--verde)}
+
+  /* Quiz */
+  .quiz{background:#fff;border:1px solid var(--gris-2);border-radius:10px;padding:28px;margin-top:24px}
+  .quiz .q{margin-bottom:24px;padding-bottom:24px;border-bottom:1px dashed var(--gris-2)}
+  .quiz .q:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+  .quiz .q b{font-size:16px}
+  .quiz .opts{margin-top:12px;display:flex;flex-wrap:wrap;gap:8px}
+  .quiz .opt{padding:8px 14px;border:1px solid var(--gris-2);background:#fff;cursor:pointer;border-radius:4px;font-family:inherit;font-size:13px;color:var(--tinta);transition:.15s}
+  .quiz .opt:hover{border-color:var(--azul)}
+  .quiz .opt.ok{background:#D8F1E5;border-color:var(--verde);color:var(--verde);font-weight:700}
+  .quiz .opt.bad{background:#FBE0DA;border-color:var(--rojo);color:var(--rojo)}
+  .quiz .feedback{margin-top:12px;font-size:13px;color:var(--tinta-2);padding:10px;background:#FAF8F1;border-radius:4px;display:none}
+  .quiz .feedback.show{display:block}
+
+  @media (max-width:880px){
+    header h1{font-size:42px}
+    section h2{font-size:32px}
+    .tipos,.lab,.stats,.strategies{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <div class="upper tag">Tema 4 · Sesión 04 · Artefacto 2</div>
+  <h1>Datos faltantes: <em>los huecos</em>.</h1>
+  <p class="lead">Un <span class="mono">NaN</span> es un agujero en el dataset. Antes de rellenarlo hay que entender <b>por qué</b> falta — eso decide qué estrategia usar. Esta es una clínica práctica: tres tipos de NaN, cuatro estrategias de imputación, y un laboratorio donde puedes ver en directo cómo cambia la distribución según lo que decidas.</p>
+</header>
+
+<!-- Tipos -->
+<section style="border-bottom:none">
+  <div class="upper step-tag">Concepto · MCAR / MAR / MNAR</div>
+  <h2>Por qué falta el dato <em>importa más</em> que cómo rellenas.</h2>
+  <p class="intro">Hay tres maneras de que falte un valor. Cada una pide un tratamiento distinto. Confundirlas mete sesgo invisible en tu modelo.</p>
+  <div class="tipos">
+    <div class="tipo mcar">
+      <div class="upper k">MCAR</div>
+      <h3>Missing Completely At Random</h3>
+      <div class="sub">Falta por azar puro</div>
+      <p>El sensor se apagó un instante. La hoja se mojó. El mecanógrafo se distrajo. <b>No depende de nada</b>: ni de la propia variable, ni de otras.</p>
+      <div class="ej"><b>Ej.</b> Un encuestador olvidó preguntar el peso a 3 socios al azar.<br/><b>OK:</b> puedes ignorarlos sin sesgo. Imputar también es seguro.</div>
+    </div>
+    <div class="tipo mar">
+      <div class="upper k">MAR</div>
+      <h3>Missing At Random</h3>
+      <div class="sub">Falta según otra variable</div>
+      <p>El hecho de que falte depende de algo que <em>sí</em> tienes. No es azar puro, pero es predecible con tus datos.</p>
+      <div class="ej"><b>Ej.</b> «Los hombres dicen menos su peso que las mujeres». Falta peso, pero depende de género — que sí tienes.<br/><b>OK con cuidado:</b> imputable usando la variable que explica la falta.</div>
+    </div>
+    <div class="tipo mnar">
+      <div class="upper k">MNAR</div>
+      <h3>Missing Not At Random</h3>
+      <div class="sub">Falta por la propia variable</div>
+      <p>El valor falta <b>justamente porque es lo que es</b>. Las personas con sobrepeso son las que ocultan su peso. La encuesta de satisfacción la dejan vacía los más cabreados.</p>
+      <div class="ej"><b>Ej.</b> Tu modelo de churn entrenado solo con «socios que respondieron» = solo con socios contentos. Falla.<br/><b>Cuidado:</b> imputar mete sesgo. Idealmente recoges más datos.</div>
+    </div>
+  </div>
+  <div class="note warning"><b>El sesgo invisible:</b> si tiras filas con NaN cuando los NaN son MNAR, te quedas <em>solo con los felices</em> y tu modelo de churn fracasa estrepitosamente. Investiga siempre antes de tirar.</div>
+</section>
+
+<!-- Lab -->
+<section style="border-bottom:none">
+  <div class="upper step-tag">Demo interactiva</div>
+  <h2>Imputador <em>en vivo</em>.</h2>
+  <p class="intro">Los pesos de Beto y Hugo y la edad de Diego están en <span class="mono">NaN</span>. Cambia la estrategia y mira cómo se altera la <b>media</b>, la <b>desviación</b> y el <b>histograma</b> de la columna <span class="mono">peso_kg</span>.</p>
+
+  <div class="lab">
+    <!-- Left: control + tabla -->
+    <div>
+      <div class="upper step-tag">Estrategia de imputación</div>
+      <div class="strategies" style="margin-top:10px" id="strategies">
+        <button class="strat active" data-id="drop"><div class="n upper">Nivel 0</div><div class="t">dropna()</div><div class="d">Tirar la fila</div></button>
+        <button class="strat" data-id="zero"><div class="n upper">Nivel 1</div><div class="t">fillna(0)</div><div class="d">Constante (mete sesgo)</div></button>
+        <button class="strat" data-id="mean"><div class="n upper">Nivel 2</div><div class="t">fillna(mean)</div><div class="d">Media · sensible a outliers</div></button>
+        <button class="strat" data-id="median"><div class="n upper">Nivel 2</div><div class="t">fillna(median)</div><div class="d">Mediana · robusta</div></button>
+        <button class="strat" data-id="mode"><div class="n upper">Nivel 2</div><div class="t">fillna(mode)</div><div class="d">Moda · solo categóricas</div></button>
+        <button class="strat" data-id="knn"><div class="n upper">Nivel 3</div><div class="t">KNNImputer(5)</div><div class="d">El vecino más parecido</div></button>
+      </div>
+
+      <pre class="code" id="code-out"></pre>
+
+      <div class="note tip" id="explainer"></div>
+    </div>
+
+    <!-- Right: tabla + stats + histograma -->
+    <div>
+      <div class="upper step-tag">Estado de la columna peso_kg</div>
+      <div class="panel">
+        <div class="stats">
+          <div class="stat"><div class="v" id="st-n">8</div><div class="l">filas usables</div></div>
+          <div class="stat"><div class="v" id="st-mean">—</div><div class="l">media</div></div>
+          <div class="stat"><div class="v" id="st-std">—</div><div class="l">desv. est.</div></div>
+        </div>
+
+        <table class="df" id="tabla">
+          <thead><tr>
+            <th>id</th><th>nombre</th><th>edad</th><th>peso_kg</th><th>género</th>
+          </tr></thead>
+          <tbody id="tbody"></tbody>
+        </table>
+
+        <div style="margin-top:18px" class="upper step-tag">Histograma · peso_kg</div>
+        <div class="hist" id="hist"></div>
+        <div class="hist-axis"><span>40</span><span>55</span><span>70</span><span>85</span><span>100</span></div>
+      </div>
+
+      <div class="note" id="alert">Selecciona una estrategia para ver el efecto.</div>
+    </div>
+  </div>
+
+  <div class="note"><b>Regla práctica:</b> la <b>mediana</b> es robusta a outliers; la <b>media</b> los nota. Si tu columna tiene cola larga (sueldos, visitas), usa mediana. Si es campana (alturas, edades sin extremos), media.</div>
+</section>
+
+<!-- Quiz -->
+<section style="border-bottom:none">
+  <div class="upper step-tag">Quiz</div>
+  <h2>¿Qué estrategia <em>usarías</em>?</h2>
+  <p class="intro">Cinco mini-casos. Pulsa la respuesta que crees correcta — verás feedback inmediato.</p>
+
+  <div class="quiz" id="quiz"></div>
+</section>
+
+</div>
+
+<script>
+/* Dataset extendido para histograma realista */
+const DS = [
+  {id:'001', nombre:'Ana',   edad:34, peso:62,  gen:'F'},
+  {id:'002', nombre:'Beto',  edad:28, peso:NaN, gen:'M'},
+  {id:'003', nombre:'Carla', edad:45, peso:78,  gen:'F'},
+  {id:'004', nombre:'Diego', edad:NaN,peso:91,  gen:'M'},
+  {id:'005', nombre:'Eva',   edad:31, peso:58,  gen:'F'},
+  {id:'006', nombre:'Fer',   edad:52, peso:72,  gen:'M'},
+  {id:'007', nombre:'Gala',  edad:23, peso:64,  gen:'F'},
+  {id:'008', nombre:'Hugo',  edad:38, peso:NaN, gen:'M'}
+];
+
+const EXPLAIN = {
+  drop:{
+    title:'Eliminas las filas con NaN.',
+    body:'Pierdes 2 filas (Beto y Hugo). Si tu dataset es enorme y faltan pocos, está bien. Si faltan los <em>cabreados</em> (MNAR), te queda un dataset sesgado.',
+    cls:'warning',
+    code:'<span class="cm"># Tirar filas con NaN</span>\ndf = df.<span class="fn">dropna</span>(subset=[<span class="st">\'peso_kg\'</span>])\n<span class="cm"># filas: 8 → 6</span>'
+  },
+  zero:{
+    title:'Imputar con 0.',
+    body:'Mete <b>un sesgo brutal</b>. Beto pesará 0 kg. La media baja artificialmente. <b>Solo úsalo</b> si 0 tiene sentido en la variable (p. ej. «km recorridos»).',
+    cls:'warning',
+    code:'df[<span class="st">\'peso_kg\'</span>] = df[<span class="st">\'peso_kg\'</span>].<span class="fn">fillna</span>(<span class="nm">0</span>)\n<span class="cm"># Beto.peso_kg = 0  ✗ irreal</span>'
+  },
+  mean:{
+    title:'Imputar con la media.',
+    body:'Buena idea si la columna sigue una <b>campana de Gauss</b>. Mantiene la media estable pero <b>reduce la varianza</b> (los imputados son todos iguales). Si hay outliers la media va a estar inflada.',
+    cls:'tip',
+    code:'media = df[<span class="st">\'peso_kg\'</span>].<span class="fn">mean</span>()\ndf[<span class="st">\'peso_kg\'</span>] = df[<span class="st">\'peso_kg\'</span>].<span class="fn">fillna</span>(media)\n<span class="cm"># Beto, Hugo → 70.83</span>'
+  },
+  median:{
+    title:'Imputar con la mediana.',
+    body:'<b>El default sensato</b> para variables numéricas. Robusta a outliers. Mismo problema con la varianza, pero no se contamina si hay extremos.',
+    cls:'tip',
+    code:'mediana = df[<span class="st">\'peso_kg\'</span>].<span class="fn">median</span>()\ndf[<span class="st">\'peso_kg\'</span>] = df[<span class="st">\'peso_kg\'</span>].<span class="fn">fillna</span>(mediana)\n<span class="cm"># Beto, Hugo → 68.0</span>'
+  },
+  mode:{
+    title:'Imputar con la moda.',
+    body:'La moda solo tiene sentido en <b>variables categóricas</b> (Plan, Género, Ciudad). Aplicarla a peso es absurdo: solo te daría el peso más repetido y reforzarías ese pico artificialmente.',
+    cls:'warning',
+    code:'<span class="cm"># OK para categóricas</span>\ndf[<span class="st">\'plan\'</span>] = df[<span class="st">\'plan\'</span>].<span class="fn">fillna</span>(df[<span class="st">\'plan\'</span>].<span class="fn">mode</span>()[<span class="nm">0</span>])\n<span class="cm"># Mal para numéricas continuas</span>'
+  },
+  knn:{
+    title:'KNN: el vecino más parecido.',
+    body:'Buscas las <b>5 filas más parecidas</b> en otras variables y promedias su peso. Beto (28 años, M) → vecinos son Diego (M) y Hugo (M). Más caro de calcular pero <b>mucho más realista</b>.',
+    cls:'tip',
+    code:'<span class="kw">from</span> sklearn.impute <span class="kw">import</span> KNNImputer\nimp = <span class="fn">KNNImputer</span>(n_neighbors=<span class="nm">5</span>)\ndf[<span class="st">\'peso_kg\'</span>] = imp.<span class="fn">fit_transform</span>(df[[<span class="st">\'peso_kg\'</span>,<span class="st">\'edad\'</span>]])\n<span class="cm"># Beto → 81.5  (parecido a Diego, Hugo)</span>'
+  }
+};
+
+let strat = 'drop';
+
+function applyStrat(s){
+  // Devuelve dataset con la columna peso tratada y un mark de cómo
+  const out = DS.map(function(r){return Object.assign({},r);});
+  // Calcular media/mediana ignorando NaN
+  const valid = DS.map(function(r){return r.peso;}).filter(function(v){return !isNaN(v);});
+  const mean = valid.reduce(function(a,b){return a+b;},0)/valid.length;
+  const sortedV = valid.slice().sort(function(a,b){return a-b;});
+  const median = sortedV[Math.floor(sortedV.length/2)];
+  if(s==='drop'){
+    out.forEach(function(r){
+      if(isNaN(r.peso)){ r.dropped=true; }
+    });
+  } else if(s==='zero'){
+    out.forEach(function(r){
+      if(isNaN(r.peso)){ r.peso = 0; r.imputed=true; }
+    });
+  } else if(s==='mean'){
+    out.forEach(function(r){
+      if(isNaN(r.peso)){ r.peso = +mean.toFixed(2); r.imputed=true; }
+    });
+  } else if(s==='median'){
+    out.forEach(function(r){
+      if(isNaN(r.peso)){ r.peso = median; r.imputed=true; }
+    });
+  } else if(s==='mode'){
+    // Moda: el valor más repetido (en este dataset todos únicos → primer valor) — para mostrar el "absurdo"
+    const counts = {};
+    valid.forEach(function(v){ counts[v]=(counts[v]||0)+1; });
+    let mode = valid[0], best = 0;
+    Object.keys(counts).forEach(function(k){ if(counts[k]>best){best=counts[k]; mode=+k;}});
+    out.forEach(function(r){
+      if(isNaN(r.peso)){ r.peso = mode; r.imputed=true; }
+    });
+  } else if(s==='knn'){
+    // KNN simulado: para Beto (M, 28) y Hugo (M, 38) usar la media de los M con peso conocido (Diego=91, Fer=72) ponderada por edad
+    out.forEach(function(r){
+      if(isNaN(r.peso)){
+        const same = DS.filter(function(x){return x.gen===r.gen && !isNaN(x.peso);});
+        // Vecino más parecido por edad
+        same.sort(function(a,b){return Math.abs(a.edad-r.edad)-Math.abs(b.edad-r.edad);});
+        const k = Math.min(2, same.length);
+        const avg = same.slice(0,k).reduce(function(a,b){return a+b.peso;},0)/k;
+        r.peso = +avg.toFixed(1);
+        r.imputed=true;
+      }
+    });
+  }
+  return out;
+}
+
+function stats(out){
+  const used = out.filter(function(r){return !r.dropped && !isNaN(r.peso);});
+  const vals = used.map(function(r){return r.peso;});
+  const n = vals.length;
+  const m = vals.reduce(function(a,b){return a+b;},0)/n;
+  const sd = Math.sqrt(vals.reduce(function(a,b){return a+(b-m)*(b-m);},0)/n);
+  return {n:n, mean:m, std:sd};
+}
+
+function renderTable(out){
+  const tb = document.getElementById('tbody');
+  tb.innerHTML = out.map(function(r){
+    const cls = r.dropped?' class="dropped"':'';
+    const pesoCls = r.dropped?'dropped':(r.imputed?'fixed':'');
+    let pesoVal = isNaN(r.peso)?'NaN':(r.peso);
+    if(typeof pesoVal==='number') pesoVal = Number.isInteger(pesoVal) ? pesoVal : pesoVal.toFixed(2);
+    return '<tr'+cls+'><td>'+r.id+'</td><td>'+r.nombre+'</td><td>'+(isNaN(r.edad)?'<span class="nan">NaN</span>':r.edad)+'</td><td class="'+pesoCls+'">'+pesoVal+'</td><td>'+r.gen+'</td></tr>';
+  }).join('');
+}
+
+function renderHist(out){
+  const used = out.filter(function(r){return !r.dropped && !isNaN(r.peso);});
+  const bins = [0,0,0,0,0,0,0,0,0,0]; // 40-100, 6 kg bins
+  const min=40, max=100, step=(max-min)/bins.length;
+  const imputedBins = [0,0,0,0,0,0,0,0,0,0];
+  used.forEach(function(r){
+    const idx = Math.max(0, Math.min(bins.length-1, Math.floor((r.peso - min)/step)));
+    bins[idx]++;
+    if(r.imputed) imputedBins[idx]++;
+  });
+  const maxN = Math.max.apply(null, bins) || 1;
+  const h = document.getElementById('hist');
+  h.innerHTML = '';
+  bins.forEach(function(n,i){
+    const tot = n; const imp = imputedBins[i];
+    const norm = tot - imp;
+    const bar = document.createElement('div');
+    bar.className = 'bar';
+    bar.style.height = (tot/maxN*100) + '%';
+    if(imp===tot && tot>0) bar.classList.add('imputed');
+    bar.title = 'rango '+(min+i*step).toFixed(0)+'-'+(min+(i+1)*step).toFixed(0)+' kg → '+tot+' (imputados: '+imp+')';
+    h.appendChild(bar);
+  });
+}
+
+function update(){
+  const out = applyStrat(strat);
+  const s = stats(out);
+  document.getElementById('st-n').textContent = s.n;
+  document.getElementById('st-mean').textContent = isNaN(s.mean)?'—':s.mean.toFixed(2);
+  document.getElementById('st-std').textContent = isNaN(s.std)?'—':s.std.toFixed(2);
+  renderTable(out);
+  renderHist(out);
+
+  const ex = EXPLAIN[strat];
+  const al = document.getElementById('alert');
+  al.className = 'note ' + (ex.cls||'tip');
+  al.innerHTML = '<b>'+ex.title+'</b> '+ex.body;
+  document.getElementById('explainer').className = 'note ' + (ex.cls||'tip');
+  document.getElementById('explainer').innerHTML = '<b>Resultado:</b> n=<span class="mono">'+s.n+'</span> · media=<span class="mono">'+(isNaN(s.mean)?'—':s.mean.toFixed(2))+'</span> · std=<span class="mono">'+(isNaN(s.std)?'—':s.std.toFixed(2))+'</span>. Compáralo con la mediana de la columna sin tocar (68 kg).';
+  document.getElementById('code-out').innerHTML = ex.code;
+
+  document.querySelectorAll('.strat').forEach(function(b){
+    b.classList.toggle('active', b.dataset.id===strat);
+  });
+}
+
+document.querySelectorAll('.strat').forEach(function(b){
+  b.addEventListener('click', function(){ strat = b.dataset.id; update(); });
+});
+update();
+
+/* ====== Quiz ====== */
+const Q = [
+  {q:'Tienes una columna «sueldo» con cola larga. La media es 80k y la mediana 35k. ¿Cómo imputas los NaN?', opts:[
+    {t:'Media', ok:false, fb:'La media está inflada por outliers. Imputar con 80k mete sesgo: la mayoría gana 35k.'},
+    {t:'Mediana', ok:true, fb:'Correcto. Distribución sesgada → mediana. Robusta al outlier.'},
+    {t:'Cero', ok:false, fb:'No: meterías ceros en sueldos, distorsionando todo.'}
+  ]},
+  {q:'En tu encuesta de satisfacción, los socios cabreados no responden. ¿Qué tipo de NaN es?', opts:[
+    {t:'MCAR', ok:false, fb:'No: la falta depende del estado emocional, no es azar puro.'},
+    {t:'MAR', ok:false, fb:'No: dependería de OTRA variable observada. Aquí depende de la propia respuesta.'},
+    {t:'MNAR', ok:true, fb:'Exacto. La falta depende de lo que vale la propia variable. Tirar filas mete sesgo brutal.'}
+  ]},
+  {q:'Tu columna «plan_suscripcion» tiene NaN en 3 filas. Es una categórica. ¿Cómo imputas?', opts:[
+    {t:'Media', ok:false, fb:'Las categóricas no tienen «media». Premium ≠ 1.5.'},
+    {t:'Moda', ok:true, fb:'Sí. La moda (categoría más frecuente) es la imputación canónica para categóricas.'},
+    {t:'Mediana', ok:false, fb:'No tiene sentido en categóricas no ordinales.'}
+  ]},
+  {q:'Dataset enorme (1M filas). Faltan 50 valores en la columna edad. Son MCAR. ¿Qué haces?', opts:[
+    {t:'KNNImputer', ok:false, fb:'Funcionaría, pero es disparar a un mosquito con un cañón. Caro y sin ganancia clara.'},
+    {t:'dropna()', ok:true, fb:'Pierdes 50/1M = 0.005% de los datos. MCAR significa que es seguro tirar. Más simple, más limpio.'},
+    {t:'fillna(0)', ok:false, fb:'Meterías 50 personas de 0 años. Sesgo absurdo.'}
+  ]},
+  {q:'En 2 columnas faltan datos de forma correlacionada (faltan en las mismas filas). ¿Qué imputador prefieres?', opts:[
+    {t:'fillna(media) por columna', ok:false, fb:'Ignoras la correlación entre columnas. Pierdes información estructural.'},
+    {t:'KNN o MICE', ok:true, fb:'Imputadores multivariantes aprovechan la relación entre columnas para imputar coherentemente.'},
+    {t:'dropna()', ok:false, fb:'Posible, pero pierdes filas que se podrían recuperar con imputación inteligente.'}
+  ]}
+];
+
+const qel = document.getElementById('quiz');
+Q.forEach(function(item, qi){
+  const div = document.createElement('div');
+  div.className = 'q';
+  div.innerHTML = '<b>'+(qi+1)+'. '+item.q+'</b><div class="opts" data-q="'+qi+'">'+
+    item.opts.map(function(o,oi){return '<button class="opt" data-q="'+qi+'" data-o="'+oi+'">'+o.t+'</button>';}).join('')+
+    '</div><div class="feedback" data-q="'+qi+'"></div>';
+  qel.appendChild(div);
+});
+
+qel.querySelectorAll('.opt').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    const qi = +btn.dataset.q, oi = +btn.dataset.o;
+    const item = Q[qi];
+    const opt = item.opts[oi];
+    const opts = qel.querySelectorAll('.opt[data-q="'+qi+'"]');
+    opts.forEach(function(o,i){
+      o.classList.remove('ok','bad');
+      if(item.opts[i].ok) o.classList.add('ok');
+      if(i===oi && !opt.ok) o.classList.add('bad');
+    });
+    const fb = qel.querySelector('.feedback[data-q="'+qi+'"]');
+    fb.classList.add('show');
+    fb.innerHTML = '<b>'+(opt.ok?'✓ Correcto. ':'✗ Casi. ')+'</b>'+opt.fb;
+  });
+});
+</script>
+</body>
+</html>

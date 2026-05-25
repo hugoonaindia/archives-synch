@@ -1,0 +1,27 @@
+# Secrets & credentials
+credentials.json
+token.json
+
+# Persistencia temporal
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.pytest_cache/
+.coverage
+*.egg
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+.localized
+
+# Env
+.env
+.env.local

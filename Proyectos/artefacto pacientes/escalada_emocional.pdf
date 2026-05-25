@@ -1,0 +1,104 @@
+%PDF-1.4
+1 0 obj
+<<
+/Type /Catalog
+/Pages 2 0 R
+>>
+endobj
+2 0 obj
+<<
+/Type /Pages
+/Kids [3 0 R]
+/Count 1
+>>
+endobj
+3 0 obj
+<<
+/Type /Page
+/Parent 2 0 R
+/MediaBox [0 0 612 792]
+/Resources <<
+  /Font <<
+    /F1 <<
+      /Type /Font
+      /Subtype /Type1
+      /BaseFont /Times-Roman
+    >>
+  >>
+>>
+/Contents 4 0 R
+>>
+endobj
+4 0 obj
+<<
+/Length 45
+>>
+stream
+BT
+/F1 12 Tf
+50 750 Td
+(Escala de Intensidad Emocional) Tj
+50 720 Td
+_____________________________ Tj
+50 680 Td
+0 - No siento nada Tj
+50 660 Td
+1 - Muy ligeramente Tj
+50 640 Td
+2 - Ligeramente Tj
+50 620 Td
+3 - Moderadamente Tj
+50 600 Td
+4 - Bastante Tj
+50 580 Td
+5 - Extremadamente Tj
+50 550 Td
+_____________________________ Tj
+50 520 Td
+Emoción actual: _________________________ Tj
+50 490 Td
+Intensidad actual: ________ Tj
+50 460 Td
+Activadores/Factores desencadenantes: Tj
+50 440 Td
+_______________________________________ Tj
+50 420 Td
+_______________________________________ Tj
+50 400 Td
+_______________________________________ Tj
+50 370 Td
+Respuestas físicas: Tj
+50 350 Td
+_______________________________________ Tj
+50 330 Td
+_______________________________________ Tj
+50 310 Td
+_______________________________________ Tj
+50 280 Td
+Estrategias de coping: Tj
+50 260 Td
+_______________________________________ Tj
+50 240 Td
+_______________________________________ Tj
+50 220 Td
+_______________________________________ Tj
+50 190 Td
+Resultado después de usar estrategias: ________ Tj
+ET
+endstream
+endobj
+xref
+0 5
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000326 00000 n 
+trailer
+<<
+/Size 5
+/Root 1 0 R
+>>
+startxref
+425
+%%EOF

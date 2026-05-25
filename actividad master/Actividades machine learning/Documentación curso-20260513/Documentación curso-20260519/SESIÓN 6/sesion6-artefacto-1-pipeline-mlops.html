@@ -1,0 +1,477 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Sesión 6 · Pipeline MLOps de GymPro</title>
+<style>
+  :root{
+    --crema:#F2EFE6;
+    --tinta:#0E1B4D;
+    --tinta-2:#1B2A6B;
+    --azul:#3FA9F5;
+    --azul-2:#1F8AD9;
+    --rojo:#D85C3E;
+    --verde:#2E9E6E;
+    --amber:#E0A23A;
+    --gris:#7A7A7A;
+    --gris-2:#C9C5B8;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--crema);color:var(--tinta);font-family:Georgia,'Times New Roman',serif;line-height:1.55}
+  .mono{font-family:'SF Mono',Menlo,Monaco,Consolas,monospace}
+  .upper{text-transform:uppercase;letter-spacing:.18em;font-weight:600}
+
+  .wrap{max-width:1240px;margin:0 auto;padding:48px 32px 96px}
+  header.hero{padding:64px 0 48px;border-bottom:1px solid var(--gris-2)}
+  header .tag{font-size:11px;color:var(--azul-2)}
+  header h1{font-size:60px;line-height:1.05;margin:24px 0 16px;font-weight:700;letter-spacing:-.02em}
+  header h1 em{font-style:italic;color:var(--azul-2);font-weight:400}
+  header p.lead{font-size:19px;color:var(--tinta-2);max-width:780px;margin:0}
+
+  section{padding:56px 0;border-bottom:1px solid var(--gris-2)}
+  section .step-tag{font-size:11px;color:var(--azul-2)}
+  section h2{font-size:42px;margin:12px 0 16px;font-weight:700;letter-spacing:-.01em;line-height:1.1}
+  section h2 em{font-style:italic;color:var(--azul-2);font-weight:400}
+  section p.intro{font-size:17px;color:var(--tinta-2);max-width:880px;margin:0 0 24px}
+
+  .card{background:#fff;border:1px solid var(--gris-2);border-radius:10px;padding:22px}
+
+  /* Niveles de madurez */
+  .levels{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:18px}
+  .level-btn{padding:20px;background:#fff;border:2px solid var(--gris-2);border-radius:10px;cursor:pointer;text-align:left;font-family:inherit;color:var(--tinta);transition:.2s}
+  .level-btn:hover{transform:translateY(-3px);border-color:var(--azul-2);box-shadow:0 6px 20px rgba(14,27,77,.08)}
+  .level-btn.active{background:var(--tinta);color:#fff;border-color:var(--tinta);transform:none}
+  .level-btn .k{font-size:11px;color:var(--azul-2);text-transform:uppercase;letter-spacing:.12em;margin-bottom:6px}
+  .level-btn.active .k{color:#9DD2F8}
+  .level-btn h4{margin:0 0 6px;font-size:20px;font-weight:700}
+  .level-btn p{font-size:13px;margin:0;opacity:.85}
+
+  /* Pipeline timeline */
+  .pipeline{margin-top:24px;background:#fff;border:1px solid var(--gris-2);border-radius:12px;padding:24px;position:relative}
+  .pipeline-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px}
+  .pipeline-head h4{margin:0;font-size:20px}
+  .pipeline-toolbar{display:flex;gap:8px;align-items:center}
+
+  .stages{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;position:relative}
+  .stage{background:#FAF8F1;border:1.5px solid var(--gris-2);border-radius:8px;padding:14px 10px;text-align:center;position:relative;cursor:pointer;transition:.25s;min-height:140px;display:flex;flex-direction:column;justify-content:flex-start}
+  .stage.disabled{opacity:.3;filter:grayscale(.7)}
+  .stage.active{border-color:var(--azul-2);background:#fff;transform:translateY(-3px);box-shadow:0 4px 16px rgba(31,138,217,.18);z-index:3}
+  .stage.done{border-color:var(--verde);background:#E8F7EF}
+  .stage.pulsing{animation:stagepulse 1s infinite ease-in-out}
+  @keyframes stagepulse{0%,100%{box-shadow:0 0 0 0 rgba(63,169,245,.45)}50%{box-shadow:0 0 0 8px rgba(63,169,245,0)}}
+  .stage .n{font-family:'SF Mono',monospace;font-size:11px;color:var(--azul-2);margin-bottom:4px}
+  .stage .icon{font-size:28px;line-height:1;margin-bottom:6px;font-family:'SF Mono',monospace;color:var(--tinta);font-weight:600}
+  .stage h5{margin:4px 0 4px;font-size:14px;font-weight:700;color:var(--tinta)}
+  .stage p{margin:0;font-size:11px;color:var(--tinta-2);line-height:1.4}
+  .stage .tag-auto{position:absolute;top:6px;right:6px;background:var(--verde);color:#fff;font-family:'SF Mono',monospace;font-size:9px;padding:2px 6px;border-radius:3px;font-weight:700}
+  .stage .tag-manual{position:absolute;top:6px;right:6px;background:var(--amber);color:#fff;font-family:'SF Mono',monospace;font-size:9px;padding:2px 6px;border-radius:3px;font-weight:700}
+
+  .pipeline-arrows{position:absolute;top:50%;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent 5%,var(--gris-2) 50%,transparent 95%);z-index:1;pointer-events:none}
+
+  .controls{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;align-items:center}
+  .btn{appearance:none;border:1px solid var(--tinta);background:transparent;color:var(--tinta);padding:10px 18px;font-family:inherit;font-size:14px;cursor:pointer;border-radius:4px;font-weight:600;transition:.15s}
+  .btn:hover{background:var(--tinta);color:var(--crema)}
+  .btn.primary{background:var(--azul-2);color:#fff;border-color:var(--azul-2)}
+  .btn.primary:hover{background:var(--tinta);border-color:var(--tinta)}
+  .btn[disabled]{opacity:.4;cursor:not-allowed}
+
+  /* Stage detail */
+  .stage-detail{margin-top:18px;background:#FAF8F1;border:1px solid var(--gris-2);border-radius:10px;padding:22px;display:flex;gap:24px;align-items:flex-start;min-height:160px}
+  .stage-detail .label-col{flex:0 0 110px;font-family:'SF Mono',monospace;font-size:11px;color:var(--gris);text-transform:uppercase;letter-spacing:.12em}
+  .stage-detail .label-col .num{font-size:48px;color:var(--azul-2);font-weight:700;font-family:Georgia,serif;line-height:1;letter-spacing:-.02em}
+  .stage-detail .content-col{flex:1}
+  .stage-detail h4{margin:0 0 6px;font-size:24px}
+  .stage-detail .desc{font-size:15px;color:var(--tinta-2);margin:0 0 12px}
+  .stage-detail .code{background:#0a0e2c;color:#e8e8e8;padding:14px 16px;border-radius:6px;font-family:'SF Mono',monospace;font-size:12px;overflow-x:auto;line-height:1.55}
+  .stage-detail .code .kw{color:#c084fc}
+  .stage-detail .code .fn{color:#fbbf24}
+  .stage-detail .code .st{color:#86efac}
+  .stage-detail .code .nm{color:#f59e0b}
+  .stage-detail .code .cm{color:#7a8aa8;font-style:italic}
+
+  /* Timeline narrativa */
+  .timeline{margin-top:24px;border-left:3px solid var(--azul-2);padding-left:24px;position:relative}
+  .timeline-event{margin-bottom:20px;position:relative}
+  .timeline-event::before{content:'';position:absolute;left:-31px;top:6px;width:14px;height:14px;background:#fff;border:3px solid var(--azul-2);border-radius:50%}
+  .timeline-event.alert::before{border-color:var(--amber);background:var(--amber)}
+  .timeline-event.action::before{border-color:var(--verde);background:var(--verde)}
+  .timeline-event .time{font-family:'SF Mono',monospace;font-size:12px;color:var(--azul-2);font-weight:700;letter-spacing:.05em}
+  .timeline-event.alert .time{color:var(--amber)}
+  .timeline-event.action .time{color:var(--verde)}
+  .timeline-event .body{font-size:15px;color:var(--tinta-2);margin-top:4px}
+  .timeline-event .body b{color:var(--tinta)}
+
+  /* Las 3 ruedas CI/CD/CT */
+  .wheels{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px}
+  .wheel{background:#fff;border:1px solid var(--gris-2);border-radius:10px;padding:24px;text-align:center;position:relative;border-top:5px solid var(--azul)}
+  .wheel.ci{border-top-color:var(--tinta-2)}
+  .wheel.cd{border-top-color:var(--azul)}
+  .wheel.ct{border-top-color:var(--verde)}
+  .wheel .ring{width:80px;height:80px;border-radius:50%;border:6px solid var(--gris-2);margin:0 auto 14px;display:flex;align-items:center;justify-content:center;font-family:Georgia,serif;font-size:24px;font-weight:700;color:var(--tinta);position:relative}
+  .wheel.ci .ring{border-color:var(--tinta-2);color:var(--tinta-2)}
+  .wheel.cd .ring{border-color:var(--azul);color:var(--azul)}
+  .wheel.ct .ring{border-color:var(--verde);color:var(--verde)}
+  .wheel .k{font-size:11px;color:var(--gris);text-transform:uppercase;letter-spacing:.14em;font-family:'SF Mono',monospace}
+  .wheel h4{margin:8px 0 8px;font-size:20px}
+  .wheel p{font-size:13px;color:var(--tinta-2);margin:0 0 10px}
+  .wheel .ex{font-style:italic;color:var(--azul-2);font-size:12px;border-top:1px dashed var(--gris-2);padding-top:10px;margin-top:10px}
+
+  .note{background:#E5F1FB;border-left:4px solid var(--azul);padding:14px 18px;border-radius:4px;margin-top:18px;font-size:14px;color:var(--tinta-2)}
+  .note b{color:var(--tinta)}
+  .tip{background:#E0F4E8;border-left-color:var(--verde)}
+  .warning{background:#FBE5DD;border-left-color:var(--rojo)}
+
+  /* Stats panel del nivel */
+  .level-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px}
+  .ls{background:#FAF8F1;padding:14px 12px;border-radius:8px;text-align:center;font-family:'SF Mono',monospace}
+  .ls .l{font-size:10px;color:var(--gris);text-transform:uppercase;letter-spacing:.1em}
+  .ls .v{font-size:18px;font-weight:700;margin-top:4px;color:var(--tinta)}
+  .ls.bad .v{color:var(--rojo)}
+  .ls.good .v{color:var(--verde)}
+  .ls.warn .v{color:var(--amber)}
+
+  /* Hero del 87% */
+  .big-stat{background:var(--tinta);color:#fff;padding:48px;border-radius:12px;margin-top:28px;text-align:center}
+  .big-stat .pct{font-size:120px;font-weight:700;font-family:Georgia,serif;line-height:1;color:var(--azul);letter-spacing:-.04em}
+  .big-stat p{font-size:18px;margin:10px 0 0;color:#cfeaff}
+  .big-stat p em{font-style:italic;color:#fff}
+
+  @media (max-width:880px){
+    header h1{font-size:42px}
+    section h2{font-size:32px}
+    .levels,.wheels,.level-stats{grid-template-columns:1fr}
+    .stages{grid-template-columns:repeat(2,1fr)}
+    .stage-detail{flex-direction:column;gap:14px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <div class="upper tag">Tema 6 · Sesión 06 · Artefacto 1</div>
+  <h1>El pipeline <em>MLOps</em> de GymPro.</h1>
+  <p class="lead">El 87% de los modelos de ML nunca llegan a producción. Entrenar es solo la mitad del camino. Esta es la otra mitad: cómo se lleva un modelo del cuaderno Jupyter a un servicio que millones de personas pueden usar — y que sigue funcionando mañana, y el mes que viene, y dentro de un año.</p>
+</header>
+
+<!-- 87% -->
+<section style="border-bottom:none">
+  <div class="upper step-tag">El secreto incómodo del ML</div>
+  <h2>El <em>87%</em> nunca llega.</h2>
+  <div class="big-stat">
+    <div class="pct">87%</div>
+    <p>de los modelos de ML <em>nunca llegan</em> a producción</p>
+    <p style="margin-top:18px;font-size:14px;opacity:.8">Producción = consistencia + escala + supervisión. Todo lo demás es prototipo.</p>
+  </div>
+  <div class="note"><b>Analogía · la paella perfecta:</b> cocinar una paella increíble en tu cocina no es lo mismo que servirla todos los domingos en un restaurante para 200 personas. El plato tiene que ser <em>idéntico cada vez</em>, escalar en eventos grandes, y los ingredientes tienen que llegar frescos cada mañana.</div>
+</section>
+
+<!-- Niveles de madurez -->
+<section style="border-bottom:none">
+  <div class="upper step-tag">Niveles de madurez · Google MLOps</div>
+  <h2>De <em>cero</em> a full auto.</h2>
+  <p class="intro">Pulsa cada nivel y mira cómo cambia el pipeline. La mayoría de equipos están en nivel 0 o 1. Llegar al 2 es una <b>decisión estratégica</b>, no solo técnica.</p>
+
+  <div class="levels" id="levels">
+    <button class="level-btn active" data-level="0">
+      <div class="k">Nivel 0 · Manual</div>
+      <h4>Todo a mano</h4>
+      <p>Notebook → script → ZIP por email → operaciones lo despliega. Sin CI/CD, sin monitoreo, reentreno por crisis.</p>
+    </button>
+    <button class="level-btn" data-level="1">
+      <div class="k">Nivel 1 · Pipeline automatizado</div>
+      <h4>El entrenamiento se automatiza</h4>
+      <p>Pipelines reproducibles, trigger automático ante nuevos datos. CI/CD del modelo, monitoring básico.</p>
+    </button>
+    <button class="level-btn" data-level="2">
+      <div class="k">Nivel 2 · CI/CD/CT completo</div>
+      <h4>Todo está automatizado</h4>
+      <p>Cambios de código y de datos disparan despliegues seguros. Continuous Integration, Delivery y Training.</p>
+    </button>
+  </div>
+
+  <!-- Pipeline visual -->
+  <div class="pipeline">
+    <div class="pipeline-head">
+      <h4 id="pipeline-title">Pipeline de GymPro · Nivel 0</h4>
+      <div class="pipeline-toolbar">
+        <button class="btn primary" id="run-btn">▶ Ejecutar pipeline</button>
+        <button class="btn" id="reset-btn">↺ Reset</button>
+      </div>
+    </div>
+    <div class="stages" id="stages"></div>
+
+    <div class="level-stats" id="level-stats"></div>
+
+    <div class="stage-detail" id="stage-detail">
+      <div class="label-col">
+        <div class="upper">Paso</div>
+        <div class="num" id="sd-num">—</div>
+      </div>
+      <div class="content-col">
+        <h4 id="sd-title">Selecciona un paso</h4>
+        <p class="desc" id="sd-desc">Haz click en cualquier paso del pipeline para ver qué pasa en él. Pulsa «Ejecutar pipeline» para que avance solo.</p>
+        <div class="code" id="sd-code" style="display:none"></div>
+      </div>
+    </div>
+
+    <div class="note" id="pipeline-note"></div>
+  </div>
+</section>
+
+<!-- CI/CD/CT -->
+<section style="border-bottom:none">
+  <div class="upper step-tag">Las tres «C» del MLOps maduro</div>
+  <h2>Las tres <em>ruedas</em> que nunca paran.</h2>
+  <p class="intro">En el software clásico hay CI y CD. En ML añadimos CT — porque el modelo, a diferencia del código, <b>se degrada solo</b> con el tiempo.</p>
+
+  <div class="wheels">
+    <div class="wheel ci">
+      <div class="ring">CI</div>
+      <div class="k upper">Continuous Integration</div>
+      <h4>Integración continua</h4>
+      <p>Cada cambio de código se valida automáticamente: tests unitarios, validación de datos, validación del modelo.</p>
+      <div class="ex">Símil cine: cada vez que un actor cambia una línea, hay un ensayo express con todo el equipo.</div>
+    </div>
+    <div class="wheel cd">
+      <div class="ring">CD</div>
+      <div class="k upper">Continuous Delivery</div>
+      <h4>Entrega continua</h4>
+      <p>Cada modelo validado se prepara para desplegarse en producción. Despliegues seguros con <b>rollback</b>.</p>
+      <div class="ex">Símil: el catering ya está envasado y etiquetado. Solo falta servir.</div>
+    </div>
+    <div class="wheel ct">
+      <div class="ring">CT</div>
+      <div class="k upper">Continuous Training</div>
+      <h4>Reentrenamiento continuo</h4>
+      <p>El modelo se reentrena automáticamente cuando llegan nuevos datos o se detecta degradación.</p>
+      <div class="ex">Específico de ML: el código no caduca; el modelo sí.</div>
+    </div>
+  </div>
+  <div class="note tip"><b>Lo que hace especial al MLOps:</b> en software clásico el código no cambia solo. En ML, aunque tu código sea idéntico, el modelo deja de funcionar porque el mundo cambia. Por eso el CT existe.</div>
+</section>
+
+<!-- Timeline narrativa -->
+<section style="border-bottom:none">
+  <div class="upper step-tag">Caso real · GymPro en producción</div>
+  <h2>Un día en la <em>vida</em> de un modelo desplegado.</h2>
+  <p class="intro">El modelo de predicción de churn de GymPro lleva 3 meses en producción. Esto es lo que pasó <b>un martes cualquiera</b>.</p>
+
+  <div class="timeline">
+    <div class="timeline-event">
+      <div class="time">08:00 · OK</div>
+      <div class="body">El modelo lleva <b>3 meses en producción</b>. Llamando cada noche a 200 socios «en riesgo» — y reteniendo al 35%. Todo nominal.</div>
+    </div>
+    <div class="timeline-event alert">
+      <div class="time">09:14 · ALERTA</div>
+      <div class="body">SageMaker Model Monitor lanza una alerta: <b>la distribución de la variable «edad» ha cambiado</b>. Llegan más socios de 18–25.</div>
+    </div>
+    <div class="timeline-event alert">
+      <div class="time">11:30 · DIAGNÓSTICO</div>
+      <div class="body">El equipo MLOps lo ve en el dashboard. Confirman: una <b>campaña en TikTok</b> ha atraído un segmento que el modelo no vio en su entrenamiento.</div>
+    </div>
+    <div class="timeline-event action">
+      <div class="time">12:00 · TRIGGER</div>
+      <div class="body">Disparan el <b>pipeline de reentrenamiento</b> en Kubeflow. Toma los datos de los últimos 6 meses y vuelve a entrenar con el mismo código de antes.</div>
+    </div>
+    <div class="timeline-event action">
+      <div class="time">14:30 · CI</div>
+      <div class="body">El nuevo modelo pasa los <b>tests automáticos</b> (CI). Se compara contra el actual con un 5% de tráfico real (A/B testing). <b>Mejora F1 en 4 puntos</b>.</div>
+    </div>
+    <div class="timeline-event action">
+      <div class="time">17:45 · DEPLOY</div>
+      <div class="body">Promoción automática: el nuevo modelo va al 100% del tráfico. <b>Rollback configurado</b> por si algo falla. Sin downtime.</div>
+    </div>
+    <div class="timeline-event">
+      <div class="time">22:00 · CRON</div>
+      <div class="body">El cron nocturno usa el modelo nuevo para llamar a los 200 socios. <b>Nadie del equipo tuvo que tocar un servidor.</b></div>
+    </div>
+  </div>
+  <div class="note tip"><b>Esto es MLOps maduro:</b> detectar, reentrenar, validar, desplegar. Ciclo cerrado. Sin pánico. En un equipo sin MLOps, alguien hubiera tardado dos semanas en notar que el modelo dejó de funcionar — y para entonces, ya habría perdido muchos socios.</div>
+</section>
+
+</div>
+
+<script>
+/* ===== Definición del pipeline ===== */
+const STAGES = [
+  {n:'01', icon:'IDE', title:'Empaquetar', desc:'Tu modelo + Python + dependencias en una imagen Docker.', code:'<span class="cm"># Dockerfile</span>\n<span class="kw">FROM</span> python:<span class="nm">3.11</span>-slim\n<span class="kw">COPY</span> model.pkl serve.py .\n<span class="kw">RUN</span> pip install -r requirements.txt\n<span class="kw">CMD</span> ["python", "serve.py"]'},
+  {n:'02', icon:'CI', title:'Test (CI)', desc:'Validación automática del modelo. Tests unitarios, validación de datos, smoke tests.', code:'<span class="cm"># GitHub Actions</span>\n<span class="kw">name</span>: ci-modelo\n<span class="kw">on</span>: [push]\n<span class="kw">jobs</span>:\n  test:\n    - <span class="fn">pytest</span> tests/\n    - <span class="fn">validate</span> --schema data/schema.json\n    - <span class="fn">check_metrics</span> --min-f1 <span class="nm">0.80</span>'},
+  {n:'03', icon:'STG', title:'Staging', desc:'Entorno réplica de producción con tráfico simulado. QA, tests de integración, depuración.', code:'<span class="cm"># Deploy a staging</span>\n<span class="kw">kubectl</span> apply -f k8s/staging.yaml\n\n<span class="cm"># Tráfico sintético</span>\n<span class="fn">k6 run</span> tests/load.js --vus <span class="nm">50</span> --duration <span class="nm">5m</span>'},
+  {n:'04', icon:'CD', title:'Deploy (CD)', desc:'A/B testing con tráfico real. Rollout gradual. Rollback automático si algo va mal.', code:'<span class="cm"># Canary deployment · 5% → 50% → 100%</span>\n<span class="kw">argo</span> rollouts set image gympro-svc \\\n   gympro-svc=gympro:v2.4\n\n<span class="kw">argo</span> rollouts promote gympro-svc'},
+  {n:'05', icon:'MON', title:'Monitorizar', desc:'F1-score, latencia, throughput, data drift. Alertas automáticas si algo cae bajo umbral.', code:'<span class="cm"># Métricas en Prometheus + Grafana</span>\nmodel_predictions_total{model=<span class="st">"gympro_v2"</span>} <span class="nm">198432</span>\nmodel_f1_score{model=<span class="st">"gympro_v2"</span>}      <span class="nm">0.847</span>\nmodel_latency_p99_ms                  <span class="nm">42</span>\nmodel_drift_alert{var=<span class="st">"edad"</span>}        <span class="nm">1</span>  ⚠'},
+  {n:'06', icon:'CT', title:'Reentrenar (CT)', desc:'Pipeline disparado por drift o calendario. Recoge datos nuevos, reentrena, valida.', code:'<span class="cm"># Kubeflow pipeline</span>\n<span class="fn">pipeline_run</span>(\n    name=<span class="st">"churn-retrain"</span>,\n    trigger=<span class="st">"drift_detected"</span>,\n    data=<span class="st">"s3://gympro/data/last_6m/"</span>,\n    target_f1=<span class="nm">0.85</span>\n)'},
+  {n:'07', icon:'GO', title:'Iterar', desc:'Volver al paso 1 con el nuevo modelo. Bucle infinito mientras el modelo viva.', code:'<span class="cm"># El ciclo nunca termina</span>\n<span class="kw">while</span> model_in_production:\n    monitor()\n    <span class="kw">if</span> drift_detected <span class="kw">or</span> schedule_due:\n        retrain()\n        deploy_if_better()'}
+];
+
+/* Por nivel: qué stages son automáticas, manuales o no existen */
+const LEVELS = {
+  0:{
+    title:'Pipeline de GymPro · Nivel 0 · Todo a mano',
+    stages:['manual','manual','none','manual','none','manual','none'],
+    stats:[
+      {l:'Tiempo de deploy', v:'2 semanas', cls:'bad'},
+      {l:'Frecuencia reentreno', v:'Por crisis', cls:'bad'},
+      {l:'Modelos en prod', v:'1', cls:'warn'},
+      {l:'Downtime típico', v:'4–8 horas', cls:'bad'}
+    ],
+    note:{cls:'warning', html:'<b>Nivel 0:</b> alguien empaqueta el modelo a mano, lo envía por email a operaciones, lo despliegan en un servidor compartido. Cada cambio es un evento. Si el modelo se degrada, nadie se entera hasta que un cliente se queja. <b>El 60% de las empresas con ML están aquí.</b>'}
+  },
+  1:{
+    title:'Pipeline de GymPro · Nivel 1 · Pipeline automatizado',
+    stages:['auto','auto','auto','manual','manual','manual','manual'],
+    stats:[
+      {l:'Tiempo de deploy', v:'1 día', cls:'warn'},
+      {l:'Frecuencia reentreno', v:'Mensual', cls:'warn'},
+      {l:'Modelos en prod', v:'3–5', cls:'good'},
+      {l:'Downtime típico', v:'10–30 min', cls:'warn'}
+    ],
+    note:{cls:'', html:'<b>Nivel 1:</b> el entrenamiento ya está automatizado. Hay pipelines reproducibles. El deploy y el reentrenamiento siguen necesitando aprobación humana. Empieza a haber monitoring básico. <b>El 30% de las empresas con ML llegan aquí.</b>'}
+  },
+  2:{
+    title:'Pipeline de GymPro · Nivel 2 · CI/CD/CT completo',
+    stages:['auto','auto','auto','auto','auto','auto','auto'],
+    stats:[
+      {l:'Tiempo de deploy', v:'< 1 hora', cls:'good'},
+      {l:'Frecuencia reentreno', v:'Por trigger', cls:'good'},
+      {l:'Modelos en prod', v:'10+', cls:'good'},
+      {l:'Downtime típico', v:'0 (zero-downtime)', cls:'good'}
+    ],
+    note:{cls:'tip', html:'<b>Nivel 2:</b> todo automatizado. Cambios de código → CI. Datos nuevos → CT. Modelo validado → CD. Rollback automático. <b>Solo el ~10% de empresas con ML llegan aquí</b> (Netflix, Uber, Spotify, Google…). Es una <em>decisión estratégica</em> que requiere equipo de plataforma dedicado.'}
+  }
+};
+
+/* Estado */
+let currentLevel = 0;
+let runningStage = -1;
+let selectedStage = -1;
+let pipelineRunning = false;
+let stageStatus = new Array(7).fill('pending');  // pending / done
+
+/* ===== Render ===== */
+function renderLevel(){
+  const lvl = LEVELS[currentLevel];
+  document.getElementById('pipeline-title').textContent = lvl.title;
+  document.querySelectorAll('.level-btn').forEach(function(b){
+    b.classList.toggle('active', +b.dataset.level === currentLevel);
+  });
+
+  // Pipeline stages
+  const stagesEl = document.getElementById('stages');
+  stagesEl.innerHTML = '';
+  STAGES.forEach(function(st, i){
+    const mode = lvl.stages[i];
+    const div = document.createElement('div');
+    let cls = 'stage';
+    if(mode === 'none') cls += ' disabled';
+    if(stageStatus[i] === 'done') cls += ' done';
+    if(i === runningStage) cls += ' active pulsing';
+    if(i === selectedStage && stageStatus[i] !== 'done') cls += ' active';
+    div.className = cls;
+    div.dataset.idx = i;
+    let badge = '';
+    if(mode === 'auto') badge = '<div class="tag-auto">AUTO</div>';
+    else if(mode === 'manual') badge = '<div class="tag-manual">MANUAL</div>';
+    div.innerHTML = badge
+      + '<div class="n">' + st.n + '</div>'
+      + '<div class="icon">' + st.icon + '</div>'
+      + '<h5>' + st.title + '</h5>'
+      + '<p>' + st.desc + '</p>';
+    div.addEventListener('click', function(){
+      if(mode === 'none') return;
+      selectedStage = i;
+      renderLevel();
+      showStageDetail(i);
+    });
+    stagesEl.appendChild(div);
+  });
+
+  // Stats
+  const sts = document.getElementById('level-stats');
+  sts.innerHTML = '';
+  lvl.stats.forEach(function(s){
+    sts.innerHTML += '<div class="ls ' + s.cls + '"><div class="l">' + s.l + '</div><div class="v">' + s.v + '</div></div>';
+  });
+
+  // Note
+  const note = document.getElementById('pipeline-note');
+  note.className = 'note ' + (lvl.note.cls||'');
+  note.innerHTML = lvl.note.html;
+}
+
+function showStageDetail(idx){
+  const st = STAGES[idx];
+  const lvl = LEVELS[currentLevel];
+  document.getElementById('sd-num').textContent = st.n;
+  document.getElementById('sd-title').textContent = st.title + (lvl.stages[idx] === 'auto' ? ' · automatizado' : lvl.stages[idx] === 'manual' ? ' · manual' : '');
+  document.getElementById('sd-desc').textContent = st.desc;
+  const code = document.getElementById('sd-code');
+  code.innerHTML = st.code;
+  code.style.display = 'block';
+}
+
+/* Pipeline animation */
+function runPipeline(){
+  if(pipelineRunning) return;
+  pipelineRunning = true;
+  stageStatus = new Array(7).fill('pending');
+  runningStage = -1;
+  renderLevel();
+
+  const lvl = LEVELS[currentLevel];
+  let i = 0;
+  function step(){
+    // Saltar stages 'none'
+    while(i < STAGES.length && lvl.stages[i] === 'none'){
+      i++;
+    }
+    if(i >= STAGES.length){
+      pipelineRunning = false;
+      runningStage = -1;
+      renderLevel();
+      return;
+    }
+    runningStage = i;
+    selectedStage = i;
+    renderLevel();
+    showStageDetail(i);
+    const delay = lvl.stages[i] === 'manual' ? 1800 : 900;
+    setTimeout(function(){
+      stageStatus[i] = 'done';
+      i++;
+      step();
+    }, delay);
+  }
+  step();
+}
+
+/* Events */
+document.querySelectorAll('.level-btn').forEach(function(b){
+  b.addEventListener('click', function(){
+    if(pipelineRunning) return;
+    currentLevel = +b.dataset.level;
+    stageStatus = new Array(7).fill('pending');
+    runningStage = -1;
+    selectedStage = -1;
+    renderLevel();
+    document.getElementById('sd-num').textContent = '—';
+    document.getElementById('sd-title').textContent = 'Selecciona un paso';
+    document.getElementById('sd-desc').textContent = 'Haz click en cualquier paso del pipeline para ver qué pasa en él. Pulsa «Ejecutar pipeline» para que avance solo.';
+    document.getElementById('sd-code').style.display = 'none';
+  });
+});
+
+document.getElementById('run-btn').addEventListener('click', runPipeline);
+document.getElementById('reset-btn').addEventListener('click', function(){
+  if(pipelineRunning) return;
+  stageStatus = new Array(7).fill('pending');
+  runningStage = -1;
+  selectedStage = -1;
+  renderLevel();
+});
+
+renderLevel();
+</script>
+</body>
+</html>

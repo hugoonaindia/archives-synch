@@ -1,0 +1,645 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Sesión 6 · Monitor de producción y Data Drift</title>
+<style>
+  :root{
+    --crema:#F2EFE6;
+    --tinta:#0E1B4D;
+    --tinta-2:#1B2A6B;
+    --azul:#3FA9F5;
+    --azul-2:#1F8AD9;
+    --rojo:#D85C3E;
+    --verde:#2E9E6E;
+    --amber:#E0A23A;
+    --gris:#7A7A7A;
+    --gris-2:#C9C5B8;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--crema);color:var(--tinta);font-family:Georgia,'Times New Roman',serif;line-height:1.55}
+  .mono{font-family:'SF Mono',Menlo,Monaco,Consolas,monospace}
+  .upper{text-transform:uppercase;letter-spacing:.18em;font-weight:600}
+
+  .wrap{max-width:1240px;margin:0 auto;padding:48px 32px 96px}
+  header.hero{padding:64px 0 48px;border-bottom:1px solid var(--gris-2)}
+  header .tag{font-size:11px;color:var(--azul-2)}
+  header h1{font-size:60px;line-height:1.05;margin:24px 0 16px;font-weight:700;letter-spacing:-.02em}
+  header h1 em{font-style:italic;color:var(--azul-2);font-weight:400}
+  header p.lead{font-size:19px;color:var(--tinta-2);max-width:780px;margin:0}
+
+  section{padding:56px 0;border-bottom:1px solid var(--gris-2)}
+  section .step-tag{font-size:11px;color:var(--azul-2)}
+  section h2{font-size:42px;margin:12px 0 16px;font-weight:700;letter-spacing:-.01em;line-height:1.1}
+  section h2 em{font-style:italic;color:var(--azul-2);font-weight:400}
+  section p.intro{font-size:17px;color:var(--tinta-2);max-width:880px;margin:0 0 24px}
+
+  .card{background:#fff;border:1px solid var(--gris-2);border-radius:10px;padding:22px}
+
+  /* Dashboard estilo Grafana */
+  .dashboard{background:#0a0e2c;color:#e8e8e8;border-radius:12px;padding:24px;margin-top:18px}
+  .dashboard .head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;flex-wrap:wrap;gap:10px}
+  .dashboard .head h4{margin:0;color:#fff;font-size:20px;font-weight:700}
+  .dashboard .head .meta{font-family:'SF Mono',monospace;font-size:12px;color:#9DD2F8}
+  .dashboard .head .live{display:inline-block;width:8px;height:8px;background:var(--verde);border-radius:50%;margin-right:6px;animation:livepulse 1.5s ease-in-out infinite}
+  @keyframes livepulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+  .dash-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+  .dash-stat{background:rgba(255,255,255,.06);padding:14px;border-radius:8px;border-left:3px solid var(--azul)}
+  .dash-stat.good{border-left-color:var(--verde)}
+  .dash-stat.bad{border-left-color:var(--rojo)}
+  .dash-stat.warn{border-left-color:var(--amber)}
+  .dash-stat .l{font-family:'SF Mono',monospace;font-size:10px;color:#9DD2F8;text-transform:uppercase;letter-spacing:.12em}
+  .dash-stat .v{font-size:28px;font-weight:700;color:#fff;margin-top:4px;font-family:Georgia,serif}
+  .dash-stat.bad .v{color:#fca5a5}
+  .dash-stat.warn .v{color:#fcd34d}
+  .dash-stat.good .v{color:#86efac}
+  .dash-stat .trend{font-family:'SF Mono',monospace;font-size:11px;margin-top:4px;color:#9DD2F8}
+
+  .dash-chart{background:rgba(255,255,255,.04);border-radius:8px;padding:14px;margin-bottom:14px}
+  .dash-chart-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+  .dash-chart-head h5{margin:0;font-size:14px;color:#fff;font-family:'SF Mono',monospace;letter-spacing:.04em}
+  .dash-chart-head .threshold{font-family:'SF Mono',monospace;font-size:11px;color:#9DD2F8}
+  .dash-chart svg{width:100%;height:180px;display:block}
+
+  .dash-alerts{background:rgba(216,92,62,.12);border:1px solid rgba(216,92,62,.5);border-radius:8px;padding:14px;display:none;animation:alertflash .8s ease-in-out;align-items:center;gap:14px}
+  @keyframes alertflash{0%{opacity:0;transform:translateY(-6px)}100%{opacity:1;transform:none}}
+  .dash-alerts.show{display:flex}
+  .dash-alerts .ico{font-size:24px}
+  .dash-alerts .txt{flex:1;color:#fca5a5;font-family:'SF Mono',monospace;font-size:13px}
+  .dash-alerts .txt b{color:#fff}
+
+  /* Time controls */
+  .time-controls{background:#fff;border:1px solid var(--gris-2);border-radius:10px;padding:18px;margin-top:18px}
+  .time-controls .head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px}
+  .time-controls .head h4{margin:0;font-size:18px}
+  .time-controls .day-display{font-family:'SF Mono',monospace;background:var(--tinta);color:#fff;padding:6px 14px;border-radius:6px;font-size:13px;font-weight:700}
+  .time-controls input[type=range]{width:100%;accent-color:var(--azul-2)}
+  .btn{appearance:none;border:1px solid var(--tinta);background:transparent;color:var(--tinta);padding:10px 18px;font-family:inherit;font-size:14px;cursor:pointer;border-radius:4px;font-weight:600;transition:.15s}
+  .btn:hover{background:var(--tinta);color:var(--crema)}
+  .btn.primary{background:var(--azul-2);color:#fff;border-color:var(--azul-2)}
+  .btn.primary:hover{background:var(--tinta);border-color:var(--tinta)}
+  .btn.success{background:var(--verde);color:#fff;border-color:var(--verde)}
+  .btn.success:hover{background:#1f7a52;border-color:#1f7a52}
+  .btn[disabled]{opacity:.4;cursor:not-allowed}
+  .time-controls .actions{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;justify-content:flex-end}
+  .time-controls .play-controls{display:flex;gap:8px;align-items:center}
+
+  /* Drift comparator */
+  .drift-lab{display:grid;grid-template-columns:1.3fr 1fr;gap:18px;margin-top:18px}
+  .drift-chart{background:#fff;border:1px solid var(--gris-2);border-radius:10px;padding:22px}
+  .drift-chart svg{width:100%;height:300px;display:block;background:#FAF8F1;border-radius:6px}
+  .drift-controls{background:#fff;border:1px solid var(--gris-2);border-radius:10px;padding:22px}
+  .drift-controls h4{margin:0 0 14px;font-size:18px}
+  .scen-buttons{display:grid;grid-template-columns:1fr;gap:8px;margin-bottom:14px}
+  .scen{padding:14px;background:#FAF8F1;border:1.5px solid var(--gris-2);border-radius:8px;cursor:pointer;text-align:left;font-family:inherit;color:var(--tinta);transition:.15s}
+  .scen:hover{border-color:var(--azul-2);transform:translateY(-1px)}
+  .scen.active{background:var(--tinta);color:#fff;border-color:var(--tinta)}
+  .scen .k{font-family:'SF Mono',monospace;font-size:11px;color:var(--azul-2);text-transform:uppercase;letter-spacing:.1em}
+  .scen.active .k{color:#9DD2F8}
+  .scen .t{font-weight:700;margin-top:4px}
+  .scen .d{font-size:12px;margin-top:4px;opacity:.85}
+
+  .psi-display{background:#FAF8F1;padding:16px;border-radius:8px;margin-top:14px;text-align:center;font-family:'SF Mono',monospace}
+  .psi-display .l{font-size:11px;color:var(--gris);text-transform:uppercase;letter-spacing:.12em}
+  .psi-display .v{font-size:48px;font-weight:700;margin:4px 0;color:var(--tinta);font-family:Georgia,serif}
+  .psi-display .v.good{color:var(--verde)}
+  .psi-display .v.warn{color:var(--amber)}
+  .psi-display .v.bad{color:var(--rojo)}
+  .psi-display .interp{font-size:13px;color:var(--tinta-2);margin-top:6px;font-family:Georgia,serif}
+
+  /* Fijo vs dinámico */
+  .strategy-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px}
+  .strat-card{background:#fff;border:1px solid var(--gris-2);border-radius:10px;padding:24px;border-top:5px solid var(--azul)}
+  .strat-card.dyn{border-top-color:var(--azul-2)}
+  .strat-card .k{font-size:11px;color:var(--gris);text-transform:uppercase;letter-spacing:.14em;font-family:'SF Mono',monospace}
+  .strat-card h4{margin:6px 0 4px;font-size:22px}
+  .strat-card h4 em{font-style:italic;color:var(--azul-2)}
+  .strat-card .when{font-size:14px;color:var(--tinta-2);margin:0 0 14px}
+  .strat-card ul{margin:0;padding-left:18px;font-size:13px;color:var(--tinta-2)}
+  .strat-card ul li{margin-bottom:6px}
+  .strat-card ul li.plus::marker{content:"+ "}
+  .strat-card ul li.minus::marker{content:"− "}
+  .strat-card .footer{margin-top:14px;padding-top:14px;border-top:1px dashed var(--gris-2);font-size:12px;font-style:italic;color:var(--azul-2)}
+
+  /* Cuatro señales rojas */
+  .signals{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:18px}
+  .signal{background:#fff;border:1px solid var(--gris-2);border-top:4px solid var(--rojo);border-radius:8px;padding:18px}
+  .signal .k{font-family:'SF Mono',monospace;font-size:11px;color:var(--rojo);text-transform:uppercase;letter-spacing:.12em}
+  .signal h4{margin:6px 0 6px;font-size:16px}
+  .signal p{font-size:13px;color:var(--tinta-2);margin:0}
+
+  .note{background:#E5F1FB;border-left:4px solid var(--azul);padding:14px 18px;border-radius:4px;margin-top:18px;font-size:14px;color:var(--tinta-2)}
+  .note b{color:var(--tinta)}
+  .tip{background:#E0F4E8;border-left-color:var(--verde)}
+  .warning{background:#FBE5DD;border-left-color:var(--rojo)}
+
+  @media (max-width:880px){
+    header h1{font-size:42px}
+    section h2{font-size:32px}
+    .dash-grid{grid-template-columns:repeat(2,1fr)}
+    .drift-lab,.strategy-grid,.signals{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <div class="upper tag">Tema 6 · Sesión 06 · Artefacto 3</div>
+  <h1>El modelo en producción es un <em>ser vivo</em>.</h1>
+  <p class="lead">Desplegar no es el final. Es el principio. Una vez en producción, los modelos se degradan solos con el tiempo — porque los datos del mundo cambian aunque el código no cambie una sola línea. Aquí ves un dashboard en directo, ves cómo decae el F1, descubres dónde se ha producido el <em>data drift</em>, y disparas el reentrenamiento para que la curva suba otra vez. Como en un proyecto MLOps real.</p>
+</header>
+
+<!-- Dashboard del modelo en vivo -->
+<section style="border-bottom:none">
+  <div class="upper step-tag">Demo 1 · Dashboard del modelo · gympro-churn v2</div>
+  <h2>Modelo desplegado, <em>vigilado</em>.</h2>
+  <p class="intro">Mueve el slider del tiempo para avanzar día a día. El F1-score baja silenciosamente porque ha aparecido <em>data drift</em>. Cuando el F1 cruza el umbral mínimo, suena la alarma. Pulsa <b>reentrenar</b> y el modelo se recupera.</p>
+
+  <div class="dashboard">
+    <div class="head">
+      <h4><span class="live"></span>gympro-churn-v2 · producción</h4>
+      <div class="meta" id="dash-meta">día 0 · 0 días desde el deploy</div>
+    </div>
+
+    <div class="dash-grid">
+      <div class="dash-stat" id="stat-f1"><div class="l">F1-score</div><div class="v">—</div><div class="trend">vs deploy</div></div>
+      <div class="dash-stat" id="stat-lat"><div class="l">latencia p99</div><div class="v">—</div><div class="trend">milisegundos</div></div>
+      <div class="dash-stat" id="stat-rps"><div class="l">throughput</div><div class="v">—</div><div class="trend">req/s</div></div>
+      <div class="dash-stat" id="stat-drift"><div class="l">drift score (PSI)</div><div class="v">—</div><div class="trend">PSI &lt; 0.1 ok</div></div>
+    </div>
+
+    <div class="dash-chart">
+      <div class="dash-chart-head"><h5>F1-score · últimos 90 días</h5><span class="threshold">umbral mínimo: 0.75</span></div>
+      <svg id="f1-chart" viewBox="0 0 700 180" preserveAspectRatio="none"></svg>
+    </div>
+
+    <div class="dash-chart">
+      <div class="dash-chart-head"><h5>Drift score (PSI) · variable «edad»</h5><span class="threshold">alerta: PSI &gt; 0.2</span></div>
+      <svg id="drift-chart" viewBox="0 0 700 180" preserveAspectRatio="none"></svg>
+    </div>
+
+    <div class="dash-alerts" id="alert-box">
+      <div class="ico">⚠️</div>
+      <div class="txt"><b>ALERTA</b> · <span id="alert-msg">F1-score por debajo del umbral mínimo · data drift detectado en variable «edad»</span></div>
+    </div>
+  </div>
+
+  <div class="time-controls">
+    <div class="head">
+      <h4>Control del tiempo · simulación de 90 días en producción</h4>
+      <div class="day-display" id="day-display">día 0</div>
+    </div>
+    <input type="range" id="time-slider" min="0" max="90" value="0" step="1" />
+    <div style="display:flex;justify-content:space-between;font-family:'SF Mono',monospace;font-size:11px;color:var(--gris);margin-top:4px">
+      <span>día 0 · deploy</span>
+      <span>día 45 · drift empieza</span>
+      <span>día 90 · hoy</span>
+    </div>
+    <div class="actions">
+      <div class="play-controls">
+        <button class="btn primary" id="play-btn">▶ Avanzar el tiempo</button>
+        <button class="btn" id="pause-btn">⏸ Pausar</button>
+      </div>
+      <button class="btn success" id="retrain-btn" disabled>🔄 Reentrenar modelo</button>
+      <button class="btn" id="reset-time-btn">↺ Reset</button>
+    </div>
+  </div>
+</section>
+
+<!-- Drift comparator -->
+<section style="border-bottom:none">
+  <div class="upper step-tag">Demo 2 · ¿Qué es realmente el data drift?</div>
+  <h2>Cuando el mundo cambia, tu modelo <em>no</em>.</h2>
+  <p class="intro">El modelo aprendió con los datos del pasado. Si los datos de hoy son distintos, el modelo deja de funcionar bien — aunque su código no haya cambiado <b>una sola línea</b>. Cambia el escenario y mira cómo se desplazan las distribuciones de entrenamiento (azul) y producción (rojo).</p>
+
+  <div class="drift-lab">
+    <div class="drift-chart">
+      <div class="upper step-tag">Distribución de la variable «gasto mensual»</div>
+      <h4 style="margin:6px 0 12px;font-size:18px" id="drift-title">Sin drift · entreno y hoy coinciden</h4>
+      <svg id="drift-compare" viewBox="0 0 700 300"></svg>
+      <div style="display:flex;gap:18px;font-size:13px;color:var(--tinta-2);margin-top:10px;font-family:Georgia,serif">
+        <span style="display:inline-flex;align-items:center;gap:6px"><span style="width:14px;height:6px;background:var(--azul-2);border-radius:1px;display:inline-block"></span>Entreno · 2022</span>
+        <span style="display:inline-flex;align-items:center;gap:6px"><span style="width:14px;height:6px;background:var(--rojo);border-radius:1px;display:inline-block"></span>Hoy · 2026</span>
+      </div>
+    </div>
+    <div class="drift-controls">
+      <h4>Escenarios · ¿qué pasó en el mundo?</h4>
+      <div class="scen-buttons">
+        <button class="scen active" data-id="none">
+          <div class="k">Sin drift</div>
+          <div class="t">Todo normal</div>
+          <div class="d">Las distribuciones coinciden. El modelo predice bien.</div>
+        </button>
+        <button class="scen" data-id="mild">
+          <div class="k">Drift leve</div>
+          <div class="t">Inflación gradual</div>
+          <div class="d">El gasto medio sube un 8%. El modelo aún funciona — pero menos preciso.</div>
+        </button>
+        <button class="scen" data-id="strong">
+          <div class="k">Drift fuerte</div>
+          <div class="t">Cambio del público</div>
+          <div class="d">Campaña en TikTok atrae socios más jóvenes. La distribución se desplaza claramente.</div>
+        </button>
+        <button class="scen" data-id="extreme">
+          <div class="k">Drift extremo</div>
+          <div class="t">Pandemia · 2020</div>
+          <div class="d">Cierre, teletrabajo, cambio masivo de hábitos. El modelo deja de funcionar de la noche a la mañana.</div>
+        </button>
+      </div>
+
+      <div class="psi-display">
+        <div class="l">drift score (PSI)</div>
+        <div class="v" id="psi-val">0.00</div>
+        <div class="interp" id="psi-interp">sin drift detectable</div>
+      </div>
+
+      <div class="note" id="drift-note" style="margin-top:14px"></div>
+    </div>
+  </div>
+
+  <div class="note"><b>PSI (Population Stability Index):</b> mide cuánto se ha movido una distribución. <b>&lt; 0.1</b> sin cambios · <b>0.1–0.2</b> cambio menor · <b>&gt; 0.2</b> cambio significativo, hay que investigar y probablemente reentrenar. Es la métrica de drift más usada en producción.</div>
+</section>
+
+<!-- Fijo vs dinámico -->
+<section style="border-bottom:none">
+  <div class="upper step-tag">Dos filosofías de reentrenamiento</div>
+  <h2>Reentreno <em>fijo</em> vs <em>dinámico</em>.</h2>
+  <p class="intro">Reentrenar es <b>obligatorio</b>. Solo varía cuándo. Dos enfoques, dos perfiles de empresa.</p>
+
+  <div class="strategy-grid">
+    <div class="strat-card">
+      <div class="k">Fijo · por calendario</div>
+      <h4>Una vez por <em>semana</em>, mes o trimestre</h4>
+      <p class="when">Se reentrena cada cierto tiempo, llueva o truene. Decisión administrativa, no técnica.</p>
+      <ul>
+        <li class="plus">Simple, predecible</li>
+        <li class="plus">Fácil de auditar y planificar</li>
+        <li class="minus">Reentrenas aunque no haga falta</li>
+        <li class="minus">Llegas tarde si el drift es brusco</li>
+      </ul>
+      <div class="footer">Cuándo: sectores estables, regulaciones que exigen auditoría temporal.</div>
+    </div>
+    <div class="strat-card dyn">
+      <div class="k">Dinámico · por trigger</div>
+      <h4>Cuando el sistema <em>detecta</em> degradación</h4>
+      <p class="when">El monitor dispara el pipeline de reentrenamiento al cruzar un umbral o detectar drift.</p>
+      <ul>
+        <li class="plus">Reentrena solo cuando hace falta</li>
+        <li class="plus">Reacciona rápido a cambios bruscos</li>
+        <li class="minus">Más complejo de implementar</li>
+        <li class="minus">Requiere monitoreo confiable</li>
+      </ul>
+      <div class="footer">Cuándo: entornos cambiantes, datos volátiles, equipos maduros.</div>
+    </div>
+  </div>
+
+  <div class="note tip"><b>En la práctica, los equipos maduros usan híbridos:</b> trigger automático (dinámico) <b>+</b> revisión humana periódica (fijo). Lo mejor de los dos mundos — el sistema reacciona rápido y aun así hay un humano que aprueba el deploy en producción.</div>
+</section>
+
+<!-- Cuatro señales -->
+<section style="border-bottom:none">
+  <div class="upper step-tag">Antes de pulsar deploy</div>
+  <h2>Cuatro señales de que <em>no estás listo</em>.</h2>
+  <p class="intro">Desplegar antes de tiempo cuesta más caro que retrasarlo. Antes de soltar el modelo a producción, comprueba que <b>no</b> estás en ninguna de estas cuatro.</p>
+
+  <div class="signals">
+    <div class="signal"><div class="k">01</div><h4>«Funciona en mi máquina»</h4><p>Si no está en un contenedor reproducible, no está listo. Sin Docker, ningún despliegue es serio.</p></div>
+    <div class="signal"><div class="k">02</div><h4>Cero monitorización</h4><p>Si no puedes saber si el modelo se degrada, vas ciego. Inaceptable. Sin métricas no hay producción.</p></div>
+    <div class="signal"><div class="k">03</div><h4>Sin plan de rollback</h4><p>¿Qué pasa si el modelo nuevo va peor? Necesitas volver atrás en segundos, no en días.</p></div>
+    <div class="signal"><div class="k">04</div><h4>Sin pipeline de reentrenamiento</h4><p>Si reentrenar implica que alguien recuerde hacerlo a mano, no se hará. Y el modelo morirá lentamente.</p></div>
+  </div>
+  <div class="note warning"><b>El símil del restaurante:</b> inaugurar no es el final. Hay que revisar cada noche: ¿sigue saliendo igual la paella? ¿La clientela ha cambiado? ¿El proveedor cambió el arroz? Si no miras, no te enteras hasta que llegan las reseñas malas. Para entonces, ya has perdido clientes.</div>
+</section>
+
+</div>
+
+<script>
+/* =====================================================================
+   DEMO 1 · Dashboard del modelo en producción
+   ===================================================================== */
+
+const TOTAL_DAYS = 90;
+
+/* Generar la serie histórica del F1 con un evento de drift en día 45 */
+function genF1Series(retrainDay){
+  // Construye series F1, latencia, drift PSI
+  const f1 = [];
+  const drift = [];
+  for(let d=0; d<=TOTAL_DAYS; d++){
+    // Base F1 0.86 con ruido pequeño
+    let baseF1 = 0.86;
+    let baseDrift = 0.02;
+    if(retrainDay && d >= retrainDay){
+      // Después de reentrenar, el modelo vuelve a estar bien
+      baseF1 = 0.87 - Math.max(0, (d-retrainDay)*0.0008);
+      baseDrift = 0.02 + Math.max(0, (d-retrainDay)*0.0005);
+    } else {
+      // El drift empieza a notarse en día 30-45
+      if(d > 30){
+        const driftDays = d - 30;
+        baseF1 = 0.86 - driftDays*0.008;
+        baseDrift = 0.02 + driftDays*0.018;
+      }
+    }
+    const noise = (Math.sin(d*0.7)*0.012 + Math.cos(d*1.3)*0.008);
+    f1.push(Math.max(0.45, Math.min(0.92, baseF1 + noise)));
+    drift.push(Math.max(0, baseDrift + Math.sin(d*0.5)*0.008));
+  }
+  return {f1, drift};
+}
+
+let currentDay = 0;
+let retrainDay = null;
+let playInterval = null;
+let series = genF1Series(null);
+
+const TH_F1 = 0.75;
+const TH_DRIFT_ALERT = 0.2;
+
+function colorClass(v, good, warn, ascend){
+  if(ascend){
+    // PSI: mayor = peor
+    if(v < good) return 'good';
+    if(v < warn) return 'warn';
+    return 'bad';
+  } else {
+    if(v >= good) return 'good';
+    if(v >= warn) return 'warn';
+    return 'bad';
+  }
+}
+
+function renderDashboard(){
+  const day = currentDay;
+  const f1 = series.f1[day];
+  const drift = series.drift[day];
+  const lat = 38 + Math.sin(day*0.3)*4 + (drift > 0.15 ? 8 : 0);
+  const rps = 1200 + Math.sin(day*0.2)*150;
+
+  // Stats
+  const f1Cls = colorClass(f1, 0.82, TH_F1, false);
+  const driftCls = colorClass(drift, 0.1, TH_DRIFT_ALERT, true);
+  document.getElementById('stat-f1').className = 'dash-stat ' + f1Cls;
+  document.getElementById('stat-f1').querySelector('.v').textContent = f1.toFixed(3);
+  const diff = ((f1 - series.f1[0])*100).toFixed(1);
+  document.getElementById('stat-f1').querySelector('.trend').textContent = (diff>=0?'+':'')+diff+' pp vs deploy';
+
+  document.getElementById('stat-lat').className = 'dash-stat ' + (lat<45?'good':(lat<60?'warn':'bad'));
+  document.getElementById('stat-lat').querySelector('.v').textContent = lat.toFixed(0)+'ms';
+
+  document.getElementById('stat-rps').className = 'dash-stat good';
+  document.getElementById('stat-rps').querySelector('.v').textContent = Math.round(rps);
+
+  document.getElementById('stat-drift').className = 'dash-stat ' + driftCls;
+  document.getElementById('stat-drift').querySelector('.v').textContent = drift.toFixed(3);
+
+  // Charts
+  renderLineChart('f1-chart', series.f1.slice(0, day+1), 0.45, 0.95, TH_F1, 'umbral 0.75', '#86efac', '#fca5a5', retrainDay);
+  renderLineChart('drift-chart', series.drift.slice(0, day+1), 0, 0.4, TH_DRIFT_ALERT, 'umbral PSI 0.2', '#fbbf24', '#fca5a5', retrainDay, true);
+
+  // Day display
+  document.getElementById('day-display').textContent = 'día '+day;
+  document.getElementById('dash-meta').textContent = 'día '+day+' · '+day+' días desde el deploy';
+
+  // Alert
+  const alertBox = document.getElementById('alert-box');
+  const alertMsg = document.getElementById('alert-msg');
+  if(f1 < TH_F1 || drift > TH_DRIFT_ALERT){
+    alertBox.classList.add('show');
+    let msg = '';
+    if(f1 < TH_F1 && drift > TH_DRIFT_ALERT){
+      msg = 'F1-score ('+f1.toFixed(3)+') por debajo del umbral · data drift detectado (PSI '+drift.toFixed(2)+')';
+    } else if(f1 < TH_F1){
+      msg = 'F1-score ('+f1.toFixed(3)+') por debajo del umbral mínimo (0.75)';
+    } else {
+      msg = 'Data drift detectado · PSI '+drift.toFixed(2)+' > 0.2';
+    }
+    alertMsg.textContent = msg;
+    document.getElementById('retrain-btn').disabled = false;
+  } else {
+    alertBox.classList.remove('show');
+    if(!retrainDay) document.getElementById('retrain-btn').disabled = (drift < 0.1);
+  }
+}
+
+function renderLineChart(svgId, points, minY, maxY, threshold, thLabel, colorOk, colorAlert, retrain, ascend){
+  const W=700, H=180, P=30;
+  const xfn = function(i){ return P + i/TOTAL_DAYS * (W-2*P); };
+  const yfn = function(v){ return (H-P) - (v-minY)/(maxY-minY) * (H-2*P); };
+  let s = '';
+
+  // Threshold line
+  s += '<line x1="'+P+'" y1="'+yfn(threshold)+'" x2="'+(W-P)+'" y2="'+yfn(threshold)+'" stroke="#fca5a5" stroke-width="1" stroke-dasharray="5 3"/>';
+  s += '<text x="'+(W-P-4)+'" y="'+(yfn(threshold)-4)+'" font-family="SF Mono" font-size="10" fill="#fca5a5" text-anchor="end">'+thLabel+'</text>';
+
+  // Retrain marker
+  if(retrain){
+    s += '<line x1="'+xfn(retrain)+'" y1="'+P+'" x2="'+xfn(retrain)+'" y2="'+(H-P)+'" stroke="#86efac" stroke-width="2" stroke-dasharray="4 2"/>';
+    s += '<text x="'+(xfn(retrain)+4)+'" y="'+(P+10)+'" font-family="SF Mono" font-size="10" fill="#86efac">🔄 reentreno</text>';
+  }
+
+  // Axes
+  s += '<line x1="'+P+'" y1="'+(H-P)+'" x2="'+(W-P)+'" y2="'+(H-P)+'" stroke="rgba(255,255,255,.2)"/>';
+
+  // Line path
+  let d = '';
+  points.forEach(function(v, i){
+    const px = xfn(i), py = yfn(v);
+    d += (i===0?'M':'L') + px + ',' + py + ' ';
+  });
+  // Color por zona
+  const lastV = points[points.length-1];
+  const isAlert = ascend ? lastV > threshold : lastV < threshold;
+  const color = isAlert ? colorAlert : colorOk;
+  s += '<path d="'+d+'" stroke="'+color+'" stroke-width="2" fill="none"/>';
+
+  // Current point
+  if(points.length > 0){
+    const lastI = points.length-1;
+    s += '<circle cx="'+xfn(lastI)+'" cy="'+yfn(points[lastI])+'" r="4" fill="'+color+'"/>';
+  }
+
+  // X-axis labels
+  [0, 30, 60, 90].forEach(function(d){
+    s += '<text x="'+xfn(d)+'" y="'+(H-10)+'" font-family="SF Mono" font-size="9" fill="rgba(255,255,255,.4)" text-anchor="middle">d'+d+'</text>';
+  });
+
+  document.getElementById(svgId).innerHTML = s;
+}
+
+/* Time controls */
+document.getElementById('time-slider').addEventListener('input', function(e){
+  currentDay = +e.target.value;
+  renderDashboard();
+});
+
+document.getElementById('play-btn').addEventListener('click', function(){
+  if(playInterval) return;
+  playInterval = setInterval(function(){
+    if(currentDay >= TOTAL_DAYS){
+      clearInterval(playInterval);
+      playInterval = null;
+      return;
+    }
+    currentDay++;
+    document.getElementById('time-slider').value = currentDay;
+    renderDashboard();
+  }, 120);
+});
+document.getElementById('pause-btn').addEventListener('click', function(){
+  if(playInterval){ clearInterval(playInterval); playInterval = null; }
+});
+document.getElementById('retrain-btn').addEventListener('click', function(){
+  retrainDay = currentDay;
+  series = genF1Series(retrainDay);
+  renderDashboard();
+});
+document.getElementById('reset-time-btn').addEventListener('click', function(){
+  if(playInterval){ clearInterval(playInterval); playInterval = null; }
+  currentDay = 0;
+  retrainDay = null;
+  series = genF1Series(null);
+  document.getElementById('time-slider').value = 0;
+  document.getElementById('retrain-btn').disabled = true;
+  renderDashboard();
+});
+
+renderDashboard();
+
+/* =====================================================================
+   DEMO 2 · Drift comparator (histogramas)
+   ===================================================================== */
+
+const SCENARIOS = {
+  none:{
+    title:'Sin drift · entreno y hoy coinciden',
+    trainMean:65, trainStd:18,
+    todayMean:65, todayStd:18,
+    psi:0.02,
+    note:{cls:'tip', html:'<b>Sin drift:</b> las dos curvas se superponen casi perfectamente. PSI ≈ 0. El modelo está prediciendo en datos parecidos a los de entrenamiento — debería funcionar bien.'}
+  },
+  mild:{
+    title:'Drift leve · inflación moderada',
+    trainMean:65, trainStd:18,
+    todayMean:72, todayStd:20,
+    psi:0.13,
+    note:{cls:'', html:'<b>Drift leve:</b> ligero desplazamiento a la derecha (el gasto sube un poco). PSI entre 0.1 y 0.2 — vigilar. El modelo aún funciona pero su precisión empieza a bajar.'}
+  },
+  strong:{
+    title:'Drift fuerte · cambio de público',
+    trainMean:65, trainStd:18,
+    todayMean:88, todayStd:22,
+    psi:0.34,
+    note:{cls:'warning', html:'<b>Drift fuerte:</b> la distribución se ha desplazado claramente. PSI > 0.2 — hay que reentrenar. El modelo está prediciendo sobre datos muy distintos a los que aprendió.'}
+  },
+  extreme:{
+    title:'Drift extremo · ruptura del comportamiento',
+    trainMean:65, trainStd:18,
+    todayMean:110, todayStd:35,
+    psi:0.78,
+    note:{cls:'warning', html:'<b>Drift extremo (caso pandemia):</b> el mundo cambió de la noche a la mañana. PSI muy alto. El modelo es <em>inútil</em> hasta que se reentrene con datos del nuevo mundo. Hay que parar el servicio o usar fallback.'}
+  }
+};
+let currentScen = 'none';
+
+function gaussCurve(x, mean, std){
+  return Math.exp(-0.5*((x-mean)/std)**2) / (std*Math.sqrt(2*Math.PI));
+}
+
+function renderDriftCompare(){
+  const sc = SCENARIOS[currentScen];
+  const W=700, H=300, P=40;
+  const minX=10, maxX=180;
+  const xfn = function(v){return P + (v-minX)/(maxX-minX)*(W-2*P);};
+
+  // Calcular max Y combinando ambas curvas
+  let maxY = 0;
+  for(let x=minX; x<=maxX; x+=2){
+    maxY = Math.max(maxY, gaussCurve(x, sc.trainMean, sc.trainStd), gaussCurve(x, sc.todayMean, sc.todayStd));
+  }
+  const yfn = function(v){return (H-P) - v/maxY*(H-2*P);};
+
+  let s = '';
+  // Axes
+  s += '<line x1="'+P+'" y1="'+(H-P)+'" x2="'+(W-P)+'" y2="'+(H-P)+'" stroke="#C9C5B8"/>';
+
+  // X axis labels
+  [20, 60, 100, 140].forEach(function(v){
+    s += '<text x="'+xfn(v)+'" y="'+(H-20)+'" font-family="SF Mono" font-size="11" fill="#7A7A7A" text-anchor="middle">'+v+'€</text>';
+  });
+  s += '<text x="'+(W/2)+'" y="'+(H-5)+'" font-family="SF Mono" font-size="11" fill="#7A7A7A" text-anchor="middle">gasto mensual (€)</text>';
+
+  // Train curve (azul)
+  let dTrain = '', dTrainArea = '';
+  for(let x=minX; x<=maxX; x+=1){
+    const y = gaussCurve(x, sc.trainMean, sc.trainStd);
+    const px = xfn(x), py = yfn(y);
+    dTrain += (x===minX?'M':'L') + px + ',' + py + ' ';
+    if(x===minX) dTrainArea = 'M '+px+','+(H-P)+' ';
+    dTrainArea += 'L '+px+','+py+' ';
+  }
+  dTrainArea += 'L '+xfn(maxX)+','+(H-P)+' Z';
+  s += '<path d="'+dTrainArea+'" fill="#3FA9F5" opacity="0.18"/>';
+  s += '<path d="'+dTrain+'" stroke="#1F8AD9" stroke-width="2.5" fill="none"/>';
+
+  // Today curve (rojo, dashed)
+  let dToday = '', dTodayArea = '';
+  for(let x=minX; x<=maxX; x+=1){
+    const y = gaussCurve(x, sc.todayMean, sc.todayStd);
+    const px = xfn(x), py = yfn(y);
+    dToday += (x===minX?'M':'L') + px + ',' + py + ' ';
+    if(x===minX) dTodayArea = 'M '+px+','+(H-P)+' ';
+    dTodayArea += 'L '+px+','+py+' ';
+  }
+  dTodayArea += 'L '+xfn(maxX)+','+(H-P)+' Z';
+  s += '<path d="'+dTodayArea+'" fill="#D85C3E" opacity="0.15"/>';
+  s += '<path d="'+dToday+'" stroke="#D85C3E" stroke-width="2.5" fill="none" stroke-dasharray="6 3"/>';
+
+  // Mean lines
+  s += '<line x1="'+xfn(sc.trainMean)+'" y1="'+yfn(0)+'" x2="'+xfn(sc.trainMean)+'" y2="'+P+'" stroke="#1F8AD9" stroke-width="1" stroke-dasharray="3 3" opacity="0.5"/>';
+  s += '<text x="'+xfn(sc.trainMean)+'" y="'+(P-4)+'" font-family="SF Mono" font-size="10" fill="#1F8AD9" text-anchor="middle">μ='+sc.trainMean+'</text>';
+
+  if(currentScen !== 'none'){
+    s += '<line x1="'+xfn(sc.todayMean)+'" y1="'+yfn(0)+'" x2="'+xfn(sc.todayMean)+'" y2="'+P+'" stroke="#D85C3E" stroke-width="1" stroke-dasharray="3 3" opacity="0.5"/>';
+    s += '<text x="'+xfn(sc.todayMean)+'" y="'+(P-4)+'" font-family="SF Mono" font-size="10" fill="#D85C3E" text-anchor="middle">μ='+sc.todayMean+'</text>';
+  }
+
+  document.getElementById('drift-compare').innerHTML = s;
+  document.getElementById('drift-title').textContent = sc.title;
+
+  // PSI display
+  const psiVal = document.getElementById('psi-val');
+  psiVal.textContent = sc.psi.toFixed(2);
+  let psiCls, psiInterp;
+  if(sc.psi < 0.1){
+    psiCls = 'good'; psiInterp = 'sin drift detectable';
+  } else if(sc.psi < 0.2){
+    psiCls = 'warn'; psiInterp = 'cambio menor · vigilar';
+  } else {
+    psiCls = 'bad'; psiInterp = 'cambio significativo · reentrenar';
+  }
+  psiVal.className = 'v '+psiCls;
+  document.getElementById('psi-interp').textContent = psiInterp;
+
+  // Note
+  const noteEl = document.getElementById('drift-note');
+  noteEl.className = 'note ' + (sc.note.cls||'');
+  noteEl.innerHTML = sc.note.html;
+}
+
+document.querySelectorAll('.scen').forEach(function(b){
+  b.addEventListener('click', function(){
+    currentScen = b.dataset.id;
+    document.querySelectorAll('.scen').forEach(function(x){x.classList.remove('active');});
+    b.classList.add('active');
+    renderDriftCompare();
+  });
+});
+
+renderDriftCompare();
+</script>
+</body>
+</html>

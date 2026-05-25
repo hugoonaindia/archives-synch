@@ -1,0 +1,451 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Sesión 5 · Matriz de confusión interactiva</title>
+<style>
+  :root{
+    --crema:#F2EFE6;
+    --tinta:#0E1B4D;
+    --tinta-2:#1B2A6B;
+    --azul:#3FA9F5;
+    --azul-2:#1F8AD9;
+    --rojo:#D85C3E;
+    --verde:#2E9E6E;
+    --amber:#E0A23A;
+    --gris:#7A7A7A;
+    --gris-2:#C9C5B8;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--crema);color:var(--tinta);font-family:Georgia,'Times New Roman',serif;line-height:1.55}
+  .mono{font-family:'SF Mono',Menlo,Monaco,Consolas,monospace}
+  .upper{text-transform:uppercase;letter-spacing:.18em;font-weight:600}
+
+  .wrap{max-width:1240px;margin:0 auto;padding:48px 32px 96px}
+  header.hero{padding:64px 0 48px;border-bottom:1px solid var(--gris-2)}
+  header .tag{font-size:11px;color:var(--azul-2)}
+  header h1{font-size:60px;line-height:1.05;margin:24px 0 16px;font-weight:700;letter-spacing:-.02em}
+  header h1 em{font-style:italic;color:var(--azul-2);font-weight:400}
+  header p.lead{font-size:19px;color:var(--tinta-2);max-width:780px;margin:0}
+
+  section{padding:56px 0;border-bottom:1px solid var(--gris-2)}
+  section .step-tag{font-size:11px;color:var(--azul-2)}
+  section h2{font-size:42px;margin:12px 0 16px;font-weight:700;letter-spacing:-.01em;line-height:1.1}
+  section h2 em{font-style:italic;color:var(--azul-2);font-weight:400}
+  section p.intro{font-size:17px;color:var(--tinta-2);max-width:880px;margin:0 0 24px}
+
+  .card{background:#fff;border:1px solid var(--gris-2);border-radius:10px;padding:22px}
+
+  /* Escenarios */
+  .scenarios{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:18px}
+  .scn{padding:18px;background:#fff;border:1px solid var(--gris-2);border-radius:8px;cursor:pointer;text-align:left;font-family:inherit;color:var(--tinta);transition:.15s;border-top:4px solid var(--gris-2)}
+  .scn.medic{border-top-color:var(--rojo)}
+  .scn.spam{border-top-color:var(--azul)}
+  .scn.churn{border-top-color:var(--verde)}
+  .scn:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(14,27,77,.08)}
+  .scn.active{box-shadow:0 0 0 3px var(--tinta)}
+  .scn .k{font-size:11px;color:var(--gris);text-transform:uppercase;letter-spacing:.12em}
+  .scn h3{margin:6px 0 6px;font-size:20px}
+  .scn p{font-size:13px;color:var(--tinta-2);margin:0}
+  .scn .err{font-family:'SF Mono',monospace;font-size:11px;margin-top:10px;background:#FAF8F1;padding:6px 8px;border-radius:4px}
+
+  /* Lab matriz */
+  .lab{display:grid;grid-template-columns:1.1fr 1fr;gap:24px;margin-top:18px}
+
+  /* Matrix */
+  .matrix{margin-top:10px;display:grid;grid-template-columns:auto auto 1fr 1fr;grid-template-rows:auto auto 1fr 1fr;gap:6px;align-items:center}
+  .matrix .corner{}
+  .matrix .col-label{grid-row:1;text-align:center;font-family:'SF Mono',monospace;font-size:11px;color:var(--gris);text-transform:uppercase;letter-spacing:.1em;padding:6px}
+  .matrix .row-label{grid-column:1;writing-mode:vertical-rl;transform:rotate(180deg);text-align:center;font-family:'SF Mono',monospace;font-size:11px;color:var(--gris);text-transform:uppercase;letter-spacing:.1em;padding:6px}
+  .matrix .h-label{font-family:'SF Mono',monospace;font-size:10px;color:var(--gris);text-transform:uppercase;letter-spacing:.1em;padding:0 6px}
+  .matrix .cell{border-radius:8px;padding:18px;min-height:120px;display:flex;flex-direction:column;justify-content:center;text-align:center}
+  .matrix .cell.vp{background:#D8F1E5}
+  .matrix .cell.vn{background:#D8F1E5}
+  .matrix .cell.fp{background:#FBE0DA}
+  .matrix .cell.fn{background:#FBE0DA}
+  .matrix .cell .label{font-size:11px;color:var(--tinta);text-transform:uppercase;letter-spacing:.12em;font-family:'SF Mono',monospace}
+  .matrix .cell .n{font-size:36px;font-weight:700;font-family:Georgia,serif;margin-top:4px}
+  .matrix .cell.vp .n,.matrix .cell.vn .n{color:var(--verde)}
+  .matrix .cell.fp .n,.matrix .cell.fn .n{color:var(--rojo)}
+  .matrix .cell .desc{font-size:11px;color:var(--tinta-2);margin-top:4px}
+
+  .slider-row{display:flex;align-items:center;justify-content:space-between;font-family:'SF Mono',monospace;font-size:13px;margin-bottom:4px;margin-top:14px}
+  input[type=range]{width:100%;accent-color:var(--azul-2)}
+
+  .metrics{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:18px}
+  .met{background:#fff;border:1px solid var(--gris-2);border-radius:8px;padding:16px;border-left:4px solid var(--azul)}
+  .met.accuracy{border-left-color:var(--gris)}
+  .met.precision{border-left-color:var(--azul)}
+  .met.recall{border-left-color:var(--verde)}
+  .met.f1{border-left-color:var(--amber)}
+  .met .k{font-size:10px;color:var(--gris);text-transform:uppercase;letter-spacing:.12em}
+  .met .name{font-size:14px;font-weight:700;font-family:Georgia,serif;margin-top:2px}
+  .met .formula{font-family:'SF Mono',monospace;font-size:11px;color:var(--tinta-2);margin-top:4px}
+  .met .v{font-size:32px;font-weight:700;font-family:Georgia,serif;margin-top:8px}
+  .met.recall .v{color:var(--verde)}
+  .met.precision .v{color:var(--azul)}
+  .met.f1 .v{color:var(--amber)}
+  .met.accuracy .v{color:var(--tinta)}
+
+  /* Distribución */
+  .distr{height:80px;background:#FAF8F1;border-radius:8px;position:relative;margin-top:14px;overflow:hidden}
+  .distr .dot{position:absolute;width:8px;height:8px;border-radius:50%;transform:translate(-4px,-4px);transition:left .3s}
+  .distr .dot.pos{background:var(--rojo)}
+  .distr .dot.neg{background:var(--azul-2)}
+  .distr .thresh{position:absolute;top:0;bottom:0;width:2px;background:var(--tinta);transition:left .15s}
+  .distr .thresh::after{content:attr(data-val);position:absolute;top:-22px;left:-30px;background:var(--tinta);color:#fff;padding:2px 8px;font-family:'SF Mono',monospace;font-size:10px;border-radius:3px}
+
+  pre.code{background:#0a0e2c;color:#e8e8e8;padding:16px 18px;border-radius:8px;font-size:12px;line-height:1.6;overflow-x:auto;margin:14px 0 0;font-family:'SF Mono',monospace}
+  pre.code .kw{color:#c084fc}
+  pre.code .fn{color:#fbbf24}
+  pre.code .st{color:#86efac}
+  pre.code .nm{color:#f59e0b}
+  pre.code .cm{color:#7a8aa8;font-style:italic}
+
+  .note{background:#E5F1FB;border-left:4px solid var(--azul);padding:14px 18px;border-radius:4px;margin-top:18px;font-size:14px;color:var(--tinta-2)}
+  .note b{color:var(--tinta)}
+  .tip{background:#E0F4E8;border-left-color:var(--verde)}
+  .warning{background:#FBE5DD;border-left-color:var(--rojo)}
+
+  /* Cluster section */
+  .clusterbox{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:18px}
+  .clusterbox .cb{background:#fff;border:1px solid var(--gris-2);border-radius:8px;padding:18px;border-left:4px solid var(--amber)}
+  .clusterbox .cb .k{font-size:11px;color:var(--amber);text-transform:uppercase;letter-spacing:.12em}
+  .clusterbox .cb h4{margin:6px 0 6px;font-size:18px}
+  .clusterbox .cb p{font-size:13px;color:var(--tinta-2);margin:0}
+
+  @media (max-width:880px){
+    header h1{font-size:42px}
+    section h2{font-size:32px}
+    .scenarios,.lab,.metrics,.clusterbox{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <div class="upper tag">Tema 5 · Sesión 05 · Artefacto 3</div>
+  <h1>La matriz de <em>confusión</em>.</h1>
+  <p class="lead">Antes de hablar de Accuracy, Precision, Recall y F1, conviene mirar la tabla de la que salen. Cuatro casillas: aciertos en verde, errores en rojo. Pero <b>no todos los errores cuestan lo mismo</b>. En cáncer un FN mata; en spam un FP enfada al jefe. Aquí mueves el umbral del clasificador y ves cómo cambian los cuatro números y, con ellos, las cuatro métricas.</p>
+</header>
+
+<!-- La tabla -->
+<section style="border-bottom:none">
+  <div class="upper step-tag">Antes de las métricas, esta tabla</div>
+  <h2>Cuatro casillas, <em>cuatro historias</em>.</h2>
+  <p class="intro">Para clasificar entre dos clases (baja/no-baja, enfermo/sano…) lo primero es contar las cuatro casillas posibles.</p>
+
+  <div class="lab" style="align-items:start">
+    <div class="card">
+      <div class="matrix">
+        <div class="corner"></div>
+        <div class="h-label" style="grid-column:3">Predijo positivo</div>
+        <div class="h-label" style="grid-column:4">Predijo negativo</div>
+
+        <div class="row-label" style="grid-row:3">Real positivo</div>
+        <div class="row-label" style="grid-row:4">Real negativo</div>
+
+        <div class="cell vp" style="grid-column:3;grid-row:3">
+          <div class="label">VP</div>
+          <div class="n">✓</div>
+          <div class="desc">acertaste el positivo</div>
+        </div>
+        <div class="cell fn" style="grid-column:4;grid-row:3">
+          <div class="label">FN</div>
+          <div class="n">✗</div>
+          <div class="desc">se te escapó</div>
+        </div>
+        <div class="cell fp" style="grid-column:3;grid-row:4">
+          <div class="label">FP</div>
+          <div class="n">✗</div>
+          <div class="desc">falsa alarma</div>
+        </div>
+        <div class="cell vn" style="grid-column:4;grid-row:4">
+          <div class="label">VN</div>
+          <div class="n">✓</div>
+          <div class="desc">acertaste el negativo</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="upper step-tag">Ejemplo · test de COVID</div>
+      <div style="margin-top:10px;font-size:14px;line-height:1.7">
+        <p style="margin:0 0 8px"><b style="color:var(--verde)">VP</b> · estás enfermo y el test lo dice. ✓</p>
+        <p style="margin:0 0 8px"><b style="color:var(--verde)">VN</b> · estás sano y el test lo dice. ✓</p>
+        <p style="margin:0 0 8px"><b style="color:var(--rojo)">FP</b> · estás sano pero el test dice positivo. <em>Aislamiento innecesario, prueba extra.</em></p>
+        <p style="margin:0 0 8px"><b style="color:var(--rojo)">FN</b> · estás enfermo pero el test dice negativo. <em>Contagias sin saberlo.</em></p>
+      </div>
+      <div class="note tip">Las 4 métricas siguientes salen de combinar estos 4 números.</div>
+    </div>
+  </div>
+</section>
+
+<!-- Lab matriz interactiva -->
+<section style="border-bottom:none">
+  <div class="upper step-tag">Demo interactiva · clasificador binario</div>
+  <h2>El <em>umbral</em> lo cambia todo.</h2>
+  <p class="intro">Un clasificador no devuelve «sí/no». Devuelve una <b>probabilidad</b>. Tú decides el umbral. Más bajo → más positivos detectados pero también más falsas alarmas. Más alto → menos falsas alarmas pero más casos que se te escapan.</p>
+
+  <div class="upper step-tag" style="margin-top:18px">Elige escenario · cambia qué error te duele más</div>
+  <div class="scenarios" id="scenarios">
+    <button class="scn medic active" data-id="medic">
+      <div class="k">Diagnóstico de cáncer</div>
+      <h3>Maximizar Recall</h3>
+      <p>FN = mandar a casa a un enfermo. <b>Inaceptable.</b> FP = prueba extra. Molesto pero asumible.</p>
+      <div class="err">«Prefiero asustar a 10 sanos que perder a 1 enfermo»</div>
+    </button>
+    <button class="scn spam" data-id="spam">
+      <div class="k">Filtro anti-spam</div>
+      <h3>Maximizar Precision</h3>
+      <p>FN = un spam llega a la bandeja. Molesto. FP = un correo del jefe va al spam. <b>Desastre.</b></p>
+      <div class="err">«Prefiero que se cuele spam a perder correos importantes»</div>
+    </button>
+    <button class="scn churn" data-id="churn">
+      <div class="k">Churn de GymPro</div>
+      <h3>F1-score (equilibrio)</h3>
+      <p>FN = pierdes al socio que se iba. FP = llamas a uno que no se iba (gastas dinero).</p>
+      <div class="err">El compromiso de F1 es lo más sensato</div>
+    </button>
+  </div>
+
+  <div class="lab" style="margin-top:18px">
+    <!-- Panel izq: distribución + slider -->
+    <div>
+      <div class="card">
+        <div class="upper step-tag">Distribución de probabilidades del modelo</div>
+        <div style="font-size:13px;color:var(--tinta-2);margin:6px 0 4px">Cada punto = una predicción. <b style="color:var(--rojo)">Rojo</b> = caso real positivo. <b style="color:var(--azul-2)">Azul</b> = caso real negativo.</div>
+        <div class="distr" id="distr"></div>
+
+        <div class="slider-row"><span>Umbral de decisión</span><span><b id="th-val">0.50</b></span></div>
+        <input type="range" id="th-slider" min="0.05" max="0.95" step="0.01" value="0.5" />
+        <div style="font-size:11px;color:var(--gris)">Si la probabilidad &gt; umbral → predicción positiva.</div>
+
+        <div class="matrix" style="margin-top:18px">
+          <div class="corner"></div>
+          <div class="h-label" style="grid-column:3">Pred +</div>
+          <div class="h-label" style="grid-column:4">Pred −</div>
+          <div class="row-label" style="grid-row:3">Real +</div>
+          <div class="row-label" style="grid-row:4">Real −</div>
+          <div class="cell vp" id="cell-vp" style="grid-column:3;grid-row:3"><div class="label">VP</div><div class="n" id="n-vp">0</div></div>
+          <div class="cell fn" id="cell-fn" style="grid-column:4;grid-row:3"><div class="label">FN</div><div class="n" id="n-fn">0</div></div>
+          <div class="cell fp" id="cell-fp" style="grid-column:3;grid-row:4"><div class="label">FP</div><div class="n" id="n-fp">0</div></div>
+          <div class="cell vn" id="cell-vn" style="grid-column:4;grid-row:4"><div class="label">VN</div><div class="n" id="n-vn">0</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel der: métricas -->
+    <div>
+      <div class="card">
+        <div class="upper step-tag">Las cuatro hermanas</div>
+        <h4 style="margin:6px 0 4px">Accuracy · Precision · Recall · F1</h4>
+
+        <div class="metrics">
+          <div class="met accuracy">
+            <div class="k">Accuracy</div>
+            <div class="name">Exactitud</div>
+            <div class="formula">(VP + VN) / total</div>
+            <div class="v" id="m-acc">—</div>
+            <div style="font-size:11px;color:var(--tinta-2);margin-top:6px">Del total, ¿qué fracción acerté?</div>
+          </div>
+          <div class="met precision">
+            <div class="k">Precision</div>
+            <div class="name">Precisión</div>
+            <div class="formula">VP / (VP + FP)</div>
+            <div class="v" id="m-pre">—</div>
+            <div style="font-size:11px;color:var(--tinta-2);margin-top:6px">De los marcados +, ¿cuántos lo eran?</div>
+          </div>
+          <div class="met recall">
+            <div class="k">Recall</div>
+            <div class="name">Sensibilidad</div>
+            <div class="formula">VP / (VP + FN)</div>
+            <div class="v" id="m-rec">—</div>
+            <div style="font-size:11px;color:var(--tinta-2);margin-top:6px">De los reales +, ¿cuántos pillé?</div>
+          </div>
+          <div class="met f1">
+            <div class="k">F1-score</div>
+            <div class="name">Equilibrio</div>
+            <div class="formula">2·P·R / (P + R)</div>
+            <div class="v" id="m-f1">—</div>
+            <div style="font-size:11px;color:var(--tinta-2);margin-top:6px">Media armónica de P y R.</div>
+          </div>
+        </div>
+
+        <div class="note" id="advice" style="margin-top:18px"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="note warning"><b>La trampa del Accuracy:</b> si el 99% de los emails NO son spam, marcar TODO como «no spam» da 99% de accuracy. Inservible. Cuando hay clases desbalanceadas, accuracy miente.</div>
+
+<pre class="code"><span class="kw">from</span> sklearn.metrics <span class="kw">import</span> confusion_matrix, accuracy_score
+<span class="kw">from</span> sklearn.metrics <span class="kw">import</span> precision_score, recall_score, f1_score
+
+y_pred = (model.<span class="fn">predict_proba</span>(X_test)[:,<span class="nm">1</span>] &gt; <span class="nm">0.5</span>).<span class="fn">astype</span>(<span class="fn">int</span>)
+
+<span class="fn">print</span>(<span class="fn">confusion_matrix</span>(y_test, y_pred))
+<span class="fn">print</span>(<span class="fn">accuracy_score</span>(y_test, y_pred))
+<span class="fn">print</span>(<span class="fn">precision_score</span>(y_test, y_pred))
+<span class="fn">print</span>(<span class="fn">recall_score</span>(y_test, y_pred))
+<span class="fn">print</span>(<span class="fn">f1_score</span>(y_test, y_pred))</pre>
+</section>
+
+<!-- Clustering metrics -->
+<section style="border-bottom:none">
+  <div class="upper step-tag">Métricas sin etiquetas</div>
+  <h2>Cuando no hay <em>respuesta correcta</em>.</h2>
+  <p class="intro">En clustering nadie etiquetó los datos. Las métricas miden algo más abstracto: ¿son los grupos <b>compactos por dentro</b> y <b>separados por fuera</b>?</p>
+  <div class="clusterbox">
+    <div class="cb">
+      <div class="k">Silhouette · -1 a +1</div>
+      <h4>El más usado</h4>
+      <p>Cuán cerca está cada punto de su propio grupo, comparado con el grupo más cercano. <b>+1</b> bien clasificado · <b>0</b> en el límite · <b>−1</b> mal asignado.</p>
+    </div>
+    <div class="cb">
+      <div class="k">Davies-Bouldin</div>
+      <h4>Cuanto menor, mejor</h4>
+      <p>Promedio del peor caso: dispersión dentro de cada cluster frente a su distancia al cluster más cercano. Valores cerca de <b>0</b> = grupos bien separados.</p>
+    </div>
+    <div class="cb">
+      <div class="k">Dunn index</div>
+      <h4>Cuanto mayor, mejor</h4>
+      <p>Ratio entre la distancia mínima entre clusters y el diámetro máximo dentro de un cluster. Premia grupos <b>compactos</b> y <b>bien separados</b>.</p>
+    </div>
+  </div>
+  <div class="note tip"><b>Analogía · mesas de un restaurante:</b> cada mesa = un cluster. Una buena distribución es: la gente de cada mesa se conoce entre sí (compacto) y las mesas están bien separadas. Si todo el mundo está mezclado, mal cluster.</div>
+</section>
+
+</div>
+
+<script>
+/* ===== Generación de probabilidades sintéticas =====
+   100 puntos: 30 positivos reales con prob alta (centro ~0.7), 70 negativos con prob baja (centro ~0.3) */
+const POINTS = (function(){
+  function seed(s){return function(){s=(s*9301+49297)%233280;return s/233280;};}
+  const r = seed(99);
+  function clamp(v){return Math.max(0.02, Math.min(0.98, v));}
+  function gauss(m,s){const u=r(),v=r();return clamp(m+s*Math.sqrt(-2*Math.log(Math.max(1e-9,u)))*Math.cos(2*Math.PI*v));}
+  const out = [];
+  for(let i=0;i<30;i++) out.push({real:1, p:gauss(0.72, 0.16)});
+  for(let i=0;i<70;i++) out.push({real:0, p:gauss(0.32, 0.18)});
+  return out;
+})();
+
+const SCEN = {
+  medic:{
+    title:'Diagnóstico de cáncer · Maximiza Recall',
+    txt:'Cada FN es un enfermo en casa. <b>Baja el umbral</b> (0.2–0.3) para asegurarte de pillar a todos los positivos. Aceptas más FP — son aceptables.',
+    cls:'warning',
+    target:'recall',
+    ideal:0.25
+  },
+  spam:{
+    title:'Filtro anti-spam · Maximiza Precision',
+    txt:'Un correo del jefe en spam es un desastre. <b>Sube el umbral</b> (0.7–0.85) para marcar como spam solo lo que estés muy seguro. Algunos spam se cuelan, pero no pierdes correos reales.',
+    cls:'tip',
+    target:'precision',
+    ideal:0.78
+  },
+  churn:{
+    title:'Churn GymPro · F1 balanceado',
+    txt:'Ningún error domina. <b>Umbral medio</b> (0.5) y mira F1: cuanto más alto, mejor compromiso. Útil para decidir a quién llamar entre los socios.',
+    cls:'',
+    target:'f1',
+    ideal:0.5
+  }
+};
+let currentScn = 'medic';
+let threshold = 0.5;
+
+function compute(){
+  let VP=0,VN=0,FP=0,FN=0;
+  POINTS.forEach(function(p){
+    const pred = p.p >= threshold ? 1 : 0;
+    if(p.real===1 && pred===1) VP++;
+    else if(p.real===1 && pred===0) FN++;
+    else if(p.real===0 && pred===1) FP++;
+    else VN++;
+  });
+  const tot = VP+VN+FP+FN;
+  const acc = (VP+VN)/tot;
+  const pre = VP/(VP+FP || 1);
+  const rec = VP/(VP+FN || 1);
+  const f1  = (2*pre*rec)/((pre+rec) || 1);
+  return {VP:VP,VN:VN,FP:FP,FN:FN, acc:acc, pre:pre, rec:rec, f1:f1};
+}
+
+function renderDistr(){
+  const el = document.getElementById('distr');
+  el.innerHTML = '';
+  POINTS.forEach(function(p,i){
+    const d = document.createElement('div');
+    d.className = 'dot ' + (p.real===1?'pos':'neg');
+    d.style.left = (p.p*100)+'%';
+    d.style.top = (p.real===1 ? 30 : 60) + '%';
+    d.title = (p.real===1?'real +':'real −') + ' · prob ' + p.p.toFixed(2);
+    el.appendChild(d);
+  });
+  const t = document.createElement('div');
+  t.className = 'thresh';
+  t.style.left = (threshold*100)+'%';
+  t.dataset.val = threshold.toFixed(2);
+  el.appendChild(t);
+}
+
+function pct(v){return (v*100).toFixed(1)+'%';}
+
+function render(){
+  const r = compute();
+  document.getElementById('n-vp').textContent = r.VP;
+  document.getElementById('n-vn').textContent = r.VN;
+  document.getElementById('n-fp').textContent = r.FP;
+  document.getElementById('n-fn').textContent = r.FN;
+  document.getElementById('m-acc').textContent = pct(r.acc);
+  document.getElementById('m-pre').textContent = isNaN(r.pre) ? '—' : pct(r.pre);
+  document.getElementById('m-rec').textContent = pct(r.rec);
+  document.getElementById('m-f1').textContent = isNaN(r.f1) ? '—' : pct(r.f1);
+
+  // Advice según escenario
+  const sc = SCEN[currentScn];
+  const adv = document.getElementById('advice');
+  let extra = '';
+  if(currentScn==='medic'){
+    if(r.rec >= 0.95) extra = '<br><b style="color:var(--verde)">✓ Excelente:</b> casi no se escapa ningún enfermo.';
+    else if(r.FN > 5) extra = '<br><b style="color:var(--rojo)">⚠ '+r.FN+' enfermos sin detectar.</b> Baja más el umbral.';
+  } else if(currentScn==='spam'){
+    if(r.pre >= 0.95) extra = '<br><b style="color:var(--verde)">✓ Excelente:</b> casi ningún correo real va a spam.';
+    else if(r.FP > 3) extra = '<br><b style="color:var(--rojo)">⚠ '+r.FP+' correos del jefe en spam.</b> Sube más el umbral.';
+  } else if(currentScn==='churn'){
+    if(r.f1 >= 0.7) extra = '<br><b style="color:var(--verde)">✓ Buen equilibrio:</b> F1 alto sin disparar ni FP ni FN.';
+  }
+  adv.className = 'note ' + sc.cls;
+  adv.innerHTML = '<b>'+sc.title+'.</b> '+sc.txt+extra;
+
+  renderDistr();
+}
+
+document.querySelectorAll('.scn').forEach(function(b){
+  b.addEventListener('click', function(){
+    currentScn = b.dataset.id;
+    document.querySelectorAll('.scn').forEach(function(x){x.classList.remove('active');});
+    b.classList.add('active');
+    threshold = SCEN[currentScn].ideal;
+    document.getElementById('th-slider').value = threshold;
+    document.getElementById('th-val').textContent = threshold.toFixed(2);
+    render();
+  });
+});
+
+document.getElementById('th-slider').addEventListener('input', function(e){
+  threshold = +e.target.value;
+  document.getElementById('th-val').textContent = threshold.toFixed(2);
+  render();
+});
+
+render();
+</script>
+</body>
+</html>

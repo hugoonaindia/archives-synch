@@ -1,0 +1,539 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Sesión 4 · Encoding & Escalado</title>
+<style>
+  :root{
+    --crema:#F2EFE6;
+    --tinta:#0E1B4D;
+    --tinta-2:#1B2A6B;
+    --azul:#3FA9F5;
+    --azul-2:#1F8AD9;
+    --rojo:#D85C3E;
+    --verde:#2E9E6E;
+    --gris:#7A7A7A;
+    --gris-2:#C9C5B8;
+    --amber:#E0A23A;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--crema);color:var(--tinta);font-family:Georgia,'Times New Roman',serif;line-height:1.55}
+  .mono{font-family:'SF Mono',Menlo,Monaco,Consolas,monospace}
+  .upper{text-transform:uppercase;letter-spacing:.18em;font-weight:600}
+
+  .wrap{max-width:1240px;margin:0 auto;padding:48px 32px 96px}
+  header.hero{padding:64px 0 48px;border-bottom:1px solid var(--gris-2)}
+  header .tag{font-size:11px;color:var(--azul-2)}
+  header h1{font-size:60px;line-height:1.05;margin:24px 0 16px;font-weight:700;letter-spacing:-.02em}
+  header h1 em{font-style:italic;color:var(--azul-2);font-weight:400}
+  header p.lead{font-size:19px;color:var(--tinta-2);max-width:780px;margin:0}
+
+  section{padding:56px 0;border-bottom:1px solid var(--gris-2)}
+  section .step-tag{font-size:11px;color:var(--azul-2)}
+  section h2{font-size:42px;margin:12px 0 16px;font-weight:700;letter-spacing:-.01em;line-height:1.1}
+  section h2 em{font-style:italic;color:var(--azul-2);font-weight:400}
+  section p.intro{font-size:17px;color:var(--tinta-2);max-width:880px;margin:0 0 24px}
+
+  .card{background:#fff;border:1px solid var(--gris-2);border-radius:8px;padding:22px}
+
+  /* Encoder selector */
+  .enc-tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:16px}
+  .enc-tab{background:#fff;border:1px solid var(--gris-2);border-top:4px solid var(--gris-2);border-radius:8px;padding:18px;cursor:pointer;text-align:left;font-family:inherit;color:var(--tinta);transition:.15s}
+  .enc-tab:hover{transform:translateY(-2px)}
+  .enc-tab.active{border-top-color:var(--azul-2);background:#fff;box-shadow:0 4px 18px rgba(14,27,77,.06)}
+  .enc-tab .k{font-size:11px;color:var(--azul-2);text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px}
+  .enc-tab h4{margin:0 0 4px;font-size:18px}
+  .enc-tab p{font-size:13px;color:var(--tinta-2);margin:0}
+
+  table.df{width:100%;border-collapse:collapse;font-family:'SF Mono',Menlo,monospace;font-size:13px;background:#fff;border-radius:6px;overflow:hidden;margin-top:12px}
+  table.df th{background:#E5E7F5;color:var(--tinta);text-transform:uppercase;font-size:10px;letter-spacing:.12em;padding:9px 10px;text-align:left;font-weight:600}
+  table.df td{padding:9px 10px;border-bottom:1px solid #f0eee4;color:var(--tinta);transition:.3s}
+  table.df tr:last-child td{border-bottom:none}
+  td.encoded{background:#E0E5FA;color:var(--tinta-2);font-weight:600}
+  td.scaled{background:#FFF3D6;color:#996600;font-weight:600}
+  td.warn{background:#FBE0DA;color:var(--rojo);font-weight:600}
+
+  pre.code{background:#0a0e2c;color:#e8e8e8;padding:16px 18px;border-radius:8px;font-size:12px;line-height:1.6;overflow-x:auto;margin:14px 0 0;font-family:'SF Mono',monospace}
+  pre.code .kw{color:#c084fc}
+  pre.code .fn{color:#fbbf24}
+  pre.code .st{color:#86efac}
+  pre.code .nm{color:#f59e0b}
+  pre.code .cm{color:#7a8aa8;font-style:italic}
+
+  .lab{display:grid;grid-template-columns:1fr 1.2fr;gap:24px;margin-top:18px}
+
+  .note{background:#E5F1FB;border-left:4px solid var(--azul);padding:14px 18px;border-radius:4px;margin-top:18px;font-size:14px;color:var(--tinta-2)}
+  .note b{color:var(--tinta)}
+  .warning{background:#FBE5DD;border-left-color:var(--rojo)}
+  .tip{background:#E0F4E8;border-left-color:var(--verde)}
+
+  /* Escalado */
+  .scaler-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:16px 0}
+  .scaler-btn{padding:14px;background:#fff;border:1px solid var(--gris-2);border-radius:6px;cursor:pointer;text-align:left;font-family:inherit;color:var(--tinta);font-size:13px;transition:.15s}
+  .scaler-btn:hover{border-color:var(--azul)}
+  .scaler-btn.active{background:var(--tinta);color:#fff;border-color:var(--tinta)}
+  .scaler-btn .t{font-weight:700;font-family:'SF Mono',monospace;font-size:13px}
+  .scaler-btn .d{font-size:11px;opacity:.85;margin-top:2px}
+
+  /* Number line */
+  .numline{height:80px;position:relative;background:#FAF8F1;border:1px solid var(--gris-2);border-radius:6px;margin-top:14px}
+  .numline .axis{position:absolute;left:30px;right:30px;top:50%;border-top:2px solid var(--gris-2)}
+  .numline .point{position:absolute;width:14px;height:14px;border-radius:50%;background:var(--azul);transform:translate(-7px,-7px);top:50%;transition:left .5s, background .3s, transform .3s}
+  .numline .point.outlier{background:var(--rojo);width:18px;height:18px;transform:translate(-9px,-9px)}
+  .numline .label{position:absolute;font-family:'SF Mono',monospace;font-size:10px;top:60%;color:var(--tinta-2);transform:translateX(-50%);transition:left .5s}
+  .numline .scale{position:absolute;font-family:'SF Mono',monospace;font-size:10px;color:var(--gris);bottom:6px;transform:translateX(-50%);transition:left .5s}
+
+  .scale-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px;font-family:'SF Mono',monospace;font-size:12px}
+  .scale-stats .b{background:#FAF8F1;padding:10px;border-radius:6px;text-align:center}
+  .scale-stats .l{font-size:10px;color:var(--gris);text-transform:uppercase;letter-spacing:.1em}
+  .scale-stats .v{font-size:18px;font-weight:700}
+
+  /* Quiz */
+  .quiz{background:#fff;border:1px solid var(--gris-2);border-radius:10px;padding:28px;margin-top:24px}
+  .quiz .q{margin-bottom:24px;padding-bottom:24px;border-bottom:1px dashed var(--gris-2)}
+  .quiz .q:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+  .quiz .q b{font-size:16px;display:block;margin-bottom:10px}
+  .quiz .opts{display:flex;flex-wrap:wrap;gap:8px}
+  .quiz .opt{padding:8px 14px;border:1px solid var(--gris-2);background:#fff;cursor:pointer;border-radius:4px;font-family:inherit;font-size:13px;color:var(--tinta);transition:.15s}
+  .quiz .opt:hover{border-color:var(--azul)}
+  .quiz .opt.ok{background:#D8F1E5;border-color:var(--verde);color:var(--verde);font-weight:700}
+  .quiz .opt.bad{background:#FBE0DA;border-color:var(--rojo);color:var(--rojo)}
+  .quiz .feedback{margin-top:12px;font-size:13px;color:var(--tinta-2);padding:10px;background:#FAF8F1;border-radius:4px;display:none}
+  .quiz .feedback.show{display:block}
+  .quiz .score{margin-top:20px;padding:20px;background:var(--tinta);color:#fff;border-radius:8px;text-align:center;font-size:18px}
+  .quiz .score b{display:block;font-size:36px;margin-bottom:6px;color:var(--azul)}
+
+  /* Data leakage panel */
+  .dl{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:18px}
+  .dl-card{background:#fff;border:1px solid var(--gris-2);border-radius:8px;padding:22px;border-top:4px solid var(--rojo)}
+  .dl-card.good{border-top-color:var(--verde)}
+  .dl-card .k{font-size:11px;color:var(--rojo);text-transform:uppercase;letter-spacing:.12em}
+  .dl-card.good .k{color:var(--verde)}
+  .dl-card h4{margin:6px 0 10px;font-size:20px}
+  .dl-card .ind{font-family:'SF Mono',monospace;font-size:13px;background:#FAF8F1;padding:10px;border-radius:6px;margin-top:12px}
+  .dl-card .ind b{color:var(--tinta)}
+
+  @media (max-width:880px){
+    header h1{font-size:42px}
+    section h2{font-size:32px}
+    .enc-tabs,.scaler-row,.scale-stats,.lab,.dl{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <div class="upper tag">Tema 4 · Sesión 04 · Artefacto 4</div>
+  <h1>Encoding y <em>escalado</em>: la última milla.</h1>
+  <p class="lead">Tu dataset está limpio. Sin NaN, sin outliers. Pero los modelos solo entienden números — y la columna <span class="mono">Plan = «Premium»</span> no es un número. Y los números que sí tienes (Edad 23–52, Cuota 30–50, Visitas 0–28) no juegan en la misma liga. Aquí cierras: tres encoders, tres escaladores, una trampa común — el <em>data leakage</em>.</p>
+</header>
+
+<!-- Encoding -->
+<section style="border-bottom:none">
+  <div class="upper step-tag">Encoding</div>
+  <h2>De <em>palabras</em> a números.</h2>
+  <p class="intro">Tres técnicas para convertir variables categóricas. Cuál usas <b>cambia mucho</b> el modelo. Pulsa cada una y mira cómo se transforma la tabla.</p>
+
+  <div class="enc-tabs">
+    <button class="enc-tab active" data-enc="onehot">
+      <div class="k">One-Hot Encoding</div>
+      <h4>Una columna por categoría</h4>
+      <p>El estándar. Sin orden falso. Pega: con 1.000 categorías → 1.000 columnas.</p>
+    </button>
+    <button class="enc-tab" data-enc="label">
+      <div class="k">Label Encoding</div>
+      <h4>Asigna un entero a cada categoría</h4>
+      <p>Bueno si la categoría es ordinal (S, M, L, XL). Mete orden falso si no lo es.</p>
+    </button>
+    <button class="enc-tab" data-enc="target">
+      <div class="k">Target Encoding</div>
+      <h4>Sustituir por la media del target</h4>
+      <p>Cada categoría = % de baja en esa categoría. Riesgo: data leakage.</p>
+    </button>
+  </div>
+
+  <div class="lab">
+    <div>
+      <div class="upper step-tag">Tabla GymPro · resultado del encoding</div>
+      <div style="overflow-x:auto">
+        <table class="df" id="enc-table"></table>
+      </div>
+      <pre class="code" id="enc-code"></pre>
+    </div>
+    <div>
+      <div class="card">
+        <div class="upper step-tag">Detalles · <span id="enc-name">One-Hot</span></div>
+        <h3 id="enc-title" style="margin:6px 0 8px;font-size:24px"></h3>
+        <p id="enc-desc" style="font-size:14px;color:var(--tinta-2)"></p>
+        <div class="note" id="enc-note"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Scaling -->
+<section style="border-bottom:none">
+  <div class="upper step-tag">Escalado</div>
+  <h2>Mismo tamaño <em>para todos</em>.</h2>
+  <p class="intro">La columna <span class="mono">cuota_€</span> de GymPro: <span class="mono">[29.9, 39.9, 49.9, 39.9, 29.9, 39.9, 99.9]</span> con un VIP a 99.9. Mira cómo cada escalador la transforma. Fíjate especialmente en qué le pasa al outlier.</p>
+
+  <div class="scaler-row">
+    <button class="scaler-btn active" data-sc="raw"><div class="t">sin tocar</div><div class="d">Como llegó</div></button>
+    <button class="scaler-btn" data-sc="minmax"><div class="t">MinMaxScaler</div><div class="d">A rango [0, 1]</div></button>
+    <button class="scaler-btn" data-sc="standard"><div class="t">StandardScaler</div><div class="d">Media 0, std 1</div></button>
+    <button class="scaler-btn" data-sc="robust"><div class="t">RobustScaler</div><div class="d">Mediana, IQR</div></button>
+  </div>
+
+  <div class="card">
+    <div class="upper step-tag">Línea numérica · cuota_€ tras escalar</div>
+    <div class="numline" id="numline"></div>
+    <div class="scale-stats">
+      <div class="b"><div class="l">min</div><div class="v" id="sc-min">—</div></div>
+      <div class="b"><div class="l">max</div><div class="v" id="sc-max">—</div></div>
+      <div class="b"><div class="l">media</div><div class="v" id="sc-mean">—</div></div>
+      <div class="b"><div class="l">std</div><div class="v" id="sc-std">—</div></div>
+    </div>
+    <pre class="code" id="sc-code"></pre>
+    <div class="note" id="sc-note"></div>
+  </div>
+
+  <div class="note tip"><b>Regla rapidísima:</b> si dudas, <b>StandardScaler</b>. Es el default sensato (regresión, SVM, redes con datos gaussianos). <b>MinMax</b> si tu algoritmo lo pide explícitamente (sigmoide, distancias acotadas). <b>Robust</b> si sospechas outliers que no quieres tirar.</div>
+</section>
+
+<!-- Data leakage -->
+<section style="border-bottom:none">
+  <div class="upper step-tag">Pro tip · El error que comete todo el mundo</div>
+  <h2>Data leakage y <em>pipelines</em>.</h2>
+  <p class="intro">El error más común al escalar: aplicarlo a <b>todo el dataset antes</b> de partir en train/test. Resultado: información del test se filtra al train. Tu modelo «hace trampa» en validación y luego falla en producción.</p>
+
+  <div class="dl">
+    <div class="dl-card">
+      <div class="k">✗ Mal · data leakage</div>
+      <h4>Escalar todo, después partir</h4>
+<pre class="code"><span class="cm"># El scaler ve TODO el dataset</span>
+df_scaled = scaler.<span class="fn">fit_transform</span>(df)
+X_train, X_test = <span class="fn">split</span>(df_scaled)</pre>
+      <div class="ind"><b>Lo que pasa:</b> el scaler aprendió la media y std usando el test. Tus métricas de validación están <b>infladas</b>. Cuando llegue el día del despliegue, dato nuevo no se parecerá a nada que el scaler «conoce».</div>
+    </div>
+    <div class="dl-card good">
+      <div class="k">✓ Bien · fit en train, transform en test</div>
+      <h4>El test se trata como dato nuevo</h4>
+<pre class="code">X_train, X_test = <span class="fn">split</span>(df)
+scaler.<span class="fn">fit</span>(X_train)         <span class="cm"># aprende solo del train</span>
+X_train = scaler.<span class="fn">transform</span>(X_train)
+X_test  = scaler.<span class="fn">transform</span>(X_test)  <span class="cm"># aplica lo aprendido</span></pre>
+      <div class="ind"><b>Por qué funciona:</b> el test simula <em>dato nuevo</em>. Lo tratas igual que tratarías una fila que llega mañana en producción. Tus métricas son honestas.</div>
+    </div>
+  </div>
+
+  <div class="note tip"><b>La forma profesional:</b> envuélvelo todo en un <span class="mono">Pipeline</span> de scikit-learn. Encoder + Scaler + Modelo, en un solo objeto. <span class="mono">pipeline.fit(X_train, y_train)</span> hace todo en cadena, sin filtrar test.</div>
+
+<pre class="code" style="margin-top:18px"><span class="kw">from</span> sklearn.pipeline <span class="kw">import</span> Pipeline
+<span class="kw">from</span> sklearn.preprocessing <span class="kw">import</span> StandardScaler, OneHotEncoder
+<span class="kw">from</span> sklearn.compose <span class="kw">import</span> ColumnTransformer
+<span class="kw">from</span> sklearn.linear_model <span class="kw">import</span> LogisticRegression
+
+prep = <span class="fn">ColumnTransformer</span>([
+    (<span class="st">'num'</span>, <span class="fn">StandardScaler</span>(), [<span class="st">'edad'</span>, <span class="st">'peso'</span>, <span class="st">'cuota'</span>]),
+    (<span class="st">'cat'</span>, <span class="fn">OneHotEncoder</span>(), [<span class="st">'plan'</span>])
+])
+
+pipe = <span class="fn">Pipeline</span>([
+    (<span class="st">'preprocesado'</span>, prep),
+    (<span class="st">'modelo'</span>, <span class="fn">LogisticRegression</span>())
+])
+
+pipe.<span class="fn">fit</span>(X_train, y_train)        <span class="cm"># todo en cadena, sin leakage</span>
+y_pred = pipe.<span class="fn">predict</span>(X_test)</pre>
+</section>
+
+<!-- Quiz final -->
+<section style="border-bottom:none">
+  <div class="upper step-tag">Quiz final</div>
+  <h2>¿Qué <em>técnica usarías</em>?</h2>
+  <p class="intro">Seis casos de la vida real. Pulsa la respuesta. Cuenta tu puntuación al final.</p>
+
+  <div class="quiz" id="quiz"></div>
+</section>
+
+</div>
+
+<script>
+/* === Encoding === */
+const PEOPLE = [
+  {nombre:'Ana',  plan:'Premium', baja:0},
+  {nombre:'Beto', plan:'Básico',  baja:1},
+  {nombre:'Carla',plan:'Premium', baja:0},
+  {nombre:'Diego',plan:'Básico',  baja:1},
+  {nombre:'Eva',  plan:'VIP',     baja:0},
+  {nombre:'Fer',  plan:'Premium', baja:0},
+  {nombre:'Gala', plan:'Básico',  baja:0},
+  {nombre:'Hugo', plan:'Premium', baja:1}
+];
+
+const ENC_INFO = {
+  onehot:{
+    name:'One-Hot',
+    title:'Una columna binaria por categoría.',
+    desc:'Para cada valor único de la columna creas una nueva columna 0/1. Es el estándar para variables categóricas <b>sin orden</b>. No introduce relaciones falsas.',
+    note:{cls:'tip', html:'<b>Pega:</b> con 1.000 categorías te da 1.000 columnas. Si la cardinalidad es alta, considera Target Encoding o agrupación de categorías.'},
+    code:'<span class="cm"># pandas</span>\ndf = pd.<span class="fn">get_dummies</span>(df, columns=[<span class="st">\'plan\'</span>])\n\n<span class="cm"># sklearn</span>\n<span class="kw">from</span> sklearn.preprocessing <span class="kw">import</span> OneHotEncoder\nenc = <span class="fn">OneHotEncoder</span>(sparse_output=<span class="kw">False</span>)\nX = enc.<span class="fn">fit_transform</span>(df[[<span class="st">\'plan\'</span>]])'
+  },
+  label:{
+    name:'Label',
+    title:'Cada categoría → un entero.',
+    desc:'Básico=0, Premium=1, VIP=2. Útil <b>solo si</b> la variable es ordinal (tallas S/M/L/XL, niveles bajo/medio/alto). En categorías sin orden, mete una relación falsa entre números.',
+    note:{cls:'warning', html:'<b>Cuidado:</b> en regresión lineal o KNN, Label sobre «plan» introduce un orden falso (VIP=2 ≠ 2× Premium). En árboles (Random Forest) el daño es mucho menor — los splits son por umbral.'},
+    code:'<span class="kw">from</span> sklearn.preprocessing <span class="kw">import</span> LabelEncoder\nle = <span class="fn">LabelEncoder</span>()\ndf[<span class="st">\'plan_label\'</span>] = le.<span class="fn">fit_transform</span>(df[<span class="st">\'plan\'</span>])\n<span class="cm"># Básico→0  Premium→1  VIP→2</span>'
+  },
+  target:{
+    name:'Target',
+    title:'Cada categoría → media del target.',
+    desc:'Reemplazas «Básico» por <b>la tasa de baja</b> de los socios Básico. Captura información directa de la categoría sobre el target. Compacto: 1 columna.',
+    note:{cls:'warning', html:'<b>Riesgo grande de leakage:</b> si calculas la media usando todo el dataset (incluido el target), el test «se cuela». Hay que hacerlo dentro de cross-validation o con CategoryEncoders + holdout.'},
+    code:'<span class="kw">from</span> category_encoders <span class="kw">import</span> TargetEncoder\nte = <span class="fn">TargetEncoder</span>(cols=[<span class="st">\'plan\'</span>])\nX_train = te.<span class="fn">fit_transform</span>(X_train, y_train)\n<span class="cm"># Básico→0.62 (62% baja)</span>\n<span class="cm"># Premium→0.18  VIP→0.08</span>\nX_test = te.<span class="fn">transform</span>(X_test)'
+  }
+};
+
+let currentEnc = 'onehot';
+
+function rateBaja(plan){
+  const sub = PEOPLE.filter(function(p){return p.plan===plan;});
+  return sub.reduce(function(a,b){return a+b.baja;},0)/sub.length;
+}
+
+function renderEnc(){
+  const info = ENC_INFO[currentEnc];
+  document.querySelectorAll('.enc-tab').forEach(function(t){
+    t.classList.toggle('active', t.dataset.enc===currentEnc);
+  });
+  document.getElementById('enc-name').textContent = info.name;
+  document.getElementById('enc-title').textContent = info.title;
+  document.getElementById('enc-desc').innerHTML = info.desc;
+  const en = document.getElementById('enc-note');
+  en.className = 'note ' + (info.note.cls||'');
+  en.innerHTML = info.note.html;
+  document.getElementById('enc-code').innerHTML = info.code;
+
+  // Tabla
+  const tab = document.getElementById('enc-table');
+  if(currentEnc==='onehot'){
+    let h = '<thead><tr><th>nombre</th><th>plan</th><th>plan_Básico</th><th>plan_Premium</th><th>plan_VIP</th><th>baja</th></tr></thead><tbody>';
+    PEOPLE.forEach(function(p){
+      h += '<tr><td>'+p.nombre+'</td><td>'+p.plan+'</td>'+
+        '<td class="encoded">'+(p.plan==='Básico'?1:0)+'</td>'+
+        '<td class="encoded">'+(p.plan==='Premium'?1:0)+'</td>'+
+        '<td class="encoded">'+(p.plan==='VIP'?1:0)+'</td>'+
+        '<td>'+p.baja+'</td></tr>';
+    });
+    tab.innerHTML = h+'</tbody>';
+  } else if(currentEnc==='label'){
+    let h = '<thead><tr><th>nombre</th><th>plan</th><th>plan_label</th><th>baja</th></tr></thead><tbody>';
+    const map = {'Básico':0,'Premium':1,'VIP':2};
+    PEOPLE.forEach(function(p){
+      h += '<tr><td>'+p.nombre+'</td><td>'+p.plan+'</td>'+
+        '<td class="warn">'+map[p.plan]+'</td>'+
+        '<td>'+p.baja+'</td></tr>';
+    });
+    tab.innerHTML = h+'</tbody>';
+  } else { // target
+    let h = '<thead><tr><th>nombre</th><th>plan</th><th>plan_target</th><th>baja</th></tr></thead><tbody>';
+    const m = {'Básico':rateBaja('Básico'),'Premium':rateBaja('Premium'),'VIP':rateBaja('VIP')};
+    PEOPLE.forEach(function(p){
+      h += '<tr><td>'+p.nombre+'</td><td>'+p.plan+'</td>'+
+        '<td class="encoded">'+m[p.plan].toFixed(2)+'</td>'+
+        '<td>'+p.baja+'</td></tr>';
+    });
+    tab.innerHTML = h+'</tbody>';
+  }
+}
+document.querySelectorAll('.enc-tab').forEach(function(t){
+  t.addEventListener('click', function(){ currentEnc = t.dataset.enc; renderEnc(); });
+});
+renderEnc();
+
+/* === Escalado === */
+const CUOTAS = [29.9, 39.9, 49.9, 39.9, 29.9, 39.9, 99.9];
+const NOMBRES = ['Ana','Beto','Carla','Diego','Eva','Fer','VIP'];
+
+const SC_INFO = {
+  raw:{name:'Sin escalar', code:'<span class="cm"># Datos originales — NO escalados</span>\ncuotas = [<span class="nm">29.9</span>, <span class="nm">39.9</span>, <span class="nm">49.9</span>, <span class="nm">39.9</span>, <span class="nm">29.9</span>, <span class="nm">39.9</span>, <span class="nm">99.9</span>]',
+        note:{cls:'warning', html:'<b>Sin escalar:</b> el VIP (99.9€) <em>aplasta</em> al resto. En SVM o KNN, este punto dominará la distancia.'}},
+  minmax:{name:'MinMaxScaler', code:'<span class="kw">from</span> sklearn.preprocessing <span class="kw">import</span> MinMaxScaler\nscaler = <span class="fn">MinMaxScaler</span>()\ndf[[<span class="st">\'cuota\'</span>]] = scaler.<span class="fn">fit_transform</span>(df[[<span class="st">\'cuota\'</span>]])\n<span class="cm"># x\' = (x - min) / (max - min) → [0, 1]</span>',
+          note:{cls:'warning', html:'<b>MinMax con outlier:</b> mira cómo el VIP queda en 1.0 y todo el resto se comprime cerca de 0. La separación entre los socios «normales» se pierde.'}},
+  standard:{name:'StandardScaler', code:'<span class="kw">from</span> sklearn.preprocessing <span class="kw">import</span> StandardScaler\nscaler = <span class="fn">StandardScaler</span>()\ndf[[<span class="st">\'cuota\'</span>]] = scaler.<span class="fn">fit_transform</span>(df[[<span class="st">\'cuota\'</span>]])\n<span class="cm"># x\' = (x - μ) / σ → media 0, std 1</span>',
+            note:{cls:'tip', html:'<b>StandardScaler:</b> el default. Media 0, desviación 1. El outlier sigue siendo grande pero no aplasta. Mejor que MinMax cuando hay extremos.'}},
+  robust:{name:'RobustScaler', code:'<span class="kw">from</span> sklearn.preprocessing <span class="kw">import</span> RobustScaler\nscaler = <span class="fn">RobustScaler</span>()\ndf[[<span class="st">\'cuota\'</span>]] = scaler.<span class="fn">fit_transform</span>(df[[<span class="st">\'cuota\'</span>]])\n<span class="cm"># Usa mediana e IQR — inmune a outliers</span>',
+          note:{cls:'tip', html:'<b>RobustScaler — la joya cuando hay outliers reales:</b> usa mediana e IQR en vez de media y std. El VIP se aleja, pero los demás socios <b>conservan su variabilidad</b>. Útil si no quieres tirar el outlier.'}}
+};
+
+let currentSc = 'raw';
+
+function quantile(sorted, q){
+  const idx = (sorted.length-1)*q;
+  const lo = Math.floor(idx), hi = Math.ceil(idx);
+  if(lo===hi) return sorted[lo];
+  return sorted[lo]*(hi-idx) + sorted[hi]*(idx-lo);
+}
+
+function applyScale(s){
+  const x = CUOTAS.slice();
+  if(s==='raw') return x;
+  if(s==='minmax'){
+    const mn = Math.min.apply(null,x), mx = Math.max.apply(null,x);
+    return x.map(function(v){return (v-mn)/(mx-mn);});
+  }
+  if(s==='standard'){
+    const m = x.reduce(function(a,b){return a+b;},0)/x.length;
+    const sd = Math.sqrt(x.reduce(function(a,b){return a+(b-m)*(b-m);},0)/x.length);
+    return x.map(function(v){return (v-m)/sd;});
+  }
+  if(s==='robust'){
+    const sort = x.slice().sort(function(a,b){return a-b;});
+    const med = quantile(sort,0.5);
+    const iqr = quantile(sort,0.75)-quantile(sort,0.25);
+    return x.map(function(v){return (v-med)/(iqr||1);});
+  }
+}
+
+function renderScale(){
+  document.querySelectorAll('.scaler-btn').forEach(function(b){
+    b.classList.toggle('active', b.dataset.sc===currentSc);
+  });
+  const info = SC_INFO[currentSc];
+  document.getElementById('sc-code').innerHTML = info.code;
+  const n = document.getElementById('sc-note');
+  n.className = 'note ' + (info.note.cls||'');
+  n.innerHTML = info.note.html;
+
+  const x = applyScale(currentSc);
+  const mn = Math.min.apply(null,x), mx = Math.max.apply(null,x);
+  const m = x.reduce(function(a,b){return a+b;},0)/x.length;
+  const sd = Math.sqrt(x.reduce(function(a,b){return a+(b-m)*(b-m);},0)/x.length);
+
+  document.getElementById('sc-min').textContent = mn.toFixed(2);
+  document.getElementById('sc-max').textContent = mx.toFixed(2);
+  document.getElementById('sc-mean').textContent = m.toFixed(2);
+  document.getElementById('sc-std').textContent = sd.toFixed(2);
+
+  // Render numline
+  const nl = document.getElementById('numline');
+  nl.innerHTML = '<div class="axis"></div>';
+  const range = mx-mn || 1;
+  const padPct = 6; // %
+  function pos(v){
+    return padPct + (v-mn)/range*(100-2*padPct);
+  }
+  x.forEach(function(v,i){
+    const left = pos(v);
+    const isOut = i===6; // VIP
+    const dot = document.createElement('div');
+    dot.className = 'point' + (isOut?' outlier':'');
+    dot.style.left = left+'%';
+    nl.appendChild(dot);
+    const lab = document.createElement('div');
+    lab.className = 'label';
+    lab.style.left = left+'%';
+    lab.textContent = NOMBRES[i];
+    nl.appendChild(lab);
+    const sc = document.createElement('div');
+    sc.className = 'scale';
+    sc.style.left = left+'%';
+    sc.textContent = (typeof v==='number'?v.toFixed(2):v);
+    nl.appendChild(sc);
+  });
+}
+document.querySelectorAll('.scaler-btn').forEach(function(b){
+  b.addEventListener('click', function(){ currentSc = b.dataset.sc; renderScale(); });
+});
+renderScale();
+
+/* === Quiz final === */
+const Q = [
+  {q:'Tu columna «sueldo» tiene cola larga. La media es 80k pero la mediana es 35k. ¿Cómo imputas los NaN?', opts:[
+    {t:'Media', ok:false, fb:'No: la media está infladísima por outliers. Imputarías con un valor poco realista.'},
+    {t:'Mediana', ok:true, fb:'Correcto. Cola larga → mediana. Robusta a los extremos.'},
+    {t:'Moda', ok:false, fb:'La moda es para categóricas, no para numéricas continuas.'}
+  ]},
+  {q:'Tus datos están sesgados (no son normales) y necesitas marcar outliers. ¿Qué método eliges?', opts:[
+    {t:'Z-score', ok:false, fb:'Z-score asume normalidad. En sesgo te falla — la cola larga te dará z altos pero son legítimos.'},
+    {t:'IQR', ok:true, fb:'Bien. IQR no asume distribución. Es el método robusto por defecto.'},
+    {t:'Media ± 2', ok:false, fb:'Misma asunción de normalidad implícita. Mismo problema.'}
+  ]},
+  {q:'Variable «ciudad» con 4 categorías sin orden, vas a entrenar regresión lineal. ¿Encoding?', opts:[
+    {t:'Label', ok:false, fb:'Mete orden falso. La regresión interpretaría que ciudad=2 es 2× ciudad=1.'},
+    {t:'One-Hot', ok:true, fb:'Correcto. Sin orden, sin sesgo. 4 columnas binarias.'},
+    {t:'Target', ok:false, fb:'Posible pero arriesgado: necesita CV para evitar leakage. Empieza por One-Hot.'}
+  ]},
+  {q:'Vas a entrenar SVM con variables de escalas muy distintas (edad, sueldo, num_hijos). ¿Qué escalador?', opts:[
+    {t:'MinMax', ok:false, fb:'Funciona, pero con outliers en sueldo aplasta el resto. Si tienes outliers, no.'},
+    {t:'Standard', ok:true, fb:'StandardScaler es el default sensato para SVM. Centra y escala. Sin distorsión por outliers extremos.'},
+    {t:'Ninguno', ok:false, fb:'SVM con escalas distintas es desastre — la variable de mayor magnitud domina la distancia.'}
+  ]},
+  {q:'Tu columna tiene outliers que no quieres tirar (son reales) pero te molestan al escalar. ¿Qué usas?', opts:[
+    {t:'MinMax', ok:false, fb:'Peor opción: el outlier marca el max y aplasta el resto cerca de 0.'},
+    {t:'Standard', ok:false, fb:'Mejor que MinMax pero la media y std siguen contaminadas por el outlier.'},
+    {t:'Robust', ok:true, fb:'Sí. RobustScaler usa mediana e IQR — inmune al outlier. La variabilidad del resto se preserva.'}
+  ]},
+  {q:'Vas a aplicar StandardScaler y luego entrenar. ¿Cómo evitas data leakage?', opts:[
+    {t:'fit_transform a todo el df', ok:false, fb:'Esto es exactamente data leakage. El scaler ve el test.'},
+    {t:'Pipeline', ok:true, fb:'Correcto. Pipeline o ColumnTransformer encadenan preprocesado y modelo. Fit solo con train, transform aplica.'},
+    {t:'Copiar test antes de escalar', ok:false, fb:'Nada que ver. El escalado debe aprenderse SOLO del train.'}
+  ]}
+];
+
+const qel = document.getElementById('quiz');
+let answered = 0, correct = 0;
+Q.forEach(function(item, qi){
+  const div = document.createElement('div');
+  div.className = 'q';
+  div.innerHTML = '<b>'+(qi+1)+'. '+item.q+'</b><div class="opts" data-q="'+qi+'">'+
+    item.opts.map(function(o,oi){return '<button class="opt" data-q="'+qi+'" data-o="'+oi+'">'+o.t+'</button>';}).join('')+
+    '</div><div class="feedback" data-q="'+qi+'"></div>';
+  qel.appendChild(div);
+});
+const score = document.createElement('div');
+score.className = 'score';
+score.id = 'score';
+score.style.display = 'none';
+score.innerHTML = '<b id="score-num">0/'+Q.length+'</b><div id="score-msg">Responde las 6 preguntas para ver tu resultado.</div>';
+qel.appendChild(score);
+
+const answeredQ = new Set();
+qel.querySelectorAll('.opt').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    const qi = +btn.dataset.q, oi = +btn.dataset.o;
+    if(answeredQ.has(qi)) return;
+    answeredQ.add(qi);
+    const item = Q[qi];
+    const opt = item.opts[oi];
+    if(opt.ok) correct++;
+    answered++;
+    const opts = qel.querySelectorAll('.opt[data-q="'+qi+'"]');
+    opts.forEach(function(o,i){
+      if(item.opts[i].ok) o.classList.add('ok');
+      if(i===oi && !opt.ok) o.classList.add('bad');
+      o.disabled = true;
+    });
+    const fb = qel.querySelector('.feedback[data-q="'+qi+'"]');
+    fb.classList.add('show');
+    fb.innerHTML = '<b>'+(opt.ok?'✓ Correcto. ':'✗ Casi. ')+'</b>'+opt.fb;
+
+    if(answered===Q.length){
+      const sc = document.getElementById('score');
+      sc.style.display='block';
+      document.getElementById('score-num').textContent = correct+'/'+Q.length;
+      let msg = '';
+      if(correct===Q.length) msg = '🎉 Perfecto. Pipeline interno calibrado.';
+      else if(correct>=Q.length-1) msg = 'Casi pleno. Repasa la opción que falló.';
+      else if(correct>=Q.length-3) msg = 'Bien. Vuelve atrás a las que fallaste y mira el feedback.';
+      else msg = 'Toca releer. Empieza por encoding y escalado: ahí están las trampas.';
+      document.getElementById('score-msg').textContent = msg;
+    }
+  });
+});
+</script>
+</body>
+</html>

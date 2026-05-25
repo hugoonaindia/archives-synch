@@ -1,0 +1,12 @@
+.git
+.gitignore
+__pycache__
+*.pyc
+.pytest_cache
+.coverage
+tests/
+docs/
+*.md
+.DS_Store
+credentials.json
+token.json
