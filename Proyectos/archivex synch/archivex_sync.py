@@ -96,7 +96,7 @@ CAL: dict = load_cal()
 
 # ── CALIBRACIÓN INTERACTIVA ───────────────────────────────────────────────────
 
-def _wait_for_position(prompt: str, countdown: int = 3) -> tuple[int, int]:
+def _wait_for_position(prompt: str, countdown: int = 6) -> tuple[int, int]:
     """Cuenta atrás y captura la posición del ratón al llegar a 0."""
     print(f"\n  📍 {prompt}")
     print(f"     Posiciona el ratón y NO LO MUEVAS. Capturando en {countdown}s...")
