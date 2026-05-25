@@ -20,6 +20,7 @@ REQUISITOS:
 # ── Imports ───────────────────────────────────────────────────────────────────
 import json
 import logging
+import logging.handlers
 import subprocess as sp
 import sys
 import time
@@ -50,14 +51,14 @@ CAL_FILE   = CONFIG_DIR / "cal_config.json"
 APP_NAME = "Archivex Clinical"
 
 # Logging
-logging.basicConfig(
-    level=logging.INFO,
-    format="[%(asctime)s] %(levelname)s — %(message)s",
-    handlers=[
-        logging.FileHandler(LOG_FILE),
-        logging.StreamHandler(),
-    ],
+_fmt = logging.Formatter("[%(asctime)s] %(levelname)s — %(message)s")
+_file_h = logging.handlers.RotatingFileHandler(
+    LOG_FILE, maxBytes=5 * 1024 * 1024, backupCount=3, encoding="utf-8"
 )
+_file_h.setFormatter(_fmt)
+_stream_h = logging.StreamHandler()
+_stream_h.setFormatter(_fmt)
+logging.basicConfig(level=logging.INFO, handlers=[_file_h, _stream_h])
 logger = logging.getLogger(__name__)
 
 pyautogui.PAUSE    = 0.4
