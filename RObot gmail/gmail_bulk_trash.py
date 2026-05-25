@@ -21,32 +21,55 @@ Ver documentos/documento_maestro_gmail_bulk_trash.md para más detalles.
 """
 
 # ── Auto-instalación de dependencias ─────────────────────────────────────────
-import subprocess, sys
+import subprocess
+import sys
 
 def install(pkg):
     subprocess.check_call([sys.executable, "-m", "pip", "install", pkg, "-q", "--break-system-packages"])
 
-for pkg in [
-    "google-auth",
-    "google-auth-oauthlib",
-    "google-api-python-client",
-]:
+REQUIRED_PKGS = {
+    "google-auth": "google.auth",
+    "google-auth-oauthlib": "google_auth_oauthlib",
+    "google-api-python-client": "googleapiclient",
+}
+
+for pkg, mod in REQUIRED_PKGS.items():
     try:
-        __import__(pkg.replace("-", "_").split("-")[0])
+        __import__(mod)
     except ImportError:
         print(f"📦 Instalando {pkg}...")
         install(pkg)
 
 # ── Imports ───────────────────────────────────────────────────────────────────
 import argparse
-import os
+from collections import Counter
+from datetime import datetime, timedelta
+import json
+import re
+import time
 from pathlib import Path
+from typing import Any, Callable
 
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
+
+MAX_RETRIES = 5
+INITIAL_BACKOFF = 1.0
+
+def api_call_with_retry(fn: Callable[[], Any], description: str = "API call") -> Any:
+    for attempt in range(MAX_RETRIES):
+        try:
+            return fn()
+        except HttpError as e:
+            if e.resp.status == 429 and attempt < MAX_RETRIES - 1:
+                wait = INITIAL_BACKOFF * (2 ** attempt)
+                print(f"\n⚠️  Rate limit en {description}. Reintentando en {wait:.0f}s... ({attempt+1}/{MAX_RETRIES})")
+                time.sleep(wait)
+            else:
+                raise
 
 # ── Configuración ─────────────────────────────────────────────────────────────
 
@@ -66,16 +89,30 @@ SENDERS_FILE = SCRIPT_DIR / "senders.json"
 def load_senders() -> dict:
     if not SENDERS_FILE.exists():
         return {"blocked": [], "whitelist": []}
-    import json
-    return json.loads(SENDERS_FILE.read_text())
+    try:
+        data = json.loads(SENDERS_FILE.read_text())
+        if "blocked" not in data or "whitelist" not in data:
+            print(f"⚠️  {SENDERS_FILE} tiene formato incorrecto. Regenerando...")
+            return {"blocked": [], "whitelist": []}
+        return data
+    except json.JSONDecodeError:
+        print(f"⚠️  {SENDERS_FILE} está corrupto. Regenerando...")
+        return {"blocked": [], "whitelist": []}
 
 def save_senders(data: dict) -> None:
-    import json
     SENDERS_FILE.write_text(json.dumps(data, indent=2, ensure_ascii=False))
+
+
+def parse_email(from_header: str) -> str:
+    match = re.search(r'<([^>]+)>', from_header)
+    if match:
+        return match.group(1).strip().lower()
+    return from_header.strip().lower()
+
 
 # ── Autenticación ─────────────────────────────────────────────────────────────
 
-def get_service() -> any:
+def get_service() -> Any:
     creds = None
 
     if TOKEN_FILE.exists():
@@ -123,7 +160,7 @@ def build_query(base_query: str, senders: dict) -> str:
 
 # ── Búsqueda ──────────────────────────────────────────────────────────────────
 
-def get_all_ids(service: any, query: str) -> list[str]:
+def get_all_ids(service: Any, query: str) -> list[str]:
     ids = []
     page_token = None
 
@@ -134,7 +171,10 @@ def get_all_ids(service: any, query: str) -> list[str]:
         if page_token:
             kwargs["pageToken"] = page_token
 
-        resp = service.users().messages().list(**kwargs).execute()
+        resp = api_call_with_retry(
+            lambda kw=kwargs: service.users().messages().list(**kw).execute(),
+            "messages.list"
+        )
         msgs = resp.get("messages", [])
         ids.extend(m["id"] for m in msgs)
 
@@ -199,35 +239,156 @@ def manage_senders(args: argparse.Namespace) -> bool:
 
     return False
 
-# ── Borrado en batch ──────────────────────────────────────────────────────────
+# ── Análisis de remitentes ────────────────────────────────────────────────
 
-def batch_trash(service: any, ids: list[str]) -> None:
-    import time
+def get_top_senders(service: Any, ids: list[str], top_n: int = 20) -> tuple[list[tuple[str, int]], dict[str, list[str]]]:
+    counter: Counter = Counter()
+    sender_ids: dict[str, list[str]] = {}
+    total = len(ids)
+
+    print(f"\n🔍 Escaneando {total} mensajes para análisis de remitentes...\n")
+
+    for i, msg_id in enumerate(ids):
+        try:
+            msg = api_call_with_retry(
+                lambda mid=msg_id: service.users().messages().get(
+                    userId="me", id=mid, format="metadata", metadataHeaders=["From"]
+                ).execute(),
+                f"messages.get ({i+1}/{total})"
+            )
+            headers = msg.get("payload", {}).get("headers", [])
+            from_val = next((h["value"] for h in headers if h["name"] == "From"), "")
+            email = parse_email(from_val)
+            if email:
+                counter[email] += 1
+                sender_ids.setdefault(email, []).append(msg_id)
+        except HttpError:
+            pass
+
+        pct = round((i + 1) / total * 100)
+        bar = "█" * (pct // 5) + "░" * (20 - pct // 5)
+        print(f"  [{bar}] {pct}%  ({i+1}/{total})  {len(counter)} remitentes únicos   ", end="\r")
+
+    print()
+
+    top_senders = counter.most_common(top_n)
+    top_emails = {email for email, _ in top_senders}
+    sender_ids = {k: v for k, v in sender_ids.items() if k in top_emails}
+
+    return top_senders, sender_ids
+
+
+def interactive_sender_menu(service: Any, top_senders: list[tuple[str, int]], sender_ids: dict[str, list[str]], senders: dict) -> bool:
+    modified = False
+
+    while True:
+        print("\n╔════════════════════════════════════════════╗")
+        print("║         Top Senders — Análisis             ║")
+        print("╚════════════════════════════════════════════╝\n")
+        print(f"  {'#':>3}  {'Remitente':<30} {'Correos':>8}")
+        print(f"  {'─'*3}  {'─'*30} {'─'*8}")
+        for i, (email, count) in enumerate(top_senders, 1):
+            print(f"  {i:>3}  {email:<30} {count:>8,}")
+        print(f"  {'─'*3}  {'─'*30} {'─'*8}")
+
+        cmd = input("\nSelecciona remitente (#), (a)ñadir todos a blocklist, (q)uit: ").strip().lower()
+
+        if cmd == "q":
+            break
+        elif cmd == "a":
+            for email, _ in top_senders:
+                if email not in senders["blocked"]:
+                    senders["blocked"].append(email)
+                    print(f"✅ Añadido a blocklist: {email}")
+                else:
+                    print(f"⚠️  Ya estaba en blocklist: {email}")
+            save_senders(senders)
+            modified = True
+            break
+        elif cmd.isdigit():
+            idx = int(cmd) - 1
+            if 0 <= idx < len(top_senders):
+                email, count = top_senders[idx]
+                modified = _handle_sender_action(service, email, count, sender_ids.get(email, []), senders) or modified
+            else:
+                print("⚠️  Número fuera de rango.")
+        else:
+            print("⚠️  Comando no válido.")
+
+    return modified
+
+
+def _handle_sender_action(service: Any, email: str, count: int, ids: list[str], senders: dict) -> bool:
+    while True:
+        print(f"\n✉️  {email} ({count:,} emails)")
+        print("  [1] Trash all — mover a la papelera")
+        print("  [2] Dry-run — simular sin borrar")
+        print("  [3] Add to blocklist")
+        print("  [4] ← Volver")
+        print("  [q] Salir")
+        action = input("\nAcción: ").strip().lower()
+
+        if action == "1":
+            batch_trash(service, ids)
+            return True
+        elif action == "2":
+            print(f"\n🔍 DRY RUN — Se moverían {len(ids)} emails de {email} a la papelera.")
+            print("   Usa 'Trash all' para aplicar.\n")
+            input("Presiona Enter para continuar...")
+        elif action == "3":
+            if email not in senders["blocked"]:
+                senders["blocked"].append(email)
+                save_senders(senders)
+                print(f"✅ Añadido a blocklist: {email}")
+            else:
+                print(f"⚠️  Ya estaba en blocklist: {email}")
+            return True
+        elif action == "4":
+            return False
+        elif action == "q":
+            return False
+        else:
+            print("⚠️  Acción no válida.")
+
+def batch_trash(service: Any, ids: list[str]) -> None:
     total   = len(ids)
     trashed = 0
+    failed  = 0
     start   = time.time()
 
     for i in range(0, total, BATCH_SIZE):
         batch = ids[i : i + BATCH_SIZE]
-        service.users().messages().batchModify(
-            userId="me",
-            body={
-                "ids":            batch,
-                "addLabelIds":    ["TRASH"],
-                "removeLabelIds": ["INBOX"],
-            },
-        ).execute()
-        trashed += len(batch)
-        elapsed  = time.time() - start
-        rate     = trashed / elapsed if elapsed > 0 else 0
-        remaining = int((total - trashed) / rate) if rate > 0 else 0
-        pct      = round(trashed / total * 100)
-        bar      = "█" * (pct // 5) + "░" * (20 - pct // 5)
-        eta_str  = f"{remaining}s restantes" if remaining > 0 else "casi listo"
-        print(f"  [{bar}] {pct}%  ({trashed}/{total})  ⏱ {eta_str}   ", end="\r")
+        try:
+            api_call_with_retry(
+                lambda b=batch: service.users().messages().batchModify(
+                    userId="me",
+                    body={
+                        "ids":            b,
+                        "addLabelIds":    ["TRASH"],
+                        "removeLabelIds": ["INBOX"],
+                    },
+                ).execute(),
+                f"batchModify ({i+1}-{min(i+BATCH_SIZE, total)})"
+            )
+            trashed += len(batch)
+        except HttpError:
+            failed += len(batch)
+        elapsed   = time.time() - start
+        processed = trashed + failed
+        rate      = trashed / elapsed if elapsed > 0 else 0
+        remaining = int((total - processed) / rate) if rate > 0 else 0
+        pct       = round(processed / total * 100)
+        bar       = "█" * (pct // 5) + "░" * (20 - pct // 5)
+        eta_str   = f"{remaining}s restantes" if remaining > 0 else "casi listo"
+        status    = f"  [{bar}] {pct}%  ({trashed}/{total})  ⏱ {eta_str}"
+        if failed:
+            status += f"  ⚠️ {failed} fallidos"
+        print(f"{status}   ", end="\r")
 
     elapsed_total = round(time.time() - start)
     print(f"\n\n✅ {trashed} correos movidos a la papelera en {elapsed_total}s.")
+    if failed:
+        print(f"⚠️  {failed} correos no pudieron procesarse.")
     print("   Vacíala en Gmail cuando quieras para liberar espacio definitivamente.\n")
 
 # ── Main ──────────────────────────────────────────────────────────────────────
@@ -248,6 +409,8 @@ Ejemplos:
   python3 gmail_bulk_trash.py --query "from:linkedin.com" --dry-run
   python3 gmail_bulk_trash.py --before 2024-01-01 --dry-run
   python3 gmail_bulk_trash.py --after 2023-01-01 --before 2023-12-31 --dry-run
+  python3 gmail_bulk_trash.py --top-senders
+  python3 gmail_bulk_trash.py --top-senders --top-limit 5 --days 30
         """
     )
 
@@ -265,6 +428,9 @@ Ejemplos:
 
     # Opciones de ejecución
     parser.add_argument("--dry-run",          action="store_true",       help="Simular sin borrar nada")
+    parser.add_argument("--top-senders",      action="store_true",       help="Analizar remitentes más frecuentes (modo interactivo)")
+    parser.add_argument("--top-limit",        type=int, default=20,      help="Número de top senders a mostrar (default: 20)")
+    parser.add_argument("--days",             type=int, default=0,       help="Ventana de tiempo en días para el análisis (default: 90 con --top-senders)")
 
     args = parser.parse_args()
 
@@ -276,17 +442,61 @@ Ejemplos:
     if manage_senders(args):
         return
 
+    # ── Modo Top Senders ────────────────────────────────────────────────
+    if args.top_senders:
+        try:
+            service = get_service()
+            senders = load_senders()
+
+            base = args.query or ""
+            days = args.days if args.days > 0 else 90
+            cutoff = datetime.now() - timedelta(days=days)
+            date_query = f"before:{cutoff.strftime('%Y/%m/%d')}"
+
+            parts = [p for p in [base, date_query] if p]
+            query = " ".join(parts)
+
+            if args.before:
+                query = f"({query}) before:{args.before.replace('-', '/')}" if query else f"before:{args.before.replace('-', '/')}"
+            if args.after:
+                query = f"({query}) after:{args.after.replace('-', '/')}" if query else f"after:{args.after.replace('-', '/')}"
+
+            ids = get_all_ids(service, query)
+
+            if not ids:
+                print("✅ No hay mensajes en el rango especificado.")
+                return
+
+            top, sender_id_map = get_top_senders(service, ids, args.top_limit)
+
+            if not top:
+                print("No se pudieron identificar remitentes.")
+                return
+
+            modified = interactive_sender_menu(service, top, sender_id_map, senders)
+
+            if modified:
+                print("\n✅ Cambios guardados. Ejecuta sin --top-senders para limpiar el resto.")
+            else:
+                print("\nSin cambios.")
+
+        except HttpError as e:
+            print(f"\n❌ Error de la API: {e}")
+            sys.exit(1)
+        except KeyboardInterrupt:
+            print("\n\nInterrumpido por el usuario.")
+        return
+
     try:
         service = get_service()
         senders = load_senders()
 
         # Construir query base
-        base = args.query if hasattr(args, 'query') and args.query else QUERY
+        base = args.query or QUERY
 
-        # Añadir filtros de fecha
-        if hasattr(args, 'before') and args.before:
+        if args.before:
             base = f"({base}) before:{args.before.replace('-', '/')}"
-        if hasattr(args, 'after') and args.after:
+        if args.after:
             base = f"({base}) after:{args.after.replace('-', '/')}"
 
         query = build_query(base, senders)

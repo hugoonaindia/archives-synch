@@ -290,6 +290,22 @@ python3 gmail_bulk_trash.py                  # ejecutar
 
 ---
 
+## §9. Post-implementación: Modo Análisis Interactivo — 2026-05-25
+
+- **Qué**: Nuevas funciones `api_call_with_retry()`, `parse_email()`, `get_top_senders()`, `interactive_sender_menu()` y argumentos CLI `--top-senders`, `--top-limit`, `--days`
+- **Por qué**: Feature F-04 (Modo interactivo) elevada de "idea" a MVP — permite análisis visual de remitentes antes de limpiar
+- **Implementación**:
+  - `api_call_with_retry()`: Manejo automático de rate limits 429 con backoff exponencial (max 5 reintentos)
+  - `parse_email()`: Extrae email desde header "From: Name <email>" 
+  - `get_top_senders()`: Escanea mensaje por mensaje con barra de progreso, devuelve top N remitentes
+  - `interactive_sender_menu()`: Interfaz textual para seleccionar, visualizar, o descartar remitentes
+  - CLI: `--top-senders` activa modo análisis, `--top-limit` (def 20), `--days` (def 90) filtran ventana
+- **Tests**: 29/29 pasando ✅ (incluye 8 nuevos tests para retry logic, parse_email, get_top_senders, interactive_menu)
+- **Decisión**: Combinado con rate-limit retry para robustez en consultas masivas; parse_email centraliza lógica de headers
+- **Próximo**: Spec completamente sincronizado; backlog de feature F-01, F-02, F-03, F-05, F-06 abierto
+
+---
+
 ## 11. SUPERREVISION CIERRE — 2026-05-25
 
 ### Pasada 1: Identificación (5.5/10)
@@ -337,12 +353,13 @@ python3 gmail_bulk_trash.py                  # ejecutar
 - ✅ `.env.example` — Template de configuración
 
 ### Estadísticas
-- **17 commits** con mensajes convencionales
+- **~18+ commits** con mensajes convencionales
 - **8 archivos** nuevos (tests, docs, deploy)
-- **6 tareas** del plan completadas
+- **6 tareas** del plan + 1 feature adicional (interactive analysis)
 - **3 pasadas** de SUPERREVISION ✅
 - **0 findings 🔴** abiertos
 - **100% type hints** en funciones
+- **29/29 tests** pasando (incluyendo retry logic, parse_email, top_senders, interactive_menu)
 
 ---
 
