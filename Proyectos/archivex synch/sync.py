@@ -446,6 +446,51 @@ def process_appointment(appt: Appointment, kb: dict,
     return "creada"
 
 
+# ─── §10 CONFIGURACIÓN DE DÍAS ───────────────────────────────────────────────
+def ask_sync_days() -> set[int]:
+    """
+    Pregunta al usuario qué días quiere sincronizar.
+
+    Returns:
+        set de weekdays (0=lun, 1=mar, ..., 6=dom)
+
+    Opciones predefinidas:
+        [T] Martes-Viernes (recomendado)
+        [L] Lunes-Viernes (standard)
+        [A] Todos los días (lun-dom)
+        [P] Personalizado (ingresa 0-6)
+    """
+    presets = {
+        "T": {1, 3, 4},              # martes, jueves, viernes
+        "L": {0, 1, 3, 4, 5},        # lunes-viernes (excluye mié y fin de semana)
+        "A": {0, 1, 2, 3, 4, 5, 6},  # todos
+    }
+
+    while True:
+        print("\n¿Qué días quieres sincronizar?")
+        print("[T] Martes-Viernes (recomendado)")
+        print("[L] Lunes-Viernes")
+        print("[A] Todos los días")
+        print("[P] Personalizado")
+
+        choice = input("Selecciona [T/L/A/P]: ").strip().upper()
+
+        if choice in presets:
+            return presets[choice]
+        elif choice == "P":
+            # Parse input: "0 1 3 4" → {0, 1, 3, 4}
+            dias_str = input("Ingresa días (ej: 0 1 3 4): ").strip()
+            try:
+                dias = {int(d) for d in dias_str.split()}
+                if all(0 <= d <= 6 for d in dias):
+                    return dias
+            except ValueError:
+                pass
+            print("Entrada inválida. Intenta de nuevo.")
+        else:
+            print("Selecciona T, L, A o P")
+
+
 # ─── §11 MAIN ────────────────────────────────────────────────────────────────
 def main() -> None:
     print("🗓  Archivex Sync")
@@ -461,6 +506,10 @@ def main() -> None:
     kb = load_knowledge()
     print(f"✅  Knowledge base cargado ({KNOWLEDGE})")
 
+    # Preguntar qué días sincronizar
+    sync_days = ask_sync_days()
+    print(f"✅  Días a sincronizar: {sorted(sync_days)}")
+
     try:
         wx, wy, ww, wh = get_window_bounds()
     except RuntimeError as e:
@@ -472,7 +521,10 @@ def main() -> None:
     print(f"📅  Semana del {monday.strftime('%d/%m/%Y')}")
 
     appointments = get_week_appointments(service, monday)
-    print(f"📋  {len(appointments)} cita(s) a procesar (lunes y miércoles excluidos)")
+
+    # Filtrar por días seleccionados
+    appointments = [a for a in appointments if a.day_offset in sync_days]
+    print(f"📋  {len(appointments)} cita(s) a procesar")
 
     if not appointments:
         print("   Nada que sincronizar.")
