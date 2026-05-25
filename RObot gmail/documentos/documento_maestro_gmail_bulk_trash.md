@@ -259,6 +259,13 @@ python3 gmail_bulk_trash.py                  # ejecutar
 - **Decisión**: Se muestra el mensaje de dry-run antes de pedir confirmación
 - **Próximo**: Task 5 — Filtros `--query`, `--before`, `--after`
 
+### §7. Task 5 — Filtros por fecha y query personalizada — 2026-05-25
+- **Qué**: Argumentos `--query`, `--before`, `--after` con conversión automática de YYYY-MM-DD a YYYY/MM/DD (formato Gmail API)
+- **Por qué**: Permitir al usuario filtrar por rango de fechas y queries personalizadas sin hardcodear
+- **Tests**: Verificación de --help y sintaxis ✅
+- **Decisión**: Se envuelven las queries en paréntesis para asegurar precedencia correcta; conversión de formato automática
+- **Próximo**: Task 6 — Mejor UX (ETA y reporte final)
+
 ---
 
 ## 10. Notas de seguridad
