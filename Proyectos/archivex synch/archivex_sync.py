@@ -673,7 +673,22 @@ def main() -> None:
     print("\n🤖 Empezando en 4 segundos…\n")
     time.sleep(4)
 
-    # 5. Foco y navegación
+    # 5. Verificar que Archivex está abierto
+    process_name = get_archivex_process_name()
+    if not process_name or process_name == APP_NAME:
+        # Intento de detección sin éxito: confirmar si el proceso existe
+        check = sp.run(
+            ["osascript", "-e",
+             f'tell application "System Events" to return (exists process "{APP_NAME}")'],
+            capture_output=True, text=True,
+        ).stdout.strip()
+        if check != "true":
+            print(f"\n❌  {APP_NAME} no está abierto.")
+            print(f"    Por favor abre {APP_NAME} en VISTA SEMANAL y vuelve a ejecutar.")
+            logger.error("Sync abortado: Archivex Clinical no está en ejecución.")
+            return
+
+    # 5b. Foco y navegación
     focus_archivex()
     navigate_to_week(monday)
 
