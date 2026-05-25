@@ -75,3 +75,11 @@ tests/
 - **Tests**: 39 passing | lint: clean
 - **Decisión**: Se mantiene el mismo modelo free para recon y verify. Se puede sobreescribir con `ARCHIVEX_RECON_MODEL` / `ARCHIVEX_VERIFY_MODEL`.
 - **Próximo**: Ejecutar `python recon.py` con Archivex abierto para generar ui_knowledge.json
+
+## §7. Hardening: validación de API key y timeout — 2026-05-25
+
+- **Qué**: Mueve validación de `OPENROUTER_API_KEY` de `detect_displayed_monday()` a `main()`. Añade timeout=60s en `_ask_llm()` y timeout=120s en `recon.py:run_recon()`. Mejora manejo de excepciones con logging específico. Envuelve API call en try/except para aislar fallos.
+- **Por qué**: Tests fallaban porque `detect_displayed_monday()` validaba la API key antes de que los mocks pudieran ejecutarse. Validar al startup (no por función) permite mocking limpio. Timeouts previenen cuelgues indefinidos. Logging mejora diagnóstico.
+- **Tests**: 39 passing (34 test_sync.py + 5 test_recon.py) | lint: clean
+- **Decisión**: Validar entorno una sola vez al startup (main), no en funciones individuales. Esto sigue arquitectura de validación de externalidades al inicio.
+- **Próximo**: Sistema completo — está listo para usar
