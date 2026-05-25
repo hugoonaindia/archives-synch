@@ -243,6 +243,7 @@ Ejemplos:
   python3 gmail_bulk_trash.py --remove-sender spam@example.com
   python3 gmail_bulk_trash.py --add-whitelist boss@work.com
   python3 gmail_bulk_trash.py --remove-whitelist boss@work.com
+  python3 gmail_bulk_trash.py --dry-run
         """
     )
 
@@ -252,6 +253,9 @@ Ejemplos:
     parser.add_argument("--add-whitelist",    nargs="+", metavar="EMAIL", help="Añadir remitente(s) a la whitelist")
     parser.add_argument("--remove-whitelist", nargs="+", metavar="EMAIL", help="Eliminar remitente(s) de la whitelist")
     parser.add_argument("--list-senders",     action="store_true",       help="Mostrar blocklist y whitelist")
+
+    # Opciones de ejecución
+    parser.add_argument("--dry-run",          action="store_true",       help="Simular sin borrar nada")
 
     args = parser.parse_args()
 
@@ -277,6 +281,11 @@ Ejemplos:
 
         if not ids:
             print("✅ No hay mensajes que coincidan con el filtro.")
+            return
+
+        if args.dry_run:
+            print(f"🔍 DRY RUN — Se moverían {len(ids)} mensajes a la papelera.")
+            print("   Ejecuta sin --dry-run para aplicar los cambios.")
             return
 
         confirm = input(f"¿Mover {len(ids)} mensajes a la papelera? (s/n): ").strip().lower()
