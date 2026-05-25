@@ -244,6 +244,9 @@ Ejemplos:
   python3 gmail_bulk_trash.py --add-whitelist boss@work.com
   python3 gmail_bulk_trash.py --remove-whitelist boss@work.com
   python3 gmail_bulk_trash.py --dry-run
+  python3 gmail_bulk_trash.py --query "from:linkedin.com" --dry-run
+  python3 gmail_bulk_trash.py --before 2024-01-01 --dry-run
+  python3 gmail_bulk_trash.py --after 2023-01-01 --before 2023-12-31 --dry-run
         """
     )
 
@@ -253,6 +256,11 @@ Ejemplos:
     parser.add_argument("--add-whitelist",    nargs="+", metavar="EMAIL", help="Añadir remitente(s) a la whitelist")
     parser.add_argument("--remove-whitelist", nargs="+", metavar="EMAIL", help="Eliminar remitente(s) de la whitelist")
     parser.add_argument("--list-senders",     action="store_true",       help="Mostrar blocklist y whitelist")
+
+    # Filtros de búsqueda
+    parser.add_argument("--query",    metavar="QUERY",  help="Query Gmail personalizada (sobreescribe la por defecto)")
+    parser.add_argument("--before",   metavar="FECHA",  help="Borrar emails ANTES de esta fecha (formato: YYYY-MM-DD)")
+    parser.add_argument("--after",    metavar="FECHA",  help="Borrar emails DESPUÉS de esta fecha (formato: YYYY-MM-DD)")
 
     # Opciones de ejecución
     parser.add_argument("--dry-run",          action="store_true",       help="Simular sin borrar nada")
@@ -270,7 +278,17 @@ Ejemplos:
     try:
         service = get_service()
         senders = load_senders()
-        query = build_query(QUERY, senders)
+
+        # Construir query base
+        base = args.query if hasattr(args, 'query') and args.query else QUERY
+
+        # Añadir filtros de fecha
+        if hasattr(args, 'before') and args.before:
+            base = f"({base}) before:{args.before.replace('-', '/')}"
+        if hasattr(args, 'after') and args.after:
+            base = f"({base}) after:{args.after.replace('-', '/')}"
+
+        query = build_query(base, senders)
 
         if not query:
             print("⚠️  No hay query ni remitentes bloqueados.")
