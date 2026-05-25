@@ -21,6 +21,7 @@ from tkinter import messagebox, ttk
 from typing import Optional
 
 import pyautogui
+from pynput import keyboard as pynput_keyboard
 
 # ── Rutas ────────────────────────────────────────────────────────────────────
 
@@ -202,10 +203,13 @@ class CalibrationApp:
         self.countdown_job: Optional[str] = None
         self.countdown_val  = 0
         self._mouse_job: Optional[str] = None
+        self._kb_listener: Optional[pynput_keyboard.Listener] = None
 
         self._setup_window()
         self._build_ui()
         self._update_mouse_loop()
+        self._start_keyboard_listener()
+        self.root.protocol("WM_DELETE_WINDOW", self._on_close)
         self.render_step()
 
     # ── Setup ─────────────────────────────────────────────────────────────────
@@ -305,7 +309,7 @@ class CalibrationApp:
 
         # Botón capturar + countdown
         self.btn_capture = tk.Button(
-            self.card, text="📍  Capturar  ( 5 )",
+            self.card, text="📍  Capturar  [ ESPACIO ]",
             font=tkfont.Font(family="Helvetica Neue", size=14, weight="bold"),
             bg=C["capture"], fg="white", activebackground=C["capture_h"],
             relief="flat", bd=0, padx=16, pady=10,
@@ -385,6 +389,35 @@ class CalibrationApp:
             pass
         self._mouse_job = self.root.after(80, self._update_mouse_loop)
 
+    # ── Teclado global ────────────────────────────────────────────────────────
+
+    def _start_keyboard_listener(self) -> None:
+        def on_press(key: pynput_keyboard.Key) -> None:
+            if key == pynput_keyboard.Key.space:
+                # thread-safe: schedule en el hilo de tkinter
+                self.root.after(0, self._on_space_pressed)
+            elif key == pynput_keyboard.Key.esc:
+                self.root.after(0, self._cancel_countdown)
+
+        self._kb_listener = pynput_keyboard.Listener(on_press=on_press, daemon=True)
+        self._kb_listener.start()
+
+    def _on_space_pressed(self) -> None:
+        step = STEPS[self.step_idx]
+        if step["type"] in ("capture_point", "capture_x", "capture_y_input"):
+            self.start_countdown()
+
+    def _cancel_countdown(self) -> None:
+        if self.countdown_job:
+            self.root.after_cancel(self.countdown_job)
+            self.countdown_job = None
+            self.btn_capture.config(text="📍  Capturar  [ ESPACIO ]")
+
+    def _on_close(self) -> None:
+        if self._kb_listener:
+            self._kb_listener.stop()
+        self.root.destroy()
+
     # ── Render ────────────────────────────────────────────────────────────────
 
     def render_step(self) -> None:
@@ -444,7 +477,7 @@ class CalibrationApp:
         if self.countdown_job:
             self.root.after_cancel(self.countdown_job)
             self.countdown_job = None
-        self.btn_capture.config(text="📍  Capturar")
+        self.btn_capture.config(text="📍  Capturar  [ ESPACIO ]")
 
         self._refresh_results_panel()
 
@@ -528,7 +561,7 @@ class CalibrationApp:
         else:
             self.countdown_job = None
             self._do_capture()
-            self.btn_capture.config(text="📍  Capturar")
+            self.btn_capture.config(text="📍  Capturar  [ ESPACIO ]")
 
     def _do_capture(self) -> None:
         step = STEPS[self.step_idx]
