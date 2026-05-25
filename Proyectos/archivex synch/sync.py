@@ -13,6 +13,7 @@ Requisitos previos:
 # ─── §1 IMPORTS ──────────────────────────────────────────────────────────────
 from __future__ import annotations
 
+import json
 import logging
 import os
 import sys
@@ -120,7 +121,55 @@ def get_week_appointments(service, monday: date) -> list[Appointment]:
 
 
 # ─── §5 KNOWLEDGE BASE ───────────────────────────────────────────────────────
-# (implemented in Task 3)
+_REQUIRED_KEYS       = {"version", "grid", "elements", "visual_signatures"}
+_REQUIRED_GRID       = {"start_hour", "end_hour", "col_offsets_pct",
+                        "first_row_y_pct", "last_row_y_pct"}
+_REQUIRED_ELEMENTS   = {"nav_prev_pct", "nav_next_pct", "patient_search_pct",
+                        "first_result_pct", "save_btn_pct"}
+
+
+def validate_knowledge(kb: dict) -> None:
+    """Raises KeyError if any required key is missing from ui_knowledge.json."""
+    for k in _REQUIRED_KEYS:
+        if k not in kb:
+            raise KeyError(f"ui_knowledge.json: falta la clave '{k}'")
+    for k in _REQUIRED_GRID:
+        if k not in kb["grid"]:
+            raise KeyError(f"ui_knowledge.json grid: falta '{k}'")
+    for k in _REQUIRED_ELEMENTS:
+        if k not in kb["elements"]:
+            raise KeyError(f"ui_knowledge.json elements: falta '{k}'")
+
+
+def load_knowledge() -> dict:
+    """Carga ui_knowledge.json. Aborta con mensaje claro si no existe."""
+    if not KNOWLEDGE.exists():
+        sys.exit(
+            f"❌  {KNOWLEDGE} no encontrado.\n"
+            "   Ejecuta primero:  python recon.py"
+        )
+    kb = json.loads(KNOWLEDGE.read_text(encoding="utf-8"))
+    validate_knowledge(kb)
+    return kb
+
+
+def abs_coords(pct_x: float, pct_y: float,
+               wx: int, wy: int, ww: int, wh: int) -> tuple[int, int]:
+    """Convierte coordenadas relativas (0-1) a píxeles absolutos."""
+    return int(wx + pct_x * ww), int(wy + pct_y * wh)
+
+
+def slot_coords(day_offset: int, hour: int, minute: int,
+                kb: dict, wx: int, wy: int, ww: int, wh: int) -> tuple[int, int]:
+    """Calcula las coordenadas absolutas del slot del calendario."""
+    g = kb["grid"]
+    x_pct = g["col_offsets_pct"][day_offset]
+    total_hours = g["end_hour"] - g["start_hour"]
+    row_span    = g["last_row_y_pct"] - g["first_row_y_pct"]
+    y_pct = g["first_row_y_pct"] + (
+        (hour - g["start_hour"] + minute / 60.0) / total_hours * row_span
+    )
+    return abs_coords(x_pct, y_pct, wx, wy, ww, wh)
 
 # ─── §6 ARCHIVEX WINDOW ──────────────────────────────────────────────────────
 # (implemented in Task 4)

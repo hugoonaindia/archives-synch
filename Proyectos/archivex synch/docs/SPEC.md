@@ -28,7 +28,7 @@ tests/
 |---|------|----------|--------|
 | 1 | Task 1: Project foundation (requirements, pyproject, tests/__init__) | ✨ Feature | ✅ Done |
 | 2 | Task 2: Appointment dataclass + Calendar reader + Mon/Wed filter | ✨ Feature | ✅ Done |
-| 3 | Task 3: Knowledge base loader + coordinate calculator | ✨ Feature | Open |
+| 3 | Task 3: Knowledge base loader + coordinate calculator | ✨ Feature | ✅ Done |
 | 4 | Task 4: Archivex window detection via AppleScript | ✨ Feature | Open |
 | 5 | Task 5: Haiku verifier with prompt caching | ✨ Feature | Open |
 | 6 | Task 6: Appointment processor — pyautogui actions | ✨ Feature | Open |
@@ -52,3 +52,10 @@ tests/
 - **Por qué**: Backlog #2
 - **Tests**: 7 passing | lint: clean
 - **Próximo**: Task 3 — Knowledge base loader + coordinate calculator
+
+## §4. Task 3 — Knowledge base + coordinate calculator — 2026-05-25
+
+- **Qué**: validate_knowledge(), load_knowledge(), abs_coords(), slot_coords() en §5 de sync.py
+- **Por qué**: Backlog #3
+- **Tests**: 13 passing | lint: clean
+- **Próximo**: Task 4 — Archivex window detection via AppleScript
