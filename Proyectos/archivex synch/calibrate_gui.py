@@ -309,7 +309,7 @@ class CalibrationApp:
 
         # Botón capturar + countdown
         self.btn_capture = tk.Button(
-            self.card, text="📍  Capturar  [ ESPACIO ]",
+            self.card, text="📍  Capturar y avanzar  [ ESPACIO ]",
             font=tkfont.Font(family="Helvetica Neue", size=14, weight="bold"),
             bg=C["capture"], fg="white", activebackground=C["capture_h"],
             relief="flat", bd=0, padx=16, pady=10,
@@ -411,7 +411,7 @@ class CalibrationApp:
         if self.countdown_job:
             self.root.after_cancel(self.countdown_job)
             self.countdown_job = None
-            self.btn_capture.config(text="📍  Capturar  [ ESPACIO ]")
+            self.btn_capture.config(text="📍  Capturar y avanzar  [ ESPACIO ]")
 
     def _on_close(self) -> None:
         if self._kb_listener:
@@ -477,7 +477,7 @@ class CalibrationApp:
         if self.countdown_job:
             self.root.after_cancel(self.countdown_job)
             self.countdown_job = None
-        self.btn_capture.config(text="📍  Capturar  [ ESPACIO ]")
+        self.btn_capture.config(text="📍  Capturar y avanzar  [ ESPACIO ]")
 
         self._refresh_results_panel()
 
@@ -549,7 +549,7 @@ class CalibrationApp:
     def start_countdown(self) -> None:
         if self.countdown_job:
             return
-        self.countdown_val = 4
+        self.countdown_val = 3
         self._tick_countdown()
 
     def _tick_countdown(self) -> None:
@@ -561,7 +561,7 @@ class CalibrationApp:
         else:
             self.countdown_job = None
             self._do_capture()
-            self.btn_capture.config(text="📍  Capturar  [ ESPACIO ]")
+            self.btn_capture.config(text="📍  Capturar y avanzar  [ ESPACIO ]")
 
     def _do_capture(self) -> None:
         step = STEPS[self.step_idx]
@@ -587,6 +587,19 @@ class CalibrationApp:
 
         self._show_captured_badge(key)
         self._refresh_results_panel()
+
+        # Devolver foco a la ventana de calibración y auto-avanzar
+        self.root.lift()
+        self.root.focus_force()
+        captured_idx = self.step_idx
+        if stype in ("capture_point", "capture_x"):
+            # Auto-avanza al siguiente paso tras 1s (tiempo de ver el badge)
+            self.root.after(1000, lambda idx=captured_idx: self._auto_advance(idx))
+
+    def _auto_advance(self, from_idx: int) -> None:
+        """Avanza al siguiente paso si no se ha navegado manualmente."""
+        if self.step_idx == from_idx:
+            self.go_next()
 
     # ── Navegación ────────────────────────────────────────────────────────────
 
