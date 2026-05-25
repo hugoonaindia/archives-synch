@@ -199,53 +199,53 @@ class TestVerifier:
         "appointment_saved": "formulario cerrado, cita visible en el calendario",
     }
 
-    def _mock_haiku(self, mock_anthropic, text: str):
+    def _mock_llm(self, mock_openai, text: str):
         msg = MagicMock()
-        msg.content = [MagicMock(text=text)]
-        mock_anthropic.return_value.messages.create.return_value = msg
+        msg.choices = [MagicMock(message=MagicMock(content=text))]
+        mock_openai.return_value.chat.completions.create.return_value = msg
 
     def test_verify_slot_empty_returns_empty(self, sync, monkeypatch):
-        mock_ant = MagicMock()
-        self._mock_haiku(mock_ant, "empty")
-        monkeypatch.setattr("sync.Anthropic", mock_ant)
+        mock_oi = MagicMock()
+        self._mock_llm(mock_oi, "empty")
+        monkeypatch.setattr("sync.OpenAI", mock_oi)
         monkeypatch.setattr("sync._screenshot_b64", lambda: "fake_b64")
         result = sync.verify_slot_empty(self.SIGNATURES, day_offset=1, hour=9)
         assert result == "empty"
 
     def test_verify_slot_empty_returns_occupied(self, sync, monkeypatch):
-        mock_ant = MagicMock()
-        self._mock_haiku(mock_ant, "occupied")
-        monkeypatch.setattr("sync.Anthropic", mock_ant)
+        mock_oi = MagicMock()
+        self._mock_llm(mock_oi, "occupied")
+        monkeypatch.setattr("sync.OpenAI", mock_oi)
         monkeypatch.setattr("sync._screenshot_b64", lambda: "fake_b64")
         result = sync.verify_slot_empty(self.SIGNATURES, day_offset=1, hour=9)
         assert result == "occupied"
 
     def test_verify_slot_empty_returns_uncertain_on_unknown(self, sync, monkeypatch):
-        mock_ant = MagicMock()
-        self._mock_haiku(mock_ant, "I cannot determine this")
-        monkeypatch.setattr("sync.Anthropic", mock_ant)
+        mock_oi = MagicMock()
+        self._mock_llm(mock_oi, "I cannot determine this")
+        monkeypatch.setattr("sync.OpenAI", mock_oi)
         monkeypatch.setattr("sync._screenshot_b64", lambda: "fake_b64")
         result = sync.verify_slot_empty(self.SIGNATURES, day_offset=1, hour=9)
         assert result == "uncertain"
 
     def test_verify_form_open_true(self, sync, monkeypatch):
-        mock_ant = MagicMock()
-        self._mock_haiku(mock_ant, "yes")
-        monkeypatch.setattr("sync.Anthropic", mock_ant)
+        mock_oi = MagicMock()
+        self._mock_llm(mock_oi, "yes")
+        monkeypatch.setattr("sync.OpenAI", mock_oi)
         monkeypatch.setattr("sync._screenshot_b64", lambda: "fake_b64")
         assert sync.verify_form_open(self.SIGNATURES) is True
 
     def test_verify_form_open_false(self, sync, monkeypatch):
-        mock_ant = MagicMock()
-        self._mock_haiku(mock_ant, "no")
-        monkeypatch.setattr("sync.Anthropic", mock_ant)
+        mock_oi = MagicMock()
+        self._mock_llm(mock_oi, "no")
+        monkeypatch.setattr("sync.OpenAI", mock_oi)
         monkeypatch.setattr("sync._screenshot_b64", lambda: "fake_b64")
         assert sync.verify_form_open(self.SIGNATURES) is False
 
     def test_verify_saved_true(self, sync, monkeypatch):
-        mock_ant = MagicMock()
-        self._mock_haiku(mock_ant, "yes")
-        monkeypatch.setattr("sync.Anthropic", mock_ant)
+        mock_oi = MagicMock()
+        self._mock_llm(mock_oi, "yes")
+        monkeypatch.setattr("sync.OpenAI", mock_oi)
         monkeypatch.setattr("sync._screenshot_b64", lambda: "fake_b64")
         assert sync.verify_saved(self.SIGNATURES) is True
 
@@ -302,21 +302,21 @@ class TestNavigation:
     WIN = (0, 0, 1440, 900)
 
     def test_detect_monday_parses_date(self, sync, monkeypatch):
-        mock_ant = MagicMock()
+        mock_oi = MagicMock()
         msg = MagicMock()
-        msg.content = [MagicMock(text='{"date": "2026-05-25"}')]
-        mock_ant.return_value.messages.create.return_value = msg
-        monkeypatch.setattr("sync.Anthropic", mock_ant)
+        msg.choices = [MagicMock(message=MagicMock(content='{"date": "2026-05-25"}'))]
+        mock_oi.return_value.chat.completions.create.return_value = msg
+        monkeypatch.setattr("sync.OpenAI", mock_oi)
         monkeypatch.setattr("sync._screenshot_b64", lambda: "fake")
         result = sync.detect_displayed_monday()
         assert result == date(2026, 5, 25)
 
     def test_detect_monday_returns_none_on_null(self, sync, monkeypatch):
-        mock_ant = MagicMock()
+        mock_oi = MagicMock()
         msg = MagicMock()
-        msg.content = [MagicMock(text='{"date": null}')]
-        mock_ant.return_value.messages.create.return_value = msg
-        monkeypatch.setattr("sync.Anthropic", mock_ant)
+        msg.choices = [MagicMock(message=MagicMock(content='{"date": null}'))]
+        mock_oi.return_value.chat.completions.create.return_value = msg
+        monkeypatch.setattr("sync.OpenAI", mock_oi)
         monkeypatch.setattr("sync._screenshot_b64", lambda: "fake")
         result = sync.detect_displayed_monday()
         assert result is None

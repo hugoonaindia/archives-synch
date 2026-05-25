@@ -6,7 +6,7 @@ Excluye lunes (0) y miércoles (2). Sincroniza siempre la semana actual.
 
 Requisitos previos:
   1. python recon.py  (produce ~/.config/archivex-sync/ui_knowledge.json)
-  2. ANTHROPIC_API_KEY configurada en el entorno
+  2. OPENROUTER_API_KEY configurada en el entorno
   3. credentials.json en el directorio actual
 """
 
@@ -27,11 +27,11 @@ from pathlib import Path
 from typing import Optional
 
 import pyautogui
-from anthropic import Anthropic
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
+from openai import OpenAI
 
 # ─── §2 CONSTANTS ────────────────────────────────────────────────────────────
 CONFIG_DIR   = Path.home() / ".config" / "archivex-sync"
@@ -39,7 +39,10 @@ KNOWLEDGE    = CONFIG_DIR / "ui_knowledge.json"
 TOKEN_PATH   = CONFIG_DIR / "token_calendar.json"
 CREDS_PATH   = Path("credentials.json")
 SCOPES       = ["https://www.googleapis.com/auth/calendar.readonly"]
-MODEL_VERIFY = os.getenv("ARCHIVEX_VERIFY_MODEL", "claude-haiku-4-5")
+MODEL_VERIFY     = os.getenv(
+    "ARCHIVEX_VERIFY_MODEL", "meta-llama/llama-3.2-11b-vision-instruct:free"
+)
+OPENROUTER_URL   = "https://openrouter.ai/api/v1"
 SKIP_DAYS    = {0, 2}   # Monday=0, Wednesday=2
 LOG_PATH     = CONFIG_DIR / "sync.log"
 
@@ -208,7 +211,7 @@ def get_window_bounds() -> tuple[int, int, int, int]:
     return parts[0], parts[1], parts[2], parts[3]
 
 
-# ─── §7 VERIFIER (Haiku + prompt caching) ────────────────────────────────────
+# ─── §7 VERIFIER (OpenRouter vision model) ───────────────────────────────────
 def _screenshot_b64() -> str:
     """Captura la pantalla y devuelve PNG en base64."""
     buf = BytesIO()
@@ -216,7 +219,7 @@ def _screenshot_b64() -> str:
     return base64.b64encode(buf.getvalue()).decode()
 
 
-def _build_cache_prefix(signatures: dict) -> str:
+def _build_system_prompt(signatures: dict) -> str:
     lines = [
         "Eres un asistente de verificación para Archivex Clinical (macOS).",
         "Recibirás un screenshot y una pregunta sobre el estado de la UI.",
@@ -229,27 +232,25 @@ def _build_cache_prefix(signatures: dict) -> str:
     return "\n".join(lines)
 
 
-def _ask_haiku(question: str, signatures: dict) -> str:
-    """Envía screenshot + pregunta a Haiku con prefijo cacheado."""
-    client = Anthropic()
-    resp = client.messages.create(
+def _ask_llm(question: str, signatures: dict) -> str:
+    """Envía screenshot + pregunta al modelo de visión via OpenRouter."""
+    client = OpenAI(
+        base_url=OPENROUTER_URL,
+        api_key=os.getenv("OPENROUTER_API_KEY"),
+    )
+    resp = client.chat.completions.create(
         model=MODEL_VERIFY,
         max_tokens=10,
-        system=[{
-            "type": "text",
-            "text": _build_cache_prefix(signatures),
-            "cache_control": {"type": "ephemeral"},
-        }],
-        messages=[{"role": "user", "content": [
-            {"type": "image", "source": {
-                "type": "base64",
-                "media_type": "image/png",
-                "data": _screenshot_b64(),
-            }},
-            {"type": "text", "text": question},
-        ]}],
+        messages=[
+            {"role": "system", "content": _build_system_prompt(signatures)},
+            {"role": "user", "content": [
+                {"type": "image_url",
+                 "image_url": {"url": f"data:image/png;base64,{_screenshot_b64()}"}},
+                {"type": "text", "text": question},
+            ]},
+        ],
     )
-    return resp.content[0].text.strip().lower()
+    return resp.choices[0].message.content.strip().lower()
 
 
 def verify_slot_empty(signatures: dict, day_offset: int, hour: int) -> str:
@@ -260,7 +261,7 @@ def verify_slot_empty(signatures: dict, day_offset: int, hour: int) -> str:
         "está vacío o tiene una cita?\n"
         "Responde ÚNICAMENTE con: empty (vacío) u occupied (tiene cita)."
     )
-    raw = _ask_haiku(question, signatures)
+    raw = _ask_llm(question, signatures)
     if "empty" in raw:
         return "empty"
     if "occupied" in raw:
@@ -270,7 +271,7 @@ def verify_slot_empty(signatures: dict, day_offset: int, hour: int) -> str:
 
 def verify_form_open(signatures: dict) -> bool:
     """Verifica si el formulario de nueva cita está abierto."""
-    raw = _ask_haiku(
+    raw = _ask_llm(
         "¿Está visible el formulario modal de nueva cita con el campo de búsqueda?\n"
         "Responde ÚNICAMENTE con: yes o no.",
         signatures,
@@ -280,7 +281,7 @@ def verify_form_open(signatures: dict) -> bool:
 
 def verify_saved(signatures: dict) -> bool:
     """Verifica si la cita fue guardada exitosamente."""
-    raw = _ask_haiku(
+    raw = _ask_llm(
         "¿Se cerró el formulario y la nueva cita es visible en el calendario?\n"
         "Responde ÚNICAMENTE con: yes o no.",
         signatures,
@@ -332,17 +333,17 @@ def save_appointment(kb: dict, wx: int, wy: int, ww: int, wh: int) -> None:
 
 # ─── §9 NAVIGATION ───────────────────────────────────────────────────────────
 def detect_displayed_monday() -> Optional[date]:
-    """Pregunta a Haiku qué lunes muestra el calendario. Devuelve date o None."""
-    client = Anthropic()
-    resp = client.messages.create(
+    """Pregunta al modelo de visión qué lunes muestra el calendario. Devuelve date o None."""
+    client = OpenAI(
+        base_url=OPENROUTER_URL,
+        api_key=os.getenv("OPENROUTER_API_KEY"),
+    )
+    resp = client.chat.completions.create(
         model=MODEL_VERIFY,
         max_tokens=32,
         messages=[{"role": "user", "content": [
-            {"type": "image", "source": {
-                "type": "base64",
-                "media_type": "image/png",
-                "data": _screenshot_b64(),
-            }},
+            {"type": "image_url",
+             "image_url": {"url": f"data:image/png;base64,{_screenshot_b64()}"}},
             {"type": "text", "text": (
                 "Mira este calendario semanal de Archivex Clinical. "
                 "¿Qué fecha tiene el lunes (primer día) de la semana visible? "
@@ -351,7 +352,7 @@ def detect_displayed_monday() -> Optional[date]:
             )},
         ]}],
     )
-    raw = resp.content[0].text.strip()
+    raw = resp.choices[0].message.content.strip()
     try:
         d = json.loads(raw)
         if d.get("date"):

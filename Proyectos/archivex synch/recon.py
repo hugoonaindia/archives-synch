@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import base64
 import json
+import os
 import sys
 import time
 from datetime import date
@@ -24,12 +25,15 @@ from io import BytesIO
 from pathlib import Path
 
 import pyautogui
-from anthropic import Anthropic
+from openai import OpenAI
 
 # ─── CONSTANTES ──────────────────────────────────────────────────────────────
-CONFIG_DIR  = Path.home() / ".config" / "archivex-sync"
-OUTPUT_PATH = CONFIG_DIR / "ui_knowledge.json"
-MODEL_RECON = "claude-opus-4-7"
+CONFIG_DIR     = Path.home() / ".config" / "archivex-sync"
+OUTPUT_PATH    = CONFIG_DIR / "ui_knowledge.json"
+MODEL_RECON    = os.getenv(
+    "ARCHIVEX_RECON_MODEL", "meta-llama/llama-3.2-11b-vision-instruct:free"
+)
+OPENROUTER_URL = "https://openrouter.ai/api/v1"
 
 _REQUIRED_KEYS       = {"version", "grid", "elements", "visual_signatures"}
 _REQUIRED_GRID       = {"start_hour", "end_hour", "col_offsets_pct",
@@ -132,9 +136,12 @@ y save_btn_pct de la posición típica de formularios modales en este tipo de ap
 # ─── RECONOCIMIENTO ──────────────────────────────────────────────────────────
 def run_recon() -> dict:
     """
-    Toma screenshots de Archivex y llama a Opus 4.7 para producir ui_knowledge.json.
+    Toma screenshots de Archivex y llama al modelo de visión para producir ui_knowledge.json.
     """
-    client = Anthropic()
+    client = OpenAI(
+        base_url=OPENROUTER_URL,
+        api_key=os.getenv("OPENROUTER_API_KEY"),
+    )
 
     print("📸  Capturando screenshot 1/2 — calendario...")
     shot1 = _screenshot_b64()
@@ -147,24 +154,24 @@ def run_recon() -> dict:
     shot2 = _screenshot_b64()
     print("   ✓  Screenshot 2 capturado\n")
 
-    print("🤖  Enviando a Opus 4.7 para análisis...")
+    print(f"🤖  Enviando a {MODEL_RECON} para análisis...")
     prompt = _RECON_PROMPT.replace("RECON_DATE", date.today().isoformat())
 
-    resp = client.messages.create(
+    resp = client.chat.completions.create(
         model=MODEL_RECON,
         max_tokens=2000,
         messages=[{"role": "user", "content": [
             {"type": "text", "text": "Screenshot 1 (vista calendario):"},
-            {"type": "image", "source": {
-                "type": "base64", "media_type": "image/png", "data": shot1}},
+            {"type": "image_url",
+             "image_url": {"url": f"data:image/png;base64,{shot1}"}},
             {"type": "text", "text": "Screenshot 2 (formulario si estaba abierto):"},
-            {"type": "image", "source": {
-                "type": "base64", "media_type": "image/png", "data": shot2}},
+            {"type": "image_url",
+             "image_url": {"url": f"data:image/png;base64,{shot2}"}},
             {"type": "text", "text": prompt},
         ]}],
     )
 
-    raw = resp.content[0].text.strip()
+    raw = resp.choices[0].message.content.strip()
 
     # Extraer JSON si viene envuelto en markdown
     if "```" in raw:
@@ -175,14 +182,14 @@ def run_recon() -> dict:
     try:
         return json.loads(raw)
     except json.JSONDecodeError as e:
-        sys.exit(f"❌  Opus devolvió JSON inválido: {e}\n\nRespuesta:\n{raw}")
+        sys.exit(f"❌  El modelo devolvió JSON inválido: {e}\n\nRespuesta:\n{raw}")
 
 
 # ─── MAIN ────────────────────────────────────────────────────────────────────
 def main() -> None:
     CONFIG_DIR.mkdir(parents=True, exist_ok=True)
 
-    print("🔍  Archivex Recon — Análisis visual con Opus 4.7")
+    print(f"🔍  Archivex Recon — Análisis visual con {MODEL_RECON}")
     print("─" * 50)
     print("   Archivex Clinical debe estar abierto en vista semanal.")
     input("   Pulsa ENTER cuando esté listo...")
