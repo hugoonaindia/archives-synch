@@ -67,3 +67,11 @@ tests/
 - **Tests**: 39 passing | lint: clean | smoke: OK
 - **Decisión**: Bug en plan original — mock usaba `mock_ant.Anthropic.return_value` pero debía ser `mock_ant.return_value`. Corregido en tests.
 - **Próximo**: Sistema completo — ejecutar `python recon.py` con Archivex abierto para generar ui_knowledge.json
+
+## §6. Migración OpenRouter (Anthropic SDK → OpenAI SDK) — 2026-05-25
+
+- **Qué**: Reemplaza `anthropic>=0.40.0` por `openai>=1.0.0`. sync.py y recon.py usan `OpenAI(base_url="https://openrouter.ai/api/v1", api_key=OPENROUTER_API_KEY)`. Formato de imagen cambia a `image_url`. Respuesta pasa de `resp.content[0].text` a `resp.choices[0].message.content`. `_ask_haiku` renombrado a `_ask_llm`. Modelo por defecto: `meta-llama/llama-3.2-11b-vision-instruct:free`.
+- **Por qué**: Usuario tiene OPENROUTER_API_KEY (no ANTHROPIC_API_KEY). Usa modelos gratuitos de OpenRouter.
+- **Tests**: 39 passing | lint: clean
+- **Decisión**: Se mantiene el mismo modelo free para recon y verify. Se puede sobreescribir con `ARCHIVEX_RECON_MODEL` / `ARCHIVEX_VERIFY_MODEL`.
+- **Próximo**: Ejecutar `python recon.py` con Archivex abierto para generar ui_knowledge.json
