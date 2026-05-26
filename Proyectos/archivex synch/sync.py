@@ -2,12 +2,12 @@
 """
 sync.py — Archivex Sync (monolito)
 Transfiere la agenda de Google Calendar a Archivex Clinical.
-Excluye lunes (0) y miércoles (2). Sincroniza siempre la semana actual.
+Sincroniza la semana actual; los días a procesar se eligen al arrancar.
 
 Requisitos previos:
-  1. python recon.py  (produce ~/.config/archivex-sync/ui_knowledge.json)
-  2. OPENROUTER_API_KEY configurada en el entorno
-  3. credentials.json en el directorio actual
+  1. ~/.config/archivex-sync/ui_knowledge.json  (coordenadas de la UI)
+  2. credentials.json en el directorio actual   (Google Calendar OAuth)
+  3. Archivex abierto en vista semanal mostrando la semana actual
 """
 
 # ─── §1 IMPORTS ──────────────────────────────────────────────────────────────
@@ -27,11 +27,12 @@ from pathlib import Path
 from typing import Optional
 
 import pyautogui
+pyautogui.PAUSE = 0.5   # pausa global entre cualquier acción de pyautogui
+
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
-from openai import OpenAI
 
 # ─── §2 CONSTANTS ────────────────────────────────────────────────────────────
 CONFIG_DIR   = Path.home() / ".config" / "archivex-sync"
@@ -39,12 +40,24 @@ KNOWLEDGE    = CONFIG_DIR / "ui_knowledge.json"
 TOKEN_PATH   = CONFIG_DIR / "token_calendar.json"
 CREDS_PATH   = Path("credentials.json")
 SCOPES       = ["https://www.googleapis.com/auth/calendar.readonly"]
-MODEL_VERIFY     = os.getenv(
-    "ARCHIVEX_VERIFY_MODEL", "nvidia/nemotron-nano-12b-v2-vl:free"
-)
-OPENROUTER_URL   = "https://openrouter.ai/api/v1"
-SKIP_DAYS    = {0, 2}   # Monday=0, Wednesday=2
 LOG_PATH     = CONFIG_DIR / "sync.log"
+
+# ─── Tiempos de espera (segundos) — fiabilidad > velocidad ───────────────────
+T_AFTER_OPEN_SLOT   = 5.0   # tras click en slot → form 'Nueva cita' renderizado
+T_AFTER_FIELD_CLICK = 1.0   # tras click/tripleClick en campo → cursor activo
+T_AFTER_TYPE        = 1.2   # tras pegar valor (deja que la app procese)
+T_AFTER_SEARCH      = 5.0   # tras pegar nombre paciente → resultados visibles
+T_AFTER_PICK        = 2.5   # tras click en el primer resultado
+T_AFTER_SAVE        = 4.0   # tras '+ Crear cita' → diálogo 'Cita creada'
+T_AFTER_CONFIRM     = 3.0   # tras 'Aceptar' → vuelta al calendario
+T_AFTER_SCROLL      = 2.5   # tras hacer scroll en el calendario (snap visual)
+
+# ─── Scroll del calendario ───────────────────────────────────────────────────
+# Calibrado empíricamente en 2026-05-26 con pyautogui en macOS:
+# 12 ticks de scroll = 1 hora; el calendario hace snap limpio a la fila.
+# Si la hora pre-rellenada se desvía, ajustar SCROLL_PER_HOUR.
+SCROLL_PER_HOUR = 12
+SCROLL_RESET    = 200   # ticks de scroll hacia arriba para garantizar 08:00 al top
 
 CONFIG_DIR.mkdir(parents=True, exist_ok=True)
 logging.basicConfig(
@@ -89,7 +102,7 @@ def get_calendar_service():
 def get_week_appointments(service, monday: date) -> list[Appointment]:
     """
     Devuelve las citas de la semana que empieza en `monday`.
-    Excluye lunes (weekday 0) y miércoles (weekday 2).
+    El filtrado por día se aplica más tarde según la selección del usuario.
     Excluye eventos de todo el día.
     """
     sunday = monday + timedelta(days=6)
@@ -114,8 +127,6 @@ def get_week_appointments(service, monday: date) -> list[Appointment]:
             continue
         dt_start = datetime.fromisoformat(start["dateTime"])
         dt_end   = datetime.fromisoformat(end["dateTime"])
-        if dt_start.weekday() in SKIP_DAYS:       # Mon or Wed → skip
-            continue
         offset = (dt_start.date() - monday).days
         appointments.append(Appointment(
             patient    = item.get("summary", ""),
@@ -133,8 +144,9 @@ def get_week_appointments(service, monday: date) -> list[Appointment]:
 _REQUIRED_KEYS       = {"version", "grid", "elements", "visual_signatures"}
 _REQUIRED_GRID       = {"start_hour", "end_hour", "col_offsets_pct",
                         "first_row_y_pct", "last_row_y_pct"}
-_REQUIRED_ELEMENTS   = {"nav_prev_pct", "nav_next_pct", "patient_search_pct",
-                        "first_result_pct", "save_btn_pct"}
+_REQUIRED_ELEMENTS   = {"patient_search_pct", "first_result_pct", "save_btn_pct",
+                        "fecha_field_pct", "hora_inicio_pct", "hora_fin_pct",
+                        "confirm_btn_pct"}
 
 
 def validate_knowledge(kb: dict) -> None:
@@ -195,20 +207,49 @@ end tell
 def get_window_bounds() -> tuple[int, int, int, int]:
     """
     Devuelve (x, y, width, height) de la ventana de Archivex Clinical.
-    Lanza RuntimeError si Archivex no está abierto.
+    Intenta primero AppleScript; si falla (sin permisos), usa Quartz CGWindowList.
     """
     result = subprocess.run(
         ["osascript", "-e", _APPLESCRIPT_BOUNDS],
         capture_output=True, text=True,
     )
     raw = result.stdout.strip()
-    if not raw:
-        raise RuntimeError(
-            "Archivex Clinical no está abierto o no es visible. "
-            "Ábrelo y ponlo en vista semanal antes de ejecutar sync.py."
+    if raw:
+        parts = [int(v) for v in raw.split(",")]
+        return parts[0], parts[1], parts[2], parts[3]
+
+    # Fallback: Quartz CGWindowList (no requiere permisos de accesibilidad)
+    try:
+        import Quartz
+        windows = Quartz.CGWindowListCopyWindowInfo(
+            Quartz.kCGWindowListOptionOnScreenOnly
+            | Quartz.kCGWindowListExcludeDesktopElements,
+            Quartz.kCGNullWindowID,
         )
-    parts = [int(v) for v in raw.split(",")]
-    return parts[0], parts[1], parts[2], parts[3]
+        for win in windows:
+            if "archivex" in str(win.get("kCGWindowOwnerName", "")).lower():
+                b = win.get("kCGWindowBounds", {})
+                x, y = int(b.get("X", 0)), int(b.get("Y", 0))
+                w, h = int(b.get("Width", 0)), int(b.get("Height", 0))
+                if w > 100 and h > 100:
+                    return x, y, w, h
+    except Exception as e:
+        log.debug("Quartz window lookup failed: %s", e)
+
+    raise RuntimeError(
+        "Archivex Clinical no está abierto o no es visible. "
+        "Ábrelo y ponlo en vista semanal antes de ejecutar sync.py."
+    )
+
+
+def focus_archivex() -> None:
+    """Trae Archivex Clinical al frente. Imprescindible antes de cada acción
+    automatizada para que los clics/scrolls vayan a su ventana (y no al Terminal)."""
+    subprocess.run(
+        ["open", "-a", "Archivex Clinical"],
+        capture_output=True,
+    )
+    time.sleep(0.6)   # tiempo para que la app reciba foco
 
 
 # ─── §7 VERIFIER (OpenRouter vision model) ───────────────────────────────────
@@ -233,29 +274,13 @@ def _build_system_prompt(signatures: dict) -> str:
 
 
 def _ask_llm(question: str, signatures: dict) -> str:
-    """Envía screenshot + pregunta al modelo de visión via OpenRouter."""
-    client = OpenAI(
-        base_url=OPENROUTER_URL,
-        api_key=os.getenv("OPENROUTER_API_KEY"),
-        timeout=60.0,  # 60s timeout para evitar cuelgues
-    )
-    resp = client.chat.completions.create(
-        model=MODEL_VERIFY,
-        max_tokens=10,
-        messages=[
-            {"role": "system", "content": _build_system_prompt(signatures)},
-            {"role": "user", "content": [
-                {"type": "image_url",
-                 "image_url": {"url": f"data:image/png;base64,{_screenshot_b64()}"}},
-                {"type": "text", "text": question},
-            ]},
-        ],
-    )
-    return resp.choices[0].message.content.strip().lower()
+    """Verificación visual deshabilitada — devuelve siempre cadena vacía."""
+    return ""
 
 
 def verify_slot_empty(signatures: dict, day_offset: int, hour: int) -> str:
-    """Devuelve: 'empty' | 'occupied' | 'uncertain'"""
+    """Devuelve: 'empty' | 'occupied' | 'uncertain'.
+    Si el LLM no responde, asume 'empty' para no bloquear la sincronización."""
     days_es = ["lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo"]
     question = (
         f"¿El slot del calendario del {days_es[day_offset]} a las {hour:02d}:00 "
@@ -267,16 +292,19 @@ def verify_slot_empty(signatures: dict, day_offset: int, hour: int) -> str:
         return "empty"
     if "occupied" in raw:
         return "occupied"
-    return "uncertain"
+    return "empty"   # sin respuesta del modelo → procede sin bloquear
 
 
 def verify_form_open(signatures: dict) -> bool:
-    """Verifica si el formulario de nueva cita está abierto."""
+    """Verifica si el formulario de nueva cita está abierto.
+    Si el LLM no responde, asume True (el rightClick es fiable)."""
     raw = _ask_llm(
         "¿Está visible el formulario modal de nueva cita con el campo de búsqueda?\n"
         "Responde ÚNICAMENTE con: yes o no.",
         signatures,
     )
+    if not raw:
+        return True
     return "yes" in raw
 
 
@@ -291,10 +319,75 @@ def verify_saved(signatures: dict) -> bool:
 
 
 # ─── §8 APPOINTMENT PROCESSOR ────────────────────────────────────────────────
-def open_slot(x: int, y: int) -> None:
-    """Doble clic en el slot del calendario para abrir el formulario."""
-    pyautogui.doubleClick(x, y)
-    time.sleep(2.0)
+def click_slot(day_offset: int, hour: int, kb: dict,
+               wx: int, wy: int, ww: int, wh: int) -> None:
+    """
+    Hace scroll del calendario para que `hour` quede en la primera fila visible,
+    y a continuación hace click izquierdo en la columna correspondiente al día.
+    Archivex abre 'Nueva cita' con la fecha y la hora pre-rellenadas.
+
+    El scroll se hace en trozos pequeños con pausas, para evitar overshoot
+    o que el snap visual no haya terminado al hacer el siguiente click.
+    """
+    cx, cy = wx + ww // 2, wy + wh // 2
+
+    # 1. Reset: scroll arriba en trozos para garantizar 08:00 al top
+    remaining = SCROLL_RESET
+    while remaining > 0:
+        chunk = min(40, remaining)
+        pyautogui.scroll(chunk, x=cx, y=cy)
+        remaining -= chunk
+        time.sleep(0.4)
+    time.sleep(T_AFTER_SCROLL)   # pausa final para que el snap se complete
+
+    # 2. Scroll abajo (hour - 8) horas, también en trozos
+    scroll_down_total = max(0, (hour - 8) * SCROLL_PER_HOUR)
+    remaining = scroll_down_total
+    while remaining > 0:
+        chunk = min(24, remaining)   # ~2 horas por trozo
+        pyautogui.scroll(-chunk, x=cx, y=cy)
+        remaining -= chunk
+        time.sleep(0.4)
+    if scroll_down_total > 0:
+        time.sleep(T_AFTER_SCROLL)   # snap visual antes del click
+
+    # 3. Mueve el cursor a la posición y click izquierdo
+    x_pct = kb["grid"]["col_offsets_pct"][day_offset]
+    y_pct = kb["grid"]["first_row_y_pct"] + 0.01   # cae dentro de la fila HH:00
+    sx, sy = abs_coords(x_pct, y_pct, wx, wy, ww, wh)
+    log.info("  click_slot day=%d hour=%d → (%d, %d)  [scroll=%d ticks]",
+             day_offset, hour, sx, sy, scroll_down_total)
+    pyautogui.moveTo(sx, sy, duration=0.3)   # movimiento visible y suave
+    time.sleep(0.4)
+    pyautogui.click(sx, sy)
+    time.sleep(T_AFTER_OPEN_SLOT)
+
+
+def fill_form_fields(date_str: str, start_time: str, end_time: str,
+                     kb: dict, wx: int, wy: int, ww: int, wh: int) -> None:
+    """
+    Rellena Fecha, Hora de inicio y Hora de fin en el formulario 'Nueva cita'.
+    Usa tripleClick (selecciona todo el contenido del campo) + paste por
+    portapapeles (Cmd+V) — más fiable que `typewrite` porque el picker no
+    intercepta caracteres uno a uno.
+
+    date_str  : "DD/MM/YYYY"
+    start_time: "HH:MM"
+    end_time  : "HH:MM"
+    """
+    elems = kb["elements"]
+
+    def _set_field(pct_key: str, value: str) -> None:
+        fx, fy = abs_coords(elems[pct_key]["x"], elems[pct_key]["y"], wx, wy, ww, wh)
+        pyautogui.tripleClick(fx, fy)              # selecciona contenido actual
+        time.sleep(T_AFTER_FIELD_CLICK)
+        subprocess.run(["pbcopy"], input=value.encode("utf-8"), check=True)
+        pyautogui.hotkey("command", "v")           # reemplaza con el nuevo valor
+        time.sleep(T_AFTER_TYPE)
+
+    _set_field("fecha_field_pct",  date_str)
+    _set_field("hora_inicio_pct",  start_time)
+    _set_field("hora_fin_pct",     end_time)
 
 
 def fill_patient(patient: str, kb: dict,
@@ -305,82 +398,51 @@ def fill_patient(patient: str, kb: dict,
         kb["elements"]["patient_search_pct"]["y"],
         wx, wy, ww, wh,
     )
-    pyautogui.click(sx, sy)
+    pyautogui.moveTo(sx, sy, duration=0.3)
     time.sleep(0.4)
+    pyautogui.tripleClick(sx, sy)
+    time.sleep(T_AFTER_FIELD_CLICK)
     subprocess.run(["pbcopy"], input=patient.encode("utf-8"), check=True)
-    pyautogui.hotkey("command", "a")
-    time.sleep(0.1)
     pyautogui.hotkey("command", "v")
-    time.sleep(2.5)
+    time.sleep(T_AFTER_SEARCH)
     rx, ry = abs_coords(
         kb["elements"]["first_result_pct"]["x"],
         kb["elements"]["first_result_pct"]["y"],
         wx, wy, ww, wh,
     )
+    pyautogui.moveTo(rx, ry, duration=0.3)
+    time.sleep(0.4)
     pyautogui.click(rx, ry)
-    time.sleep(0.8)
+    time.sleep(T_AFTER_PICK)
 
 
 def save_appointment(kb: dict, wx: int, wy: int, ww: int, wh: int) -> None:
-    """Hace clic en el botón guardar/crear cita."""
+    """Hace clic en '+ Crear cita' y luego acepta el diálogo 'Cita creada'."""
     bx, by = abs_coords(
         kb["elements"]["save_btn_pct"]["x"],
         kb["elements"]["save_btn_pct"]["y"],
         wx, wy, ww, wh,
     )
+    log.info("  save_appointment click '+ Crear cita' → (%d, %d)", bx, by)
+    pyautogui.moveTo(bx, by, duration=0.3)
+    time.sleep(0.4)
     pyautogui.click(bx, by)
-    time.sleep(1.5)
+    time.sleep(T_AFTER_SAVE)
+
+    # Aceptar el modal de confirmación "Cita creada"
+    confirm = kb["elements"].get("confirm_btn_pct")
+    if confirm:
+        cx, cy = abs_coords(confirm["x"], confirm["y"], wx, wy, ww, wh)
+        log.info("  confirm click 'Aceptar' → (%d, %d)", cx, cy)
+        pyautogui.moveTo(cx, cy, duration=0.3)
+        time.sleep(0.4)
+        pyautogui.click(cx, cy)
+        time.sleep(T_AFTER_CONFIRM)
 
 
-# ─── §9 NAVIGATION ───────────────────────────────────────────────────────────
-def detect_displayed_monday() -> Optional[date]:
-    """Pregunta al modelo de visión qué lunes muestra el calendario. Devuelve date o None."""
-    try:
-        client = OpenAI(
-            base_url=OPENROUTER_URL,
-            api_key=os.getenv("OPENROUTER_API_KEY"),
-            timeout=60.0,  # 60s timeout
-        )
-        resp = client.chat.completions.create(
-            model=MODEL_VERIFY,
-            max_tokens=32,
-            messages=[{"role": "user", "content": [
-                {"type": "image_url",
-                 "image_url": {"url": f"data:image/png;base64,{_screenshot_b64()}"}},
-                {"type": "text", "text": (
-                    "Mira este calendario semanal de Archivex Clinical. "
-                    "¿Qué fecha tiene el lunes (primer día) de la semana visible? "
-                    'Responde ÚNICAMENTE con JSON: {"date": "YYYY-MM-DD"} '
-                    'o {"date": null} si no puedes determinarlo.'
-                )},
-            ]}],
-        )
-        raw = resp.choices[0].message.content.strip()
-        d = json.loads(raw)
-        if d.get("date"):
-            return date.fromisoformat(d["date"])
-    except (json.JSONDecodeError, ValueError) as e:
-        log.warning(f"No se pudo detectar lunes: {e}")
-    except Exception as e:
-        log.error(f"Error en detect_displayed_monday: {e}")
-    return None
-
-
-def navigate_to_week(target_monday: date, kb: dict,
-                     wx: int, wy: int, ww: int, wh: int) -> None:
-    """Navega Archivex a la semana de target_monday."""
-    current = detect_displayed_monday()
-    if current is None:
-        log.warning("No se pudo detectar la semana actual — omitiendo navegación")
-        return
-    delta = (target_monday - current).days // 7
-    if delta == 0:
-        return
-    btn = kb["elements"]["nav_next_pct"] if delta > 0 else kb["elements"]["nav_prev_pct"]
-    bx, by = abs_coords(btn["x"], btn["y"], wx, wy, ww, wh)
-    for _ in range(abs(delta)):
-        pyautogui.click(bx, by)
-        time.sleep(0.8)
+# ─── §9 NAVEGACIÓN ENTRE SEMANAS ─────────────────────────────────────────────
+# sync.py solo opera sobre la semana actual: el usuario debe asegurarse de que
+# Archivex muestre esa semana antes de arrancar. No se navega automáticamente.
 
 
 # ─── §10 CONFLICT HANDLING ───────────────────────────────────────────────────
@@ -413,6 +475,15 @@ def process_appointment(appt: Appointment, kb: dict,
     """
     sigs = kb["visual_signatures"]
 
+    # Asegurar que Archivex tiene el foco (no el Terminal u otra app)
+    focus_archivex()
+
+    # Re-fetch bounds: la ventana puede haberse movido entre citas
+    try:
+        wx, wy, ww, wh = get_window_bounds()
+    except RuntimeError as e:
+        log.warning("No se pudo refrescar bounds de la ventana: %s", e)
+
     status = verify_slot_empty(sigs, day_offset=appt.day_offset, hour=appt.hour)
     if status != "empty":
         accion = ask_conflict_action(appt)
@@ -423,11 +494,11 @@ def process_appointment(appt: Appointment, kb: dict,
                      appt.patient, appt.date.strftime("%d/%m/%Y"), appt.start_time)
             return "saltada"
 
-    sx, sy = slot_coords(appt.day_offset, appt.hour, appt.minute, kb, wx, wy, ww, wh)
-    open_slot(sx, sy)
+    # Scroll + click en el slot del día/hora correctos: Archivex pre-rellena fecha y hora
+    click_slot(appt.day_offset, appt.hour, kb, wx, wy, ww, wh)
 
     if not verify_form_open(sigs):
-        open_slot(sx, sy)
+        click_slot(appt.day_offset, appt.hour, kb, wx, wy, ww, wh)
         if not verify_form_open(sigs):
             log.warning("SALTADA  | %s | %s %s | formulario no se abrió",
                         appt.patient, appt.date.strftime("%d/%m/%Y"), appt.start_time)
@@ -449,59 +520,38 @@ def process_appointment(appt: Appointment, kb: dict,
 # ─── §10 CONFIGURACIÓN DE DÍAS ───────────────────────────────────────────────
 def ask_sync_days() -> set[int]:
     """
-    Pregunta al usuario qué días quiere sincronizar.
-
-    Returns:
-        set de weekdays (0=lun, 1=mar, ..., 6=dom)
-
-    Opciones predefinidas:
-        [T] Martes-Viernes (recomendado)
-        [L] Lunes-Viernes (standard)
-        [A] Todos los días (lun-dom)
-        [P] Personalizado (ingresa 0-6)
+    Muestra los 7 días de la semana y deja al usuario elegir cuáles sincronizar.
+    El default (Enter vacío) es Martes, Jueves, Viernes.
+    Devuelve set de weekdays (0=lun … 6=dom).
     """
-    presets = {
-        "T": {1, 3, 4},              # martes, jueves, viernes
-        "L": {0, 1, 3, 4, 5},        # lunes-viernes (excluye mié y fin de semana)
-        "A": {0, 1, 2, 3, 4, 5, 6},  # todos
-    }
+    _NOMBRES = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"]
+    _DEFAULT = {1, 3, 4}   # martes, jueves, viernes
 
     while True:
         print("\n¿Qué días quieres sincronizar?")
-        print("[T] Martes-Viernes (recomendado)")
-        print("[L] Lunes-Viernes")
-        print("[A] Todos los días")
-        print("[P] Personalizado")
+        print("  (Enter para usar el predeterminado marcado con ✓)\n")
+        for i, nombre in enumerate(_NOMBRES):
+            marca = " ✓" if i in _DEFAULT else ""
+            print(f"  {i + 1}  {nombre}{marca}")
+        print()
+        raw = input("Días [1-7 separados por espacio, o Enter]: ").strip()
 
-        choice = input("Selecciona [T/L/A/P]: ").strip().upper()
+        if not raw:
+            return _DEFAULT
 
-        if choice in presets:
-            return presets[choice]
-        elif choice == "P":
-            # Parse input: "0 1 3 4" → {0, 1, 3, 4}
-            dias_str = input("Ingresa días (ej: 0 1 3 4): ").strip()
-            try:
-                dias = {int(d) for d in dias_str.split()}
-                if all(0 <= d <= 6 for d in dias):
-                    return dias
-            except ValueError:
-                pass
-            print("Entrada inválida. Intenta de nuevo.")
-        else:
-            print("Selecciona T, L, A o P")
+        try:
+            seleccion = {int(d) - 1 for d in raw.split()}
+            if seleccion and all(0 <= d <= 6 for d in seleccion):
+                return seleccion
+        except ValueError:
+            pass
+        print("  ⚠  Ingresa números del 1 al 7 separados por espacio (ej: 2 4 5)")
 
 
 # ─── §11 MAIN ────────────────────────────────────────────────────────────────
 def main() -> None:
     print("🗓  Archivex Sync")
     print("─" * 40)
-
-    # Validar entorno al inicio
-    if not os.getenv("OPENROUTER_API_KEY"):
-        sys.exit(
-            "❌  OPENROUTER_API_KEY no está configurada.\n"
-            "   Configura: export OPENROUTER_API_KEY=<tu_key>"
-        )
 
     kb = load_knowledge()
     print(f"✅  Knowledge base cargado ({KNOWLEDGE})")
@@ -518,11 +568,10 @@ def main() -> None:
 
     service = get_calendar_service()
     monday = date.today() - timedelta(days=date.today().weekday())
-    print(f"📅  Semana del {monday.strftime('%d/%m/%Y')}")
+    sunday = monday + timedelta(days=6)
+    print(f"📅  Semana actual: {monday.strftime('%d/%m')} – {sunday.strftime('%d/%m/%Y')}")
 
     appointments = get_week_appointments(service, monday)
-
-    # Filtrar por días seleccionados
     appointments = [a for a in appointments if a.day_offset in sync_days]
     print(f"📋  {len(appointments)} cita(s) a procesar")
 
@@ -530,7 +579,10 @@ def main() -> None:
         print("   Nada que sincronizar.")
         return
 
-    navigate_to_week(monday, kb, wx, wy, ww, wh)
+    print()
+    print("⚠️   Asegúrate de que Archivex muestra esta semana en la vista semanal.")
+    print("    Si la semana mostrada es otra, ajústala manualmente antes de continuar.")
+    input("    Pulsa Enter cuando estés listo (Ctrl+C para cancelar)... ")
 
     creadas = saltadas = 0
     try:

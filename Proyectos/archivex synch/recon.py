@@ -125,9 +125,10 @@ def capture_screenshot_interactive(step_name: str) -> Optional[str]:
     """
     while True:
         print(f"📍 {_STEP_INSTRUCTIONS[step_name]}")
-        print("   [ESPACIO] Capturar | [R] Reintentar | [S] Saltar")
+        print("   [ESPACIO] Capturar | [R] Reintentar | [S] Salir")
 
-        key = pyautogui.press()  # bloqueante, retorna string de tecla
+        import keyboard
+        key = keyboard.read_key()  # bloqueante, retorna string de tecla
 
         if key == "space":
             return _screenshot_b64()

@@ -414,3 +414,42 @@ class TestProcessAppointment:
             sync.process_appointment(
                 self._appt(sync), self.KB_FIXTURE, 0, 0, 1440, 900
             )
+
+
+class TestAskSyncDays:
+    def test_ask_sync_days_martes_viernes(self, sync, monkeypatch):
+        """Usuario elige T (Martes-Viernes)"""
+        monkeypatch.setattr("builtins.input", lambda _: "T")
+        monkeypatch.setattr("builtins.print", lambda *a, **k: None)
+        result = sync.ask_sync_days()
+        assert result == {1, 3, 4}  # martes, jueves, viernes
+
+    def test_ask_sync_days_lunes_viernes(self, sync, monkeypatch):
+        """Usuario elige L (Lunes-Viernes)"""
+        monkeypatch.setattr("builtins.input", lambda _: "L")
+        monkeypatch.setattr("builtins.print", lambda *a, **k: None)
+        result = sync.ask_sync_days()
+        assert result == {0, 1, 3, 4, 5}  # lun-viernes (excluye miércoles y fin de semana)
+
+    def test_ask_sync_days_todos(self, sync, monkeypatch):
+        """Usuario elige A (Todos los días)"""
+        monkeypatch.setattr("builtins.input", lambda _: "A")
+        monkeypatch.setattr("builtins.print", lambda *a, **k: None)
+        result = sync.ask_sync_days()
+        assert result == {0, 1, 2, 3, 4, 5, 6}
+
+    def test_ask_sync_days_personalizado(self, sync, monkeypatch):
+        """Usuario elige P (Personalizado) e ingresa '0 1 3'"""
+        inputs = iter(["P", "0 1 3"])
+        monkeypatch.setattr("builtins.input", lambda _: next(inputs))
+        monkeypatch.setattr("builtins.print", lambda *a, **k: None)
+        result = sync.ask_sync_days()
+        assert result == {0, 1, 3}
+
+    def test_ask_sync_days_personalizado_invalid_repeats(self, sync, monkeypatch):
+        """Usuario elige P, ingresa inválido, luego T"""
+        inputs = iter(["P", "99", "T"])
+        monkeypatch.setattr("builtins.input", lambda _: next(inputs))
+        monkeypatch.setattr("builtins.print", lambda *a, **k: None)
+        result = sync.ask_sync_days()
+        assert result == {1, 3, 4}
