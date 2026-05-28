@@ -1,0 +1,187 @@
+F.FF.                                                                    [100%]
+=================================== FAILURES ===================================
+_______________________________ test_index_route _______________________________
+tests/test_app.py:23: in test_index_route
+    response = client.get('/')
+               ^^^^^^^^^^^^^^^
+../../../anaconda3/lib/python3.13/site-packages/werkzeug/test.py:1162: in get
+    return self.open(*args, **kw)
+           ^^^^^^^^^^^^^^^^^^^^^^
+../../../anaconda3/lib/python3.13/site-packages/flask/testing.py:235: in open
+    response = super().open(
+../../../anaconda3/lib/python3.13/site-packages/werkzeug/test.py:1116: in open
+    response_parts = self.run_wsgi_app(request.environ, buffered=buffered)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../anaconda3/lib/python3.13/site-packages/werkzeug/test.py:988: in run_wsgi_app
+    rv = run_wsgi_app(self.application, environ, buffered=buffered)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../anaconda3/lib/python3.13/site-packages/werkzeug/test.py:1264: in run_wsgi_app
+    app_rv = app(environ, start_response)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../anaconda3/lib/python3.13/site-packages/flask/app.py:1536: in __call__
+    return self.wsgi_app(environ, start_response)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../anaconda3/lib/python3.13/site-packages/flask/app.py:1514: in wsgi_app
+    response = self.handle_exception(e)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+../../../anaconda3/lib/python3.13/site-packages/flask/app.py:1511: in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../anaconda3/lib/python3.13/site-packages/flask/app.py:919: in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../anaconda3/lib/python3.13/site-packages/flask/app.py:917: in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+../../../anaconda3/lib/python3.13/site-packages/flask/app.py:902: in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+app.py:22: in index
+    return render_template('index.html')
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../anaconda3/lib/python3.13/site-packages/flask/templating.py:150: in render_template
+    template = app.jinja_env.get_or_select_template(template_name_or_list)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../anaconda3/lib/python3.13/site-packages/jinja2/environment.py:1087: in get_or_select_template
+    return self.get_template(template_name_or_list, parent, globals)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../anaconda3/lib/python3.13/site-packages/jinja2/environment.py:1016: in get_template
+    return self._load_template(name, globals)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../anaconda3/lib/python3.13/site-packages/jinja2/environment.py:975: in _load_template
+    template = self.loader.load(self, name, self.make_globals(globals))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../anaconda3/lib/python3.13/site-packages/jinja2/loaders.py:126: in load
+    source, filename, uptodate = self.get_source(environment, name)
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../anaconda3/lib/python3.13/site-packages/flask/templating.py:66: in get_source
+    return self._get_source_fast(environment, template)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../anaconda3/lib/python3.13/site-packages/flask/templating.py:100: in _get_source_fast
+    raise TemplateNotFound(template)
+E   jinja2.exceptions.TemplateNotFound: index.html
+_____________________________ test_pacientes_route _____________________________
+tests/test_app.py:33: in test_pacientes_route
+    response = client.get('/pacientes')
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+../../../anaconda3/lib/python3.13/site-packages/werkzeug/test.py:1162: in get
+    return self.open(*args, **kw)
+           ^^^^^^^^^^^^^^^^^^^^^^
+../../../anaconda3/lib/python3.13/site-packages/flask/testing.py:235: in open
+    response = super().open(
+../../../anaconda3/lib/python3.13/site-packages/werkzeug/test.py:1116: in open
+    response_parts = self.run_wsgi_app(request.environ, buffered=buffered)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../anaconda3/lib/python3.13/site-packages/werkzeug/test.py:988: in run_wsgi_app
+    rv = run_wsgi_app(self.application, environ, buffered=buffered)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../anaconda3/lib/python3.13/site-packages/werkzeug/test.py:1264: in run_wsgi_app
+    app_rv = app(environ, start_response)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../anaconda3/lib/python3.13/site-packages/flask/app.py:1536: in __call__
+    return self.wsgi_app(environ, start_response)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../anaconda3/lib/python3.13/site-packages/flask/app.py:1514: in wsgi_app
+    response = self.handle_exception(e)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+../../../anaconda3/lib/python3.13/site-packages/flask/app.py:1511: in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../anaconda3/lib/python3.13/site-packages/flask/app.py:919: in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../anaconda3/lib/python3.13/site-packages/flask/app.py:917: in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+../../../anaconda3/lib/python3.13/site-packages/flask/app.py:902: in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+app.py:29: in listar_pacientes
+    return render_template('pacientes.html', pacientes=pacientes)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../anaconda3/lib/python3.13/site-packages/flask/templating.py:150: in render_template
+    template = app.jinja_env.get_or_select_template(template_name_or_list)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../anaconda3/lib/python3.13/site-packages/jinja2/environment.py:1087: in get_or_select_template
+    return self.get_template(template_name_or_list, parent, globals)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../anaconda3/lib/python3.13/site-packages/jinja2/environment.py:1016: in get_template
+    return self._load_template(name, globals)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../anaconda3/lib/python3.13/site-packages/jinja2/environment.py:975: in _load_template
+    template = self.loader.load(self, name, self.make_globals(globals))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../anaconda3/lib/python3.13/site-packages/jinja2/loaders.py:126: in load
+    source, filename, uptodate = self.get_source(environment, name)
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../anaconda3/lib/python3.13/site-packages/flask/templating.py:66: in get_source
+    return self._get_source_fast(environment, template)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../anaconda3/lib/python3.13/site-packages/flask/templating.py:100: in _get_source_fast
+    raise TemplateNotFound(template)
+E   jinja2.exceptions.TemplateNotFound: pacientes.html
+______________________________ test_tareas_route _______________________________
+tests/test_app.py:38: in test_tareas_route
+    response = client.get('/tareas')
+               ^^^^^^^^^^^^^^^^^^^^^
+../../../anaconda3/lib/python3.13/site-packages/werkzeug/test.py:1162: in get
+    return self.open(*args, **kw)
+           ^^^^^^^^^^^^^^^^^^^^^^
+../../../anaconda3/lib/python3.13/site-packages/flask/testing.py:235: in open
+    response = super().open(
+../../../anaconda3/lib/python3.13/site-packages/werkzeug/test.py:1116: in open
+    response_parts = self.run_wsgi_app(request.environ, buffered=buffered)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../anaconda3/lib/python3.13/site-packages/werkzeug/test.py:988: in run_wsgi_app
+    rv = run_wsgi_app(self.application, environ, buffered=buffered)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../anaconda3/lib/python3.13/site-packages/werkzeug/test.py:1264: in run_wsgi_app
+    app_rv = app(environ, start_response)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../anaconda3/lib/python3.13/site-packages/flask/app.py:1536: in __call__
+    return self.wsgi_app(environ, start_response)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../anaconda3/lib/python3.13/site-packages/flask/app.py:1514: in wsgi_app
+    response = self.handle_exception(e)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+../../../anaconda3/lib/python3.13/site-packages/flask/app.py:1511: in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../anaconda3/lib/python3.13/site-packages/flask/app.py:919: in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../anaconda3/lib/python3.13/site-packages/flask/app.py:917: in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+../../../anaconda3/lib/python3.13/site-packages/flask/app.py:902: in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+app.py:104: in listar_tareas
+    return render_template('tareas.html', tareas=tareas)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../anaconda3/lib/python3.13/site-packages/flask/templating.py:150: in render_template
+    template = app.jinja_env.get_or_select_template(template_name_or_list)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../anaconda3/lib/python3.13/site-packages/jinja2/environment.py:1087: in get_or_select_template
+    return self.get_template(template_name_or_list, parent, globals)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../anaconda3/lib/python3.13/site-packages/jinja2/environment.py:1016: in get_template
+    return self._load_template(name, globals)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../anaconda3/lib/python3.13/site-packages/jinja2/environment.py:975: in _load_template
+    template = self.loader.load(self, name, self.make_globals(globals))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../anaconda3/lib/python3.13/site-packages/jinja2/loaders.py:126: in load
+    source, filename, uptodate = self.get_source(environment, name)
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../anaconda3/lib/python3.13/site-packages/flask/templating.py:66: in get_source
+    return self._get_source_fast(environment, template)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../anaconda3/lib/python3.13/site-packages/flask/templating.py:100: in _get_source_fast
+    raise TemplateNotFound(template)
+E   jinja2.exceptions.TemplateNotFound: tareas.html
+=========================== short test summary info ============================
+FAILED tests/test_app.py::test_index_route - jinja2.exceptions.TemplateNotFou...
+FAILED tests/test_app.py::test_pacientes_route - jinja2.exceptions.TemplateNo...
+FAILED tests/test_app.py::test_tareas_route - jinja2.exceptions.TemplateNotFo...
+3 failed, 2 passed in 0.21s

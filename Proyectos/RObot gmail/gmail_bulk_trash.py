@@ -282,73 +282,100 @@ def interactive_sender_menu(service: Any, top_senders: list[tuple[str, int]], se
     modified = False
 
     while True:
-        print("\n╔════════════════════════════════════════════╗")
-        print("║         Top Senders — Análisis             ║")
-        print("╚════════════════════════════════════════════╝\n")
-        print(f"  {'#':>3}  {'Remitente':<30} {'Correos':>8}")
-        print(f"  {'─'*3}  {'─'*30} {'─'*8}")
+        print("\n" + "═" * 50)
+        print("           TOP SENDERS — Selecciona remitente")
+        print("═" * 50)
+        print(f"  {'#':>3}  {'Remitente':<35} {'Correos':>8}")
+        print(f"  {'───':>3}  {'─'*35} {'─'*8}")
         for i, (email, count) in enumerate(top_senders, 1):
-            print(f"  {i:>3}  {email:<30} {count:>8,}")
-        print(f"  {'─'*3}  {'─'*30} {'─'*8}")
-
-        cmd = input("\nSelecciona remitente (#), (a)ñadir todos a blocklist, (q)uit: ").strip().lower()
+            print(f"  {i:>3}  {email:<35} {count:>8,}")
+        print()
+        print("  (a) Añadir TODOS los visibles a blocklist")
+        print("  (q) Volver")
+        print("─" * 50)
+        cmd = input("\nElige un número de remitente, (a) o (q): ").strip().lower()
 
         if cmd == "q":
             break
         elif cmd == "a":
+            added = 0
             for email, _ in top_senders:
                 if email not in senders["blocked"]:
                     senders["blocked"].append(email)
-                    print(f"✅ Añadido a blocklist: {email}")
-                else:
-                    print(f"⚠️  Ya estaba en blocklist: {email}")
+                    added += 1
             save_senders(senders)
-            modified = True
-            break
+            print(f"\n✅ {added} remitentes añadidos a blocklist.")
+            if added:
+                modified = True
+            input("\nPresiona Enter para continuar...")
         elif cmd.isdigit():
             idx = int(cmd) - 1
             if 0 <= idx < len(top_senders):
                 email, count = top_senders[idx]
-                modified = _handle_sender_action(service, email, count, sender_ids.get(email, []), senders) or modified
+                _handle_sender_action(service, email, count, sender_ids.get(email, []), senders)
             else:
                 print("⚠️  Número fuera de rango.")
         else:
-            print("⚠️  Comando no válido.")
+            print("⚠️  Opción no válida.")
 
     return modified
 
 
-def _handle_sender_action(service: Any, email: str, count: int, ids: list[str], senders: dict) -> bool:
+def _handle_sender_action(service: Any, email: str, total_count: int, msg_ids: list[str], senders: dict) -> None:
     while True:
-        print(f"\n✉️  {email} ({count:,} emails)")
-        print("  [1] Trash all — mover a la papelera")
-        print("  [2] Dry-run — simular sin borrar")
-        print("  [3] Add to blocklist")
-        print("  [4] ← Volver")
-        print("  [q] Salir")
-        action = input("\nAcción: ").strip().lower()
+        print()
+        print("═" * 50)
+        print(f"  Remitente: {email}")
+        print(f"  Correos:   {total_count:,}")
+        print("═" * 50)
+        print("  [1] 🗑️  TRASH ALL  —  Mover TODOS a la papelera")
+        print("  [2] 🔍 DRY RUN     —  Simular (ver cuántos se borrarían)")
+        print("  [3] 🚫 BLOCKLIST   —  Añadir a blocklist y salir")
+        print("  [4] ← Volver a la lista")
+        print("─" * 50)
+        action = input("Acción: ").strip().lower()
 
         if action == "1":
-            batch_trash(service, ids)
-            return True
+            if not msg_ids:
+                print(f"\n⚠️  No hay IDs de correos almacenados para {email}.")
+                print("   Ejecuta el análisis de nuevo con más mensajes.")
+                input("Presiona Enter para continuar...")
+                return
+
+            print(f"\n⚠️  Vas a mover {len(msg_ids):,} correos de {email} a la PAPELERA.")
+            print("   (Se pueden recuperar desde la papelera en 30 días)")
+            confirm = input("Confirmar (s/n): ").strip().lower()
+            if confirm != "s":
+                print("Cancelado.")
+                input("Presiona Enter para continuar...")
+                return
+
+            print()
+            batch_trash(service, msg_ids)
+            print(f"\n✅ Operación completada para {email}.")
+            input("\nPresiona Enter para volver a la lista...")
+            return
+
         elif action == "2":
-            print(f"\n🔍 DRY RUN — Se moverían {len(ids)} emails de {email} a la papelera.")
-            print("   Usa 'Trash all' para aplicar.\n")
+            print(f"\n🔍 DRY RUN — Se moverían {len(msg_ids):,} correos de {email} a la papelera.")
+            print("   Usa [1] Trash all para aplicar.\n")
             input("Presiona Enter para continuar...")
+
         elif action == "3":
             if email not in senders["blocked"]:
                 senders["blocked"].append(email)
                 save_senders(senders)
-                print(f"✅ Añadido a blocklist: {email}")
+                print(f"\n✅ {email} añadido a blocklist.")
             else:
-                print(f"⚠️  Ya estaba en blocklist: {email}")
-            return True
+                print(f"\n⚠️  {email} ya estaba en blocklist.")
+            input("\nPresiona Enter para continuar...")
+            return
+
         elif action == "4":
-            return False
-        elif action == "q":
-            return False
+            return
+
         else:
-            print("⚠️  Acción no válida.")
+            print("⚠️  Opción no válida.")
 
 def batch_trash(service: Any, ids: list[str]) -> None:
     total   = len(ids)

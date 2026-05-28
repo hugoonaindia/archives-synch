@@ -5,6 +5,7 @@ Tests for simple_error_handler module
 import pytest
 import logging
 import time
+import tempfile
 from pathlib import Path
 import sys
 from unittest.mock import patch, MagicMock
@@ -89,7 +90,7 @@ class TestRetryWithBackoffSimple:
     
     def test_return_none_on_max_retries(self):
         """Test function returns None when max retries exhausted and no exception raised"""
-        @retry_with_backoff_simple(max_retries=2)
+        @retry_with_backoff_simple(max_retries=2, raise_on_failure=False)
         def func_returns_none():
             raise ValueError("Keep failing")
         
@@ -154,14 +155,16 @@ class TestSetupSimpleLogging:
     def test_setup_logging_creates_directory(self):
         """Test that logging setup creates log directory"""
         with tempfile.TemporaryDirectory() as temp_dir:
-            with patch('src.utils.simple_error_handler.Path') as mock_path:
-                mock_path.return_value = Path(temp_dir)
-                mock_path.mkdir = MagicMock()
+            with patch('src.utils.simple_error_handler.Path') as mock_path_class:
+                mock_path_instance = MagicMock()
+                mock_path_class.return_value = mock_path_instance
+                mock_path_instance.__truediv__.return_value = temp_dir + "/trader_simple.log"
+                mock_path_instance.mkdir = MagicMock()
                 
                 logger = setup_simple_logging()
                 
                 # Should create log directory
-                mock_path.mkdir.assert_called_once_with(exist_ok=True)
+                mock_path_instance.mkdir.assert_called_once_with(exist_ok=True)
     
     def test_setup_logging_returns_logger(self):
         """Test that setup_logging returns a SimpleLogger instance"""

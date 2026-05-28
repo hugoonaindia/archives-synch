@@ -1,0 +1,12 @@
+[
+  {
+    "id": "67511d89-4a0f-4297-8a9c-b6bb667d8f63",
+    "tipo": "colegio",
+    "titulo": "Recogida de niños",
+    "descripcion": "le recojo a Francio en la puerta y a Julieta que entre el dentro del cola y recogerla en el patio de Francio.\n\n#francho #julieta #recoger patio #colegio",
+    "fecha_limite": "2026-05-27T01:59:29.587245",
+    "completada": false,
+    "prioridad": "alta",
+    "asignada_a": "padres"
+  }
+]

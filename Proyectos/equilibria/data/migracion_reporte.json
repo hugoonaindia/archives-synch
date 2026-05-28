@@ -1,0 +1,69 @@
+{
+  "fecha_migracion": "2026-05-27T01:59:29.589846",
+  "total_pacientes": 5,
+  "total_sesiones": 3,
+  "total_tareas": 1,
+  "pacientes": [
+    {
+      "id": "917b4b20-bfd0-46ec-8193-2b811686f365",
+      "nombre": "Naira",
+      "notas_count": 4,
+      "fecha_registro": "2026-05-27T01:59:29.583566"
+    },
+    {
+      "id": "95f9b886-988e-4ba7-9bb1-64cdd2b6998c",
+      "nombre": "[Nombre del paciente]",
+      "notas_count": 3,
+      "fecha_registro": "2026-05-27T01:59:29.586402"
+    },
+    {
+      "id": "1f4ae736-87dc-46bd-81b1-cae17dfbcd7d",
+      "nombre": "Naira",
+      "notas_count": 1,
+      "fecha_registro": "2026-05-27T01:59:29.587525"
+    },
+    {
+      "id": "ad3b807b-dd76-47e8-b4f4-232f8a275429",
+      "nombre": "Carlos",
+      "notas_count": 1,
+      "fecha_registro": "2026-05-27T01:59:29.588265"
+    },
+    {
+      "id": "109ea330-3954-4b7a-8a07-10cdde096caa",
+      "nombre": "Ana",
+      "notas_count": 1,
+      "fecha_registro": "2026-05-27T01:59:29.589043"
+    }
+  ],
+  "sesiones": [
+    {
+      "id": "faaa26f7-7be9-47a5-80bf-a4c59f405ddc",
+      "paciente_id": "1f4ae736-87dc-46bd-81b1-cae17dfbcd7d",
+      "fecha": "2026-05-27T01:59:29.588060",
+      "costo": 80.0,
+      "duracion": 60
+    },
+    {
+      "id": "f3b094ca-a067-41f1-8836-4e34b453448a",
+      "paciente_id": "ad3b807b-dd76-47e8-b4f4-232f8a275429",
+      "fecha": "2026-05-27T01:59:29.588677",
+      "costo": 80.0,
+      "duracion": 60
+    },
+    {
+      "id": "e049e9f2-4663-48dd-8b1f-bd1950603226",
+      "paciente_id": "109ea330-3954-4b7a-8a07-10cdde096caa",
+      "fecha": "2026-05-27T01:59:29.589510",
+      "costo": 80.0,
+      "duracion": 60
+    }
+  ],
+  "tareas": [
+    {
+      "id": "67511d89-4a0f-4297-8a9c-b6bb667d8f63",
+      "tipo": "colegio",
+      "titulo": "Recogida de niños",
+      "completada": false
+    }
+  ]
+}

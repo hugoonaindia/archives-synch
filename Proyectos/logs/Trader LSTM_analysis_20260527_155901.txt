@@ -1,0 +1,2 @@
+Errores de sintaxis encontrados: 0
+Errores de sintaxis corregidos: 0

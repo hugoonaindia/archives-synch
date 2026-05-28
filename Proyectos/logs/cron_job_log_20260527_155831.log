@@ -1,0 +1,167 @@
+🚀 INICIANDO PROCESO AUTOMATIZADO DE DEBUGGING Y CORRECCIÓN
+📅 Fecha: miércoles, 27 de mayo de 2026, 15:58:31 CEST
+📂 Proyectos a procesar: 10
+
+🔄 Iniciando proyecto equilibria (1/10)...
+=== ANALIZANDO PROYECTO: equilibria ===
+Ruta: /Users/hugoonaindia/Desktop/Proyectos/equilibria
+Tiempo: miércoles, 27 de mayo de 2026, 15:58:31 CEST
+1. Buscando errores de sintaxis en equilibria...
+📁 Encontrados 4 archivos Python
+✅ Sintaxis OK: ./tests/test_app.py
+✅ Sintaxis OK: ./migrar_datos.py
+✅ Sintaxis OK: ./app.py
+✅ Sintaxis OK: ./data/estructura_datos.py
+2. Buscando patrones de bugs en equilibria...
+3. Verificando dependencias en equilibria...
+✅ requirements.txt encontrado
+4. Buscando otros patrones de bugs en equilibria...
+⚠️  ANÁLISIS COMPLETADO: equilibria (con errores detectados y corregidos)
+
+⏱️  Esperando 2 segundos antes del siguiente proyecto...
+🔄 Iniciando proyecto LSTM RL (2/10)...
+=== ANALIZANDO PROYECTO: LSTM RL ===
+Ruta: /Users/hugoonaindia/Desktop/Proyectos/LSTM RL
+Tiempo: miércoles, 27 de mayo de 2026, 15:58:34 CEST
+1. Buscando errores de sintaxis en LSTM RL...
+📁 Encontrados 45 archivos Python
+✅ Sintaxis OK: ./tests/test_ui_flow_coverage.py
+✅ Sintaxis OK: ./tests/test_basic.py
+✅ Sintaxis OK: ./tests/conftest.py
+✅ Sintaxis OK: ./tests/test_feature_store.py
+✅ Sintaxis OK: ./tests/test_model_registry.py
+✅ Sintaxis OK: ./tests/test_usage_analytics.py
+✅ Sintaxis OK: ./tests/__init__.py
+✅ Sintaxis OK: ./tests/test_feature_discovery.py
+✅ Sintaxis OK: ./tests/test_config_profiles.py
+✅ Sintaxis OK: ./tests/test_data_versioning.py
+✅ Sintaxis OK: ./tests/test_notifications.py
+✅ Sintaxis OK: ./tests/test_code_review_fixes.py
+✅ Sintaxis OK: ./tests/test_error_log.py
+✅ Sintaxis OK: ./tests/test_walk_forward_cv.py
+✅ Sintaxis OK: ./.claude/worktrees/eloquent-sanderson-c1df78/tests/test_ui_flow_coverage.py
+✅ Sintaxis OK: ./.claude/worktrees/eloquent-sanderson-c1df78/tests/test_basic.py
+✅ Sintaxis OK: ./.claude/worktrees/eloquent-sanderson-c1df78/tests/conftest.py
+✅ Sintaxis OK: ./.claude/worktrees/eloquent-sanderson-c1df78/tests/test_usage_analytics.py
+✅ Sintaxis OK: ./.claude/worktrees/eloquent-sanderson-c1df78/tests/__init__.py
+✅ Sintaxis OK: ./.claude/worktrees/eloquent-sanderson-c1df78/tests/test_feature_discovery.py
+✅ Sintaxis OK: ./.claude/worktrees/eloquent-sanderson-c1df78/tests/test_config_profiles.py
+✅ Sintaxis OK: ./.claude/worktrees/eloquent-sanderson-c1df78/tests/test_notifications.py
+✅ Sintaxis OK: ./.claude/worktrees/eloquent-sanderson-c1df78/trading_lstm_rl_app.py
+✅ Sintaxis OK: ./.claude/worktrees/compassionate-bohr-0dd067/tests/test_ui_flow_coverage.py
+✅ Sintaxis OK: ./.claude/worktrees/compassionate-bohr-0dd067/tests/test_basic.py
+✅ Sintaxis OK: ./.claude/worktrees/compassionate-bohr-0dd067/tests/conftest.py
+✅ Sintaxis OK: ./.claude/worktrees/compassionate-bohr-0dd067/tests/test_usage_analytics.py
+✅ Sintaxis OK: ./.claude/worktrees/compassionate-bohr-0dd067/tests/__init__.py
+✅ Sintaxis OK: ./.claude/worktrees/compassionate-bohr-0dd067/tests/test_feature_discovery.py
+✅ Sintaxis OK: ./.claude/worktrees/compassionate-bohr-0dd067/tests/test_config_profiles.py
+✅ Sintaxis OK: ./.claude/worktrees/compassionate-bohr-0dd067/tests/test_notifications.py
+✅ Sintaxis OK: ./.claude/worktrees/compassionate-bohr-0dd067/trading_lstm_rl_app.py
+✅ Sintaxis OK: ./.claude/worktrees/vigorous-turing-72f9c6/tests/test_ui_flow_coverage.py
+✅ Sintaxis OK: ./.claude/worktrees/vigorous-turing-72f9c6/tests/test_basic.py
+✅ Sintaxis OK: ./.claude/worktrees/vigorous-turing-72f9c6/tests/conftest.py
+✅ Sintaxis OK: ./.claude/worktrees/vigorous-turing-72f9c6/tests/__init__.py
+✅ Sintaxis OK: ./.claude/worktrees/vigorous-turing-72f9c6/tests/test_feature_discovery.py
+✅ Sintaxis OK: ./.claude/worktrees/vigorous-turing-72f9c6/tests/test_notifications.py
+✅ Sintaxis OK: ./.claude/worktrees/vigorous-turing-72f9c6/trading_lstm_rl_app.py
+✅ Sintaxis OK: ./.claude/worktrees/sharp-wright-3a41fc/tests/test_ui_flow_coverage.py
+✅ Sintaxis OK: ./.claude/worktrees/sharp-wright-3a41fc/tests/test_basic.py
+✅ Sintaxis OK: ./.claude/worktrees/sharp-wright-3a41fc/tests/conftest.py
+✅ Sintaxis OK: ./.claude/worktrees/sharp-wright-3a41fc/tests/__init__.py
+✅ Sintaxis OK: ./.claude/worktrees/sharp-wright-3a41fc/trading_lstm_rl_app.py
+✅ Sintaxis OK: ./trading_lstm_rl_app.py
+2. Buscando patrones de bugs en LSTM RL...
+3. Verificando dependencias en LSTM RL...
+✅ requirements.txt encontrado
+✅ pyproject.toml encontrado
+4. Buscando otros patrones de bugs en LSTM RL...
+⚠️  ANÁLISIS COMPLETADO: LSTM RL (con errores detectados y corregidos)
+
+⏱️  Esperando 2 segundos antes del siguiente proyecto...
+🔄 Iniciando proyecto psych-billing-app (3/10)...
+=== ANALIZANDO PROYECTO: psych-billing-app ===
+Ruta: /Users/hugoonaindia/Desktop/Proyectos/psych-billing-app
+Tiempo: miércoles, 27 de mayo de 2026, 15:58:40 CEST
+1. Buscando errores de sintaxis en psych-billing-app...
+📁 Encontrados 8 archivos Python
+✅ Sintaxis OK: ./tests/conftest.py
+✅ Sintaxis OK: ./tests/test_critical_paths.py
+✅ Sintaxis OK: ./tests/__init__.py
+✅ Sintaxis OK: ./tests/test_gui.py
+✅ Sintaxis OK: ./tests/test_integration.py
+✅ Sintaxis OK: ./tests/test_logic.py
+✅ Sintaxis OK: ./core.py
+✅ Sintaxis OK: ./app.py
+2. Buscando patrones de bugs en psych-billing-app...
+⚠️  Found 2 bare except statements
+🔧 ✅ **CORREGIDO** - Bare excepts en: ./.venv/lib/python3.12/site-packages/coverage/collector.py
+🔧 ✅ **CORREGIDO** - Bare excepts en: ./.venv/lib/python3.12/site-packages/coverage/pth_file.py
+3. Verificando dependencias en psych-billing-app...
+✅ requirements.txt encontrado
+✅ pyproject.toml encontrado
+4. Buscando otros patrones de bugs en psych-billing-app...
+ℹ️  Found 95 TODO statements
+⚠️  Found 20 wildcard imports
+⚠️  ANÁLISIS COMPLETADO: psych-billing-app (con errores detectados y corregidos)
+
+⏱️  Esperando 2 segundos antes del siguiente proyecto...
+🔄 Iniciando proyecto Trader LSTM (4/10)...
+=== ANALIZANDO PROYECTO: Trader LSTM ===
+Ruta: /Users/hugoonaindia/Desktop/Proyectos/Trader LSTM
+Tiempo: miércoles, 27 de mayo de 2026, 15:59:01 CEST
+1. Buscando errores de sintaxis en Trader LSTM...
+📁 Encontrados 9322 archivos Python
+⚠️  Proyecto grande (9322 archivos), analizando solo primeros 100 archivos...
+✅ Sintaxis OK: ./traderLSTM.py
+✅ Sintaxis OK: ./test/test_error_handling.py
+✅ Sintaxis OK: ./test/test_core.py
+✅ Sintaxis OK: ./test/__init__.py
+✅ Sintaxis OK: ./test/test_enhanced.py
+✅ Sintaxis OK: ./run_infinite_loop.py
+✅ Sintaxis OK: ./venv/lib/python3.12/site-packages/orjson/__init__.py
+✅ Sintaxis OK: ./venv/lib/python3.12/site-packages/ruff/_find_ruff.py
+✅ Sintaxis OK: ./venv/lib/python3.12/site-packages/ruff/__init__.py
+✅ Sintaxis OK: ./venv/lib/python3.12/site-packages/ruff/__main__.py
+✅ Sintaxis OK: ./venv/lib/python3.12/site-packages/mdurl/_decode.py
+✅ Sintaxis OK: ./venv/lib/python3.12/site-packages/mdurl/_url.py
+✅ Sintaxis OK: ./venv/lib/python3.12/site-packages/mdurl/__init__.py
+✅ Sintaxis OK: ./venv/lib/python3.12/site-packages/mdurl/_format.py
+✅ Sintaxis OK: ./venv/lib/python3.12/site-packages/mdurl/_parse.py
+✅ Sintaxis OK: ./venv/lib/python3.12/site-packages/mdurl/_encode.py
+✅ Sintaxis OK: ./venv/lib/python3.12/site-packages/packaging/tags.py
+✅ Sintaxis OK: ./venv/lib/python3.12/site-packages/packaging/_musllinux.py
+✅ Sintaxis OK: ./venv/lib/python3.12/site-packages/packaging/dependency_groups.py
+✅ Sintaxis OK: ./venv/lib/python3.12/site-packages/packaging/metadata.py
+✅ Sintaxis OK: ./venv/lib/python3.12/site-packages/packaging/version.py
+✅ Sintaxis OK: ./venv/lib/python3.12/site-packages/packaging/direct_url.py
+✅ Sintaxis OK: ./venv/lib/python3.12/site-packages/packaging/licenses/__init__.py
+✅ Sintaxis OK: ./venv/lib/python3.12/site-packages/packaging/licenses/_spdx.py
+✅ Sintaxis OK: ./venv/lib/python3.12/site-packages/packaging/pylock.py
+✅ Sintaxis OK: ./venv/lib/python3.12/site-packages/packaging/__init__.py
+✅ Sintaxis OK: ./venv/lib/python3.12/site-packages/packaging/_parser.py
+✅ Sintaxis OK: ./venv/lib/python3.12/site-packages/packaging/utils.py
+✅ Sintaxis OK: ./venv/lib/python3.12/site-packages/packaging/requirements.py
+✅ Sintaxis OK: ./venv/lib/python3.12/site-packages/packaging/_structures.py
+✅ Sintaxis OK: ./venv/lib/python3.12/site-packages/packaging/markers.py
+✅ Sintaxis OK: ./venv/lib/python3.12/site-packages/packaging/errors.py
+✅ Sintaxis OK: ./venv/lib/python3.12/site-packages/packaging/_manylinux.py
+✅ Sintaxis OK: ./venv/lib/python3.12/site-packages/packaging/_tokenizer.py
+✅ Sintaxis OK: ./venv/lib/python3.12/site-packages/packaging/specifiers.py
+✅ Sintaxis OK: ./venv/lib/python3.12/site-packages/packaging/_elffile.py
+✅ Sintaxis OK: ./venv/lib/python3.12/site-packages/opt_einsum/sharing.py
+✅ Sintaxis OK: ./venv/lib/python3.12/site-packages/opt_einsum/paths.py
+✅ Sintaxis OK: ./venv/lib/python3.12/site-packages/opt_einsum/_version.py
+✅ Sintaxis OK: ./venv/lib/python3.12/site-packages/opt_einsum/backends/dispatch.py
+✅ Sintaxis OK: ./venv/lib/python3.12/site-packages/opt_einsum/backends/object_arrays.py
+✅ Sintaxis OK: ./venv/lib/python3.12/site-packages/opt_einsum/backends/__init__.py
+✅ Sintaxis OK: ./venv/lib/python3.12/site-packages/opt_einsum/backends/tensorflow.py
+✅ Sintaxis OK: ./venv/lib/python3.12/site-packages/opt_einsum/backends/jax.py
+✅ Sintaxis OK: ./venv/lib/python3.12/site-packages/opt_einsum/backends/cupy.py
+✅ Sintaxis OK: ./venv/lib/python3.12/site-packages/opt_einsum/backends/theano.py
+✅ Sintaxis OK: ./venv/lib/python3.12/site-packages/opt_einsum/backends/torch.py
+✅ Sintaxis OK: ./venv/lib/python3.12/site-packages/opt_einsum/tests/test_parser.py
+✅ Sintaxis OK: ./venv/lib/python3.12/site-packages/opt_einsum/tests/test_input.py
+✅ Sintaxis OK: ./venv/lib/python3.12/site-packages/opt_einsum/tests/test_sharing.py
+⏸️  Límite de 50 archivos alcanzado para este proyecto
+2. Buscando patrones de bugs en Trader LSTM...
+⚠️  Found 121 bare except statements

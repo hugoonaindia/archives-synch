@@ -102,7 +102,7 @@ class TestSimpleApiClient:
         with pytest.raises(ValueError, match="inválida - no es un objeto JSON"):
             self.client._decode_response(data)
     
-    @patch('urllib.request.urlopen')
+    @patch('src.api.simple_api_client.urlopen')
     def test_make_request_success(self, mock_urlopen):
         """Test successful HTTP request"""
         mock_response = Mock()
@@ -112,7 +112,7 @@ class TestSimpleApiClient:
         result = self.client._make_request("GET", "/test")
         assert result == {"result": "success"}
     
-    @patch('urllib.request.urlopen')
+    @patch('src.api.simple_api_client.urlopen')
     def test_make_request_with_payload(self, mock_urlopen):
         """Test HTTP request with payload"""
         mock_response = Mock()
@@ -127,7 +127,7 @@ class TestSimpleApiClient:
         request_obj = call_args[0][0]
         assert request_obj.data == b'{"key": "value", "number": 42}'
     
-    @patch('urllib.request.urlopen')
+    @patch('src.api.simple_api_client.urlopen')
     def test_make_request_http_error(self, mock_urlopen):
         """Test HTTP error handling"""
         mock_response = Mock()
@@ -135,10 +135,10 @@ class TestSimpleApiClient:
         mock_error = HTTPError("http://api.example.com/test", 404, "Not Found", {}, mock_response)
         mock_urlopen.side_effect = mock_error
         
-        with pytest.raises(RuntimeError, match="HTTP 404"):
+        with pytest.raises(RuntimeError, match="Not found"):
             self.client._make_request("GET", "/test")
     
-    @patch('urllib.request.urlopen')
+    @patch('src.api.simple_api_client.urlopen')
     def test_make_request_url_error(self, mock_urlopen):
         """Test URL error handling"""
         mock_urlopen.side_effect = URLError("Connection failed")

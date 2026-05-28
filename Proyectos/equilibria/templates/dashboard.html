@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Equilibria - Sistema de Gestión Terapéutica</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <h1>🏥 Equilibria</h1>
+            <span>Sistema de Gestión Terapéutica</span>
+        </div>
+        <div class="nav-menu">
+            <a href="{{ url_for('dashboard') }}" class="nav-link">Dashboard</a>
+            <a href="{{ url_for('listar_pacientes') }}" class="nav-link">Pacientes</a>
+            <a href="{{ url_for('listar_tareas') }}" class="nav-link">Tareas</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="hero">
+            <h2>Bienvenido al Sistema de Gestión</h2>
+            <p>Gestiona tu práctica terapéutica y tareas administrativas de manera organizada.</p>
+            <div class="hero-buttons">
+                <a href="{{ url_for('nuevo_paciente') }}" class="btn btn-primary">Nuevo Paciente</a>
+                <a href="{{ url_for('nueva_tarea') }}" class="btn btn-secondary">Nueva Tarea</a>
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">👥</div>
+                <div class="stat-content">
+                    <h3>{{ total_pacientes }}</h3>
+                    <p>Pacientes</p>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">📅</div>
+                <div class="stat-content">
+                    <h3>{{ total_sesiones }}</h3>
+                    <p>Sesiones</p>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">✅</div>
+                <div class="stat-content">
+                    <h3>{{ tareas_pendientes }}</h3>
+                    <p>Tareas Pendientes</p>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">💰</div>
+                <div class="stat-content">
+                    <h3>{{ ingresos_totales }}€</h3>
+                    <p>Ingresos Totales</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-sections">
+            <div class="section">
+                <h3>Últimas Sesiones</h3>
+                <div class="session-list">
+                    {% for sesion in ultimas_sesiones %}
+                    <div class="session-item">
+                        <div class="session-info">
+                            <strong>Sesión #{{ sesion.id[:8] }}</strong>
+                            <span>{{ sesion.fecha[:10] }}</span>
+                        </div>
+                        <div class="session-meta">
+                            <span>{{ sesion.duracion }}min</span>
+                            <span class="session-cost">{{ sesion.costo }}€</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="section">
+                <h3>Tareas Urgentes</h3>
+                {% if tareas_urgentes %}
+                <div class="task-list urgent">
+                    {% for tarea in tareas_urgentes %}
+                    <div class="task-item urgent">
+                        <div class="task-info">
+                            <strong>{{ tarea.titulo }}</strong>
+                            <span>{{ tarea.fecha_limite[:10] }}</span>
+                        </div>
+                        <div class="task-meta">
+                            <span class="priority">{{ tarea.prioridad }}</span>
+                            <span>{{ tarea.tipo }}</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="no-tasks">No hay tareas urgentes pendientes.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

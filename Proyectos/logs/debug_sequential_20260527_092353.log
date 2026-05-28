@@ -1,0 +1,71 @@
+=== INICIO ANÁLISIS SECUENCIAL: 2026-05-27_09-23-53 ===
+Directorio base: /Users/hugoonaindia/Desktop/Proyectos
+Total de proyectos: 10
+
+=== ANALIZANDO PROYECTO: equilibria ===
+Ruta: /Users/hugoonaindia/Desktop/Proyectos/equilibria
+Tiempo: miércoles, 27 de mayo de 2026, 09:23:53 CEST
+❌ ANÁLISIS FALLIDO: equilibria
+
+⏱️  Esperando 5 segundos antes del siguiente proyecto...
+=== ANALIZANDO PROYECTO: LSTM RL ===
+Ruta: /Users/hugoonaindia/Desktop/Proyectos/LSTM RL
+Tiempo: miércoles, 27 de mayo de 2026, 09:23:58 CEST
+❌ ANÁLISIS FALLIDO: LSTM RL
+
+⏱️  Esperando 5 segundos antes del siguiente proyecto...
+=== ANALIZANDO PROYECTO: psych-billing-app ===
+Ruta: /Users/hugoonaindia/Desktop/Proyectos/psych-billing-app
+Tiempo: miércoles, 27 de mayo de 2026, 09:24:03 CEST
+❌ ANÁLISIS FALLIDO: psych-billing-app
+
+⏱️  Esperando 5 segundos antes del siguiente proyecto...
+=== ANALIZANDO PROYECTO: Trader LSTM ===
+Ruta: /Users/hugoonaindia/Desktop/Proyectos/Trader LSTM
+Tiempo: miércoles, 27 de mayo de 2026, 09:24:08 CEST
+❌ ANÁLISIS FALLIDO: Trader LSTM
+
+⏱️  Esperando 5 segundos antes del siguiente proyecto...
+=== ANALIZANDO PROYECTO: trader supersimple ===
+Ruta: /Users/hugoonaindia/Desktop/Proyectos/trader supersimple
+Tiempo: miércoles, 27 de mayo de 2026, 09:24:13 CEST
+❌ ANÁLISIS FALLIDO: trader supersimple
+
+⏱️  Esperando 5 segundos antes del siguiente proyecto...
+=== ANALIZANDO PROYECTO: ayuda programacion ===
+Ruta: /Users/hugoonaindia/Desktop/Proyectos/ayuda programacion
+Tiempo: miércoles, 27 de mayo de 2026, 09:24:18 CEST
+❌ ANÁLISIS FALLIDO: ayuda programacion
+
+⏱️  Esperando 5 segundos antes del siguiente proyecto...
+=== ANALIZANDO PROYECTO: archivex synch ===
+Ruta: /Users/hugoonaindia/Desktop/Proyectos/archivex synch
+Tiempo: miércoles, 27 de mayo de 2026, 09:24:23 CEST
+❌ ANÁLISIS FALLIDO: archivex synch
+
+⏱️  Esperando 5 segundos antes del siguiente proyecto...
+=== ANALIZANDO PROYECTO: artefacto pacientes ===
+Ruta: /Users/hugoonaindia/Desktop/Proyectos/artefacto pacientes
+Tiempo: miércoles, 27 de mayo de 2026, 09:24:28 CEST
+❌ ANÁLISIS FALLIDO: artefacto pacientes
+
+⏱️  Esperando 5 segundos antes del siguiente proyecto...
+=== ANALIZANDO PROYECTO: RObot gmail ===
+Ruta: /Users/hugoonaindia/Desktop/Proyectos/RObot gmail
+Tiempo: miércoles, 27 de mayo de 2026, 09:24:33 CEST
+❌ ANÁLISIS FALLIDO: RObot gmail
+
+⏱️  Esperando 5 segundos antes del siguiente proyecto...
+=== ANALIZANDO PROYECTO: recursos gratis psicologia ===
+Ruta: /Users/hugoonaindia/Desktop/Proyectos/recursos gratis psicologia
+Tiempo: miércoles, 27 de mayo de 2026, 09:24:38 CEST
+❌ ANÁLISIS FALLIDO: recursos gratis psicologia
+
+⏱️  Esperando 5 segundos antes del siguiente proyecto...
+
+=== RESUMEN FINAL ===
+Total de proyectos: 10
+Analizados exitosamente: 0
+Con errores: 10
+Correcciones automáticas: 0
+Finalizado: miércoles, 27 de mayo de 2026, 09:24:43 CEST

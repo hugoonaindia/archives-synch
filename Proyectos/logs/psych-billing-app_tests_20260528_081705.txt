@@ -1,0 +1,1 @@
+/Users/hugoonaindia/Desktop/Proyectos/psych-billing-app/.venv/bin/python: No module named pytest

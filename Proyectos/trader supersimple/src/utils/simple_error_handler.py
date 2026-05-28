@@ -12,6 +12,7 @@ Funcionalidades principales:
 """
 
 import logging
+import logging.handlers
 import time
 from pathlib import Path
 from typing import Callable, Any, Optional
@@ -23,7 +24,8 @@ def retry_with_backoff_simple(
     base_delay: float = 1.0,
     max_delay: float = 30.0,
     exponential_base: float = 2.0,
-    jitter: bool = True
+    jitter: bool = True,
+    raise_on_failure: bool = True
 ) -> Callable:
     """
     Decorador simple para reintentos con exponential backoff
@@ -37,7 +39,9 @@ def retry_with_backoff_simple(
                 except Exception as e:
                     if attempt == max_retries - 1:
                         logging.error(f"Función {func.__name__} falló después de {max_retries} intentos")
-                        raise
+                        if raise_on_failure:
+                            raise
+                        return None
                     
                     delay = min(base_delay * (exponential_base ** attempt), max_delay)
                     if jitter:
@@ -47,6 +51,7 @@ def retry_with_backoff_simple(
                         f"Intento {attempt + 1}/{max_retries} para {func.__name__} falló. "
                         f"Reintentando en {delay:.2f}s... Error: {str(e)}"
                     )
+                    
                     time.sleep(delay)
             
             return None
@@ -176,7 +181,7 @@ def setup_simple_logging():
     )
     
     # Handler para archivo con rotación
-    file_handler = logging.FileHandler(
+    file_handler = logging.handlers.RotatingFileHandler(
         log_dir / "trader_simple.log",
         maxBytes=1_000_000,
         backupCount=5,

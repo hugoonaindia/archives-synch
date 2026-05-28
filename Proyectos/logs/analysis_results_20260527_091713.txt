@@ -1,0 +1,6 @@
+=== RESULTADOS COMPLETOS ===
+Total de archivos Python del proyecto: 50
+Errores de sintaxis: 0
+Patrones de bugs potenciales: 1
+Archivos de prueba:     2000
+Archivo de resultados: analysis_results_20260527_091713.txt

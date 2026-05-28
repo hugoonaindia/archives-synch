@@ -1,13 +1,20 @@
 """Unit tests for recon.py validation logic."""
 import sys
-from unittest.mock import Mock
+from unittest.mock import Mock, MagicMock
 
 import pytest
 
 
 @pytest.fixture(autouse=True)
 def mock_pyautogui():
-    sys.modules["pyautogui"] = Mock()
+    mock_keyboard = Mock()
+    mock_pyautogui = Mock()
+    sys.modules["pyautogui"] = mock_pyautogui
+    sys.modules["keyboard"] = mock_keyboard
+    
+    # Mock the read_key function specifically
+    mock_keyboard.read_key = Mock()
+    
     yield
     sys.modules.pop("recon", None)
 
@@ -81,34 +88,29 @@ class TestValidateReconOutput:
 class TestCaptureScreenshotInteractive:
     def test_space_returns_b64_screenshot(self, recon, monkeypatch):
         """Usuario presiona ESPACIO → captura screenshot"""
-        # Mock pyautogui.press() → retorna "space"
-        monkeypatch.setattr("recon.pyautogui.press", lambda: "space")
-        # Mock _screenshot_b64() → retorna fake b64
-        monkeypatch.setattr("recon._screenshot_b64", lambda: "fake_b64_data")
-        # Mock input() → nunca debería ser llamado
-        monkeypatch.setattr("builtins.input", lambda _: pytest.fail("input() should not be called"))
-
+        monkeypatch.setattr("keyboard.read_key", Mock(return_value="space"))
+        monkeypatch.setattr("recon._screenshot_b64", lambda: "fake_b64")
+        
         result = recon.capture_screenshot_interactive("calendario")
-        assert result == "fake_b64_data"
-
+        assert result == "fake_b64"
     def test_retry_then_space(self, recon, monkeypatch):
         """Usuario presiona R (retry), luego ESPACIO → captura screenshot"""
         calls = []
-        def fake_press():
+        def fake_read_key():
             calls.append(1)
             return "space" if len(calls) > 1 else "r"
-
-        monkeypatch.setattr("recon.pyautogui.press", fake_press)
+        
+        monkeypatch.setattr("keyboard.read_key", Mock(side_effect=fake_read_key))
         monkeypatch.setattr("recon._screenshot_b64", lambda: "screenshot_data")
         monkeypatch.setattr("builtins.print", lambda *a, **k: None)  # silence output
 
         result = recon.capture_screenshot_interactive("calendario")
         assert result == "screenshot_data"
-        assert len(calls) == 2  # press() called twice
+        assert len(calls) == 2  # read_key called twice
 
     def test_skip_returns_none(self, recon, monkeypatch):
         """Usuario presiona S (skip) → retorna None"""
-        monkeypatch.setattr("recon.pyautogui.press", lambda: "s")
+        monkeypatch.setattr("keyboard.read_key", Mock(return_value="s"))
         monkeypatch.setattr("builtins.print", lambda *a, **k: None)
 
         result = recon.capture_screenshot_interactive("formulario")
@@ -117,12 +119,12 @@ class TestCaptureScreenshotInteractive:
     def test_invalid_key_repeats_prompt(self, recon, monkeypatch):
         """Usuario presiona tecla inválida, luego ESPACIO → captura screenshot"""
         calls = []
-        def fake_press():
+        def fake_read_key():
             calls.append(1)
             # Primero una tecla inválida, luego ESPACIO
             return "x" if len(calls) == 1 else "space"
 
-        monkeypatch.setattr("recon.pyautogui.press", fake_press)
+        monkeypatch.setattr("keyboard.read_key", Mock(side_effect=fake_read_key))
         monkeypatch.setattr("recon._screenshot_b64", lambda: "valid_screenshot")
         monkeypatch.setattr("builtins.print", lambda *a, **k: None)
 

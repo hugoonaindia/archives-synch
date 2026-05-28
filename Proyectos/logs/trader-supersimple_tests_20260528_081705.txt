@@ -1,0 +1,3 @@
+🔍 Verificando dependencias...
+❌ Paquetes faltantes: pytest-cov
+Instalar con: pip install pytest coverage pytest-cov

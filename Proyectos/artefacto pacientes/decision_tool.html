@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Herramienta de Toma de Decisiones</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: #f0f4ff;
+    min-height: 100vh;
+    color: #1a1a2e;
+  }
+
+  header {
+    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    color: white;
+    padding: 28px 32px;
+    text-align: center;
+    box-shadow: 0 4px 20px rgba(79,70,229,0.3);
+  }
+  header h1 { font-size: 1.8rem; font-weight: 700; letter-spacing: -0.5px; }
+  header p { margin-top: 6px; opacity: 0.85; font-size: 0.95rem; }
+
+  /* PROGRESS BAR */
+  .progress-bar-wrap {
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    background: white;
+    border-bottom: 1px solid #e5e7eb;
+    padding: 0 32px;
+  }
+  .step-indicator {
+    flex: 1;
+    max-width: 200px;
+    padding: 14px 8px;
+    text-align: center;
+    font-size: 0.8rem;
+    color: #9ca3af;
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+  }
+  .step-indicator .num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    background: #e5e7eb;
+    color: #6b7280;
+    font-weight: 700;
+    font-size: 0.75rem;
+    margin-bottom: 4px;
+  }
+  .step-indicator.active { color: #4f46e5; border-bottom-color: #4f46e5; }
+  .step-indicator.active .num { background: #4f46e5; color: white; }
+  .step-indicator.done { color: #059669; border-bottom-color: #059669; }
+  .step-indicator.done .num { background: #059669; color: white; }
+
+  /* CONTENT */
+  .container { max-width: 780px; margin: 32px auto; padding: 0 16px 60px; }
+
+  .card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+    padding: 32px;
+    display: none;
+  }
+  .card.active { display: block; }
+
+  .card h2 { font-size: 1.3rem; font-weight: 700; margin-bottom: 6px; color: #1a1a2e; }
+  .card .subtitle { color: #6b7280; font-size: 0.9rem; margin-bottom: 24px; }
+
+  label { display: block; font-size: 0.85rem; font-weight: 600; color: #374151; margin-bottom: 6px; }
+  input[type="text"], textarea, select {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid #d1d5db;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    color: #1a1a2e;
+    transition: border-color 0.2s;
+    outline: none;
+  }
+  input[type="text"]:focus, textarea:focus { border-color: #4f46e5; }
+
+  /* OPCIONES */
+  .option-list { display: flex; flex-direction: column; gap: 10px; }
+  .option-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #f9fafb;
+    border: 1.5px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 10px 14px;
+  }
+  .option-row .opt-num {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: #ede9fe;
+    color: #4f46e5;
+    font-weight: 700;
+    font-size: 0.8rem;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .option-row input { border: none; background: transparent; font-size: 0.92rem; }
+  .option-row input:focus { outline: none; }
+  .option-row .del-btn {
+    background: none; border: none; cursor: pointer;
+    color: #d1d5db; font-size: 1.1rem; padding: 4px;
+    transition: color 0.2s;
+  }
+  .option-row .del-btn:hover { color: #ef4444; }
+
+  /* CRITERIOS */
+  .criterio-row {
+    background: #f9fafb;
+    border: 1.5px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+  }
+  .criterio-top { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .crit-num {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: #fef3c7; color: #d97706;
+    font-weight: 700; font-size: 0.8rem;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .criterio-top input { flex: 1; border: none; background: transparent; font-size: 0.92rem; }
+  .criterio-top input:focus { outline: none; }
+  .criterio-top .del-btn {
+    background: none; border: none; cursor: pointer;
+    color: #d1d5db; font-size: 1.1rem; padding: 4px;
+    transition: color 0.2s;
+  }
+  .criterio-top .del-btn:hover { color: #ef4444; }
+
+  .importancia-row { display: flex; align-items: center; gap: 10px; }
+  .importancia-row span { font-size: 0.78rem; color: #6b7280; min-width: 80px; }
+  .star-group { display: flex; gap: 4px; }
+  .star {
+    font-size: 1.3rem; cursor: pointer; color: #d1d5db;
+    transition: color 0.15s, transform 0.1s;
+    user-select: none;
+  }
+  .star.active { color: #f59e0b; }
+  .star:hover { transform: scale(1.2); }
+  .imp-label { font-size: 0.78rem; color: #4f46e5; font-weight: 600; min-width: 70px; }
+
+  /* PUNTUACION */
+  .score-grid { width: 100%; border-collapse: collapse; }
+  .score-grid th {
+    background: #f3f4f6; padding: 10px 12px;
+    text-align: left; font-size: 0.8rem; font-weight: 600;
+    color: #374151; border-bottom: 2px solid #e5e7eb;
+  }
+  .score-grid td {
+    padding: 10px 12px; border-bottom: 1px solid #f3f4f6; vertical-align: middle;
+  }
+  .score-grid tr:last-child td { border-bottom: none; }
+  .score-grid td:first-child { font-size: 0.85rem; color: #374151; max-width: 160px; }
+
+  .score-slider-wrap { display: flex; align-items: center; gap: 10px; }
+  .score-slider-wrap input[type="range"] {
+    -webkit-appearance: none;
+    width: 120px; height: 6px;
+    border-radius: 3px;
+    background: linear-gradient(to right, #4f46e5 0%, #e5e7eb 0%);
+    outline: none;
+    border: none;
+    padding: 0;
+  }
+  .score-slider-wrap input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: #4f46e5;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(79,70,229,0.4);
+  }
+  .score-val {
+    font-weight: 700; font-size: 1rem; color: #4f46e5;
+    min-width: 24px; text-align: center;
+  }
+
+  /* BOTONES */
+  .btn-row { display: flex; gap: 10px; margin-top: 28px; justify-content: flex-end; }
+  .btn {
+    padding: 10px 22px; border-radius: 10px; font-size: 0.9rem;
+    font-weight: 600; cursor: pointer; border: none; transition: all 0.2s;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    color: white; box-shadow: 0 4px 14px rgba(79,70,229,0.35);
+  }
+  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(79,70,229,0.4); }
+  .btn-secondary { background: #f3f4f6; color: #374151; }
+  .btn-secondary:hover { background: #e5e7eb; }
+  .btn-add {
+    background: #ede9fe; color: #4f46e5; border: 1.5px dashed #c4b5fd;
+    width: 100%; margin-top: 8px;
+  }
+  .btn-add:hover { background: #ddd6fe; }
+
+  /* RESULTADOS */
+  .resultado-wrap { margin-top: 8px; }
+  .resultado-card {
+    background: #f9fafb; border: 1.5px solid #e5e7eb;
+    border-radius: 12px; padding: 16px 20px; margin-bottom: 12px;
+    position: relative;
+  }
+  .resultado-card.winner {
+    background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+    border-color: #6ee7b7;
+  }
+  .resultado-card .opt-name {
+    font-weight: 700; font-size: 1.05rem; margin-bottom: 10px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .badge-winner {
+    background: #059669; color: white;
+    font-size: 0.7rem; padding: 2px 8px; border-radius: 999px; font-weight: 700;
+  }
+  .bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+  .bar-label { font-size: 0.78rem; color: #6b7280; width: 130px; flex-shrink: 0; text-align: right; }
+  .bar-outer { flex: 1; background: #e5e7eb; border-radius: 999px; height: 10px; overflow: hidden; }
+  .bar-inner { height: 100%; border-radius: 999px; transition: width 1s ease; }
+  .bar-score { font-size: 0.8rem; font-weight: 600; min-width: 36px; }
+
+  .total-score {
+    font-size: 1.4rem; font-weight: 700; color: #4f46e5;
+    text-align: right; margin-top: 8px;
+  }
+  .winner .total-score { color: #059669; }
+
+  .recomendacion {
+    background: linear-gradient(135deg, #ede9fe, #faf5ff);
+    border: 1.5px solid #c4b5fd;
+    border-radius: 14px;
+    padding: 20px 24px;
+    margin-top: 20px;
+    text-align: center;
+  }
+  .recomendacion h3 { font-size: 1rem; color: #5b21b6; margin-bottom: 8px; }
+  .recomendacion p { font-size: 0.9rem; color: #374151; line-height: 1.6; }
+  .recomendacion strong { color: #4f46e5; }
+
+  .aviso {
+    background: #fffbeb; border: 1px solid #fcd34d; border-radius: 10px;
+    padding: 12px 16px; font-size: 0.8rem; color: #92400e;
+    margin-top: 16px; line-height: 1.5;
+  }
+
+  .error-msg { color: #ef4444; font-size: 0.82rem; margin-top: 8px; display: none; }
+
+  .btn-reset { margin-top: 24px; text-align: center; }
+  .btn-ghost {
+    background: none; border: 1.5px solid #d1d5db; color: #6b7280;
+    padding: 8px 20px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; transition: all 0.2s;
+  }
+  .btn-ghost:hover { border-color: #4f46e5; color: #4f46e5; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🧭 Herramienta de Toma de Decisiones</h1>
+  <p>Evalúa tus opciones con criterios ponderados y obtén una puntuación objetiva</p>
+</header>
+
+<div class="progress-bar-wrap">
+  <div class="step-indicator active" id="si1" onclick="goToStep(1)">
+    <div><div class="num">1</div></div>
+    Tu decisión
+  </div>
+  <div class="step-indicator" id="si2" onclick="goToStep(2)">
+    <div><div class="num">2</div></div>
+    Opciones
+  </div>
+  <div class="step-indicator" id="si3" onclick="goToStep(3)">
+    <div><div class="num">3</div></div>
+    Criterios
+  </div>
+  <div class="step-indicator" id="si4" onclick="goToStep(4)">
+    <div><div class="num">4</div></div>
+    Puntuación
+  </div>
+  <div class="step-indicator" id="si5" onclick="goToStep(5)">
+    <div><div class="num">5</div></div>
+    Resultados
+  </div>
+</div>
+
+<div class="container">
+  <!-- PASO 1 -->
+  <div class="card active" id="step1">
+    <h2>¿Qué decisión necesitas tomar?</h2>
+    <p class="subtitle">Describe brevemente el dilema o elección que tienes por delante.</p>
+    <label for="decisionTitle">Título de tu decisión</label>
+    <input type="text" id="decisionTitle" placeholder="Ej: ¿A qué carrera me dedico?" maxlength="100" />
+    <p id="err1" class="error-msg">Por favor escribe el título de tu decisión.</p>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="step1Next()">Siguiente →</button>
+    </div>
+  </div>
+
+  <!-- PASO 2 -->
+  <div class="card" id="step2">
+    <h2>¿Cuáles son tus opciones?</h2>
+    <p class="subtitle">Añade al menos 2 opciones que estás considerando (máximo 6).</p>
+    <div class="option-list" id="optionList"></div>
+    <button class="btn btn-add" onclick="addOption()">+ Añadir opción</button>
+    <p id="err2" class="error-msg">Añade al menos 2 opciones.</p>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="goToStep(1)">← Atrás</button>
+      <button class="btn btn-primary" onclick="step2Next()">Siguiente →</button>
+    </div>
+  </div>
+
+  <!-- PASO 3 -->
+  <div class="card" id="step3">
+    <h2>¿Qué criterios importan?</h2>
+    <p class="subtitle">Define qué factores valoras en esta decisión y cuánto peso tiene cada uno (⭐ = poco importante, ⭐⭐⭐⭐⭐ = muy importante).</p>
+    <div id="criterioList"></div>
+    <button class="btn btn-add" onclick="addCriterio()">+ Añadir criterio</button>
+    <p id="err3" class="error-msg">Añade al menos 1 criterio.</p>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="goToStep(2)">← Atrás</button>
+      <button class="btn btn-primary" onclick="step3Next()">Siguiente →</button>
+    </div>
+  </div>
+
+  <!-- PASO 4 -->
+  <div class="card" id="step4">
+    <h2>Puntúa cada opción</h2>
+    <p class="subtitle">Para cada criterio, indica del 1 al 10 cómo se desempeña cada opción. Sé honesto.</p>
+    <div id="scoreTableWrap"></div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="goToStep(3)">← Atrás</button>
+      <button class="btn btn-primary" onclick="calcularResultados()">Ver resultados →</button>
+    </div>
+  </div>
+
+  <!-- PASO 5 -->
+  <div class="card" id="step5">
+    <h2 id="resultTitle">Resultados de tu decisión</h2>
+    <p class="subtitle" id="resultSubtitle"></p>
+    <div class="resultado-wrap" id="resultadoWrap"></div>
+    <div class="recomendacion" id="recomendacionBox"></div>
+    <div class="aviso">
+      ⚠️ Esta herramienta te ayuda a <strong>ordenar tu pensamiento</strong> de forma objetiva. La decisión final siempre es tuya. Puedes consultar con personas de confianza o un profesional antes de decidir.
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="goToStep(4)">← Volver a ajustar</button>
+    </div>
+    <div class="btn-reset">
+      <button class="btn-ghost" onclick="resetAll()">🔄 Empezar nueva decisión</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let state = { titulo: '', opciones: [], criterios: [], puntuaciones: {} };
+let currentStep = 1;
+
+function goToStep(n) {
+  if (n > currentStep && n !== currentStep + 1) return;
+  document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
+  document.getElementById('step' + n).classList.add('active');
+  for (let i = 1; i <= 5; i++) {
+    const si = document.getElementById('si' + i);
+    si.classList.remove('active', 'done');
+    if (i < n) si.classList.add('done');
+    else if (i === n) si.classList.add('active');
+  }
+  currentStep = n;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function step1Next() {
+  const v = document.getElementById('decisionTitle').value.trim();
+  if (!v) { document.getElementById('err1').style.display = 'block'; return; }
+  document.getElementById('err1').style.display = 'none';
+  state.titulo = v;
+  renderOptions();
+  goToStep(2);
+}
+
+function renderOptions() {
+  const list = document.getElementById('optionList');
+  list.innerHTML = '';
+  while (state.opciones.length < 2) state.opciones.push('');
+  state.opciones.forEach((op, i) => {
+    const row = document.createElement('div');
+    row.className = 'option-row';
+    row.innerHTML = `
+      <div class="opt-num">${i + 1}</div>
+      <input type="text" placeholder="Opción ${i + 1}..." value="${escHtml(op)}"
+        oninput="state.opciones[${i}] = this.value" maxlength="80" />
+      ${i >= 2 ? `<button class="del-btn" onclick="removeOption(${i})">✕</button>` : ''}
+    `;
+    list.appendChild(row);
+  });
+}
+
+function addOption() {
+  if (state.opciones.length >= 6) return;
+  state.opciones.push('');
+  renderOptions();
+  document.querySelectorAll('#optionList .option-row input')[state.opciones.length - 1].focus();
+}
+function removeOption(i) { state.opciones.splice(i, 1); renderOptions(); }
+
+function step2Next() {
+  const filled = state.opciones.filter(o => o.trim() !== '');
+  if (filled.length < 2) { document.getElementById('err2').style.display = 'block'; return; }
+  document.getElementById('err2').style.display = 'none';
+  state.opciones = state.opciones.filter(o => o.trim() !== '');
+  renderCriterios();
+  goToStep(3);
+}
+
+const impLabels = ['', 'Poco importante', 'Algo importante', 'Moderadamente', 'Muy importante', 'Imprescindible'];
+
+function renderCriterios() {
+  const list = document.getElementById('criterioList');
+  list.innerHTML = '';
+  if (state.criterios.length === 0) state.criterios.push({ texto: '', estrellas: 3 });
+  state.criterios.forEach((c, i) => {
+    const div = document.createElement('div');
+    div.className = 'criterio-row';
+    const starsHtml = [1,2,3,4,5].map(n =>
+      `<span class="star ${c.estrellas >= n ? 'active' : ''}"
+        onclick="setEstrellas(${i}, ${n})"
+        onmouseover="hoverStars(${i}, ${n})"
+        onmouseout="restoreStars(${i})">★</span>`
+    ).join('');
+    div.innerHTML = `
+      <div class="criterio-top">
+        <div class="crit-num">${i + 1}</div>
+        <input type="text" placeholder="Ej: Salario, satisfacción, tiempo..." value="${escHtml(c.texto)}"
+          oninput="state.criterios[${i}].texto = this.value" maxlength="60" />
+        ${i > 0 ? `<button class="del-btn" onclick="removeCriterio(${i})">✕</button>` : ''}
+      </div>
+      <div class="importancia-row">
+        <span>Importancia:</span>
+        <div class="star-group" id="stars_${i}">${starsHtml}</div>
+        <span class="imp-label" id="impLbl_${i}">${impLabels[c.estrellas]}</span>
+      </div>
+    `;
+    list.appendChild(div);
+  });
+}
+
+function setEstrellas(i, n) {
+  state.criterios[i].estrellas = n;
+  renderCriterioStars(i, n);
+  document.getElementById('impLbl_' + i).textContent = impLabels[n];
+}
+function hoverStars(i, n) { renderCriterioStars(i, n, true); }
+function restoreStars(i) { renderCriterioStars(i, state.criterios[i].estrellas); }
+function renderCriterioStars(i, n, hover = false) {
+  const group = document.getElementById('stars_' + i);
+  if (!group) return;
+  group.querySelectorAll('.star').forEach((s, idx) => { s.classList.toggle('active', idx < n); });
+  if (!hover) document.getElementById('impLbl_' + i).textContent = impLabels[n];
+}
+
+function addCriterio() {
+  if (state.criterios.length >= 8) return;
+  state.criterios.push({ texto: '', estrellas: 3 });
+  renderCriterios();
+  const inputs = document.querySelectorAll('#criterioList .criterio-row input[type="text"]');
+  inputs[inputs.length - 1].focus();
+}
+function removeCriterio(i) { state.criterios.splice(i, 1); renderCriterios(); }
+
+function step3Next() {
+  const filled = state.criterios.filter(c => c.texto.trim() !== '');
+  if (filled.length < 1) { document.getElementById('err3').style.display = 'block'; return; }
+  document.getElementById('err3').style.display = 'none';
+  state.criterios = state.criterios.filter(c => c.texto.trim() !== '');
+  renderScoreTable();
+  goToStep(4);
+}
+
+function renderScoreTable() {
+  const wrap = document.getElementById('scoreTableWrap');
+  let html = `<table class="score-grid"><tr><th>Criterio</th>${state.opciones.map(o => `<th>${escHtml(o)}</th>`).join('')}</tr>`;
+  state.criterios.forEach((c, ci) => {
+    html += `<tr><td><strong>${escHtml(c.texto)}</strong><br/><span style="font-size:0.75rem;color:#f59e0b">${'★'.repeat(c.estrellas)}</span></td>`;
+    state.opciones.forEach((o, oi) => {
+      const key = `${oi}_${ci}`;
+      const val = state.puntuaciones[key] || 5;
+      state.puntuaciones[key] = val;
+      html += `<td><div class="score-slider-wrap">
+        <input type="range" min="1" max="10" value="${val}" id="sl_${oi}_${ci}" oninput="updateScore(${oi}, ${ci}, this.value)" />
+        <span class="score-val" id="sv_${oi}_${ci}">${val}</span>
+      </div></td>`;
+    });
+    html += '</tr>';
+  });
+  html += '</table>';
+  wrap.innerHTML = html;
+  state.criterios.forEach((c, ci) => {
+    state.opciones.forEach((o, oi) => updateScore(oi, ci, state.puntuaciones[`${oi}_${ci}`] || 5));
+  });
+}
+
+function updateScore(oi, ci, val) {
+  val = parseInt(val);
+  state.puntuaciones[`${oi}_${ci}`] = val;
+  const sv = document.getElementById(`sv_${oi}_${ci}`);
+  const sl = document.getElementById(`sl_${oi}_${ci}`);
+  if (sv) sv.textContent = val;
+  if (sl) {
+    const pct = (val - 1) / 9 * 100;
+    sl.style.background = `linear-gradient(to right, #4f46e5 ${pct}%, #e5e7eb ${pct}%)`;
+  }
+}
+
+function calcularResultados() {
+  const totalStars = state.criterios.reduce((s, c) => s + c.estrellas, 0);
+  const scores = state.opciones.map((opt, oi) => {
+    let total = 0;
+    state.criterios.forEach((c, ci) => {
+      total += (c.estrellas / totalStars) * (state.puntuaciones[`${oi}_${ci}`] || 5);
+    });
+    return { opt, score: total, breakdown: state.criterios.map((c, ci) => ({
+      crit: c.texto, punt: state.puntuaciones[`${oi}_${ci}`] || 5
+    }))};
+  });
+  scores.sort((a, b) => b.score - a.score);
+
+  document.getElementById('resultTitle').textContent = `Resultados: ${state.titulo}`;
+  document.getElementById('resultSubtitle').textContent = `Comparamos ${state.opciones.length} opciones en base a ${state.criterios.length} criterios ponderados.`;
+
+  const wrap = document.getElementById('resultadoWrap');
+  wrap.innerHTML = '';
+  const barColors = ['#4f46e5','#7c3aed','#0891b2','#059669','#d97706','#dc2626'];
+
+  scores.forEach((s, rank) => {
+    const isWinner = rank === 0;
+    const card = document.createElement('div');
+    card.className = 'resultado-card' + (isWinner ? ' winner' : '');
+    const barsHtml = s.breakdown.map((b, bi) => {
+      const pct = (b.punt / 10) * 100;
+      return `<div class="bar-row">
+        <span class="bar-label">${escHtml(b.crit)}</span>
+        <div class="bar-outer"><div class="bar-inner" style="width:${pct}%;background:${barColors[bi % barColors.length]}"></div></div>
+        <span class="bar-score">${b.punt}/10</span>
+      </div>`;
+    }).join('');
+    card.innerHTML = `
+      <div class="opt-name">
+        ${isWinner ? '<span style="font-size:1.3rem">🏆</span>' : `<span style="font-size:1rem;color:#9ca3af">#${rank+1}</span>`}
+        ${escHtml(s.opt)}
+        ${isWinner ? '<span class="badge-winner">Mejor opción</span>' : ''}
+      </div>
+      ${barsHtml}
+      <div class="total-score">${s.score.toFixed(2)} / 10</div>
+    `;
+    wrap.appendChild(card);
+  });
+
+  const winner = scores[0];
+  const second = scores[1];
+  const diff = winner.score - second.score;
+  let recoText = '';
+  if (diff < 0.3) {
+    recoText = `<strong>${escHtml(winner.opt)}</strong> y <strong>${escHtml(second.opt)}</strong> están muy igualadas. Puede que el aspecto emocional o algún criterio que aún no hayas considerado sea el que incline la balanza. Reflexiona con calma.`;
+  } else if (diff < 1) {
+    recoText = `<strong>${escHtml(winner.opt)}</strong> tiene cierta ventaja según tus criterios. Si los pesos reflejan bien tus prioridades, es la opción más equilibrada para ti ahora mismo.`;
+  } else {
+    recoText = `<strong>${escHtml(winner.opt)}</strong> destaca claramente sobre las demás opciones según lo que más valoras. Los números apoyan esta elección de forma sólida.`;
+  }
+  document.getElementById('recomendacionBox').innerHTML = `<h3>💡 ¿Qué te dicen los datos?</h3><p>${recoText}</p>`;
+  goToStep(5);
+}
+
+function resetAll() {
+  state = { titulo: '', opciones: [], criterios: [], puntuaciones: {} };
+  document.getElementById('decisionTitle').value = '';
+  goToStep(1);
+}
+
+function escHtml(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+renderOptions();
+renderCriterios();
+</script>
+</body>
+</html>

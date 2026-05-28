@@ -1,0 +1,10 @@
+Errores de sintaxis encontrados: 0
+Archivos analizados: 4
+✅ requirements.txt encontrado
+
+=== RESUMEN equilibria ===
+Archivos Python: 4
+Errores de sintaxis: 0
+Bare excepts: 0
+Correcciones automáticas: No
+Finalizado: miércoles, 27 de mayo de 2026, 09:35:37 CEST

@@ -1,0 +1,38 @@
+........................................................................ [ 17%]
+........................................................................ [ 35%]
+........................................................................ [ 53%]
+........................................................................ [ 71%]
+........................................................................ [ 88%]
+.............................................                            [100%]
+=============================== warnings summary ===============================
+../../../anaconda3/lib/python3.13/site-packages/starlette/formparsers.py:12
+  /Users/hugoonaindia/anaconda3/lib/python3.13/site-packages/starlette/formparsers.py:12: PendingDeprecationWarning: Please use `import python_multipart` instead.
+    import multipart
+
+../../../anaconda3/lib/python3.13/site-packages/vbuild/__init__.py:33
+  /Users/hugoonaindia/anaconda3/lib/python3.13/site-packages/vbuild/__init__.py:33: DeprecationWarning: 'pkgutil.find_loader' is deprecated and slated for removal in Python 3.14; use importlib.util.find_spec() instead
+    hasLess = bool(pkgutil.find_loader("lesscpy"))
+
+../../../anaconda3/lib/python3.13/site-packages/vbuild/__init__.py:34
+  /Users/hugoonaindia/anaconda3/lib/python3.13/site-packages/vbuild/__init__.py:34: DeprecationWarning: 'pkgutil.find_loader' is deprecated and slated for removal in Python 3.14; use importlib.util.find_spec() instead
+    hasSass = bool(pkgutil.find_loader("scss"))
+
+../../../anaconda3/lib/python3.13/site-packages/vbuild/__init__.py:35
+  /Users/hugoonaindia/anaconda3/lib/python3.13/site-packages/vbuild/__init__.py:35: DeprecationWarning: 'pkgutil.find_loader' is deprecated and slated for removal in Python 3.14; use importlib.util.find_spec() instead
+    hasClosure = bool(pkgutil.find_loader("closure"))
+
+tests/test_basic.py::TestDataManagerLoad::test_validate_and_clean_dayfirst_exception_branch
+  /Users/hugoonaindia/Desktop/LSTM RL/tests/test_basic.py:622: UserWarning: Parsing dates in %d/%m/%Y format when dayfirst=False (the default) was specified. Pass `dayfirst=True` or specify a format to silence this warning.
+
+tests/test_feature_discovery.py::TestFeatureDiscoveryAPI::test_discover_features_unknown_method_fallback
+tests/test_feature_discovery.py::TestFeatureDiscoveryMethods::test_both_selection_methods_work
+  /Users/hugoonaindia/anaconda3/lib/python3.13/site-packages/numpy/lib/function_base.py:2897: RuntimeWarning: invalid value encountered in divide
+    c /= stddev[:, None]
+
+tests/test_feature_discovery.py::TestFeatureDiscoveryAPI::test_discover_features_unknown_method_fallback
+tests/test_feature_discovery.py::TestFeatureDiscoveryMethods::test_both_selection_methods_work
+  /Users/hugoonaindia/anaconda3/lib/python3.13/site-packages/numpy/lib/function_base.py:2898: RuntimeWarning: invalid value encountered in divide
+    c /= stddev[None, :]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+405 passed, 9 warnings in 5.66s

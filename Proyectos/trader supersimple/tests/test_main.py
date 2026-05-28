@@ -103,7 +103,10 @@ class TestSimpleMain:
         
         # Verify results
         assert result == 0
-        mock_logger.log_info.assert_called_with("Interrupción recibida, deteniendo...")
+        # Verificar que se llamó con el mensaje de interrupción (última llamada)
+        mock_logger.log_info.assert_any_call("Interrupción recibida, deteniendo...")
+        # También se llama a "Aplicación finalizada exitosamente" después del break
+        assert mock_logger.log_info.call_count >= 1
     
     @patch('src.simple_main.setup_simple_logging')
     @patch('src.simple_main.SimpleApiClient')

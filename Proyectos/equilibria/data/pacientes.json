@@ -1,0 +1,125 @@
+[
+  {
+    "id": "917b4b20-bfd0-46ec-8193-2b811686f365",
+    "nombre": "Naira",
+    "email": null,
+    "telefono": null,
+    "fecha_registro": "2026-05-27T01:59:29.583566",
+    "notas": [
+      {
+        "fecha": "2026-05-27T01:59:29.585661",
+        "nota": "Tiene que ir a comprar ropa grande de su talla.",
+        "tags": [
+          "migrado"
+        ]
+      },
+      {
+        "fecha": "2026-05-27T01:59:29.585867",
+        "nota": "Empezar a hacer una lista con las cosas que necesita para cuando nazca el niño.",
+        "tags": [
+          "migrado"
+        ]
+      },
+      {
+        "fecha": "2026-05-27T01:59:29.586077",
+        "nota": "Revisión de preparativos para el bebé. Estado emocional estable.",
+        "tags": [
+          "migrado"
+        ]
+      },
+      {
+        "fecha": "2026-05-27T01:59:29.586230",
+        "nota": "Sesion de 80 euros. Próxima sesión en dos semanas (2026-04-29).",
+        "tags": [
+          "migrado"
+        ]
+      }
+    ],
+    "metadatos": {}
+  },
+  {
+    "id": "95f9b886-988e-4ba7-9bb1-64cdd2b6998c",
+    "nombre": "[Nombre del paciente]",
+    "email": null,
+    "telefono": null,
+    "fecha_registro": "2026-05-27T01:59:29.586402",
+    "notas": [
+      {
+        "fecha": "2026-05-27T01:59:29.586567",
+        "nota": "[Acción u observación]",
+        "tags": [
+          "migrado"
+        ]
+      },
+      {
+        "fecha": "2026-05-27T01:59:29.586737",
+        "nota": "[Próximo paso o recordatorio]",
+        "tags": [
+          "migrado"
+        ]
+      },
+      {
+        "fecha": "2026-05-27T01:59:29.586907",
+        "nota": "[Otra nota relevante]",
+        "tags": [
+          "migrado"
+        ]
+      }
+    ],
+    "metadatos": {}
+  },
+  {
+    "id": "1f4ae736-87dc-46bd-81b1-cae17dfbcd7d",
+    "nombre": "Naira",
+    "email": "naira@example.com",
+    "telefono": null,
+    "fecha_registro": "2026-05-27T01:59:29.587525",
+    "notas": [
+      {
+        "fecha": "2026-05-27T01:59:29.587858",
+        "nota": "Consulta inicial realizada con éxito",
+        "tags": [
+          "inicial",
+          "importante"
+        ]
+      }
+    ],
+    "metadatos": {}
+  },
+  {
+    "id": "ad3b807b-dd76-47e8-b4f4-232f8a275429",
+    "nombre": "Carlos",
+    "email": "carlos@example.com",
+    "telefono": null,
+    "fecha_registro": "2026-05-27T01:59:29.588265",
+    "notas": [
+      {
+        "fecha": "2026-05-27T01:59:29.588467",
+        "nota": "Consulta inicial realizada con éxito",
+        "tags": [
+          "inicial",
+          "importante"
+        ]
+      }
+    ],
+    "metadatos": {}
+  },
+  {
+    "id": "109ea330-3954-4b7a-8a07-10cdde096caa",
+    "nombre": "Ana",
+    "email": "ana@example.com",
+    "telefono": null,
+    "fecha_registro": "2026-05-27T01:59:29.589043",
+    "notas": [
+      {
+        "fecha": "2026-05-27T01:59:29.589274",
+        "nota": "Consulta inicial realizada con éxito",
+        "tags": [
+          "inicial",
+          "importante"
+        ]
+      }
+    ],
+    "metadatos": {}
+  }
+]

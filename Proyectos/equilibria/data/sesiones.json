@@ -1,0 +1,38 @@
+[
+  {
+    "id": "faaa26f7-7be9-47a5-80bf-a4c59f405ddc",
+    "paciente_id": "1f4ae736-87dc-46bd-81b1-cae17dfbcd7d",
+    "fecha": "2026-05-27T01:59:29.588060",
+    "duracion": 60,
+    "costo": 80.0,
+    "notas": "Sesión regular de seguimiento",
+    "estado": "completada",
+    "tags": [
+      "seguimiento"
+    ]
+  },
+  {
+    "id": "f3b094ca-a067-41f1-8836-4e34b453448a",
+    "paciente_id": "ad3b807b-dd76-47e8-b4f4-232f8a275429",
+    "fecha": "2026-05-27T01:59:29.588677",
+    "duracion": 60,
+    "costo": 80.0,
+    "notas": "Sesión regular de seguimiento",
+    "estado": "completada",
+    "tags": [
+      "seguimiento"
+    ]
+  },
+  {
+    "id": "e049e9f2-4663-48dd-8b1f-bd1950603226",
+    "paciente_id": "109ea330-3954-4b7a-8a07-10cdde096caa",
+    "fecha": "2026-05-27T01:59:29.589510",
+    "duracion": 60,
+    "costo": 80.0,
+    "notas": "Sesión regular de seguimiento",
+    "estado": "completada",
+    "tags": [
+      "seguimiento"
+    ]
+  }
+]
